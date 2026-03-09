@@ -1,166 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<title>Lesson Quiz</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
+    <meta charset="UTF-8">
+    <title>Lesson Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-<body class="bg-gray-100">
+<div class="max-w-3xl w-full mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Quiz</h1>
 
+    <div class="text-center">
+        <button id="startExamBtn" class="bg-green-600 hover:bg-green-700 transition text-white font-semibold px-8 py-3 rounded-lg shadow-md">
+            Enter Exam
+        </button>
+    </div>
 
-<div class="max-w-3xl mx-auto p-6">
+    <div id="examBox" class="hidden bg-white p-8 rounded-xl shadow-lg mt-6">
+        <img id="questionImage" class="w-full mb-6 rounded border border-gray-200 shadow-sm" alt="Question Image">
 
-<h1 class="text-2xl font-bold mb-6 text-center">
+        <div id="optionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
-Quiz
-
-</h1>
-
-
-<button id="startExam"
-class="bg-green-600 text-white px-6 py-3 rounded">
-
-Enter Exam
-
-</button>
-
-
-<div id="examBox"
-class="hidden bg-white p-6 rounded shadow mt-6">
-
-
-<img id="questionImage"
-class="w-full mb-4">
-
-
-<div id="answers"></div>
-
-
-<button id="nextBtn"
-class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
-
-Next Question
-
-</button>
-
-
+        <button id="nextBtn" class="bg-orange-500 hover:bg-orange-600 transition text-white font-bold px-6 py-3 mt-8 rounded-lg w-full shadow-md">
+            Next Question
+        </button>
+    </div>
 </div>
-
-
-</div>
-
 
 <script type="module">
+    import { db } from "./firebase.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { db } from "./firebase.js"
+    // ربط عناصر الـ HTML بالجافاسكريبت
+    const startExamBtn = document.getElementById("startExamBtn");
+    const examBox = document.getElementById("examBox");
+    const questionImage = document.getElementById("questionImage");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const nextBtn = document.getElementById("nextBtn");
 
-import {
-doc,
-getDoc
-}
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonId = urlParams.get("id");
 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    let questions = [];
+    let current = 0;
+    // تم تغيير اسم المصفوفة لـ userAnswers لمنع التعارض مع عناصر الـ HTML
+    let userAnswers = []; 
 
+    // جلب البيانات من فايربيز
+    async function fetchQuestions() {
+        if (!lessonId) {
+            alert("Lesson ID is missing in the URL!");
+            return;
+        }
 
-const lessonId =
-new URLSearchParams(location.search).get("id")
+        startExamBtn.innerText = "Loading...";
+        startExamBtn.disabled = true;
 
+        try {
+            const lessonRef = doc(db, "lessons", lessonId);
+            const snap = await getDoc(lessonRef);
 
-const lessonRef = doc(db,"lessons",lessonId)
+            if (snap.exists()) {
+                const lesson = snap.data();
+                questions = lesson.questions || [];
+                
+                if(questions.length > 0){
+                    startExamBtn.innerText = "Enter Exam";
+                    startExamBtn.disabled = false;
+                } else {
+                    alert("No questions found for this lesson.");
+                    startExamBtn.innerText = "No Questions";
+                }
+            } else {
+                alert("Lesson not found!");
+            }
+        } catch (error) {
+            console.error("Error fetching lesson:", error);
+            alert("Error loading exam.");
+        }
+    }
 
-const snap = await getDoc(lessonRef)
+    // بدء الامتحان
+    startExamBtn.onclick = () => {
+        if(questions.length === 0) return;
+        
+        startExamBtn.parentElement.classList.add("hidden"); // إخفاء زر البداية
+        examBox.classList.remove("hidden"); // إظهار مربع الامتحان
+        loadQuestion();
+    };
 
-const lesson = snap.data()
+    // تحميل السؤال الحالي
+    function loadQuestion() {
+        let q = questions[current];
+        questionImage.src = q.image;
 
-let questions = lesson.questions
+        // عرض الاختيارات (A, B, C, D) لأن النص موجود داخل الصورة
+        optionsContainer.innerHTML = `
+            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
+                <input type="radio" name="answer" value="a" class="w-5 h-5 text-blue-600 mr-3"> 
+                <span class="text-lg font-medium">A</span>
+            </label>
+            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
+                <input type="radio" name="answer" value="b" class="w-5 h-5 text-blue-600 mr-3"> 
+                <span class="text-lg font-medium">B</span>
+            </label>
+            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
+                <input type="radio" name="answer" value="c" class="w-5 h-5 text-blue-600 mr-3"> 
+                <span class="text-lg font-medium">C</span>
+            </label>
+            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
+                <input type="radio" name="answer" value="d" class="w-5 h-5 text-blue-600 mr-3"> 
+                <span class="text-lg font-medium">D</span>
+            </label>
+        `;
+    }
 
+    // الانتقال للسؤال التالي
+    nextBtn.onclick = () => {
+        let selected = document.querySelector("input[name='answer']:checked");
 
+        if (!selected) {
+            alert("Please choose an answer first!");
+            return;
+        }
 
-let current = 0
+        userAnswers.push(selected.value);
+        current++;
 
-let answers = []
+        if (current < questions.length) {
+            loadQuestion();
+        } else {
+            // إنهاء الامتحان
+            examBox.innerHTML = `
+                <div class="text-center py-10">
+                    <h2 class="text-3xl font-bold text-green-600 mb-4">Exam Finished!</h2>
+                    <p class="text-gray-600">Your answers have been recorded.</p>
+                </div>
+            `;
+            console.log("Student Answers:", userAnswers);
+            // يمكنك هنا إضافة كود إرسال الإجابات إلى فايربيز مرة أخرى
+        }
+    };
 
-
-
-startExam.onclick = ()=>{
-
-examBox.classList.remove("hidden")
-
-loadQuestion()
-
-}
-
-
-
-function loadQuestion(){
-
-let q = questions[current]
-
-questionImage.src = q.image
-
-
-answers.innerHTML = `
-
-<label class="block border p-3 mb-2">
-<input type="radio" name="answer" value="a"> ${q.a}
-</label>
-
-<label class="block border p-3 mb-2">
-<input type="radio" name="answer" value="b"> ${q.b}
-</label>
-
-<label class="block border p-3 mb-2">
-<input type="radio" name="answer" value="c"> ${q.c}
-</label>
-
-<label class="block border p-3 mb-2">
-<input type="radio" name="answer" value="d"> ${q.d}
-</label>
-
-`
-
-}
-
-
-
-nextBtn.onclick = ()=>{
-
-let selected =
-document.querySelector("input[name='answer']:checked")
-
-if(!selected){
-
-alert("Choose answer")
-
-return
-
-}
-
-answers.push(selected.value)
-
-current++
-
-
-if(current < questions.length){
-
-loadQuestion()
-
-}
-else{
-
-alert("Exam Finished")
-
-}
-
-}
-
+    // تهيئة الامتحان عند تحميل الصفحة
+    fetchQuestions();
 
 </script>
-
 </body>
 </html>
