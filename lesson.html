@@ -23,9 +23,7 @@ href="https://cdn.plyr.io/3.7.8/plyr.css"/>
 
 
 <h1 class="text-2xl font-bold text-center mb-6">
-
 Lesson
-
 </h1>
 
 
@@ -33,25 +31,16 @@ Lesson
 
 <div class="flex gap-4 justify-center mb-6">
 
-<button onclick="showTab('quiz')"
-class="bg-blue-500 text-white px-6 py-2 rounded">
-
+<button onclick="showTab('quiz')" class="bg-blue-500 text-white px-6 py-2 rounded">
 Quiz
-
 </button>
 
-<button onclick="showTab('video')"
-class="bg-gray-200 px-6 py-2 rounded">
-
+<button onclick="showTab('video')" class="bg-gray-200 px-6 py-2 rounded">
 Video
-
 </button>
 
-<button onclick="showTab('pdf')"
-class="bg-gray-200 px-6 py-2 rounded">
-
+<button onclick="showTab('pdf')" class="bg-gray-200 px-6 py-2 rounded">
 PDF
-
 </button>
 
 </div>
@@ -76,7 +65,9 @@ class="hidden bg-white p-6 rounded shadow">
 <img id="questionImage"
 class="mb-4 w-full">
 
+
 <div id="answers"></div>
+
 
 <button id="nextBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
@@ -98,7 +89,8 @@ Next Question
 <div class="video-wrapper">
 
 <div id="player"
-data-plyr-provider="youtube"></div>
+data-plyr-provider="youtube"
+data-plyr-embed-id="VIDEO_ID"></div>
 
 </div>
 
@@ -111,7 +103,7 @@ data-plyr-provider="youtube"></div>
 <div id="pdf"
 class="hidden text-center">
 
-<a id="pdfLink"
+<a href="files/lesson.pdf"
 class="bg-blue-500 text-white px-6 py-3 rounded">
 
 Download PDF
@@ -134,75 +126,45 @@ class="text-center mt-6 text-xl font-bold"></div>
 
 
 
-<script type="module">
-
-
-import { db } from "./firebase.js"
-
-import {
-
-doc,
-getDoc
-
-}
-
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
-
-
-
-const lessonId =
-new URLSearchParams(location.search).get("id")
-
-
-const ref = doc(db,"lessons",lessonId)
-
-const snap = await getDoc(ref)
-
-const lesson = snap.data()
-
-
-
-/* VIDEO */
-
-const videoId =
-lesson.video.split("v=")[1]
-
-document
-.getElementById("player")
-.setAttribute(
-"data-plyr-embed-id",
-videoId
-)
-
-
-
-/* PDF */
-
-document
-.getElementById("pdfLink")
-.href = lesson.pdf
-
+<script>
 
 
 /* QUESTIONS */
 
-let questions = lesson.questions
+let questions = [
+
+{
+image:"q1.png",
+a:"2",
+b:"4",
+c:"6",
+d:"8",
+correct:"b"
+},
+
+{
+image:"q2.png",
+a:"5",
+b:"7",
+c:"9",
+d:"10",
+correct:"c"
+}
+
+]
+
 
 let currentQuestion = 0
-
 let answers = []
-
 let finished = false
 
 
 
-document
-.getElementById("startExam")
-.onclick = () => {
+/* START EXAM */
 
-document
-.getElementById("examBox")
-.classList.remove("hidden")
+document.getElementById("startExam").onclick = () => {
+
+document.getElementById("examBox").classList.remove("hidden")
 
 loadQuestion()
 
@@ -210,36 +172,31 @@ loadQuestion()
 
 
 
+/* LOAD QUESTION */
+
 function loadQuestion(){
 
 let q = questions[currentQuestion]
 
-questionImage.src = q.image
+document.getElementById("questionImage").src = q.image
 
-answersDiv.innerHTML = `
 
-<label>
-<input type="radio"
-name="a"
-value="a"> ${q.a}
-</label><br>
+document.getElementById("answers").innerHTML = `
 
-<label>
-<input type="radio"
-name="a"
-value="b"> ${q.b}
-</label><br>
+<label class="block mb-2">
+<input type="radio" name="a" value="a"> ${q.a}
+</label>
 
-<label>
-<input type="radio"
-name="a"
-value="c"> ${q.c}
-</label><br>
+<label class="block mb-2">
+<input type="radio" name="a" value="b"> ${q.b}
+</label>
 
-<label>
-<input type="radio"
-name="a"
-value="d"> ${q.d}
+<label class="block mb-2">
+<input type="radio" name="a" value="c"> ${q.c}
+</label>
+
+<label class="block mb-2">
+<input type="radio" name="a" value="d"> ${q.d}
 </label>
 
 `
@@ -248,12 +205,12 @@ value="d"> ${q.d}
 
 
 
-nextBtn.onclick = () => {
+/* NEXT QUESTION */
+
+document.getElementById("nextBtn").onclick = () => {
 
 let selected =
-document.querySelector(
-"input[name='a']:checked"
-)
+document.querySelector("input[name='a']:checked")
 
 if(!selected){
 
@@ -284,14 +241,15 @@ finishExam()
 
 
 
+/* FINISH EXAM */
+
 function finishExam(){
 
-if(!confirm("Finish exam?"))
+if(!confirm("Are you sure to finish exam?"))
 return
 
 
 let score = 0
-
 let review = ""
 
 
@@ -315,7 +273,7 @@ else{
 review +=
 `<p style="color:red">
 Question ${i+1}: Wrong
-Correct: ${q.correct}
+Correct answer: ${q.correct}
 </p>`
 
 }
@@ -325,14 +283,12 @@ Correct: ${q.correct}
 
 finished = true
 
-
-localStorage
-.setItem("lesson_score",score)
+localStorage.setItem("lesson_score",score)
 
 
-examBox.innerHTML = `
+document.getElementById("examBox").innerHTML = `
 
-<h2>
+<h2 class="text-xl font-bold">
 Score ${score}/${questions.length}
 </h2>
 
@@ -341,7 +297,7 @@ ${review}
 `
 
 
-result.innerText =
+document.getElementById("result").innerText =
 "Score "+score+"/"+questions.length
 
 
@@ -351,7 +307,7 @@ initPlayer()
 
 
 
-/* PLAYER */
+/* VIDEO PLAYER */
 
 function initPlayer(){
 
@@ -363,7 +319,6 @@ controls:[
 'current-time',
 'mute',
 'volume',
-'settings',
 'fullscreen'
 ],
 
@@ -390,16 +345,13 @@ return
 
 }
 
-quiz.classList.add("hidden")
-video.classList.add("hidden")
-pdf.classList.add("hidden")
+document.getElementById("quiz").classList.add("hidden")
+document.getElementById("video").classList.add("hidden")
+document.getElementById("pdf").classList.add("hidden")
 
-document
-.getElementById(tab)
-.classList.remove("hidden")
+document.getElementById(tab).classList.remove("hidden")
 
 }
-
 
 
 </script>
@@ -412,13 +364,9 @@ document
 
 max-width:900px;
 margin:auto;
-
 border-radius:20px;
-
 overflow:hidden;
-
-box-shadow:0 10px 40px
-rgba(0,0,0,0.4);
+box-shadow:0 10px 40px rgba(0,0,0,0.4);
 
 }
 
