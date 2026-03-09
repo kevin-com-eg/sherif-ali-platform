@@ -1,34 +1,119 @@
 body{
-margin:0;
+
 font-family:Arial;
+margin:0;
 direction:rtl;
-background:#f3f4f6;
+background:#f4f6f9;
+
 }
 
+/* header */
+
 header{
+
 display:flex;
 justify-content:space-between;
 padding:20px;
-background:#1e40af;
+background:#1e3a8a;
 color:white;
+
 }
 
 nav a{
+
 margin:10px;
 color:white;
 text-decoration:none;
+
 }
+
+/* hero */
 
 .hero{
+
 text-align:center;
-padding:100px;
+padding:120px;
 background:#3b82f6;
 color:white;
+
 }
 
-button{
-padding:10px 20px;
-border:none;
+.btn{
+
+display:inline-block;
+margin-top:20px;
+padding:12px 25px;
 background:white;
+color:#3b82f6;
+text-decoration:none;
+border-radius:8px;
+
+}
+
+/* subjects */
+
+.subjects{
+
+padding:40px;
+text-align:center;
+
+}
+
+.cards{
+
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+
+}
+
+.card{
+
+background:white;
+padding:30px;
+border-radius:10px;
+width:150px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+
+}
+
+/* auth */
+
+.auth-body{
+
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+
+}
+
+.auth-box{
+
+background:white;
+padding:40px;
+border-radius:10px;
+width:300px;
+text-align:center;
+
+}
+
+.auth-box input{
+
+width:100%;
+padding:10px;
+margin:10px 0;
+
+}
+
+.auth-box button{
+
+width:100%;
+padding:10px;
+background:#3b82f6;
+border:none;
+color:white;
 cursor:pointer;
+
 }
