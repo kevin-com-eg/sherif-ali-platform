@@ -24,19 +24,46 @@ font-family:'Tajawal',sans-serif;
 
 
 <nav class="bg-orange-500 text-white p-4 font-bold text-xl">
+
 Teacher Dashboard
+
 </nav>
 
 
-
 <div class="max-w-5xl mx-auto p-6 space-y-6">
+
+
+<!-- LESSON INFO -->
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<h2 class="font-bold mb-3">
+
+Lesson Info
+
+</h2>
+
+<input id="lessonName"
+placeholder="اسم الحصة"
+class="w-full border p-3 rounded mb-3">
+
+<input id="lessonPrice"
+placeholder="سعر الحصة"
+class="w-full border p-3 rounded">
+
+</div>
+
 
 
 <!-- VIDEO -->
 
 <div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">YouTube URL</h2>
+<h2 class="font-bold mb-3">
+
+YouTube Video URL
+
+</h2>
 
 <input id="videoUrl"
 class="w-full border p-3 rounded"
@@ -50,7 +77,11 @@ placeholder="https://youtube.com/...">
 
 <div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-4">Quiz Questions</h2>
+<h2 class="font-bold mb-4">
+
+Quiz Questions
+
+</h2>
 
 <div id="questions"></div>
 
@@ -69,7 +100,11 @@ Add Question
 
 <div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">Upload PDF</h2>
+<h2 class="font-bold mb-3">
+
+Upload PDF
+
+</h2>
 
 <input type="file" id="pdfFile">
 
@@ -173,13 +208,15 @@ questionsDiv.appendChild(q)
 
 document.getElementById("saveLesson").onclick=async()=>{
 
+
+const lessonName=document.getElementById("lessonName").value
+const lessonPrice=document.getElementById("lessonPrice").value
 const video=document.getElementById("videoUrl").value
+
 
 const pdfFile=document.getElementById("pdfFile").files[0]
 
 let pdfUrl=""
-
-
 
 if(pdfFile){
 
@@ -238,6 +275,10 @@ correct:q.querySelector(".correct").value
 
 
 await addDoc(collection(db,"lessons"),{
+
+name:lessonName,
+
+price:lessonPrice,
 
 video:video,
 
