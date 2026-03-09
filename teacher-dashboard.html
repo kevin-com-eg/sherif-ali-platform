@@ -1,90 +1,91 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Teacher Dashboard</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 p-6">
 
-<nav class="bg-orange-500 text-white p-4 text-xl font-bold">
+<h1 class="text-2xl font-bold mb-6">
 Teacher Dashboard
-</nav>
+</h1>
 
 
-<div class="max-w-4xl mx-auto p-6 space-y-6">
+<div class="bg-white p-6 rounded shadow max-w-2xl">
 
-
-<!-- LESSON INFO -->
-
-<div class="bg-white p-6 rounded-xl shadow">
 
 <input id="lessonName"
 placeholder="Lesson Name"
-class="w-full border p-3 rounded mb-3">
+class="border p-2 w-full mb-3">
 
-<input id="lessonPrice"
-placeholder="Lesson Price"
-class="w-full border p-3 rounded">
-
-</div>
-
-
-<!-- VIDEO -->
-
-<div class="bg-white p-6 rounded-xl shadow">
 
 <input id="videoUrl"
-placeholder="YouTube URL"
-class="w-full border p-3 rounded">
-
-</div>
+placeholder="Youtube URL"
+class="border p-2 w-full mb-3">
 
 
-<!-- PDF -->
-
-<div class="bg-white p-6 rounded-xl shadow">
-
-<input id="pdfLink"
-placeholder="PDF Link"
-class="w-full border p-3 rounded">
-
-</div>
+<input id="pdfUrl"
+placeholder="PDF URL"
+class="border p-2 w-full mb-6">
 
 
-
-<!-- QUIZ -->
-
-<div class="bg-white p-6 rounded-xl shadow">
-
-<h2 class="font-bold mb-4">
-
-Quiz Questions
-
+<h2 class="font-bold mb-2">
+Add Question
 </h2>
 
-<div id="questions"></div>
 
-<button id="addQuestion"
-class="bg-orange-500 text-white px-4 py-2 rounded mt-4">
+<input id="qImage"
+placeholder="Question Image URL"
+class="border p-2 w-full mb-2">
+
+
+<input id="a"
+placeholder="Answer A"
+class="border p-2 w-full mb-2">
+
+
+<input id="b"
+placeholder="Answer B"
+class="border p-2 w-full mb-2">
+
+
+<input id="c"
+placeholder="Answer C"
+class="border p-2 w-full mb-2">
+
+
+<input id="d"
+placeholder="Answer D"
+class="border p-2 w-full mb-2">
+
+
+<select id="correct"
+class="border p-2 w-full mb-4">
+
+<option value="a">Correct A</option>
+<option value="b">Correct B</option>
+<option value="c">Correct C</option>
+<option value="d">Correct D</option>
+
+</select>
+
+
+<button onclick="addQuestion()"
+class="bg-blue-500 text-white px-4 py-2 rounded">
 
 Add Question
 
 </button>
 
-</div>
 
-
-
-<button id="saveLesson"
-class="bg-orange-500 text-white px-6 py-3 rounded">
+<button onclick="saveLesson()"
+class="bg-green-600 text-white px-4 py-2 rounded ml-2">
 
 Save Lesson
 
@@ -94,110 +95,70 @@ Save Lesson
 </div>
 
 
-
 <script type="module">
 
-import { db } from "./firebase.js"
 
-import { collection, addDoc }
+import { db }
+from "./firebase.js"
+
+import {
+collection,
+addDoc
+}
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
 
 
-let questionCount = 0
-
-const questionsDiv = document.getElementById("questions")
-
-
-
-document.getElementById("addQuestion").onclick = () => {
-
-if(questionCount >= 100){
-
-alert("Maximum 100 questions")
-return
-
-}
-
-questionCount++
-
-const q = document.createElement("div")
-
-q.className="border p-4 mt-4 rounded"
-
-q.innerHTML = `
-
-<p class="font-bold mb-2">Question ${questionCount}</p>
-
-<input placeholder="Question Image URL" class="qImage border p-2 w-full mb-2">
-
-<input placeholder="Answer A" class="a border p-2 w-full mb-1">
-
-<input placeholder="Answer B" class="b border p-2 w-full mb-1">
-
-<input placeholder="Answer C" class="c border p-2 w-full mb-1">
-
-<input placeholder="Answer D" class="d border p-2 w-full mb-1">
-
-<input placeholder="Correct (A/B/C/D)" class="correct border p-2 w-full">
-
-`
-
-questionsDiv.appendChild(q)
-
-}
-
-
-
-document.getElementById("saveLesson").onclick = async () => {
-
-const lessonName = document.getElementById("lessonName").value
-const lessonPrice = document.getElementById("lessonPrice").value
-const video = document.getElementById("videoUrl").value
-const pdf = document.getElementById("pdfLink").value
-
-
-const questionsElements = document.querySelectorAll("#questions > div")
-
 let questions = []
 
 
-questionsElements.forEach(q=>{
 
-questions.push({
+window.addQuestion = function(){
 
-image:q.querySelector(".qImage").value,
+let q = {
 
-a:q.querySelector(".a").value,
-b:q.querySelector(".b").value,
-c:q.querySelector(".c").value,
-d:q.querySelector(".d").value,
+image: qImage.value,
 
-correct:q.querySelector(".correct").value
+a: a.value,
 
-})
+b: b.value,
 
-})
+c: c.value,
 
+d: d.value,
 
-await addDoc(collection(db,"lessons"),{
-
-name:lessonName,
-price:lessonPrice,
-video:video,
-pdf:pdf,
-questions:questions,
-createdAt:Date.now()
-
-})
-
-
-alert("Lesson Saved Successfully")
+correct: correct.value
 
 }
 
-</script>
+questions.push(q)
 
+alert("Question Added")
+
+}
+
+
+
+window.saveLesson = async function(){
+
+await addDoc(collection(db,"lessons"),{
+
+name: lessonName.value,
+
+video: videoUrl.value,
+
+pdf: pdfUrl.value,
+
+questions: questions
+
+})
+
+alert("Lesson Saved")
+
+}
+
+
+</script>
 
 </body>
 </html>
