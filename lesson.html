@@ -2,141 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Quiz</title>
+    <title>Lesson Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style> .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; } </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 p-6">
+    <div class="max-w-3xl mx-auto">
+        <h1 id="title" class="text-3xl font-bold text-center mb-6 text-gray-800"></h1>
 
-<div class="max-w-3xl mx-auto p-6">
-    <h1 id="lessonTitle" class="text-3xl font-black text-center text-gray-800 my-8">Loading Lesson...</h1>
-
-    <div id="startBox" class="text-center bg-white p-10 rounded-2xl shadow-xl">
-        <p class="mb-6 text-gray-500 italic">Please read the questions carefully from the images.</p>
-        <button id="startBtn" class="bg-green-600 text-white px-12 py-4 rounded-full font-bold text-xl hover:scale-105 transition">ENTER EXAM</button>
-    </div>
-
-    <div id="quizBox" class="hidden bg-white p-6 rounded-2xl shadow-xl border">
-        <div id="progress" class="text-blue-600 font-bold mb-4 uppercase tracking-tighter"></div>
-        <img id="qImg" class="w-full rounded-xl border mb-6 shadow-sm">
-        
-        <div id="options" class="grid grid-cols-1 gap-3"></div>
-
-        <button id="nextBtn" class="w-full bg-orange-500 text-white py-4 mt-8 rounded-xl font-black hover:bg-orange-600 transition shadow-lg">NEXT QUESTION →</button>
-    </div>
-
-    <div id="resultBox" class="hidden space-y-6">
-        <div class="bg-white p-8 rounded-2xl shadow-xl text-center">
-            <h2 id="finalScore" class="text-5xl font-black text-blue-600 mb-2"></h2>
-            <p class="text-gray-400 font-bold uppercase">Exam Completed</p>
+        <div id="quizArea">
+            <div id="examBox" class="bg-white p-6 rounded-xl shadow-md">
+                <div id="qCountDisplay" class="text-sm font-bold text-blue-600 mb-2"></div>
+                <img id="mainImg" class="w-full rounded mb-6 border">
+                <div id="opts" class="grid grid-cols-1 gap-3"></div>
+                <button id="nextBtn" class="w-full bg-orange-500 text-white py-4 mt-6 rounded-lg font-bold">Next Question</button>
+            </div>
         </div>
 
-        <div class="flex bg-white rounded-xl shadow border p-1">
-            <button id="btnTabReview" onclick="switchTab('review')" class="flex-1 py-3 font-bold active-tab">Review Answers</button>
-            <button id="btnTabVideo" onclick="switchTab('video')" class="flex-1 py-3 font-bold text-gray-400">Explanation Video</button>
-        </div>
+        <div id="finishBox" class="hidden">
+            <div class="bg-white p-8 rounded-xl shadow-md text-center mb-6 border-t-8 border-blue-600">
+                <h2 id="finalScore" class="text-4xl font-black text-blue-600"></h2>
+            </div>
 
-        <div id="tabReview" class="space-y-4"></div>
+            <div class="flex border-b mb-4">
+                <button id="tRev" class="flex-1 py-3 font-bold border-b-4 border-blue-600">Review</button>
+                <button id="tVid" class="flex-1 py-3 font-bold text-gray-400">Video</button>
+            </div>
 
-        <div id="tabVideo" class="hidden bg-white p-4 rounded-2xl shadow-xl">
-            <div id="vidContainer" class="aspect-video"></div>
+            <div id="revContent" class="space-y-4"></div>
+            <div id="vidContent" class="hidden bg-white p-4 rounded shadow-lg">
+                <div id="ytBox" class="aspect-video"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<script type="module">
-    import { db } from "./firebase.js"
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+    <script type="module">
+        import { db } from "./firebase.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const lessonId = urlParams.get("id");
+        const id = new URLSearchParams(location.search).get("id");
+        let data, qs = [], cur = 0, answers = [];
 
-    let questions = [], current = 0, userAnswers = [], lessonData = {};
-
-    async function loadData() {
-        if(!lessonId) return alert("URL ID is missing!");
-        const docRef = doc(db, "lessons", lessonId);
-        const snap = await getDoc(docRef);
-        
-        if(snap.exists()) {
-            lessonData = snap.data();
-            questions = lessonData.questions || [];
-            document.getElementById("lessonTitle").innerText = lessonData.name;
-        } else {
-            alert("Lesson not found!");
+        async function init() {
+            if(!id) return;
+            const s = await getDoc(doc(db, "lessons", id));
+            if(s.exists()) {
+                data = s.data();
+                qs = data.questions || [];
+                document.getElementById("title").innerText = data.name;
+                showQ();
+            }
         }
-    }
 
-    document.getElementById("startBtn").onclick = () => {
-        if(questions.length === 0) return alert("This lesson has no questions!");
-        document.getElementById("startBox").classList.add("hidden");
-        document.getElementById("quizBox").classList.remove("hidden");
-        showQuestion();
-    }
-
-    function showQuestion() {
-        const q = questions[current];
-        document.getElementById("qImg").src = q.image;
-        document.getElementById("progress").innerText = `Question ${current + 1} / ${questions.length}`;
-        
-        document.getElementById("options").innerHTML = ['a','b','c','d'].map(letter => `
-            <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer hover:bg-blue-50 transition border-gray-100">
-                <input type="radio" name="ans" value="${letter}" class="w-5 h-5 mr-4 text-blue-600">
-                <span class="font-bold text-gray-700">${letter.toUpperCase()} ${q[letter] !== letter.toUpperCase() ? ': ' + q[letter] : ''}</span>
-            </label>
-        `).join('');
-    }
-
-    document.getElementById("nextBtn").onclick = () => {
-        const selected = document.querySelector('input[name="ans"]:checked');
-        if(!selected) return alert("Choose an answer!");
-
-        userAnswers.push(selected.value);
-        current++;
-
-        if(current < questions.length) showQuestion();
-        else showResults();
-    }
-
-    function showResults() {
-        document.getElementById("quizBox").classList.add("hidden");
-        document.getElementById("resultBox").classList.remove("hidden");
-
-        let score = 0;
-        let html = "";
-        
-        questions.forEach((q, i) => {
-            const isCorrect = userAnswers[i] === q.correct;
-            if(isCorrect) score++;
-            html += `
-                <div class="bg-white p-4 rounded-xl border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'} shadow">
-                    <img src="${q.image}" class="w-32 rounded border mb-2">
-                    <p class="font-bold">Your Ans: <span class="${isCorrect?'text-green-600':'text-red-600'}">${userAnswers[i].toUpperCase()}</span> 
-                    | Correct: <span class="text-green-600">${q.correct.toUpperCase()}</span></p>
-                </div>
-            `;
-        });
-
-        document.getElementById("finalScore").innerText = `${score} / ${questions.length}`;
-        document.getElementById("tabReview").innerHTML = html;
-
-        // Embed Video logic
-        if(lessonData.videoUrl) {
-            let vidId = lessonData.videoUrl.split('v=')[1]?.split('&')[0] || lessonData.videoUrl.split('/').pop();
-            document.getElementById("vidContainer").innerHTML = `<iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe>`;
+        function showQ() {
+            if(qs.length === 0) return;
+            const q = qs[cur];
+            document.getElementById("qCountDisplay").innerText = `QUESTION ${cur + 1} / ${qs.length}`;
+            document.getElementById("mainImg").src = q.image;
+            document.getElementById("opts").innerHTML = ['a','b','c','d'].map(o => `
+                <label class="flex items-center p-4 border rounded cursor-pointer hover:bg-gray-50">
+                    <input type="radio" name="r" value="${o}" class="mr-3">
+                    <span class="font-bold">${o.toUpperCase()}: ${q[o]}</span>
+                </label>
+            `).join('');
         }
-    }
 
-    window.switchTab = (tab) => {
-        const isRev = tab === 'review';
-        document.getElementById("tabReview").classList.toggle("hidden", !isRev);
-        document.getElementById("tabVideo").classList.toggle("hidden", isRev);
-        
-        document.getElementById("btnTabReview").className = `flex-1 py-3 font-bold ${isRev ? 'active-tab' : 'text-gray-400'}`;
-        document.getElementById("btnTabVideo").className = `flex-1 py-3 font-bold ${!isRev ? 'active-tab' : 'text-gray-400'}`;
-    }
+        document.getElementById("nextBtn").onclick = () => {
+            const sel = document.querySelector('input[name="r"]:checked');
+            if(!sel) return alert("Select answer!");
+            answers.push(sel.value);
+            cur++;
+            if(cur < qs.length) showQ();
+            else finish();
+        };
 
-    loadData();
-</script>
+        function finish() {
+            document.getElementById("quizArea").classList.add("hidden");
+            document.getElementById("finishBox").classList.remove("hidden");
+            
+            let score = 0;
+            let revHTML = "";
+            qs.forEach((q, i) => {
+                const correct = userAnswers[i] === q.correct;
+                if(correct) score++;
+                revHTML += `<div class="p-4 border-l-4 ${correct ? 'border-green-500 bg-green-50':'border-red-500 bg-red-50'} rounded shadow-sm">
+                    <img src="${q.image}" class="w-32 mb-2 rounded border">
+                    <p class="font-bold">Result: ${correct ? '✅':'❌'} | Correct: ${q.correct.toUpperCase()}</p>
+                </div>`;
+            });
+
+            document.getElementById("finalScore").innerText = `SCORE: ${score} / ${qs.length}`;
+            document.getElementById("revContent").innerHTML = revHTML;
+
+            if(data.video) {
+                const vId = data.video.split('v=')[1]?.split('&')[0] || data.video.split('/').pop();
+                document.getElementById("ytBox").innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>`;
+            }
+        }
+
+        // التبديل بين التابات
+        document.getElementById("tRev").onclick = () => {
+            document.getElementById("revContent").classList.remove("hidden");
+            document.getElementById("vidContent").classList.add("hidden");
+            document.getElementById("tRev").className = "flex-1 py-3 font-bold border-b-4 border-blue-600";
+            document.getElementById("tVid").className = "flex-1 py-3 font-bold text-gray-400";
+        };
+
+        document.getElementById("tVid").onclick = () => {
+            document.getElementById("vidContent").classList.remove("hidden");
+            document.getElementById("revContent").classList.add("hidden");
+            document.getElementById("tVid").className = "flex-1 py-3 font-bold border-b-4 border-blue-600";
+            document.getElementById("tRev").className = "flex-1 py-3 font-bold text-gray-400";
+        };
+
+        init();
+    </script>
 </body>
 </html>
