@@ -4,14 +4,9 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Lesson</title>
+<title>Lesson Quiz</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
-<link rel="stylesheet"
-href="https://cdn.plyr.io/3.7.8/plyr.css"/>
 
 </head>
 
@@ -19,40 +14,18 @@ href="https://cdn.plyr.io/3.7.8/plyr.css"/>
 <body class="bg-gray-100">
 
 
-<div class="max-w-4xl mx-auto p-6">
+<div class="max-w-3xl mx-auto p-6">
 
 
 <h1 class="text-2xl font-bold text-center mb-6">
-Lesson
+
+Quiz
+
 </h1>
 
 
-<!-- TABS -->
-
-<div class="flex gap-4 justify-center mb-6">
-
-<button onclick="showTab('quiz')" class="bg-blue-500 text-white px-6 py-2 rounded">
-Quiz
-</button>
-
-<button onclick="showTab('video')" class="bg-gray-200 px-6 py-2 rounded">
-Video
-</button>
-
-<button onclick="showTab('pdf')" class="bg-gray-200 px-6 py-2 rounded">
-PDF
-</button>
-
-</div>
-
-
-
-<!-- QUIZ -->
-
-<div id="quiz">
-
 <button id="startExam"
-class="bg-green-600 text-white px-6 py-3 rounded mb-6">
+class="bg-green-600 text-white px-6 py-3 rounded">
 
 Enter Exam
 
@@ -60,10 +33,11 @@ Enter Exam
 
 
 <div id="examBox"
-class="hidden bg-white p-6 rounded shadow">
+class="hidden bg-white p-6 rounded shadow mt-6">
+
 
 <img id="questionImage"
-class="mb-4 w-full">
+class="w-full mb-4">
 
 
 <div id="answers"></div>
@@ -76,60 +50,16 @@ Next Question
 
 </button>
 
-</div>
 
 </div>
 
 
-
-<!-- VIDEO -->
-
-<div id="video" class="hidden">
-
-<div class="video-wrapper">
-
-<div id="player"
-data-plyr-provider="youtube"
-data-plyr-embed-id="VIDEO_ID"></div>
-
 </div>
-
-</div>
-
-
-
-<!-- PDF -->
-
-<div id="pdf"
-class="hidden text-center">
-
-<a href="files/lesson.pdf"
-class="bg-blue-500 text-white px-6 py-3 rounded">
-
-Download PDF
-
-</a>
-
-</div>
-
-
-
-<div id="result"
-class="text-center mt-6 text-xl font-bold"></div>
-
-
-</div>
-
-
-
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
 
 
 <script>
 
-
-/* QUESTIONS */
 
 let questions = [
 
@@ -156,15 +86,13 @@ correct:"c"
 
 let currentQuestion = 0
 let answers = []
-let finished = false
 
 
-
-/* START EXAM */
 
 document.getElementById("startExam").onclick = () => {
 
-document.getElementById("examBox").classList.remove("hidden")
+document.getElementById("examBox")
+.classList.remove("hidden")
 
 loadQuestion()
 
@@ -172,31 +100,28 @@ loadQuestion()
 
 
 
-/* LOAD QUESTION */
-
 function loadQuestion(){
 
 let q = questions[currentQuestion]
 
 document.getElementById("questionImage").src = q.image
 
-
 document.getElementById("answers").innerHTML = `
 
 <label class="block mb-2">
-<input type="radio" name="a" value="a"> ${q.a}
+<input type="radio" name="answer" value="a"> ${q.a}
 </label>
 
 <label class="block mb-2">
-<input type="radio" name="a" value="b"> ${q.b}
+<input type="radio" name="answer" value="b"> ${q.b}
 </label>
 
 <label class="block mb-2">
-<input type="radio" name="a" value="c"> ${q.c}
+<input type="radio" name="answer" value="c"> ${q.c}
 </label>
 
 <label class="block mb-2">
-<input type="radio" name="a" value="d"> ${q.d}
+<input type="radio" name="answer" value="d"> ${q.d}
 </label>
 
 `
@@ -205,12 +130,10 @@ document.getElementById("answers").innerHTML = `
 
 
 
-/* NEXT QUESTION */
-
 document.getElementById("nextBtn").onclick = () => {
 
 let selected =
-document.querySelector("input[name='a']:checked")
+document.querySelector("input[name='answer']:checked")
 
 if(!selected){
 
@@ -233,144 +156,14 @@ loadQuestion()
 
 else{
 
-finishExam()
+alert("Exam Finished")
 
 }
-
-}
-
-
-
-/* FINISH EXAM */
-
-function finishExam(){
-
-if(!confirm("Are you sure to finish exam?"))
-return
-
-
-let score = 0
-let review = ""
-
-
-questions.forEach((q,i)=>{
-
-let user = answers[i]
-
-if(user === q.correct){
-
-score++
-
-review +=
-`<p style="color:green">
-Question ${i+1}: Correct
-</p>`
-
-}
-
-else{
-
-review +=
-`<p style="color:red">
-Question ${i+1}: Wrong
-Correct answer: ${q.correct}
-</p>`
-
-}
-
-})
-
-
-finished = true
-
-localStorage.setItem("lesson_score",score)
-
-
-document.getElementById("examBox").innerHTML = `
-
-<h2 class="text-xl font-bold">
-Score ${score}/${questions.length}
-</h2>
-
-${review}
-
-`
-
-
-document.getElementById("result").innerText =
-"Score "+score+"/"+questions.length
-
-
-initPlayer()
-
-}
-
-
-
-/* VIDEO PLAYER */
-
-function initPlayer(){
-
-const player = new Plyr('#player',{
-
-controls:[
-'play',
-'progress',
-'current-time',
-'mute',
-'volume',
-'fullscreen'
-],
-
-youtube:{
-rel:0,
-modestbranding:1
-}
-
-})
-
-}
-
-
-
-/* TABS */
-
-function showTab(tab){
-
-if(tab==="video" && !finished){
-
-alert("Finish quiz first")
-
-return
-
-}
-
-document.getElementById("quiz").classList.add("hidden")
-document.getElementById("video").classList.add("hidden")
-document.getElementById("pdf").classList.add("hidden")
-
-document.getElementById(tab).classList.remove("hidden")
 
 }
 
 
 </script>
-
-
-
-<style>
-
-.video-wrapper{
-
-max-width:900px;
-margin:auto;
-border-radius:20px;
-overflow:hidden;
-box-shadow:0 10px 40px rgba(0,0,0,0.4);
-
-}
-
-</style>
 
 
 </body>
