@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Teacher Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Tajawal',sans-serif;
+}
+
+</style>
+
+</head>
+
+
+<body class="bg-gray-100">
+
+
+<!-- NAVBAR -->
+
+<nav class="bg-orange-500 text-white p-4 flex justify-between">
+
+<h1 class="font-bold text-xl">
+
+MathPro Teacher Panel
+
+</h1>
+
+<button id="logoutBtn">
+
+تسجيل خروج
+
+</button>
+
+</nav>
+
+
+
+<div class="max-w-6xl mx-auto p-6 grid md:grid-cols-3 gap-6">
+
+
+<!-- ADD LESSON -->
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold mb-4">
+
+إضافة حصة
+
+</h2>
+
+<input id="lessonTitle"
+placeholder="اسم الحصة"
+class="w-full border p-2 mb-3">
+
+<input id="videoLink"
+placeholder="YouTube Link"
+class="w-full border p-2 mb-3">
+
+<button onclick="addLesson()"
+class="bg-orange-500 text-white px-4 py-2 rounded">
+
+إضافة
+
+</button>
+
+</div>
+
+
+
+<!-- UPLOAD PDF -->
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold mb-4">
+
+رفع PDF
+
+</h2>
+
+<input type="file" id="pdfFile"
+class="mb-3">
+
+<button onclick="uploadPDF()"
+class="bg-orange-500 text-white px-4 py-2 rounded">
+
+رفع الملف
+
+</button>
+
+</div>
+
+
+
+<!-- CREATE EXAM -->
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold mb-4">
+
+إنشاء سؤال
+
+</h2>
+
+<input id="question"
+placeholder="السؤال"
+class="w-full border p-2 mb-2">
+
+<input id="a"
+placeholder="A"
+class="w-full border p-2 mb-2">
+
+<input id="b"
+placeholder="B"
+class="w-full border p-2 mb-2">
+
+<input id="c"
+placeholder="C"
+class="w-full border p-2 mb-2">
+
+<input id="d"
+placeholder="D"
+class="w-full border p-2 mb-2">
+
+<input id="correct"
+placeholder="الإجابة الصحيحة"
+class="w-full border p-2 mb-3">
+
+<button onclick="addQuestion()"
+class="bg-orange-500 text-white px-4 py-2 rounded">
+
+إضافة السؤال
+
+</button>
+
+</div>
+
+
+</div>
+
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import { 
+getAuth,
+onAuthStateChanged,
+signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+getStorage,
+ref,
+uploadBytes
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+
+const firebaseConfig={
+apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
+authDomain:"math-e62c9.firebaseapp.com",
+projectId:"math-e62c9",
+storageBucket:"math-e62c9.appspot.com",
+appId:"1:271507842148:web:2907aad4caf67afd08ab71"
+}
+
+const app=initializeApp(firebaseConfig)
+
+const auth=getAuth(app)
+
+const db=getFirestore(app)
+
+const storage=getStorage(app)
+
+
+
+/* حماية الصفحة */
+
+const adminEmail="kevin.hany.08@proton.me"
+
+onAuthStateChanged(auth,(user)=>{
+
+if(!user){
+
+window.location="index.html"
+
+}
+
+if(user.email !== adminEmail){
+
+alert("غير مسموح بالدخول")
+
+window.location="index.html"
+
+}
+
+})
+
+
+
+/* إضافة حصة */
+
+window.addLesson=async()=>{
+
+const title=document.getElementById("lessonTitle").value
+
+const video=document.getElementById("videoLink").value
+
+await addDoc(collection(db,"lessons"),{
+
+title:title,
+video:video
+
+})
+
+alert("تم إضافة الحصة")
+
+}
+
+
+
+/* رفع PDF */
+
+window.uploadPDF=async()=>{
+
+const file=document.getElementById("pdfFile").files[0]
+
+const storageRef=ref(storage,"pdfs/"+file.name)
+
+await uploadBytes(storageRef,file)
+
+alert("تم رفع الملف")
+
+}
+
+
+
+/* إنشاء سؤال */
+
+window.addQuestion=async()=>{
+
+await addDoc(collection(db,"exams"),{
+
+question:question.value,
+
+a:a.value,
+b:b.value,
+c:c.value,
+d:d.value,
+
+correct:correct.value
+
+})
+
+alert("تم إضافة السؤال")
+
+}
+
+
+
+/* تسجيل خروج */
+
+document.getElementById("logoutBtn").onclick=()=>{
+
+signOut(auth)
+
+window.location="index.html"
+
+}
+
+</script>
+
+</body>
+</html>
