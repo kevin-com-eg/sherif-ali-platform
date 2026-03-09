@@ -10,33 +10,37 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+font-family:'Tajawal',sans-serif;
+}
+</style>
+
 </head>
 
 <body class="bg-gray-100">
 
-<nav class="bg-orange-500 text-white p-4">
+
+<nav class="bg-orange-500 text-white p-4 font-bold text-xl">
 Teacher Dashboard
 </nav>
 
 
-<div class="max-w-4xl mx-auto p-6 space-y-6">
+
+<div class="max-w-5xl mx-auto p-6 space-y-6">
 
 
 <!-- VIDEO -->
 
-<div class="bg-white p-6 rounded-xl">
+<div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">
-
-YouTube Video URL
-
-</h2>
+<h2 class="font-bold mb-3">YouTube URL</h2>
 
 <input id="videoUrl"
-
 class="w-full border p-3 rounded"
-
-placeholder="YouTube URL">
+placeholder="https://youtube.com/...">
 
 </div>
 
@@ -44,19 +48,14 @@ placeholder="YouTube URL">
 
 <!-- QUIZ -->
 
-<div class="bg-white p-6 rounded-xl">
+<div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">
-
-Quiz Questions
-
-</h2>
+<h2 class="font-bold mb-4">Quiz Questions</h2>
 
 <div id="questions"></div>
 
 <button id="addQuestion"
-
-class="bg-orange-500 text-white px-4 py-2 mt-4 rounded">
+class="bg-orange-500 text-white px-4 py-2 rounded mt-4">
 
 Add Question
 
@@ -68,36 +67,69 @@ Add Question
 
 <!-- PDF -->
 
-<div class="bg-white p-6 rounded-xl">
+<div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">
-
-Upload PDF
-
-</h2>
+<h2 class="font-bold mb-3">Upload PDF</h2>
 
 <input type="file" id="pdfFile">
 
 </div>
 
 
-<button id="saveLesson"
 
+<button id="saveLesson"
 class="bg-orange-500 text-white px-6 py-3 rounded">
 
 Save Lesson
 
 </button>
 
+
 </div>
 
 
 
-<script>
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+getStorage,
+ref,
+uploadBytes,
+getDownloadURL
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+
+const firebaseConfig={
+apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
+authDomain:"math-e62c9.firebaseapp.com",
+projectId:"math-e62c9",
+storageBucket:"math-e62c9.appspot.com"
+}
+
+const app=initializeApp(firebaseConfig)
+
+const db=getFirestore(app)
+
+const storage=getStorage(app)
+
+
 
 let questionCount=0
 
 const questionsDiv=document.getElementById("questions")
+
+
 
 document.getElementById("addQuestion").onclick=()=>{
 
@@ -121,13 +153,13 @@ q.innerHTML=`
 
 <input type="file" class="qImage mb-2">
 
-<input placeholder="A" class="a border p-2 w-full mb-1">
+<input placeholder="Answer A" class="a border p-2 w-full mb-1">
 
-<input placeholder="B" class="b border p-2 w-full mb-1">
+<input placeholder="Answer B" class="b border p-2 w-full mb-1">
 
-<input placeholder="C" class="c border p-2 w-full mb-1">
+<input placeholder="Answer C" class="c border p-2 w-full mb-1">
 
-<input placeholder="D" class="d border p-2 w-full mb-1">
+<input placeholder="Answer D" class="d border p-2 w-full mb-1">
 
 <input placeholder="Correct (A/B/C/D)" class="correct border p-2 w-full">
 
@@ -137,7 +169,93 @@ questionsDiv.appendChild(q)
 
 }
 
+
+
+document.getElementById("saveLesson").onclick=async()=>{
+
+const video=document.getElementById("videoUrl").value
+
+const pdfFile=document.getElementById("pdfFile").files[0]
+
+let pdfUrl=""
+
+
+
+if(pdfFile){
+
+const pdfRef=ref(storage,"pdf/"+Date.now()+pdfFile.name)
+
+await uploadBytes(pdfRef,pdfFile)
+
+pdfUrl=await getDownloadURL(pdfRef)
+
+}
+
+
+
+const questionsElements=document.querySelectorAll("#questions > div")
+
+let questions=[]
+
+
+
+for(const q of questionsElements){
+
+const imgFile=q.querySelector(".qImage").files[0]
+
+let imgUrl=""
+
+if(imgFile){
+
+const imgRef=ref(storage,"questions/"+Date.now()+imgFile.name)
+
+await uploadBytes(imgRef,imgFile)
+
+imgUrl=await getDownloadURL(imgRef)
+
+}
+
+
+
+questions.push({
+
+image:imgUrl,
+
+a:q.querySelector(".a").value,
+
+b:q.querySelector(".b").value,
+
+c:q.querySelector(".c").value,
+
+d:q.querySelector(".d").value,
+
+correct:q.querySelector(".correct").value
+
+})
+
+}
+
+
+
+await addDoc(collection(db,"lessons"),{
+
+video:video,
+
+pdf:pdfUrl,
+
+questions:questions,
+
+createdAt:Date.now()
+
+})
+
+
+alert("Lesson Saved Successfully")
+
+}
+
 </script>
+
 
 </body>
 </html>
