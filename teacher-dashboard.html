@@ -14,10 +14,7 @@
         <input id="pdfUrl" placeholder="PDF URL" class="border p-2 w-full mb-6 rounded">
 
         <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
-            <h2 class="font-bold mb-4 text-blue-700 flex justify-between">
-                <span>Add Question</span>
-                <span id="qCounter" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">Questions in queue: 0</span>
-            </h2>
+            <h2 class="font-bold mb-4 text-blue-700">Add Question</h2>
             <input id="qImage" placeholder="Question Image URL" class="border p-2 w-full mb-2 rounded">
             <div class="grid grid-cols-2 gap-2 mb-4">
                 <input id="a" placeholder="Label A" class="border p-2 rounded text-sm">
@@ -31,22 +28,23 @@
                 <option value="c">Correct C</option>
                 <option value="d">Correct D</option>
             </select>
-            <button onclick="addQuestion()" class="bg-blue-500 text-white px-4 py-2 rounded w-full font-bold">Add Question to List</button>
+            <button id="addQBtn" class="bg-blue-500 text-white px-4 py-2 rounded w-full font-bold">Add Question to List</button>
         </div>
 
-        <button onclick="saveLesson()" id="saveBtn" class="bg-green-600 text-white px-6 py-3 rounded w-full font-black shadow-lg">SAVE LESSON TO FIREBASE</button>
+        <button id="saveBtn" class="bg-green-600 text-white px-6 py-3 rounded w-full font-black shadow-lg">SAVE LESSON</button>
+        <div id="status" class="mt-4 text-center font-bold"></div>
     </div>
 
     <script type="module">
-        import { db } from "./firebase.js"
-        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        import { db } from "./firebase.js";
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         let questionsArray = [];
 
-        // دالة إضافة سؤال للقائمة المؤقتة
-        window.addQuestion = function() {
+        // الطريقة الصحيحة لتعريف الدوال جوه الـ Module
+        document.getElementById("addQBtn").addEventListener("click", () => {
             const img = document.getElementById("qImage").value;
-            if(!img) return alert("Please enter Image URL first!");
+            if(!img) return alert("Please enter Image URL!");
 
             const q = {
                 image: img,
@@ -58,38 +56,33 @@
             };
 
             questionsArray.push(q);
-            document.getElementById("qCounter").innerText = `Questions in queue: ${questionsArray.length}`;
-            
-            // تنظيف الخانات لسؤال جديد
+            document.getElementById("status").innerText = `Questions added: ${questionsArray.length}`;
             document.getElementById("qImage").value = "";
-            alert("Question added to local list!");
-        }
+            alert("Question added locally!");
+        });
 
-        // دالة الحفظ النهائي
-        window.saveLesson = async function() {
-            const saveBtn = document.getElementById("saveBtn");
-            const currentImg = document.getElementById("qImage").value;
+        document.getElementById("saveBtn").addEventListener("click", async () => {
+            if(questionsArray.length === 0) return alert("Add questions first!");
 
-            // "حركة ذكية": لو المدرس نسي يدوس Add وكان كاتب بيانات سؤال، نضيفه أوتوماتيك
-            if(currentImg && questionsArray.length === 0) {
-                addQuestion();
-            }
-
-            if(questionsArray.length === 0) return alert("Add at least one question!");
-
-            saveBtn.innerText = "Saving...";
-            saveBtn.disabled = true;
+            const btn = document.getElementById("saveBtn");
+            btn.disabled = true;
+            btn.innerText = "Saving...";
 
             try {
                 await addDoc(collection(db, "lessons"), {
                     name: document.getElementById("lessonName").value,
-                    video: document.getElementById("videoUrl").value, // سميتها video عشان تطابق صورتك
+                    video: document.getElementById("videoUrl").value, // متوافق مع Firebase
                     pdf: document.getElementById("pdfUrl").value,
-                    questions: questionsArray
+                    questions: questionsArray // متوافق مع Firebase
                 });
-                alert("Lesson Saved Successfully!");
-                location.reload(); // ريفرش عشان تفضي الفورم
+                alert("Lesson Saved!");
+                location.reload();
             } catch (e) {
                 console.error(e);
-                alert("Error saving lesson");
-                saveBtn
+                alert("Error!");
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
