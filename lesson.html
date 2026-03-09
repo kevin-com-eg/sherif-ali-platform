@@ -2,119 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lesson Quiz</title>
+    <title>Student Lesson</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; }
+        #vidContainer iframe { width: 100%; height: 100%; border-radius: 12px; }
+    </style>
 </head>
-<body class="bg-gray-50 p-6">
-    <div class="max-w-3xl mx-auto">
-        <h1 id="title" class="text-3xl font-bold text-center mb-6 text-gray-800"></h1>
+<body class="bg-gray-50 min-h-screen p-4">
 
-        <div id="quizArea">
-            <div id="examBox" class="bg-white p-6 rounded-xl shadow-md">
-                <div id="qCountDisplay" class="text-sm font-bold text-blue-600 mb-2"></div>
-                <img id="mainImg" class="w-full rounded mb-6 border">
-                <div id="opts" class="grid grid-cols-1 gap-3"></div>
-                <button id="nextBtn" class="w-full bg-orange-500 text-white py-4 mt-6 rounded-lg font-bold">Next Question</button>
-            </div>
+    <div class="max-w-3xl mx-auto">
+        <h1 id="lessonTitle" class="text-3xl font-black text-center my-6 text-gray-800 tracking-tighter"></h1>
+
+        <div id="quizArea" class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
+            <div id="progress" class="text-blue-600 font-bold mb-4 text-sm uppercase"></div>
+            <img id="qImg" class="w-full rounded-xl mb-6 shadow-sm border border-gray-200">
+            <div id="options" class="grid grid-cols-1 gap-3"></div>
+            <button id="nextBtn" class="w-full bg-orange-500 text-white py-4 mt-8 rounded-xl font-black shadow-lg hover:bg-orange-600 transition uppercase">Next Question →</button>
         </div>
 
-        <div id="finishBox" class="hidden">
-            <div class="bg-white p-8 rounded-xl shadow-md text-center mb-6 border-t-8 border-blue-600">
-                <h2 id="finalScore" class="text-4xl font-black text-blue-600"></h2>
+        <div id="resultsScreen" class="hidden space-y-6">
+            <div class="bg-white p-8 rounded-2xl shadow-xl text-center border-t-8 border-blue-600">
+                <h2 id="finalScore" class="text-5xl font-black text-blue-600 mb-2"></h2>
+                <p class="text-gray-400 font-bold">EXAM COMPLETED</p>
             </div>
 
-            <div class="flex border-b mb-4">
-                <button id="tRev" class="flex-1 py-3 font-bold border-b-4 border-blue-600">Review</button>
-                <button id="tVid" class="flex-1 py-3 font-bold text-gray-400">Video</button>
+            <div class="flex bg-white rounded-xl shadow border p-1">
+                <button id="btnReview" class="flex-1 py-3 font-bold active-tab transition">Review Answers</button>
+                <button id="btnVideo" class="flex-1 py-3 font-bold text-gray-400 transition">Watch Explanation</button>
             </div>
 
-            <div id="revContent" class="space-y-4"></div>
-            <div id="vidContent" class="hidden bg-white p-4 rounded shadow-lg">
-                <div id="ytBox" class="aspect-video"></div>
+            <div id="reviewTab" class="space-y-4"></div>
+
+            <div id="videoTab" class="hidden bg-white p-4 rounded-2xl shadow-xl">
+                <div id="vidContainer" class="aspect-video w-full bg-black rounded-xl overflow-hidden shadow-inner">
+                    </div>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { db } from "./firebase.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script type="module">
+    import { db } from "./firebase.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        const id = new URLSearchParams(location.search).get("id");
-        let data, qs = [], cur = 0, answers = [];
+    const lessonId = new URLSearchParams(window.location.search).get("id");
+    let lessonData, questions = [], current = 0, userAns = [];
 
-        async function init() {
-            if(!id) return;
-            const s = await getDoc(doc(db, "lessons", id));
-            if(s.exists()) {
-                data = s.data();
-                qs = data.questions || [];
-                document.getElementById("title").innerText = data.name;
-                showQ();
-            }
-        }
-
-        function showQ() {
-            if(qs.length === 0) return;
-            const q = qs[cur];
-            document.getElementById("qCountDisplay").innerText = `QUESTION ${cur + 1} / ${qs.length}`;
-            document.getElementById("mainImg").src = q.image;
-            document.getElementById("opts").innerHTML = ['a','b','c','d'].map(o => `
-                <label class="flex items-center p-4 border rounded cursor-pointer hover:bg-gray-50">
-                    <input type="radio" name="r" value="${o}" class="mr-3">
-                    <span class="font-bold">${o.toUpperCase()}: ${q[o]}</span>
-                </label>
-            `).join('');
-        }
-
-        document.getElementById("nextBtn").onclick = () => {
-            const sel = document.querySelector('input[name="r"]:checked');
-            if(!sel) return alert("Select answer!");
-            answers.push(sel.value);
-            cur++;
-            if(cur < qs.length) showQ();
-            else finish();
-        };
-
-        function finish() {
-            document.getElementById("quizArea").classList.add("hidden");
-            document.getElementById("finishBox").classList.remove("hidden");
-            
-            let score = 0;
-            let revHTML = "";
-            qs.forEach((q, i) => {
-                const correct = userAnswers[i] === q.correct;
-                if(correct) score++;
-                revHTML += `<div class="p-4 border-l-4 ${correct ? 'border-green-500 bg-green-50':'border-red-500 bg-red-50'} rounded shadow-sm">
-                    <img src="${q.image}" class="w-32 mb-2 rounded border">
-                    <p class="font-bold">Result: ${correct ? '✅':'❌'} | Correct: ${q.correct.toUpperCase()}</p>
-                </div>`;
-            });
-
-            document.getElementById("finalScore").innerText = `SCORE: ${score} / ${qs.length}`;
-            document.getElementById("revContent").innerHTML = revHTML;
-
-            if(data.video) {
-                const vId = data.video.split('v=')[1]?.split('&')[0] || data.video.split('/').pop();
-                document.getElementById("ytBox").innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>`;
-            }
-        }
-
-        // التبديل بين التابات
-        document.getElementById("tRev").onclick = () => {
-            document.getElementById("revContent").classList.remove("hidden");
-            document.getElementById("vidContent").classList.add("hidden");
-            document.getElementById("tRev").className = "flex-1 py-3 font-bold border-b-4 border-blue-600";
-            document.getElementById("tVid").className = "flex-1 py-3 font-bold text-gray-400";
-        };
-
-        document.getElementById("tVid").onclick = () => {
-            document.getElementById("vidContent").classList.remove("hidden");
-            document.getElementById("revContent").classList.add("hidden");
-            document.getElementById("tVid").className = "flex-1 py-3 font-bold border-b-4 border-blue-600";
-            document.getElementById("tRev").className = "flex-1 py-3 font-bold text-gray-400";
-        };
-
-        init();
-    </script>
-</body>
-</html>
+    async function init() {
+        if(!lessonId) return;
+        try {
+            const snap = await getDoc(doc(db, "lessons", lessonId));
+            if(snap.exists()) {
+                lessonData = snap.data();
+                // التأكد من جلب الحقول بنفس مسمياتها في الفايربيز عندك
+                questions = lessonData.questions || []; 
+                document.getElementById("lessonTitle").innerText = lessonData.name;
+                
+                if(questions.length > 0) {
+                    showQuestion();
+                } else {
+                    document.getElementById("
