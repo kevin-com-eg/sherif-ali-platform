@@ -26,9 +26,9 @@ Enter Exam
 class="hidden bg-white p-6 rounded shadow mt-6">
 
 <img id="questionImage"
-class="w-full mb-4">
+class="w-full mb-4 rounded">
 
-<div id="answers"></div>
+<div id="answers" class="space-y-2"></div>
 
 <button id="nextBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
@@ -51,24 +51,17 @@ import {
 doc,
 getDoc,
 collection,
-addDoc,
-query,
-where,
-getDocs
+addDoc
 }
 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
 
 
-/* LESSON ID FROM URL */
+/* GET LESSON */
 
 const lessonId =
 new URLSearchParams(location.search).get("id")
-
-
-
-/* LOAD LESSON FROM FIREBASE */
 
 const lessonRef = doc(db,"lessons",lessonId)
 
@@ -84,28 +77,6 @@ let currentQuestion = 0
 let answers = []
 
 
-
-/* CHECK IF STUDENT DID EXAM BEFORE */
-
-const q = query(
-collection(db,"results"),
-where("student","==",auth.currentUser.email),
-where("lesson","==",lessonId)
-)
-
-const resultSnap = await getDocs(q)
-
-if(!resultSnap.empty){
-
-const data = resultSnap.docs[0].data()
-
-showResult(data)
-
-}
-
-
-
-/* START EXAM */
 
 startExam.onclick = () => {
 
@@ -125,22 +96,27 @@ let q = questions[currentQuestion]
 
 questionImage.src = q.image
 
+
 answers.innerHTML = `
 
-<label>
-<input type="radio" name="answer" value="a"> ${q.a}
-</label><br>
+<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
+<input type="radio" name="answer" value="a" class="mr-2">
+${q.a}
+</label>
 
-<label>
-<input type="radio" name="answer" value="b"> ${q.b}
-</label><br>
+<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
+<input type="radio" name="answer" value="b" class="mr-2">
+${q.b}
+</label>
 
-<label>
-<input type="radio" name="answer" value="c"> ${q.c}
-</label><br>
+<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
+<input type="radio" name="answer" value="c" class="mr-2">
+${q.c}
+</label>
 
-<label>
-<input type="radio" name="answer" value="d"> ${q.d}
+<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
+<input type="radio" name="answer" value="d" class="mr-2">
+${q.d}
 </label>
 
 `
@@ -165,6 +141,7 @@ document.querySelector("input[name='answer']:checked")
 if(!selected){
 
 alert("Choose answer")
+
 return
 
 }
@@ -173,11 +150,13 @@ answers.push(selected.value)
 
 currentQuestion++
 
+
 if(currentQuestion < questions.length){
 
 loadQuestion()
 
 }
+
 else{
 
 finishExam()
@@ -192,8 +171,9 @@ finishExam()
 
 async function finishExam(){
 
-if(!confirm("Finish exam?"))
+if(!confirm("Are you sure to finish exam?"))
 return
+
 
 let score = 0
 let review = ""
@@ -206,16 +186,17 @@ if(user === q.correct){
 
 score++
 
-review += `<p style="color:green">
+review += `<p class="text-green-600">
 Question ${i+1}: Correct
 </p>`
 
 }
+
 else{
 
-review += `<p style="color:red">
+review += `<p class="text-red-600">
 Question ${i+1}: Wrong
-Correct: ${q.correct}
+Correct answer: ${q.correct}
 </p>`
 
 }
@@ -239,18 +220,9 @@ date: Date.now()
 
 
 examBox.innerHTML =
-`<h2>Score ${score}/${questions.length}</h2>${review}`
-
-}
-
-
-
-/* SHOW RESULT IF DONE BEFORE */
-
-function showResult(data){
-
-examBox.innerHTML =
-`<h2>Your Score ${data.score}</h2>`
+`<h2 class="text-xl font-bold">
+Score ${score}/${questions.length}
+</h2>${review}`
 
 }
 
