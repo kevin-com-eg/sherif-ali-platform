@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <title>Lesson Quiz</title>
 
@@ -11,57 +12,64 @@
 
 <body class="bg-gray-100">
 
+
 <div class="max-w-3xl mx-auto p-6">
 
-<h1 class="text-2xl font-bold text-center mb-6">
+<h1 class="text-2xl font-bold mb-6 text-center">
+
 Quiz
+
 </h1>
+
 
 <button id="startExam"
 class="bg-green-600 text-white px-6 py-3 rounded">
+
 Enter Exam
+
 </button>
+
 
 <div id="examBox"
 class="hidden bg-white p-6 rounded shadow mt-6">
 
-<img id="questionImage"
-class="w-full mb-4 rounded">
 
-<div id="answers" class="space-y-2"></div>
+<img id="questionImage"
+class="w-full mb-4">
+
+
+<div id="answers"></div>
+
 
 <button id="nextBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
+
 Next Question
+
 </button>
+
 
 </div>
 
-<div id="result"
-class="mt-6 text-xl font-bold"></div>
 
 </div>
 
 
 <script type="module">
 
-import { db, auth } from "./firebase.js"
+import { db } from "./firebase.js"
 
 import {
 doc,
-getDoc,
-collection,
-addDoc
+getDoc
 }
 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-
-
-/* GET LESSON */
 
 const lessonId =
 new URLSearchParams(location.search).get("id")
+
 
 const lessonRef = doc(db,"lessons",lessonId)
 
@@ -73,12 +81,13 @@ let questions = lesson.questions
 
 
 
-let currentQuestion = 0
+let current = 0
+
 let answers = []
 
 
 
-startExam.onclick = () => {
+startExam.onclick = ()=>{
 
 examBox.classList.remove("hidden")
 
@@ -88,52 +97,38 @@ loadQuestion()
 
 
 
-/* LOAD QUESTION */
-
 function loadQuestion(){
 
-let q = questions[currentQuestion]
+let q = questions[current]
 
 questionImage.src = q.image
 
 
 answers.innerHTML = `
 
-<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
-<input type="radio" name="answer" value="a" class="mr-2">
-${q.a}
+<label class="block border p-3 mb-2">
+<input type="radio" name="answer" value="a"> ${q.a}
 </label>
 
-<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
-<input type="radio" name="answer" value="b" class="mr-2">
-${q.b}
+<label class="block border p-3 mb-2">
+<input type="radio" name="answer" value="b"> ${q.b}
 </label>
 
-<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
-<input type="radio" name="answer" value="c" class="mr-2">
-${q.c}
+<label class="block border p-3 mb-2">
+<input type="radio" name="answer" value="c"> ${q.c}
 </label>
 
-<label class="block border p-3 rounded cursor-pointer hover:bg-gray-100">
-<input type="radio" name="answer" value="d" class="mr-2">
-${q.d}
+<label class="block border p-3 mb-2">
+<input type="radio" name="answer" value="d"> ${q.d}
 </label>
 
 `
 
-if(currentQuestion === questions.length-1){
-
-nextBtn.innerText = "Finish Exam"
-
-}
-
 }
 
 
 
-/* NEXT QUESTION */
-
-nextBtn.onclick = () => {
+nextBtn.onclick = ()=>{
 
 let selected =
 document.querySelector("input[name='answer']:checked")
@@ -148,83 +143,22 @@ return
 
 answers.push(selected.value)
 
-currentQuestion++
+current++
 
 
-if(currentQuestion < questions.length){
+if(current < questions.length){
 
 loadQuestion()
 
 }
-
 else{
 
-finishExam()
+alert("Exam Finished")
 
 }
 
 }
 
-
-
-/* FINISH EXAM */
-
-async function finishExam(){
-
-if(!confirm("Are you sure to finish exam?"))
-return
-
-
-let score = 0
-let review = ""
-
-questions.forEach((q,i)=>{
-
-let user = answers[i]
-
-if(user === q.correct){
-
-score++
-
-review += `<p class="text-green-600">
-Question ${i+1}: Correct
-</p>`
-
-}
-
-else{
-
-review += `<p class="text-red-600">
-Question ${i+1}: Wrong
-Correct answer: ${q.correct}
-</p>`
-
-}
-
-})
-
-
-await addDoc(collection(db,"results"),{
-
-student: auth.currentUser.email,
-
-lesson: lessonId,
-
-score: score,
-
-answers: answers,
-
-date: Date.now()
-
-})
-
-
-examBox.innerHTML =
-`<h2 class="text-xl font-bold">
-Score ${score}/${questions.length}
-</h2>${review}`
-
-}
 
 </script>
 
