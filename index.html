@@ -7,24 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; transition: all 0.4s; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f9fafb; color: #1f2937; }
         .fade-in { animation: fade 1s ease; }
         @keyframes fade { from { opacity: 0; transform: translateY(20px) } to { opacity: 1 } }
         .hover-scale { transition: transform .3s; }
         .hover-scale:hover { transform: translateY(-5px); }
         .gold-gradient { background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .ramadan-card { background: rgba(255, 255, 255, 0.95); border: 2px solid #f97316; }
-        .dark .ramadan-card { background: #1a1c23; border-color: #374151; }
+        .login-card { background: white; border: 2px solid #f97316; }
     </style>
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+<body class="min-h-screen">
 
     <nav class="flex justify-between items-center p-6 max-w-6xl mx-auto">
-        <h1 class="text-3xl font-black text-orange-500 tracking-tighter">
-            Math<span class="text-gray-800 dark:text-white">Pro</span>
+        <h1 class="text-4xl font-black text-orange-500 tracking-tighter">
+            Math<span class="text-gray-800">Pro</span>
         </h1>
-        <button id="modeBtn" class="bg-orange-500 hover:bg-orange-600 text-white w-12 h-12 rounded-2xl shadow-lg transition-all flex items-center justify-center text-xl">🌙</button>
+        <div class="text-orange-500 font-bold">🌙 رمضان كريم</div>
     </nav>
 
     <div class="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto p-6 fade-in mt-10">
@@ -34,53 +33,53 @@
                 <img src="images/sherif.png" class="w-64 h-64 mx-auto rounded-full shadow-2xl border-[10px] border-orange-500 object-cover">
                 <span class="absolute bottom-2 right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-white animate-pulse"></span>
             </div>
-            <h2 class="text-4xl font-black mt-8 text-gray-800 dark:text-white leading-tight">
+            <h2 class="text-4xl font-black mt-8 text-gray-800 leading-tight">
                 أهلاً بك في منصة <br> <span class="gold-gradient">الأستاذ شريف علي</span>
             </h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-4 text-lg font-medium">خطوتك الأولى نحو تقفيل مادة الرياضيات بكل سهولة 🌙</p>
+            <p class="text-gray-500 mt-4 text-lg font-medium">خطوتك الأولى نحو تقفيل مادة الرياضيات بكل سهولة 🌙</p>
         </div>
 
-        <div class="ramadan-card p-10 rounded-[2.5rem] shadow-2xl hover-scale">
-            <div class="flex gap-2 mb-8 bg-gray-100 dark:bg-gray-800 p-1 rounded-2xl">
+        <div class="login-card p-10 rounded-[2.5rem] shadow-2xl hover-scale">
+            <div class="flex gap-2 mb-8 bg-gray-100 p-1 rounded-2xl">
                 <button id="loginTab" class="flex-1 py-3 font-black rounded-xl bg-orange-500 text-white transition-all shadow-md">دخول</button>
-                <button id="signupTab" class="flex-1 py-3 font-black rounded-xl text-gray-500 dark:text-gray-400 transition-all">حساب جديد</button>
+                <button id="signupTab" class="flex-1 py-3 font-black rounded-xl text-gray-500 transition-all">حساب جديد</button>
             </div>
 
             <div id="nameField" class="hidden animate-fade-in">
-                <label class="block mb-2 text-sm font-bold text-gray-600 dark:text-gray-300">الاسم الكامل</label>
-                <input id="name" placeholder="مثال: أحمد محمد" class="w-full p-4 border-2 border-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-2xl mb-4 outline-none focus:border-orange-500 transition">
+                <label class="block mb-2 text-sm font-bold text-gray-600">الاسم الكامل</label>
+                <input id="name" placeholder="مثال: أحمد محمد" class="w-full p-4 border-2 border-gray-100 rounded-2xl mb-4 outline-none focus:border-orange-500 transition">
             </div>
 
-            <label class="block mb-2 text-sm font-bold text-gray-600 dark:text-gray-300">البريد الإلكتروني</label>
-            <input id="email" type="email" placeholder="example@mail.com" class="w-full p-4 border-2 border-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-2xl mb-4 outline-none focus:border-orange-500 transition">
+            <label class="block mb-2 text-sm font-bold text-gray-600">البريد الإلكتروني</label>
+            <input id="email" type="email" placeholder="example@mail.com" class="w-full p-4 border-2 border-gray-100 rounded-2xl mb-4 outline-none focus:border-orange-500 transition">
 
-            <label class="block mb-2 text-sm font-bold text-gray-600 dark:text-gray-300">كلمة المرور</label>
-            <input id="password" type="password" placeholder="••••••••" class="w-full p-4 border-2 border-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-2xl mb-2 outline-none focus:border-orange-500 transition">
+            <label class="block mb-2 text-sm font-bold text-gray-600">كلمة المرور</label>
+            <input id="password" type="password" placeholder="••••••••" class="w-full p-4 border-2 border-gray-100 rounded-2xl mb-2 outline-none focus:border-orange-500 transition">
 
             <div class="text-left mb-6">
                 <button id="forgotBtn" class="text-sm font-bold text-orange-500 hover:underline">نسيت كلمة المرور؟</button>
             </div>
 
-            <button id="actionBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-orange-200 dark:shadow-none transition-all">تسجيل الدخول</button>
+            <button id="actionBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-orange-200 transition-all">تسجيل الدخول</button>
             
             <div class="relative my-8 text-center">
-                <hr class="border-gray-200 dark:border-gray-700">
-                <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-4 text-xs text-gray-400 font-bold">أو عن طريق</span>
+                <hr class="border-gray-200">
+                <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs text-gray-400 font-bold">أو عن طريق</span>
             </div>
 
-            <button id="googleBtn" class="w-full flex items-center justify-center gap-3 border-2 border-gray-100 dark:border-gray-700 py-3 rounded-2xl font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition dark:text-white">
+            <button id="googleBtn" class="w-full flex items-center justify-center gap-3 border-2 border-gray-100 py-3 rounded-2xl font-bold hover:bg-gray-50 transition">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
                 جوجل
             </button>
         </div>
     </div>
 
-    <footer class="text-center mt-20 p-10 border-t border-gray-100 dark:border-gray-800">
-        <p class="text-gray-400 dark:text-gray-500 font-bold mb-2">© 2026 MathPro Platform — All Rights Reserved</p>
-        <p class="text-gray-800 dark:text-white font-black text-lg">
+    <footer class="text-center mt-20 p-10 border-t border-gray-100">
+        <p class="text-gray-400 font-bold mb-2">© 2026 MathPro Platform — All Rights Reserved</p>
+        <p class="text-gray-800 font-black text-lg">
             Developed with ❤️ By <span class="text-orange-500">Kevin Hany</span>
         </p>
-        <a href="tel:01064233004" class="inline-block mt-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-orange-500 transition">
+        <a href="tel:01064233004" class="inline-block mt-2 bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-600 hover:text-orange-500 transition">
             📞 01064233004
         </a>
     </footer>
@@ -102,7 +101,6 @@
 
         let mode = "login";
 
-        // تبديل التابات
         const loginTab = document.getElementById("loginTab");
         const signupTab = document.getElementById("signupTab");
         const actionBtn = document.getElementById("actionBtn");
@@ -113,7 +111,7 @@
             nameField.classList.remove("hidden");
             actionBtn.innerText = "إنشاء حساب مجاني";
             signupTab.className = "flex-1 py-3 font-black rounded-xl bg-orange-500 text-white shadow-md";
-            loginTab.className = "flex-1 py-3 font-black rounded-xl text-gray-500 dark:text-gray-400";
+            loginTab.className = "flex-1 py-3 font-black rounded-xl text-gray-500";
         }
 
         loginTab.onclick = () => {
@@ -121,10 +119,9 @@
             nameField.classList.add("hidden");
             actionBtn.innerText = "تسجيل الدخول";
             loginTab.className = "flex-1 py-3 font-black rounded-xl bg-orange-500 text-white shadow-md";
-            signupTab.className = "flex-1 py-3 font-black rounded-xl text-gray-500 dark:text-gray-400";
+            signupTab.className = "flex-1 py-3 font-black rounded-xl text-gray-500";
         }
 
-        // نسيت كلمة المرور
         document.getElementById("forgotBtn").onclick = async () => {
             const emailVal = document.getElementById("email").value;
             if(!emailVal) return alert("اكتب إيميلك الأول في خانة البريد الإلكتروني");
@@ -134,7 +131,6 @@
             } catch(e) { alert(e.message); }
         }
 
-        // تسجيل الدخول والإنشاء
         actionBtn.onclick = async () => {
             const emailVal = document.getElementById("email").value;
             const passVal = document.getElementById("password").value;
@@ -147,16 +143,12 @@
             } catch(e) { alert("خطأ: " + e.message); }
         }
 
-        // جوجل
         document.getElementById("googleBtn").onclick = async () => {
             try {
                 const res = await signInWithPopup(auth, new GoogleAuthProvider());
                 window.location = (res.user.email === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
             } catch(e) { alert(e.message); }
         }
-
-        // المود المظلم
-        document.getElementById("modeBtn").onclick = () => document.documentElement.classList.toggle("dark");
     </script>
 </body>
 </html>
