@@ -2,48 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Lesson</title>
+    <title>Student Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style> .active-tab { border-bottom: 4px solid #2563eb; color: #2563eb; } </style>
 </head>
-<body class="bg-gray-100 min-h-screen py-10">
+<body class="bg-gray-50 min-h-screen">
 
-<div class="max-w-4xl mx-auto p-4">
-    <div id="lessonHeader" class="text-center mb-8">
-        <h1 id="lessonTitle" class="text-4xl font-bold text-gray-800">Loading...</h1>
+<div class="max-w-3xl mx-auto p-6">
+    <h1 id="lessonTitle" class="text-3xl font-black text-center text-gray-800 my-8">Loading Lesson...</h1>
+
+    <div id="startBox" class="text-center bg-white p-10 rounded-2xl shadow-xl">
+        <p class="mb-6 text-gray-500 italic">Please read the questions carefully from the images.</p>
+        <button id="startBtn" class="bg-green-600 text-white px-12 py-4 rounded-full font-bold text-xl hover:scale-105 transition">ENTER EXAM</button>
     </div>
 
-    <div id="startScreen" class="text-center">
-        <button id="startBtn" class="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-2xl font-bold shadow-xl transition transform hover:scale-105">
-            Start Lesson Quiz
-        </button>
-    </div>
-
-    <div id="quizBox" class="hidden bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-        <div id="progress" class="text-sm text-gray-500 mb-4 font-bold uppercase tracking-widest"></div>
-        <img id="qImg" class="w-full rounded-xl mb-6 shadow-sm border">
+    <div id="quizBox" class="hidden bg-white p-6 rounded-2xl shadow-xl border">
+        <div id="progress" class="text-blue-600 font-bold mb-4 uppercase tracking-tighter"></div>
+        <img id="qImg" class="w-full rounded-xl border mb-6 shadow-sm">
         
-        <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div id="options" class="grid grid-cols-1 gap-3"></div>
 
-        <button id="nextBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 mt-8 rounded-xl font-bold shadow-lg transition">
-            Next Question →
-        </button>
+        <button id="nextBtn" class="w-full bg-orange-500 text-white py-4 mt-8 rounded-xl font-black hover:bg-orange-600 transition shadow-lg">NEXT QUESTION →</button>
     </div>
 
-    <div id="resultBox" class="hidden animate-fade-in">
-        <div class="bg-white p-8 rounded-2xl shadow-xl text-center mb-6">
-            <h2 class="text-4xl font-black text-blue-600 mb-2" id="finalScore"></h2>
-            <p class="text-gray-500">Exam completed! Review your performance below.</p>
+    <div id="resultBox" class="hidden space-y-6">
+        <div class="bg-white p-8 rounded-2xl shadow-xl text-center">
+            <h2 id="finalScore" class="text-5xl font-black text-blue-600 mb-2"></h2>
+            <p class="text-gray-400 font-bold uppercase">Exam Completed</p>
         </div>
 
-        <div class="flex bg-gray-200 p-1 rounded-xl mb-6">
-            <button onclick="showTab('review')" id="tabRev" class="flex-1 py-3 rounded-lg font-bold bg-white shadow text-blue-600">Review Answers</button>
-            <button onclick="showTab('video')" id="tabVid" class="flex-1 py-3 rounded-lg font-bold text-gray-600">Watch Explanation</button>
+        <div class="flex bg-white rounded-xl shadow border p-1">
+            <button id="btnTabReview" onclick="switchTab('review')" class="flex-1 py-3 font-bold active-tab">Review Answers</button>
+            <button id="btnTabVideo" onclick="switchTab('video')" class="flex-1 py-3 font-bold text-gray-400">Explanation Video</button>
         </div>
 
-        <div id="reviewTab" class="space-y-4"></div>
+        <div id="tabReview" class="space-y-4"></div>
 
-        <div id="videoTab" class="hidden bg-white p-4 rounded-2xl shadow-xl">
-            <div id="videoContainer" class="aspect-video w-full"></div>
+        <div id="tabVideo" class="hidden bg-white p-4 rounded-2xl shadow-xl">
+            <div id="vidContainer" class="aspect-video"></div>
         </div>
     </div>
 </div>
@@ -52,88 +48,95 @@
     import { db } from "./firebase.js"
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
-    const urlId = new URLSearchParams(window.location.search).get("id");
-    let lessonData, questions = [], current = 0, userAnswers = [];
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonId = urlParams.get("id");
 
-    // جلب الداتا
-    async function init() {
-        if(!urlId) return alert("No Lesson ID provided!");
-        const snap = await getDoc(doc(db, "lessons", urlId));
-        if(!snap.exists()) return alert("Lesson not found!");
+    let questions = [], current = 0, userAnswers = [], lessonData = {};
+
+    async function loadData() {
+        if(!lessonId) return alert("URL ID is missing!");
+        const docRef = doc(db, "lessons", lessonId);
+        const snap = await getDoc(docRef);
         
-        lessonData = snap.data();
-        questions = lessonData.questions;
-        document.getElementById("lessonTitle").innerText = lessonData.name;
+        if(snap.exists()) {
+            lessonData = snap.data();
+            questions = lessonData.questions || [];
+            document.getElementById("lessonTitle").innerText = lessonData.name;
+        } else {
+            alert("Lesson not found!");
+        }
     }
 
-    window.startBtn.onclick = () => {
-        document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("startBtn").onclick = () => {
+        if(questions.length === 0) return alert("This lesson has no questions!");
+        document.getElementById("startBox").classList.add("hidden");
         document.getElementById("quizBox").classList.remove("hidden");
-        loadQ();
-    };
+        showQuestion();
+    }
 
-    function loadQ() {
-        let q = questions[current];
-        document.getElementById("progress").innerText = `Question ${current + 1} / ${questions.length}`;
+    function showQuestion() {
+        const q = questions[current];
         document.getElementById("qImg").src = q.image;
+        document.getElementById("progress").innerText = `Question ${current + 1} / ${questions.length}`;
         
-        document.getElementById("options").innerHTML = ['a','b','c','d'].map(opt => `
+        document.getElementById("options").innerHTML = ['a','b','c','d'].map(letter => `
             <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer hover:bg-blue-50 transition border-gray-100">
-                <input type="radio" name="choice" value="${opt}" class="w-5 h-5 mr-3">
-                <span class="font-bold text-gray-700">${opt.toUpperCase()}: ${q[opt]}</span>
+                <input type="radio" name="ans" value="${letter}" class="w-5 h-5 mr-4 text-blue-600">
+                <span class="font-bold text-gray-700">${letter.toUpperCase()} ${q[letter] !== letter.toUpperCase() ? ': ' + q[letter] : ''}</span>
             </label>
         `).join('');
     }
 
-    window.nextBtn.onclick = () => {
-        let selected = document.querySelector('input[name="choice"]:checked');
-        if(!selected) return alert("Select an answer!");
+    document.getElementById("nextBtn").onclick = () => {
+        const selected = document.querySelector('input[name="ans"]:checked');
+        if(!selected) return alert("Choose an answer!");
 
         userAnswers.push(selected.value);
         current++;
 
-        if(current < questions.length) loadQ();
-        else finish();
-    };
+        if(current < questions.length) showQuestion();
+        else showResults();
+    }
 
-    function finish() {
+    function showResults() {
         document.getElementById("quizBox").classList.add("hidden");
         document.getElementById("resultBox").classList.remove("hidden");
 
         let score = 0;
-        let reviewHTML = "";
-
+        let html = "";
+        
         questions.forEach((q, i) => {
-            let isCorrect = userAnswers[i] === q.correct;
+            const isCorrect = userAnswers[i] === q.correct;
             if(isCorrect) score++;
-            
-            reviewHTML += `
-                <div class="bg-white p-4 rounded-xl shadow border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'}">
-                    <img src="${q.image}" class="w-48 rounded mb-2">
-                    <p class="font-bold">Your: <span class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${userAnswers[i].toUpperCase()}</span> | Correct: <span class="text-green-600">${q.correct.toUpperCase()}</span></p>
-                </div>`;
+            html += `
+                <div class="bg-white p-4 rounded-xl border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'} shadow">
+                    <img src="${q.image}" class="w-32 rounded border mb-2">
+                    <p class="font-bold">Your Ans: <span class="${isCorrect?'text-green-600':'text-red-600'}">${userAnswers[i].toUpperCase()}</span> 
+                    | Correct: <span class="text-green-600">${q.correct.toUpperCase()}</span></p>
+                </div>
+            `;
         });
 
         document.getElementById("finalScore").innerText = `${score} / ${questions.length}`;
-        document.getElementById("reviewTab").innerHTML = reviewHTML;
+        document.getElementById("tabReview").innerHTML = html;
 
-        // تجهيز الفيديو
+        // Embed Video logic
         if(lessonData.videoUrl) {
             let vidId = lessonData.videoUrl.split('v=')[1]?.split('&')[0] || lessonData.videoUrl.split('/').pop();
-            document.getElementById("videoContainer").innerHTML = `<iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe>`;
+            document.getElementById("vidContainer").innerHTML = `<iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe>`;
         }
     }
 
-    window.showTab = (type) => {
-        const isRev = type === 'review';
-        document.getElementById("reviewTab").classList.toggle("hidden", !isRev);
-        document.getElementById("videoTab").classList.toggle("hidden", isRev);
+    window.switchTab = (tab) => {
+        const isRev = tab === 'review';
+        document.getElementById("tabReview").classList.toggle("hidden", !isRev);
+        document.getElementById("tabVideo").classList.toggle("hidden", isRev);
         
-        document.getElementById("tabRev").className = isRev ? "flex-1 py-3 rounded-lg font-bold bg-white shadow text-blue-600" : "flex-1 py-3 rounded-lg font-bold text-gray-600";
-        document.getElementById("tabVid").className = !isRev ? "flex-1 py-3 rounded-lg font-bold bg-white shadow text-blue-600" : "flex-1 py-3 rounded-lg font-bold text-gray-600";
+        document.getElementById("btnTabReview").className = `flex-1 py-3 font-bold ${isRev ? 'active-tab' : 'text-gray-400'}`;
+        document.getElementById("btnTabVideo").className = `flex-1 py-3 font-bold ${!isRev ? 'active-tab' : 'text-gray-400'}`;
     }
 
-    init();
+    loadData();
 </script>
 </body>
 </html>
