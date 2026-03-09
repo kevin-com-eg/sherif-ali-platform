@@ -6,105 +6,90 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-6">
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow-lg">
+        <h1 class="text-2xl font-bold mb-6 border-b pb-2">Teacher Dashboard</h1>
 
-<div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-    <h1 class="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Teacher Dashboard</h1>
+        <input id="lessonName" placeholder="Lesson Name" class="border p-2 w-full mb-3 rounded">
+        <input id="videoUrl" placeholder="Youtube URL" class="border p-2 w-full mb-3 rounded">
+        <input id="pdfUrl" placeholder="PDF URL" class="border p-2 w-full mb-6 rounded">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <input id="lessonName" placeholder="Lesson Name (e.g. Chemistry 101)" class="border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-        <input id="videoUrl" placeholder="YouTube Video URL" class="border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-        <input id="pdfUrl" placeholder="PDF Summary URL" class="border p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 col-span-full">
-    </div>
-
-    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 mb-8">
-        <h2 class="font-bold text-blue-800 mb-4 flex justify-between">
-            <span>Add Question</span>
-            <span id="qCount" class="text-sm bg-blue-200 px-2 py-1 rounded text-blue-900">Questions Added: 0</span>
-        </h2>
-        
-        <input id="qImage" placeholder="Question Image URL (Link from Google Drive or Cloudinary)" class="border p-3 w-full mb-4 rounded-lg">
-        
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <input id="a" placeholder="Label A (Optional)" class="border p-2 rounded">
-            <input id="b" placeholder="Label B (Optional)" class="border p-2 rounded">
-            <input id="c" placeholder="Label C (Optional)" class="border p-2 rounded">
-            <input id="d" placeholder="Label D (Optional)" class="border p-2 rounded">
+        <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+            <h2 class="font-bold mb-4 text-blue-700 flex justify-between">
+                <span>Add Question</span>
+                <span id="qCounter" class="bg-blue-600 text-white px-2 py-1 rounded text-xs">Questions in queue: 0</span>
+            </h2>
+            <input id="qImage" placeholder="Question Image URL" class="border p-2 w-full mb-2 rounded">
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <input id="a" placeholder="Label A" class="border p-2 rounded text-sm">
+                <input id="b" placeholder="Label B" class="border p-2 rounded text-sm">
+                <input id="c" placeholder="Label C" class="border p-2 rounded text-sm">
+                <input id="d" placeholder="Label D" class="border p-2 rounded text-sm">
+            </div>
+            <select id="correct" class="border p-2 w-full mb-4 rounded">
+                <option value="a">Correct A</option>
+                <option value="b">Correct B</option>
+                <option value="c">Correct C</option>
+                <option value="d">Correct D</option>
+            </select>
+            <button onclick="addQuestion()" class="bg-blue-500 text-white px-4 py-2 rounded w-full font-bold">Add Question to List</button>
         </div>
 
-        <select id="correct" class="border p-3 w-full mb-6 rounded-lg font-bold text-gray-700">
-            <option value="a">Correct: A</option>
-            <option value="b">Correct: B</option>
-            <option value="c">Correct: C</option>
-            <option value="d">Correct: D</option>
-        </select>
-
-        <button onclick="addQuestionToList()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">
-            + Add Question to List
-        </button>
+        <button onclick="saveLesson()" id="saveBtn" class="bg-green-600 text-white px-6 py-3 rounded w-full font-black shadow-lg">SAVE LESSON TO FIREBASE</button>
     </div>
 
-    <button id="saveBtn" onclick="saveToFirebase()" class="w-full bg-green-600 text-white font-black py-4 rounded-xl text-xl shadow-xl hover:bg-green-700 transition">
-        SAVE & PUBLISH LESSON
-    </button>
+    <script type="module">
+        import { db } from "./firebase.js"
+        import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
-    <div id="successMsg" class="hidden mt-6 p-4 bg-green-100 text-green-800 rounded-lg text-center font-bold">
-        Lesson Saved! Copy ID: <span id="newId" class="select-all underline"></span>
-    </div>
-</div>
+        let questionsArray = [];
 
-<script type="module">
-    import { db } from "./firebase.js"
-    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        // دالة إضافة سؤال للقائمة المؤقتة
+        window.addQuestion = function() {
+            const img = document.getElementById("qImage").value;
+            if(!img) return alert("Please enter Image URL first!");
 
-    let questionsList = [];
+            const q = {
+                image: img,
+                a: document.getElementById("a").value || "A",
+                b: document.getElementById("b").value || "B",
+                c: document.getElementById("c").value || "C",
+                d: document.getElementById("d").value || "D",
+                correct: document.getElementById("correct").value
+            };
 
-    window.addQuestionToList = function() {
-        if(!document.getElementById("qImage").value) return alert("Please add Image URL!");
-        
-        const q = {
-            image: document.getElementById("qImage").value,
-            a: document.getElementById("a").value || "A",
-            b: document.getElementById("b").value || "B",
-            c: document.getElementById("c").value || "C",
-            d: document.getElementById("d").value || "D",
-            correct: document.getElementById("correct").value
-        };
-
-        questionsList.push(q);
-        document.getElementById("qCount").innerText = `Questions Added: ${questionsList.length}`;
-        
-        // Reset question fields
-        document.getElementById("qImage").value = "";
-        alert("Question added! You can now add more or click Save.");
-    }
-
-    window.saveToFirebase = async function() {
-        const name = document.getElementById("lessonName").value;
-        const btn = document.getElementById("saveBtn");
-
-        if(!name || questionsList.length === 0) return alert("Need Lesson Name and at least 1 Question!");
-
-        btn.innerText = "Publishing...";
-        btn.disabled = true;
-
-        try {
-            const docRef = await addDoc(collection(db, "lessons"), {
-                name: name,
-                videoUrl: document.getElementById("videoUrl").value,
-                pdfUrl: document.getElementById("pdfUrl").value,
-                questions: questionsList,
-                createdAt: new Date()
-            });
-
-            document.getElementById("successMsg").classList.remove("hidden");
-            document.getElementById("newId").innerText = docRef.id;
-            btn.innerText = "DONE!";
-        } catch (e) {
-            console.error(e);
-            alert("Error saving!");
-            btn.disabled = false;
+            questionsArray.push(q);
+            document.getElementById("qCounter").innerText = `Questions in queue: ${questionsArray.length}`;
+            
+            // تنظيف الخانات لسؤال جديد
+            document.getElementById("qImage").value = "";
+            alert("Question added to local list!");
         }
-    }
-</script>
-</body>
-</html>
+
+        // دالة الحفظ النهائي
+        window.saveLesson = async function() {
+            const saveBtn = document.getElementById("saveBtn");
+            const currentImg = document.getElementById("qImage").value;
+
+            // "حركة ذكية": لو المدرس نسي يدوس Add وكان كاتب بيانات سؤال، نضيفه أوتوماتيك
+            if(currentImg && questionsArray.length === 0) {
+                addQuestion();
+            }
+
+            if(questionsArray.length === 0) return alert("Add at least one question!");
+
+            saveBtn.innerText = "Saving...";
+            saveBtn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "lessons"), {
+                    name: document.getElementById("lessonName").value,
+                    video: document.getElementById("videoUrl").value, // سميتها video عشان تطابق صورتك
+                    pdf: document.getElementById("pdfUrl").value,
+                    questions: questionsArray
+                });
+                alert("Lesson Saved Successfully!");
+                location.reload(); // ريفرش عشان تفضي الفورم
+            } catch (e) {
+                console.error(e);
+                alert("Error saving lesson");
+                saveBtn
