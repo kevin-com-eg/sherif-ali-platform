@@ -7,8 +7,10 @@ font-family:Arial;
 
 body{
 
-background:#0f172a;
+background:#020617;
+
 color:white;
+
 direction:rtl;
 
 }
@@ -23,7 +25,7 @@ align-items:center;
 
 padding:20px 60px;
 
-background:#0f172a;
+background:#020617;
 
 border-bottom:1px solid rgba(255,255,255,0.08);
 
@@ -46,13 +48,11 @@ margin-left:20px;
 
 opacity:0.8;
 
-transition:0.2s;
+transition:0.3s;
 
 }
 
 nav a:hover{
-
-opacity:1;
 
 color:#facc15;
 
@@ -64,21 +64,17 @@ color:#facc15;
 
 display:flex;
 
-align-items:center;
-
 justify-content:space-between;
+
+align-items:center;
 
 padding:100px 80px;
 
 }
 
-/* hero text */
-
 .hero-text h1{
 
-font-size:72px;
-
-margin-bottom:10px;
+font-size:70px;
 
 }
 
@@ -86,9 +82,9 @@ margin-bottom:10px;
 
 color:#facc15;
 
-letter-spacing:3px;
+margin:10px 0;
 
-margin-bottom:15px;
+letter-spacing:3px;
 
 }
 
@@ -96,11 +92,9 @@ margin-bottom:15px;
 
 opacity:0.8;
 
-font-size:18px;
+margin-top:10px;
 
 }
-
-/* button */
 
 .btn{
 
@@ -110,37 +104,27 @@ margin-top:30px;
 
 background:#facc15;
 
-color:#0f172a;
+color:#020617;
 
 padding:14px 30px;
 
 border-radius:10px;
 
-font-weight:bold;
-
 text-decoration:none;
 
-transition:0.2s;
+font-weight:bold;
 
 }
-
-.btn:hover{
-
-transform:translateY(-2px);
-
-}
-
-/* hero image */
 
 .hero-image img{
 
 width:480px;
 
-border-radius:18px;
+border-radius:20px;
 
 }
 
-/* features section */
+/* features */
 
 .features{
 
@@ -150,63 +134,26 @@ justify-content:center;
 
 gap:30px;
 
-margin:80px;
+margin:60px;
 
 flex-wrap:wrap;
 
 }
 
-/* cards */
-
-.glass-card{
+.feature{
 
 background:#1e293b;
 
-padding:22px 30px;
+padding:20px 30px;
 
 border-radius:14px;
 
 border:1px solid rgba(255,255,255,0.08);
 
-font-size:16px;
-
-transition:0.2s;
-
 }
 
-.glass-card:hover{
+/* courses */
 
-transform:translateY(-5px);
-
-background:#263449;
-
-}
-
-/* responsive */
-
-@media(max-width:900px){
-
-.hero{
-
-flex-direction:column;
-
-text-align:center;
-
-}
-
-.hero-image img{
-
-margin-top:40px;
-
-width:320px;
-
-}
-
-.features{
-
-margin:40px;
-
-}
 .courses{
 
 padding:60px 80px;
@@ -245,16 +192,58 @@ border-radius:14px;
 
 border:1px solid rgba(255,255,255,0.08);
 
-font-size:18px;
-
-transition:0.2s;
+transition:0.3s;
 
 }
 
 .course-card:hover{
 
+background:#263449;
+
 transform:translateY(-6px);
 
-background:#263449;
+}
+
+/* footer */
+
+footer{
+
+background:#020617;
+
+padding:50px 80px;
+
+border-top:1px solid rgba(255,255,255,0.08);
+
+margin-top:80px;
+
+}
+
+.footer-content{
+
+display:flex;
+
+justify-content:space-between;
+
+flex-wrap:wrap;
+
+margin-bottom:20px;
+
+}
+
+.contact a{
+
+color:#facc15;
+
+text-decoration:none;
+
+}
+
+.copyright{
+
+text-align:center;
+
+opacity:0.6;
+
+font-size:14px;
 
 }
