@@ -10,7 +10,8 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+<link rel="stylesheet"
+href="https://cdn.plyr.io/3.7.8/plyr.css"/>
 
 </head>
 
@@ -32,16 +33,25 @@ Lesson
 
 <div class="flex gap-4 justify-center mb-6">
 
-<button onclick="showTab('quiz')" class="bg-blue-500 text-white px-6 py-2 rounded">
+<button onclick="showTab('quiz')"
+class="bg-blue-500 text-white px-6 py-2 rounded">
+
 Quiz
+
 </button>
 
-<button onclick="showTab('video')" class="bg-gray-200 px-6 py-2 rounded">
+<button onclick="showTab('video')"
+class="bg-gray-200 px-6 py-2 rounded">
+
 Video
+
 </button>
 
-<button onclick="showTab('pdf')" class="bg-gray-200 px-6 py-2 rounded">
+<button onclick="showTab('pdf')"
+class="bg-gray-200 px-6 py-2 rounded">
+
 PDF
+
 </button>
 
 </div>
@@ -60,9 +70,11 @@ Enter Exam
 </button>
 
 
-<div id="examBox" class="hidden bg-white p-6 rounded shadow">
+<div id="examBox"
+class="hidden bg-white p-6 rounded shadow">
 
-<img id="questionImage" class="mb-4 w-full">
+<img id="questionImage"
+class="mb-4 w-full">
 
 <div id="answers"></div>
 
@@ -86,8 +98,7 @@ Next Question
 <div class="video-wrapper">
 
 <div id="player"
-data-plyr-provider="youtube"
-data-plyr-embed-id="VIDEO_ID"></div>
+data-plyr-provider="youtube"></div>
 
 </div>
 
@@ -97,9 +108,10 @@ data-plyr-embed-id="VIDEO_ID"></div>
 
 <!-- PDF -->
 
-<div id="pdf" class="hidden text-center">
+<div id="pdf"
+class="hidden text-center">
 
-<a href="files/lesson.pdf"
+<a id="pdfLink"
 class="bg-blue-500 text-white px-6 py-3 rounded">
 
 Download PDF
@@ -110,7 +122,8 @@ Download PDF
 
 
 
-<div id="result" class="mt-6 text-center text-xl font-bold"></div>
+<div id="result"
+class="text-center mt-6 text-xl font-bold"></div>
 
 
 </div>
@@ -120,60 +133,76 @@ Download PDF
 <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
 
-<script>
+
+<script type="module">
 
 
-let questions = [
+import { db } from "./firebase.js"
 
-{
-image:"q1.png",
-a:"2",
-b:"4",
-c:"6",
-d:"8",
-correct:"b"
-},
+import {
 
-{
-image:"q2.png",
-a:"5",
-b:"7",
-c:"9",
-d:"10",
-correct:"c"
+doc,
+getDoc
+
 }
 
-]
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
+
+
+const lessonId =
+new URLSearchParams(location.search).get("id")
+
+
+const ref = doc(db,"lessons",lessonId)
+
+const snap = await getDoc(ref)
+
+const lesson = snap.data()
+
+
+
+/* VIDEO */
+
+const videoId =
+lesson.video.split("v=")[1]
+
+document
+.getElementById("player")
+.setAttribute(
+"data-plyr-embed-id",
+videoId
+)
+
+
+
+/* PDF */
+
+document
+.getElementById("pdfLink")
+.href = lesson.pdf
+
+
+
+/* QUESTIONS */
+
+let questions = lesson.questions
 
 let currentQuestion = 0
+
 let answers = []
+
 let finished = false
 
 
 
-function showTab(tab){
+document
+.getElementById("startExam")
+.onclick = () => {
 
-if(tab === "video" && !finished){
-
-alert("Finish quiz first")
-return
-
-}
-
-document.getElementById("quiz").classList.add("hidden")
-document.getElementById("video").classList.add("hidden")
-document.getElementById("pdf").classList.add("hidden")
-
-document.getElementById(tab).classList.remove("hidden")
-
-}
-
-
-
-document.getElementById("startExam").onclick = () => {
-
-document.getElementById("examBox").classList.remove("hidden")
+document
+.getElementById("examBox")
+.classList.remove("hidden")
 
 loadQuestion()
 
@@ -185,17 +214,33 @@ function loadQuestion(){
 
 let q = questions[currentQuestion]
 
-document.getElementById("questionImage").src = q.image
+questionImage.src = q.image
 
-document.getElementById("answers").innerHTML = `
+answersDiv.innerHTML = `
 
-<label><input type="radio" name="answer" value="a"> ${q.a}</label><br>
+<label>
+<input type="radio"
+name="a"
+value="a"> ${q.a}
+</label><br>
 
-<label><input type="radio" name="answer" value="b"> ${q.b}</label><br>
+<label>
+<input type="radio"
+name="a"
+value="b"> ${q.b}
+</label><br>
 
-<label><input type="radio" name="answer" value="c"> ${q.c}</label><br>
+<label>
+<input type="radio"
+name="a"
+value="c"> ${q.c}
+</label><br>
 
-<label><input type="radio" name="answer" value="d"> ${q.d}</label>
+<label>
+<input type="radio"
+name="a"
+value="d"> ${q.d}
+</label>
 
 `
 
@@ -203,13 +248,17 @@ document.getElementById("answers").innerHTML = `
 
 
 
-document.getElementById("nextBtn").onclick = () => {
+nextBtn.onclick = () => {
 
-let selected = document.querySelector("input[name='answer']:checked")
+let selected =
+document.querySelector(
+"input[name='a']:checked"
+)
 
 if(!selected){
 
 alert("Choose answer")
+
 return
 
 }
@@ -218,11 +267,14 @@ answers.push(selected.value)
 
 currentQuestion++
 
+
 if(currentQuestion < questions.length){
 
 loadQuestion()
 
-}else{
+}
+
+else{
 
 finishExam()
 
@@ -234,10 +286,12 @@ finishExam()
 
 function finishExam(){
 
-if(!confirm("Are you sure to finish exam?")) return
+if(!confirm("Finish exam?"))
+return
 
 
 let score = 0
+
 let review = ""
 
 
@@ -249,12 +303,19 @@ if(user === q.correct){
 
 score++
 
-review += `<p style="color:green">Question ${i+1}: Correct</p>`
+review +=
+`<p style="color:green">
+Question ${i+1}: Correct
+</p>`
 
-}else{
+}
 
-review += `<p style="color:red">
-Question ${i+1}: Wrong (Correct: ${q.correct})
+else{
+
+review +=
+`<p style="color:red">
+Question ${i+1}: Wrong
+Correct: ${q.correct}
 </p>`
 
 }
@@ -265,19 +326,22 @@ Question ${i+1}: Wrong (Correct: ${q.correct})
 finished = true
 
 
-localStorage.setItem("lesson_score",score)
+localStorage
+.setItem("lesson_score",score)
 
 
-document.getElementById("examBox").innerHTML = `
+examBox.innerHTML = `
 
-<h2>Score ${score}/${questions.length}</h2>
+<h2>
+Score ${score}/${questions.length}
+</h2>
 
 ${review}
 
 `
 
 
-document.getElementById("result").innerText =
+result.innerText =
 "Score "+score+"/"+questions.length
 
 
@@ -286,6 +350,8 @@ initPlayer()
 }
 
 
+
+/* PLAYER */
 
 function initPlayer(){
 
@@ -312,20 +378,28 @@ modestbranding:1
 
 
 
-/* load saved result */
+/* TABS */
 
-const saved = localStorage.getItem("lesson_score")
+function showTab(tab){
 
-if(saved){
+if(tab==="video" && !finished){
 
-finished = true
+alert("Finish quiz first")
 
-document.getElementById("result").innerText =
-"Your Score: "+saved+"/"+questions.length
-
-initPlayer()
+return
 
 }
+
+quiz.classList.add("hidden")
+video.classList.add("hidden")
+pdf.classList.add("hidden")
+
+document
+.getElementById(tab)
+.classList.remove("hidden")
+
+}
+
 
 
 </script>
@@ -335,11 +409,17 @@ initPlayer()
 <style>
 
 .video-wrapper{
+
 max-width:900px;
 margin:auto;
+
 border-radius:20px;
+
 overflow:hidden;
-box-shadow:0 10px 40px rgba(0,0,0,0.4);
+
+box-shadow:0 10px 40px
+rgba(0,0,0,0.4);
+
 }
 
 </style>
