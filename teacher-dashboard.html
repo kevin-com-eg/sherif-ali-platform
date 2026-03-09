@@ -1,164 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<title>Teacher Dashboard</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-gray-100 p-6">
 
-<h1 class="text-2xl font-bold mb-6">
-Teacher Dashboard
-</h1>
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Teacher Dashboard</h1>
 
+    <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-blue-600">Lesson Info</h2>
+        <input id="lessonName" placeholder="Lesson Name" class="border p-3 w-full mb-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+        <input id="videoUrl" placeholder="Youtube URL (e.g., https://www.youtube.com/watch?v=xxxx)" class="border p-3 w-full mb-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+        <input id="pdfUrl" placeholder="PDF URL" class="border p-3 w-full mb-6 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
 
-<div class="bg-white p-6 rounded shadow max-w-2xl">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-orange-600">Add Questions</h2>
+        <div class="bg-orange-50 p-4 rounded-lg mb-4 border border-orange-100">
+            <input id="qImage" placeholder="Question Image URL" class="border p-3 w-full mb-3 rounded-lg">
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <input id="a" placeholder="Label for A (Optional)" class="border p-2 rounded-lg text-sm">
+                <input id="b" placeholder="Label for B (Optional)" class="border p-2 rounded-lg text-sm">
+                <input id="c" placeholder="Label for C (Optional)" class="border p-2 rounded-lg text-sm">
+                <input id="d" placeholder="Label for D (Optional)" class="border p-2 rounded-lg text-sm">
+            </div>
+            <select id="correct" class="border p-3 w-full mb-4 rounded-lg bg-white">
+                <option value="a">Correct Answer: A</option>
+                <option value="b">Correct Answer: B</option>
+                <option value="c">Correct Answer: C</option>
+                <option value="d">Correct Answer: D</option>
+            </select>
+            
+            <div class="flex justify-between items-center">
+                <button onclick="addQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition">
+                    + Add Question to List
+                </button>
+                <span id="qCounter" class="text-orange-700 font-bold text-lg">Questions: 0</span>
+            </div>
+        </div>
 
+        <button onclick="saveLesson()" id="saveBtn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold w-full shadow-lg transition">
+            Save & Publish Lesson
+        </button>
+    </div>
 
-<input id="lessonName"
-placeholder="Lesson Name"
-class="border p-2 w-full mb-3">
-
-
-<input id="videoUrl"
-placeholder="Youtube URL"
-class="border p-2 w-full mb-3">
-
-
-<input id="pdfUrl"
-placeholder="PDF URL"
-class="border p-2 w-full mb-6">
-
-
-<h2 class="font-bold mb-2">
-Add Question
-</h2>
-
-
-<input id="qImage"
-placeholder="Question Image URL"
-class="border p-2 w-full mb-2">
-
-
-<input id="a"
-placeholder="Answer A"
-class="border p-2 w-full mb-2">
-
-
-<input id="b"
-placeholder="Answer B"
-class="border p-2 w-full mb-2">
-
-
-<input id="c"
-placeholder="Answer C"
-class="border p-2 w-full mb-2">
-
-
-<input id="d"
-placeholder="Answer D"
-class="border p-2 w-full mb-2">
-
-
-<select id="correct"
-class="border p-2 w-full mb-4">
-
-<option value="a">Correct A</option>
-<option value="b">Correct B</option>
-<option value="c">Correct C</option>
-<option value="d">Correct D</option>
-
-</select>
-
-
-<button onclick="addQuestion()"
-class="bg-blue-500 text-white px-4 py-2 rounded">
-
-Add Question
-
-</button>
-
-
-<button onclick="saveLesson()"
-class="bg-green-600 text-white px-4 py-2 rounded ml-2">
-
-Save Lesson
-
-</button>
-
-
+    <div id="shareLinkBox" class="hidden bg-white p-6 rounded-xl shadow-md border-2 border-green-500 animate-bounce">
+        <p class="text-green-700 font-bold mb-2">✅ Lesson Saved Successfully!</p>
+        <p class="text-sm text-gray-600 mb-2">Share this link with your students:</p>
+        <input id="finalLink" readonly class="bg-gray-100 border p-3 w-full rounded-lg text-blue-600 font-mono text-sm">
+    </div>
 </div>
 
-
 <script type="module">
+    import { db } from "./firebase.js"
+    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
+    let questions = [];
 
-import { db }
-from "./firebase.js"
+    window.addQuestion = function(){
+        const img = document.getElementById("qImage").value;
+        if(!img) return alert("Please add a question image URL");
 
-import {
-collection,
-addDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+        let q = {
+            image: img,
+            a: document.getElementById("a").value || "A",
+            b: document.getElementById("b").value || "B",
+            c: document.getElementById("c").value || "C",
+            d: document.getElementById("d").value || "D",
+            correct: document.getElementById("correct").value
+        };
 
+        questions.push(q);
+        document.getElementById("qCounter").innerText = `Questions: ${questions.length}`;
+        
+        // مسح خانات السؤال بعد الإضافة لتسهيل إضافة التالي
+        document.getElementById("qImage").value = "";
+        alert("Question added to local list!");
+    }
 
+    window.saveLesson = async function(){
+        const name = document.getElementById("lessonName").value;
+        const saveBtn = document.getElementById("saveBtn");
 
-let questions = []
+        if(!name || questions.length === 0) return alert("Please enter lesson name and add at least one question!");
 
+        saveBtn.innerText = "Saving...";
+        saveBtn.disabled = true;
 
+        try {
+            const docRef = await addDoc(collection(db, "lessons"), {
+                name: name,
+                videoUrl: document.getElementById("videoUrl").value,
+                pdfUrl: document.getElementById("pdfUrl").value,
+                questions: questions,
+                createdAt: new Date()
+            });
 
-window.addQuestion = function(){
-
-let q = {
-
-image: qImage.value,
-
-a: a.value,
-
-b: b.value,
-
-c: c.value,
-
-d: d.value,
-
-correct: correct.value
-
-}
-
-questions.push(q)
-
-alert("Question Added")
-
-}
-
-
-
-window.saveLesson = async function(){
-
-await addDoc(collection(db,"lessons"),{
-
-name: lessonName.value,
-
-video: videoUrl.value,
-
-pdf: pdfUrl.value,
-
-questions: questions
-
-})
-
-alert("Lesson Saved")
-
-}
-
-
+            // توليد لينك الطالب (افترضنا أن صفحة الطالب اسمها quiz.html)
+            const studentUrl = window.location.origin + "/quiz.html?id=" + docRef.id;
+            document.getElementById("finalLink").value = studentUrl;
+            document.getElementById("shareLinkBox").classList.remove("hidden");
+            
+            saveBtn.innerText = "Saved!";
+            alert("Lesson Published!");
+        } catch (e) {
+            console.error(e);
+            alert("Error saving lesson.");
+            saveBtn.disabled = false;
+        }
+    }
 </script>
-
 </body>
 </html>
