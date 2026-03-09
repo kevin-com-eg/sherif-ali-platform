@@ -10,19 +10,15 @@
 
 </head>
 
-
 <body class="bg-gray-100">
 
-
 <div class="max-w-3xl mx-auto p-6">
-
 
 <h1 class="text-2xl font-bold text-center mb-6">
 
 Quiz
 
 </h1>
-
 
 <button id="startExam"
 class="bg-green-600 text-white px-6 py-3 rounded">
@@ -31,17 +27,13 @@ Enter Exam
 
 </button>
 
-
 <div id="examBox"
 class="hidden bg-white p-6 rounded shadow mt-6">
-
 
 <img id="questionImage"
 class="w-full mb-4">
 
-
 <div id="answers"></div>
-
 
 <button id="nextBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
@@ -50,16 +42,14 @@ Next Question
 
 </button>
 
-
 </div>
 
+<div id="result"
+class="mt-6 text-xl font-bold"></div>
 
 </div>
-
-
 
 <script>
-
 
 let questions = [
 
@@ -83,11 +73,8 @@ correct:"c"
 
 ]
 
-
 let currentQuestion = 0
 let answers = []
-
-
 
 document.getElementById("startExam").onclick = () => {
 
@@ -97,8 +84,6 @@ document.getElementById("examBox")
 loadQuestion()
 
 }
-
-
 
 function loadQuestion(){
 
@@ -126,9 +111,14 @@ document.getElementById("answers").innerHTML = `
 
 `
 
+if(currentQuestion === questions.length - 1){
+
+document.getElementById("nextBtn").innerText =
+"Finish Exam"
+
 }
 
-
+}
 
 document.getElementById("nextBtn").onclick = () => {
 
@@ -147,7 +137,6 @@ answers.push(selected.value)
 
 currentQuestion++
 
-
 if(currentQuestion < questions.length){
 
 loadQuestion()
@@ -156,15 +145,56 @@ loadQuestion()
 
 else{
 
-alert("Exam Finished")
+finishExam()
 
 }
 
 }
 
+function finishExam(){
+
+if(!confirm("Are you sure to finish exam?"))
+return
+
+let score = 0
+let review = ""
+
+questions.forEach((q,i)=>{
+
+let user = answers[i]
+
+if(user === q.correct){
+
+score++
+
+review +=
+`<p style="color:green">
+Question ${i+1}: Correct
+</p>`
+
+}
+
+else{
+
+review +=
+`<p style="color:red">
+Question ${i+1}: Wrong
+Correct answer: ${q.correct}
+</p>`
+
+}
+
+})
+
+document.getElementById("examBox").innerHTML =
+
+`<h2>Score ${score}/${questions.length}</h2>${review}`
+
+localStorage.setItem("lessonScore",score)
+
+}
 
 </script>
-
 
 </body>
 </html>
