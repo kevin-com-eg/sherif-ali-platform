@@ -22,89 +22,62 @@
 
 
 <h1 class="text-2xl font-bold text-center mb-6">
-
-EXPLANATION VIDEO
-
+Lesson
 </h1>
-
-
-
-<!-- VIDEO PLAYER -->
-
-<div id="videoBox" class="hidden">
-
-<div class="video-wrapper">
-
-<div id="player"
-data-plyr-provider="youtube"
-data-plyr-embed-id="VIDEO_ID"></div>
-
-</div>
-
-</div>
-
 
 
 <!-- TABS -->
 
-<div class="flex gap-4 mt-6 justify-center">
+<div class="flex gap-4 justify-center mb-6">
 
-<button onclick="showTab('exam')" class="bg-gray-200 px-6 py-2 rounded">
-
-Exam
-
+<button onclick="showTab('quiz')" class="tabBtn bg-blue-500 text-white px-6 py-2 rounded">
+Quiz
 </button>
 
-<button onclick="showTab('video')" class="bg-gray-200 px-6 py-2 rounded">
-
+<button onclick="showTab('video')" class="tabBtn bg-gray-200 px-6 py-2 rounded">
 Video
-
 </button>
 
-<button onclick="showTab('files')" class="bg-gray-200 px-6 py-2 rounded">
-
-Files
-
+<button onclick="showTab('pdf')" class="tabBtn bg-gray-200 px-6 py-2 rounded">
+PDF
 </button>
 
 </div>
 
 
 
-<!-- EXAM -->
+<!-- QUIZ TAB -->
 
-<div id="exam" class="mt-6">
+<div id="quiz">
 
 <div class="bg-white p-6 rounded-xl shadow">
-
 
 <img src="question.png" class="mb-4 w-full">
 
 
-<label>
+<label class="block mb-2">
 <input type="radio" name="q1" value="A"> A
-</label><br>
+</label>
 
-<label>
+<label class="block mb-2">
 <input type="radio" name="q1" value="B"> B
-</label><br>
+</label>
 
-<label>
+<label class="block mb-2">
 <input type="radio" name="q1" value="C"> C
-</label><br>
+</label>
 
-<label>
+<label class="block mb-2">
 <input type="radio" name="q1" value="D"> D
 </label>
 
 
-<button id="finishExam"
+<button id="finishBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
 
 Finish Exam
 
 </button>
-
 
 </div>
 
@@ -114,26 +87,32 @@ Finish Exam
 
 <!-- VIDEO TAB -->
 
-<div id="video" class="hidden mt-6">
+<div id="video" class="hidden">
 
-<p class="text-center text-gray-500">
+<div class="bg-white p-6 rounded-xl shadow">
 
-Finish the exam first
+<div class="video-wrapper">
 
-</p>
+<div id="player"
+data-plyr-provider="youtube"
+data-plyr-embed-id="dQw4w9WgXcQ"></div>
+
+</div>
+
+</div>
 
 </div>
 
 
 
-<!-- FILES -->
+<!-- PDF TAB -->
 
-<div id="files" class="hidden mt-6">
+<div id="pdf" class="hidden">
 
-<div class="bg-white p-6 rounded-xl shadow">
+<div class="bg-white p-6 rounded-xl shadow text-center">
 
 <a href="files/lesson.pdf"
-class="bg-orange-500 text-white px-6 py-3 rounded">
+class="bg-blue-500 text-white px-6 py-3 rounded">
 
 Download PDF
 
@@ -145,9 +124,10 @@ Download PDF
 
 
 
-<!-- RESULT -->
+<div id="result"
+class="text-center text-xl font-bold mt-6 hidden">
 
-<div id="result" class="hidden mt-6 text-center text-xl font-bold"></div>
+</div>
 
 
 
@@ -162,11 +142,21 @@ Download PDF
 <script>
 
 
+let finished = false
+let correctAnswer = "B"
+
+
+
 function showTab(tab){
 
-document.getElementById("exam").classList.add("hidden")
+if(tab === "video" && !finished){
+alert("Finish quiz first")
+return
+}
+
+document.getElementById("quiz").classList.add("hidden")
 document.getElementById("video").classList.add("hidden")
-document.getElementById("files").classList.add("hidden")
+document.getElementById("pdf").classList.add("hidden")
 
 document.getElementById(tab).classList.remove("hidden")
 
@@ -174,30 +164,42 @@ document.getElementById(tab).classList.remove("hidden")
 
 
 
-document.getElementById("finishExam").onclick = () => {
+document.getElementById("finishBtn").onclick = () => {
 
-if(!confirm("Are you sure you want to finish the exam?")) return
+if(!confirm("Are you sure you want to finish the exam?"))
+return
+
+
+finished = true
 
 
 const selected = document.querySelector("input[name='q1']:checked")
 
+
 let score = 0
 
-if(selected && selected.value === "B"){
+
+if(selected && selected.value === correctAnswer){
+
 score = 1
+
+selected.parentElement.style.color = "green"
+
+}else{
+
+if(selected) selected.parentElement.style.color = "red"
+
+document.querySelector(`input[value="${correctAnswer}"]`).parentElement.style.color="green"
+
 }
 
 
-localStorage.setItem("lesson_result",score)
+document.querySelectorAll("input").forEach(i=>i.disabled=true)
 
 
 document.getElementById("result").classList.remove("hidden")
+
 document.getElementById("result").innerText = "Score: "+score+"/1"
-
-
-document.getElementById("videoBox").classList.remove("hidden")
-
-showTab("video")
 
 
 initPlayer()
@@ -208,7 +210,7 @@ initPlayer()
 
 function initPlayer(){
 
-const player = new Plyr('#player', {
+const player = new Plyr('#player',{
 
 controls:[
 'play',
@@ -221,7 +223,6 @@ controls:[
 ],
 
 youtube:{
-noCookie:true,
 rel:0,
 modestbranding:1
 }
@@ -232,37 +233,18 @@ modestbranding:1
 
 
 
-/* if user already did exam */
-
-const saved = localStorage.getItem("lesson_result")
-
-if(saved){
-
-document.getElementById("videoBox").classList.remove("hidden")
-
-document.getElementById("result").classList.remove("hidden")
-
-document.getElementById("result").innerText="Score: "+saved+"/1"
-
-initPlayer()
-
-}
-
-
-
 </script>
+
 
 
 <style>
 
 .video-wrapper{
-
 max-width:900px;
 margin:auto;
 border-radius:20px;
 overflow:hidden;
 box-shadow:0 10px 40px rgba(0,0,0,0.4);
-
 }
 
 </style>
