@@ -1,102 +1,100 @@
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-}
-
 body{
 
-height:100vh;
+margin:0;
+
+font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+
+background: radial-gradient(circle at top,#1f2937,#020617);
+
+color:white;
+
 direction:rtl;
-
-background: linear-gradient(
-135deg,
-#4facfe,
-#00f2fe,
-#667eea
-);
-
-display:flex;
-flex-direction:column;
 
 }
 
-/* NAVBAR */
+/* navbar */
 
 header{
 
 display:flex;
+
 justify-content:space-between;
-align-items:center;
 
-padding:20px 40px;
+padding:20px 60px;
 
-background: rgba(255,255,255,0.08);
+background: rgba(255,255,255,0.05);
 
 backdrop-filter: blur(20px);
 
-border-bottom:1px solid rgba(255,255,255,0.2);
+border-bottom:1px solid rgba(255,255,255,0.1);
 
 }
 
 .logo{
 
-font-size:22px;
-font-weight:600;
-color:white;
+font-size:24px;
+
+font-weight:700;
 
 }
 
 nav a{
 
 color:white;
+
 text-decoration:none;
+
 margin-left:20px;
-font-size:15px;
 
-opacity:0.9;
+opacity:0.8;
 
 }
 
-nav a:hover{
-opacity:1;
-}
-
-/* HERO */
+/* hero */
 
 .hero{
 
-flex:1;
-
 display:flex;
-flex-direction:column;
-justify-content:center;
+
 align-items:center;
 
-text-align:center;
-color:white;
+justify-content:space-between;
+
+padding:80px;
 
 }
 
-.hero h1{
+/* text */
 
-font-size:55px;
-font-weight:700;
-margin-bottom:10px;
+.hero-text h1{
 
-}
+font-size:70px;
 
-.hero p{
-
-font-size:18px;
-opacity:0.9;
+margin:0;
 
 }
 
-/* glass button */
+.hero-text h2{
+
+color:#facc15;
+
+letter-spacing:3px;
+
+margin:10px 0;
+
+}
+
+.hero-text p{
+
+opacity:0.8;
+
+margin-top:10px;
+
+}
 
 .btn{
+
+display:inline-block;
 
 margin-top:30px;
 
@@ -104,160 +102,52 @@ padding:14px 30px;
 
 border-radius:14px;
 
-background: rgba(255,255,255,0.15);
-
-border:1px solid rgba(255,255,255,0.3);
+background: rgba(255,255,255,0.1);
 
 backdrop-filter: blur(10px);
+
+border:1px solid rgba(255,255,255,0.2);
 
 color:white;
 
 text-decoration:none;
 
-transition:0.3s;
+}
+
+/* image */
+
+.hero-image img{
+
+width:420px;
+
+border-radius:20px;
 
 }
 
-.btn:hover{
+/* features */
 
-background: rgba(255,255,255,0.25);
-
-}
-
-/* cards */
-
-.cards{
+.features{
 
 display:flex;
+
 justify-content:center;
-gap:20px;
-margin-top:50px;
-flex-wrap:wrap;
+
+gap:30px;
+
+margin:60px;
 
 }
 
-.card{
-
-width:180px;
+.glass-card{
 
 padding:25px;
 
-border-radius:18px;
+border-radius:20px;
 
-background: rgba(255,255,255,0.12);
+background: rgba(255,255,255,0.08);
 
 backdrop-filter: blur(20px);
 
 border:1px solid rgba(255,255,255,0.2);
-
-color:white;
-
-text-align:center;
-
-font-size:18px;
-
-}
-
-/* AUTH PAGES */
-
-.auth-body{
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-height:100vh;
-
-background: linear-gradient(
-135deg,
-#4facfe,
-#00f2fe,
-#667eea
-);
-
-}
-
-.auth-box{
-
-width:320px;
-
-padding:40px;
-
-border-radius:22px;
-
-background: rgba(255,255,255,0.12);
-
-backdrop-filter: blur(25px);
-
-border:1px solid rgba(255,255,255,0.2);
-
-color:white;
-
-text-align:center;
-
-}
-
-.auth-box h2{
-margin-bottom:20px;
-}
-
-.auth-box input{
-
-width:100%;
-
-padding:12px;
-
-margin:10px 0;
-
-border-radius:10px;
-
-border:none;
-
-outline:none;
-
-background: rgba(255,255,255,0.2);
-
-color:white;
-
-}
-
-.auth-box input::placeholder{
-
-color:rgba(255,255,255,0.7);
-
-}
-
-.auth-box button{
-
-width:100%;
-
-padding:12px;
-
-margin-top:10px;
-
-border-radius:12px;
-
-border:none;
-
-background: rgba(255,255,255,0.25);
-
-color:white;
-
-cursor:pointer;
-
-font-size:15px;
-
-}
-
-.auth-box button:hover{
-
-background: rgba(255,255,255,0.35);
-
-}
-
-.auth-box a{
-
-color:white;
-text-decoration:underline;
 
 }
