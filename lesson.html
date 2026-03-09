@@ -5,18 +5,19 @@
     <title>Lesson Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-10">
 
-<div class="max-w-3xl w-full mx-auto p-6">
+<div class="max-w-4xl w-full mx-auto p-6">
     <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Quiz</h1>
 
-    <div class="text-center">
+    <div class="text-center" id="startScreen">
         <button id="startExamBtn" class="bg-green-600 hover:bg-green-700 transition text-white font-semibold px-8 py-3 rounded-lg shadow-md">
             Enter Exam
         </button>
     </div>
 
     <div id="examBox" class="hidden bg-white p-8 rounded-xl shadow-lg mt-6">
+        <div class="mb-4 text-gray-500 font-semibold" id="questionCounter"></div>
         <img id="questionImage" class="w-full mb-6 rounded border border-gray-200 shadow-sm" alt="Question Image">
 
         <div id="optionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -25,33 +26,59 @@
             Next Question
         </button>
     </div>
+
+    <div id="resultsBox" class="hidden bg-white p-8 rounded-xl shadow-lg mt-6">
+        <h2 class="text-3xl font-bold text-center text-blue-600 mb-6" id="scoreDisplay"></h2>
+
+        <div class="flex border-b border-gray-200 mb-6">
+            <button id="tabReviewBtn" class="flex-1 py-3 text-center font-bold text-blue-600 border-b-2 border-blue-600 hover:bg-gray-50 transition">
+                مراجعة الإجابات
+            </button>
+            <button id="tabVideoBtn" class="flex-1 py-3 text-center font-bold text-gray-500 border-b-2 border-transparent hover:text-blue-600 hover:bg-gray-50 transition">
+                فيديو الشرح
+            </button>
+        </div>
+
+        <div id="reviewContent" class="space-y-6">
+            </div>
+
+        <div id="videoContent" class="hidden">
+            </div>
+    </div>
 </div>
 
 <script type="module">
     import { db } from "./firebase.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // ربط عناصر الـ HTML بالجافاسكريبت
+    // ربط العناصر
     const startExamBtn = document.getElementById("startExamBtn");
+    const startScreen = document.getElementById("startScreen");
     const examBox = document.getElementById("examBox");
     const questionImage = document.getElementById("questionImage");
     const optionsContainer = document.getElementById("optionsContainer");
     const nextBtn = document.getElementById("nextBtn");
+    const questionCounter = document.getElementById("questionCounter");
+    
+    // عناصر النتيجة
+    const resultsBox = document.getElementById("resultsBox");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const reviewContent = document.getElementById("reviewContent");
+    const videoContent = document.getElementById("videoContent");
+    const tabReviewBtn = document.getElementById("tabReviewBtn");
+    const tabVideoBtn = document.getElementById("tabVideoBtn");
 
     const urlParams = new URLSearchParams(window.location.search);
     const lessonId = urlParams.get("id");
 
+    let lessonData = {};
     let questions = [];
     let current = 0;
-    // تم تغيير اسم المصفوفة لـ userAnswers لمنع التعارض مع عناصر الـ HTML
     let userAnswers = []; 
 
     // جلب البيانات من فايربيز
     async function fetchQuestions() {
-        if (!lessonId) {
-            alert("Lesson ID is missing in the URL!");
-            return;
-        }
+        if (!lessonId) return alert("Lesson ID is missing!");
 
         startExamBtn.innerText = "Loading...";
         startExamBtn.disabled = true;
@@ -61,68 +88,47 @@
             const snap = await getDoc(lessonRef);
 
             if (snap.exists()) {
-                const lesson = snap.data();
-                questions = lesson.questions || [];
+                lessonData = snap.data();
+                questions = lessonData.questions || [];
                 
                 if(questions.length > 0){
                     startExamBtn.innerText = "Enter Exam";
                     startExamBtn.disabled = false;
                 } else {
-                    alert("No questions found for this lesson.");
                     startExamBtn.innerText = "No Questions";
                 }
             } else {
                 alert("Lesson not found!");
             }
         } catch (error) {
-            console.error("Error fetching lesson:", error);
+            console.error(error);
             alert("Error loading exam.");
         }
     }
 
-    // بدء الامتحان
     startExamBtn.onclick = () => {
         if(questions.length === 0) return;
-        
-        startExamBtn.parentElement.classList.add("hidden"); // إخفاء زر البداية
-        examBox.classList.remove("hidden"); // إظهار مربع الامتحان
+        startScreen.classList.add("hidden");
+        examBox.classList.remove("hidden");
         loadQuestion();
     };
 
-    // تحميل السؤال الحالي
     function loadQuestion() {
         let q = questions[current];
         questionImage.src = q.image;
+        questionCounter.innerText = `Question ${current + 1} of ${questions.length}`;
 
-        // عرض الاختيارات (A, B, C, D) لأن النص موجود داخل الصورة
-        optionsContainer.innerHTML = `
+        optionsContainer.innerHTML = ['a', 'b', 'c', 'd'].map(opt => `
             <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
-                <input type="radio" name="answer" value="a" class="w-5 h-5 text-blue-600 mr-3"> 
-                <span class="text-lg font-medium">A</span>
+                <input type="radio" name="answer" value="${opt}" class="w-5 h-5 text-blue-600 mr-3"> 
+                <span class="text-lg font-medium">${opt.toUpperCase()}</span>
             </label>
-            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
-                <input type="radio" name="answer" value="b" class="w-5 h-5 text-blue-600 mr-3"> 
-                <span class="text-lg font-medium">B</span>
-            </label>
-            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
-                <input type="radio" name="answer" value="c" class="w-5 h-5 text-blue-600 mr-3"> 
-                <span class="text-lg font-medium">C</span>
-            </label>
-            <label class="block border border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition flex items-center">
-                <input type="radio" name="answer" value="d" class="w-5 h-5 text-blue-600 mr-3"> 
-                <span class="text-lg font-medium">D</span>
-            </label>
-        `;
+        `).join('');
     }
 
-    // الانتقال للسؤال التالي
     nextBtn.onclick = () => {
         let selected = document.querySelector("input[name='answer']:checked");
-
-        if (!selected) {
-            alert("Please choose an answer first!");
-            return;
-        }
+        if (!selected) return alert("Please choose an answer first!");
 
         userAnswers.push(selected.value);
         current++;
@@ -130,19 +136,73 @@
         if (current < questions.length) {
             loadQuestion();
         } else {
-            // إنهاء الامتحان
-            examBox.innerHTML = `
-                <div class="text-center py-10">
-                    <h2 class="text-3xl font-bold text-green-600 mb-4">Exam Finished!</h2>
-                    <p class="text-gray-600">Your answers have been recorded.</p>
-                </div>
-            `;
-            console.log("Student Answers:", userAnswers);
-            // يمكنك هنا إضافة كود إرسال الإجابات إلى فايربيز مرة أخرى
+            finishExam();
         }
     };
 
-    // تهيئة الامتحان عند تحميل الصفحة
+    // إنهاء الامتحان وعرض النتيجة
+    function finishExam() {
+        examBox.classList.add("hidden");
+        resultsBox.classList.remove("hidden");
+
+        let score = 0;
+        let reviewHTML = "";
+
+        questions.forEach((q, index) => {
+            const uAnswer = userAnswers[index];
+            const isCorrect = uAnswer === q.correct; // بافتراض إن قاعدة البيانات فيها q.correct
+            if (isCorrect) score++;
+
+            reviewHTML += `
+                <div class="p-4 border rounded-lg ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}">
+                    <p class="font-bold mb-2 text-gray-700">Question ${index + 1}:</p>
+                    <img src="${q.image}" class="w-full max-w-sm mx-auto mb-3 rounded shadow-sm">
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center text-lg mt-4">
+                        <span class="text-gray-600">Your Answer: <strong class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${uAnswer.toUpperCase()}</strong></span>
+                        ${!isCorrect && q.correct ? `<span class="text-gray-600">Correct Answer: <strong class="text-green-600">${q.correct.toUpperCase()}</strong></span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        scoreDisplay.innerText = `Your Score: ${score} / ${questions.length}`;
+        reviewContent.innerHTML = reviewHTML;
+
+        // تجهيز فيديو الشرح
+        if (lessonData.videoUrl) {
+            // تحويل رابط يوتيوب العادي لرابط Embed عشان يشتغل جوة الموقع
+            let embedUrl = lessonData.videoUrl.replace("watch?v=", "embed/");
+            videoContent.innerHTML = `
+                <iframe class="w-full aspect-video rounded-lg shadow-md" src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            `;
+        } else {
+            videoContent.innerHTML = `<p class="text-center text-gray-500 py-10">لا يوجد فيديو شرح متاح لهذا الدرس.</p>`;
+        }
+    }
+
+    // برمجة أزرار الـ Tabs
+    tabReviewBtn.onclick = () => {
+        reviewContent.classList.remove("hidden");
+        videoContent.classList.add("hidden");
+        
+        tabReviewBtn.classList.add("text-blue-600", "border-blue-600");
+        tabReviewBtn.classList.remove("text-gray-500", "border-transparent");
+        
+        tabVideoBtn.classList.add("text-gray-500", "border-transparent");
+        tabVideoBtn.classList.remove("text-blue-600", "border-blue-600");
+    };
+
+    tabVideoBtn.onclick = () => {
+        videoContent.classList.remove("hidden");
+        reviewContent.classList.add("hidden");
+        
+        tabVideoBtn.classList.add("text-blue-600", "border-blue-600");
+        tabVideoBtn.classList.remove("text-gray-500", "border-transparent");
+        
+        tabReviewBtn.classList.add("text-gray-500", "border-transparent");
+        tabReviewBtn.classList.remove("text-blue-600", "border-blue-600");
+    };
+
     fetchQuestions();
 
 </script>
