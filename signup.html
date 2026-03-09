@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,117 +8,48 @@
 
 <title>MathPro | إنشاء حساب</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-
-<style>
-
-*{font-family:'Tajawal',sans-serif}
-
-body{
-background:linear-gradient(135deg,#667eea,#764ba2);
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.glass{
-background:rgba(255,255,255,.95);
-border-radius:30px;
-padding:35px;
-max-width:420px;
-width:100%;
-}
-
-</style>
 </head>
 
 <body>
 
-<div class="glass shadow-2xl">
+<header>
 
-<div class="text-center mb-6">
+<div class="logo">MathPro</div>
 
-<div class="inline-block p-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl mb-3">
-<i class="fa-solid fa-calculator text-white text-3xl"></i>
-</div>
+<nav>
+<a href="index.html">الرئيسية</a>
+<a href="login.html">تسجيل الدخول</a>
+</nav>
 
-<h1 class="text-3xl font-black text-gray-800">MathPro</h1>
-<p class="text-gray-600">Mr Sherif Ali</p>
+</header>
 
-</div>
 
-<h2 class="text-xl font-bold mb-5 text-center">إنشاء حساب</h2>
+<section class="auth-section">
 
-<input id="name" placeholder="الاسم"
-class="w-full p-4 border rounded-xl mb-4">
+<div class="auth-box">
 
-<input id="email" placeholder="البريد الإلكتروني"
-class="w-full p-4 border rounded-xl mb-4">
+<h2>إنشاء حساب</h2>
 
-<input id="password" type="password"
-placeholder="كلمة المرور"
-class="w-full p-4 border rounded-xl mb-4">
+<input id="name" placeholder="الاسم">
 
-<button id="signupBtn"
-class="w-full bg-purple-600 text-white p-4 rounded-xl font-bold hover:bg-purple-700">
+<input id="email" placeholder="البريد الإلكتروني">
 
-إنشاء حساب
+<input id="password" type="password" placeholder="كلمة المرور">
 
-</button>
+<button id="signupBtn">إنشاء الحساب</button>
 
-<p class="text-center mt-5 text-gray-600">
+<p class="auth-link">
 
-لديك حساب؟
-<a href="login.html" class="text-blue-600 font-bold">تسجيل الدخول</a>
+لديك حساب ؟  
+<a href="login.html">تسجيل الدخول</a>
 
 </p>
 
 </div>
 
-<script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import { getAuth,createUserWithEmailAndPassword }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
-authDomain:"math-e62c9.firebaseapp.com",
-projectId:"math-e62c9",
-appId:"1:271507842148:web:2907aad4caf67afd08ab71"
-}
-
-const app=initializeApp(firebaseConfig)
-const auth=getAuth(app)
-
-document.getElementById("signupBtn").onclick=async()=>{
-
-let email=document.getElementById("email").value
-let password=document.getElementById("password").value
-
-try{
-
-await createUserWithEmailAndPassword(auth,email,password)
-
-window.location="dashboard.html"
-
-}catch(e){
-
-alert(e.message)
-
-}
-
-}
-
-</script>
+</section>
 
 </body>
 </html>
