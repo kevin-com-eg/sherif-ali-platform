@@ -3,70 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | رمضان كريم</title>
+    <title>MathPro | Dashboard 🌙</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; overflow-x: hidden; }
-        .ramadan-bg { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-        /* زينة رمضان */
-        .zena {
-            position: absolute; top: 0; left: 0; width: 100%; height: 80px;
-            background-image: url('https://www.transparentpng.com/download/ramadan/ramadan-hanging-decor-png-15.png');
-            background-repeat: repeat-x; background-size: contain; z-index: 50;
+        body { font-family: 'Tajawal', sans-serif; background-color: #0b0e14; color: white; overflow-x: hidden; }
+        
+        /* تأثير زينة رمضان في الخلفية */
+        .ramadan-header {
+            background: linear-gradient(to bottom, rgba(255, 165, 0, 0.1), transparent);
+            position: relative;
         }
-        .card-ramadan { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,215,0,0.3); }
-        .gold-text { color: #ffd700; }
-        .gold-btn { background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); color: #000; }
+        
+        /* حبال الزينة */
+        .zena-rope {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+            background: url('https://www.transparentpng.com/download/ramadan/ramadan-hanging-decor-png-15.png') repeat-x;
+            background-size: contain; opacity: 0.8; z-index: 10;
+        }
+
+        /* كروت الحصص فخمة */
+        .lesson-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .lesson-card:hover {
+            transform: translateY(-10px);
+            border-color: #f97316;
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
+        }
+
+        .gold-gradient {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* مشغل الموسيقى بشكل عصري */
+        .audio-player {
+            background: rgba(249, 115, 22, 0.1);
+            border: 1px solid #f97316;
+            border-radius: 50px;
+        }
     </style>
 </head>
-<body class="ramadan-bg text-white min-h-screen">
+<body>
 
-    <div class="zena"></div>
+    <div class="zena-rope"></div>
 
-    <nav class="p-6 flex justify-between items-center border-b border-gray-700 bg-black bg-opacity-30">
-        <div class="flex items-center gap-4">
-            <h1 class="text-3xl font-black gold-text tracking-tighter">MathPro</h1>
-            <span class="text-xs bg-red-600 px-2 py-1 rounded animate-pulse">مباشر الآن</span>
+    <nav class="flex justify-between items-center p-6 border-b border-gray-800 bg-black/50 sticky top-0 z-40">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center font-black text-white shadow-lg shadow-orange-500/50">M</div>
+            <h1 class="text-2xl font-black tracking-tighter gold-gradient">MathPro</h1>
         </div>
-        <div class="flex items-center gap-4">
-            <button onclick="toggleProfile()" class="hover:text-gold-text transition">تعديل الملف الشخصي</button>
-            <button onclick="logout()" class="bg-red-500 hover:bg-red-700 px-4 py-2 rounded-lg font-bold">تسجيل خروج</button>
+        
+        <div class="flex items-center gap-6">
+            <button onclick="openProfile()" class="text-sm font-bold text-gray-400 hover:text-orange-500 transition">تعديل الحساب</button>
+            <button onclick="logout()" class="bg-red-500/10 text-red-500 border border-red-500/20 px-4 py-2 rounded-xl font-bold hover:bg-red-500 hover:text-white transition">خروج</button>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-8">
-        <div class="text-center mb-12 mt-10">
-            <h2 class="text-4xl font-black mb-2">أهلاً بك يا بطل في MathPro 🌙</h2>
-            <p class="text-xl gold-text font-bold uppercase tracking-widest">رمضان في مصر حاجة تانية</p>
-        </div>
-
-        <div class="mb-10 flex justify-center">
-            <div class="card-ramadan p-4 rounded-2xl flex items-center gap-4">
-                <span class="text-sm">🎶 استمع للأجواء:</span>
-                <audio controls class="h-8">
-                    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-black mb-4 leading-tight">أهلاً بك يا بطل، <br> <span class="gold-gradient" id="userName">أستاذ شريف علي</span> 👋</h2>
+            <p class="text-gray-400 text-lg">رمضان في مصر حاجة تانية.. ومذاكرتك معانا كمان!</p>
+            
+            <div class="mt-8 flex justify-center">
+                <div class="audio-player px-6 py-2 flex items-center gap-4">
+                    <span class="text-xs font-bold text-orange-500">🎧 PLAYING: رمضان في مصر</span>
+                    <audio id="ramadanSong" loop>
+                        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
                     </audio>
+                    <button onclick="toggleMusic()" id="musicBtn" class="bg-orange-500 w-8 h-8 rounded-full flex items-center justify-center text-white">▶</button>
+                </div>
             </div>
         </div>
 
-        <div id="lessonsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <h3 class="text-xl font-bold mb-8 flex items-center gap-2">
+            <span class="w-2 h-8 bg-orange-500 rounded-full"></span>
+            الحصص المتاحة لك
+        </h3>
+
+        <div id="lessonsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             </div>
 
-        <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-[100] flex items-center justify-center p-4">
-            <div class="bg-gray-800 p-8 rounded-3xl w-full max-w-md border-2 border-gold-text">
-                <h3 class="text-2xl font-bold mb-6 gold-text">تعديل بياناتك</h3>
-                <input id="newName" type="text" placeholder="الاسم الجديد" class="w-full p-3 rounded-lg bg-gray-700 mb-4 border border-gray-600">
-                <button onclick="saveProfile()" class="gold-btn w-full py-3 rounded-xl font-black">حفظ التعديلات</button>
-                <button onclick="toggleProfile()" class="w-full mt-2 text-gray-400">إلغاء</button>
-            </div>
-        </div>
-
-        <footer class="mt-20 text-center pb-10">
-            <p class="text-3xl font-black gold-text">كل عام وأنتم بخير</p>
-            <p class="text-gray-500 mt-2">رمضان مبارك عليكم وعلى أسرتكم</p>
+        <footer class="mt-32 text-center border-t border-gray-800 pt-10">
+            <p class="text-3xl font-black gold-gradient mb-2">كل عام وأنتم بخير</p>
+            <p class="text-gray-500">منصة MathPro تتمنى لكم صوماً مقبولاً وإفطاراً شهياً</p>
         </footer>
     </main>
+
+    <div id="profileModal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 border border-orange-500/30 p-8 rounded-[2rem] w-full max-w-md shadow-2xl">
+            <h3 class="text-2xl font-black mb-6 gold-gradient">بيانات ملفك الشخصي</h3>
+            <div class="space-y-4">
+                <input id="editName" type="text" placeholder="الاسم بالكامل" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-2xl outline-none focus:border-orange-500 transition">
+                <button onclick="updateProfile()" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-orange-500/30">حفظ التعديلات</button>
+                <button onclick="closeProfile()" class="w-full text-gray-500 font-bold">إلغاء</button>
+            </div>
+        </div>
+    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -82,41 +121,56 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // تحميل الحصص
-    async function loadLessons() {
+    async function load() {
         const querySnapshot = await getDocs(collection(db, "lessons"));
-        const container = document.getElementById("lessonsGrid");
+        const grid = document.getElementById("lessonsGrid");
+        
         querySnapshot.forEach((doc) => {
-            const lesson = doc.data();
-            container.innerHTML += `
-                <div class="card-ramadan p-6 rounded-3xl hover:scale-105 transition-all">
-                    <h4 class="text-xl font-bold mb-4">${lesson.name}</h4>
-                    <a href="lesson.html?id=${doc.id}" class="gold-btn block text-center py-2 rounded-lg font-bold">ابدأ المذاكرة</a>
+            const data = doc.data();
+            grid.innerHTML += `
+                <div class="lesson-card p-8 rounded-[2rem] flex flex-col justify-between">
+                    <div>
+                        <div class="bg-orange-500/10 text-orange-500 text-[10px] font-black tracking-widest uppercase mb-4 w-fit px-3 py-1 rounded-full border border-orange-500/20">NEW LESSON</div>
+                        <h4 class="text-2xl font-black mb-2 text-white leading-tight">${data.name}</h4>
+                        <p class="text-gray-500 text-sm mb-8">شرح تفصيلي للمنهج مع حل الأسئلة</p>
+                    </div>
+                    <a href="lesson.html?id=${doc.id}" class="group bg-white text-black font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-orange-500 hover:text-white transition-all">
+                        ابدأ الآن
+                        <span class="group-hover:translate-x-[-5px] transition-transform">←</span>
+                    </a>
                 </div>
             `;
         });
     }
 
-    // وظائف الواجهة
-    window.toggleProfile = () => {
-        document.getElementById("profileModal").classList.toggle("hidden");
-    };
-
-    window.logout = () => {
-        if(confirm("هل تريد تسجيل الخروج؟")) {
-            window.location.href = "login.html"; // وجهه لصفحة اللوجن بتاعتك
+    // إدارة الموسيقى
+    window.toggleMusic = () => {
+        const song = document.getElementById('ramadanSong');
+        const btn = document.getElementById('musicBtn');
+        if (song.paused) {
+            song.play();
+            btn.innerText = '⏸';
+        } else {
+            song.pause();
+            btn.innerText = '▶';
         }
-    };
+    }
 
-    window.saveProfile = () => {
-        const name = document.getElementById("newName").value;
-        if(name) {
-            alert("تم تحديث اسمك بنجاح يا " + name);
-            toggleProfile();
+    // إدارة الملف الشخصي
+    window.openProfile = () => document.getElementById('profileModal').classList.remove('hidden');
+    window.closeProfile = () => document.getElementById('profileModal').classList.add('hidden');
+    window.updateProfile = () => {
+        const n = document.getElementById('editName').value;
+        if(n) {
+            document.getElementById('userName').innerText = n;
+            alert("أهلاً بك يا " + n);
+            closeProfile();
         }
-    };
+    }
+    
+    window.logout = () => { if(confirm("خارج يا بطل؟")) window.location.href = "login.html"; };
 
-    loadLessons();
+    load();
 </script>
 </body>
 </html>
