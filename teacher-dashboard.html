@@ -14,53 +14,47 @@
 
 <body class="bg-gray-100">
 
-
 <nav class="bg-orange-500 text-white p-4 text-xl font-bold">
-
 Teacher Dashboard
-
 </nav>
 
 
-
-<div class="max-w-5xl mx-auto p-6 space-y-6">
+<div class="max-w-4xl mx-auto p-6 space-y-6">
 
 
 <!-- LESSON INFO -->
 
 <div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">
-
-Lesson Info
-
-</h2>
-
 <input id="lessonName"
 placeholder="Lesson Name"
 class="w-full border p-3 rounded mb-3">
 
 <input id="lessonPrice"
-placeholder="Price"
+placeholder="Lesson Price"
 class="w-full border p-3 rounded">
 
 </div>
-
 
 
 <!-- VIDEO -->
 
 <div class="bg-white p-6 rounded-xl shadow">
 
-<h2 class="font-bold mb-3">
-
-YouTube URL
-
-</h2>
-
 <input id="videoUrl"
-class="w-full border p-3 rounded"
-placeholder="https://youtube.com/...">
+placeholder="YouTube URL"
+class="w-full border p-3 rounded">
+
+</div>
+
+
+<!-- PDF -->
+
+<div class="bg-white p-6 rounded-xl shadow">
+
+<input id="pdfLink"
+placeholder="PDF Link"
+class="w-full border p-3 rounded">
 
 </div>
 
@@ -89,22 +83,6 @@ Add Question
 
 
 
-<!-- PDF -->
-
-<div class="bg-white p-6 rounded-xl shadow">
-
-<h2 class="font-bold mb-3">
-
-Upload PDF
-
-</h2>
-
-<input type="file" id="pdfFile">
-
-</div>
-
-
-
 <button id="saveLesson"
 class="bg-orange-500 text-white px-6 py-3 rounded">
 
@@ -112,20 +90,17 @@ Save Lesson
 
 </button>
 
+
 </div>
 
 
 
 <script type="module">
 
-import { db, storage }
-from "./firebase.js";
+import { db } from "./firebase.js"
 
 import { collection, addDoc }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import { ref, uploadBytes, getDownloadURL }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
 
 
 
@@ -154,15 +129,15 @@ q.innerHTML = `
 
 <p class="font-bold mb-2">Question ${questionCount}</p>
 
-<input type="file" class="qImage mb-2">
+<input placeholder="Question Image URL" class="qImage border p-2 w-full mb-2">
 
-<input placeholder="A" class="a border p-2 w-full mb-1">
+<input placeholder="Answer A" class="a border p-2 w-full mb-1">
 
-<input placeholder="B" class="b border p-2 w-full mb-1">
+<input placeholder="Answer B" class="b border p-2 w-full mb-1">
 
-<input placeholder="C" class="c border p-2 w-full mb-1">
+<input placeholder="Answer C" class="c border p-2 w-full mb-1">
 
-<input placeholder="D" class="d border p-2 w-full mb-1">
+<input placeholder="Answer D" class="d border p-2 w-full mb-1">
 
 <input placeholder="Correct (A/B/C/D)" class="correct border p-2 w-full">
 
@@ -179,21 +154,7 @@ document.getElementById("saveLesson").onclick = async () => {
 const lessonName = document.getElementById("lessonName").value
 const lessonPrice = document.getElementById("lessonPrice").value
 const video = document.getElementById("videoUrl").value
-
-const pdfFile = document.getElementById("pdfFile").files[0]
-
-let pdfUrl = ""
-
-if(pdfFile){
-
-const pdfRef = ref(storage,"pdf/"+Date.now()+pdfFile.name)
-
-await uploadBytes(pdfRef,pdfFile)
-
-pdfUrl = await getDownloadURL(pdfRef)
-
-}
-
+const pdf = document.getElementById("pdfLink").value
 
 
 const questionsElements = document.querySelectorAll("#questions > div")
@@ -201,58 +162,32 @@ const questionsElements = document.querySelectorAll("#questions > div")
 let questions = []
 
 
-
-for(const q of questionsElements){
-
-const imgFile = q.querySelector(".qImage").files[0]
-
-let imgUrl = ""
-
-if(imgFile){
-
-const imgRef = ref(storage,"questions/"+Date.now()+imgFile.name)
-
-await uploadBytes(imgRef,imgFile)
-
-imgUrl = await getDownloadURL(imgRef)
-
-}
-
-
+questionsElements.forEach(q=>{
 
 questions.push({
 
-image: imgUrl,
+image:q.querySelector(".qImage").value,
 
-a: q.querySelector(".a").value,
+a:q.querySelector(".a").value,
+b:q.querySelector(".b").value,
+c:q.querySelector(".c").value,
+d:q.querySelector(".d").value,
 
-b: q.querySelector(".b").value,
-
-c: q.querySelector(".c").value,
-
-d: q.querySelector(".d").value,
-
-correct: q.querySelector(".correct").value
+correct:q.querySelector(".correct").value
 
 })
 
-}
-
+})
 
 
 await addDoc(collection(db,"lessons"),{
 
-name: lessonName,
-
-price: lessonPrice,
-
-video: video,
-
-pdf: pdfUrl,
-
-questions: questions,
-
-createdAt: Date.now()
+name:lessonName,
+price:lessonPrice,
+video:video,
+pdf:pdf,
+questions:questions,
+createdAt:Date.now()
 
 })
 
