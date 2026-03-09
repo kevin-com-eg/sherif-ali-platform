@@ -18,11 +18,13 @@
 <body class="bg-gray-100">
 
 
-<div class="max-w-5xl mx-auto p-6">
+<div class="max-w-4xl mx-auto p-6">
 
 
 <h1 class="text-2xl font-bold text-center mb-6">
+
 Lesson
+
 </h1>
 
 
@@ -30,15 +32,15 @@ Lesson
 
 <div class="flex gap-4 justify-center mb-6">
 
-<button onclick="showTab('quiz')" class="tabBtn bg-blue-500 text-white px-6 py-2 rounded">
+<button onclick="showTab('quiz')" class="bg-blue-500 text-white px-6 py-2 rounded">
 Quiz
 </button>
 
-<button onclick="showTab('video')" class="tabBtn bg-gray-200 px-6 py-2 rounded">
+<button onclick="showTab('video')" class="bg-gray-200 px-6 py-2 rounded">
 Video
 </button>
 
-<button onclick="showTab('pdf')" class="tabBtn bg-gray-200 px-6 py-2 rounded">
+<button onclick="showTab('pdf')" class="bg-gray-200 px-6 py-2 rounded">
 PDF
 </button>
 
@@ -46,36 +48,28 @@ PDF
 
 
 
-<!-- QUIZ TAB -->
+<!-- QUIZ -->
 
 <div id="quiz">
 
-<div class="bg-white p-6 rounded-xl shadow">
+<button id="startExam"
+class="bg-green-600 text-white px-6 py-3 rounded mb-6">
 
-<img src="question.png" class="mb-4 w-full">
+Enter Exam
 
-
-<label class="block mb-2">
-<input type="radio" name="q1" value="A"> A
-</label>
-
-<label class="block mb-2">
-<input type="radio" name="q1" value="B"> B
-</label>
-
-<label class="block mb-2">
-<input type="radio" name="q1" value="C"> C
-</label>
-
-<label class="block mb-2">
-<input type="radio" name="q1" value="D"> D
-</label>
+</button>
 
 
-<button id="finishBtn"
+<div id="examBox" class="hidden bg-white p-6 rounded shadow">
+
+<img id="questionImage" class="mb-4 w-full">
+
+<div id="answers"></div>
+
+<button id="nextBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
 
-Finish Exam
+Next Question
 
 </button>
 
@@ -85,31 +79,25 @@ Finish Exam
 
 
 
-<!-- VIDEO TAB -->
+<!-- VIDEO -->
 
 <div id="video" class="hidden">
-
-<div class="bg-white p-6 rounded-xl shadow">
 
 <div class="video-wrapper">
 
 <div id="player"
 data-plyr-provider="youtube"
-data-plyr-embed-id="dQw4w9WgXcQ"></div>
+data-plyr-embed-id="VIDEO_ID"></div>
 
 </div>
 
 </div>
 
-</div>
 
 
+<!-- PDF -->
 
-<!-- PDF TAB -->
-
-<div id="pdf" class="hidden">
-
-<div class="bg-white p-6 rounded-xl shadow text-center">
+<div id="pdf" class="hidden text-center">
 
 <a href="files/lesson.pdf"
 class="bg-blue-500 text-white px-6 py-3 rounded">
@@ -120,15 +108,9 @@ Download PDF
 
 </div>
 
-</div>
 
 
-
-<div id="result"
-class="text-center text-xl font-bold mt-6 hidden">
-
-</div>
-
+<div id="result" class="mt-6 text-center text-xl font-bold"></div>
 
 
 </div>
@@ -138,20 +120,45 @@ class="text-center text-xl font-bold mt-6 hidden">
 <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
 
-
 <script>
 
 
+let questions = [
+
+{
+image:"q1.png",
+a:"2",
+b:"4",
+c:"6",
+d:"8",
+correct:"b"
+},
+
+{
+image:"q2.png",
+a:"5",
+b:"7",
+c:"9",
+d:"10",
+correct:"c"
+}
+
+]
+
+
+let currentQuestion = 0
+let answers = []
 let finished = false
-let correctAnswer = "B"
 
 
 
 function showTab(tab){
 
 if(tab === "video" && !finished){
+
 alert("Finish quiz first")
 return
+
 }
 
 document.getElementById("quiz").classList.add("hidden")
@@ -164,42 +171,114 @@ document.getElementById(tab).classList.remove("hidden")
 
 
 
-document.getElementById("finishBtn").onclick = () => {
+document.getElementById("startExam").onclick = () => {
 
-if(!confirm("Are you sure you want to finish the exam?"))
+document.getElementById("examBox").classList.remove("hidden")
+
+loadQuestion()
+
+}
+
+
+
+function loadQuestion(){
+
+let q = questions[currentQuestion]
+
+document.getElementById("questionImage").src = q.image
+
+document.getElementById("answers").innerHTML = `
+
+<label><input type="radio" name="answer" value="a"> ${q.a}</label><br>
+
+<label><input type="radio" name="answer" value="b"> ${q.b}</label><br>
+
+<label><input type="radio" name="answer" value="c"> ${q.c}</label><br>
+
+<label><input type="radio" name="answer" value="d"> ${q.d}</label>
+
+`
+
+}
+
+
+
+document.getElementById("nextBtn").onclick = () => {
+
+let selected = document.querySelector("input[name='answer']:checked")
+
+if(!selected){
+
+alert("Choose answer")
 return
+
+}
+
+answers.push(selected.value)
+
+currentQuestion++
+
+if(currentQuestion < questions.length){
+
+loadQuestion()
+
+}else{
+
+finishExam()
+
+}
+
+}
+
+
+
+function finishExam(){
+
+if(!confirm("Are you sure to finish exam?")) return
+
+
+let score = 0
+let review = ""
+
+
+questions.forEach((q,i)=>{
+
+let user = answers[i]
+
+if(user === q.correct){
+
+score++
+
+review += `<p style="color:green">Question ${i+1}: Correct</p>`
+
+}else{
+
+review += `<p style="color:red">
+Question ${i+1}: Wrong (Correct: ${q.correct})
+</p>`
+
+}
+
+})
 
 
 finished = true
 
 
-const selected = document.querySelector("input[name='q1']:checked")
+localStorage.setItem("lesson_score",score)
 
 
-let score = 0
+document.getElementById("examBox").innerHTML = `
+
+<h2>Score ${score}/${questions.length}</h2>
+
+${review}
+
+`
 
 
-if(selected && selected.value === correctAnswer){
-
-score = 1
-
-selected.parentElement.style.color = "green"
-
-}else{
-
-if(selected) selected.parentElement.style.color = "red"
-
-document.querySelector(`input[value="${correctAnswer}"]`).parentElement.style.color="green"
-
-}
-
-
-document.querySelectorAll("input").forEach(i=>i.disabled=true)
-
-
-document.getElementById("result").classList.remove("hidden")
-
-document.getElementById("result").innerText = "Score: "+score+"/1"
+document.getElementById("result").innerText =
+"Score "+score+"/"+questions.length
 
 
 initPlayer()
@@ -231,6 +310,22 @@ modestbranding:1
 
 }
 
+
+
+/* load saved result */
+
+const saved = localStorage.getItem("lesson_score")
+
+if(saved){
+
+finished = true
+
+document.getElementById("result").innerText =
+"Your Score: "+saved+"/"+questions.length
+
+initPlayer()
+
+}
 
 
 </script>
