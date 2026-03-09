@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <title>Lesson Quiz</title>
 
@@ -15,16 +14,12 @@
 <div class="max-w-3xl mx-auto p-6">
 
 <h1 class="text-2xl font-bold text-center mb-6">
-
 Quiz
-
 </h1>
 
 <button id="startExam"
 class="bg-green-600 text-white px-6 py-3 rounded">
-
 Enter Exam
-
 </button>
 
 <div id="examBox"
@@ -37,9 +32,7 @@ class="w-full mb-4">
 
 <button id="nextBtn"
 class="bg-orange-500 text-white px-6 py-3 mt-4 rounded">
-
 Next Question
-
 </button>
 
 </div>
@@ -49,78 +42,122 @@ class="mt-6 text-xl font-bold"></div>
 
 </div>
 
-<script>
 
-let questions = [
+<script type="module">
 
-{
-image:"q1.png",
-a:"2",
-b:"4",
-c:"6",
-d:"8",
-correct:"b"
-},
+import { db, auth } from "./firebase.js"
 
-{
-image:"q2.png",
-a:"5",
-b:"7",
-c:"9",
-d:"10",
-correct:"c"
+import {
+doc,
+getDoc,
+collection,
+addDoc,
+query,
+where,
+getDocs
 }
 
-]
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+
+
+
+/* LESSON ID FROM URL */
+
+const lessonId =
+new URLSearchParams(location.search).get("id")
+
+
+
+/* LOAD LESSON FROM FIREBASE */
+
+const lessonRef = doc(db,"lessons",lessonId)
+
+const snap = await getDoc(lessonRef)
+
+const lesson = snap.data()
+
+let questions = lesson.questions
+
+
 
 let currentQuestion = 0
 let answers = []
 
-document.getElementById("startExam").onclick = () => {
 
-document.getElementById("examBox")
-.classList.remove("hidden")
+
+/* CHECK IF STUDENT DID EXAM BEFORE */
+
+const q = query(
+collection(db,"results"),
+where("student","==",auth.currentUser.email),
+where("lesson","==",lessonId)
+)
+
+const resultSnap = await getDocs(q)
+
+if(!resultSnap.empty){
+
+const data = resultSnap.docs[0].data()
+
+showResult(data)
+
+}
+
+
+
+/* START EXAM */
+
+startExam.onclick = () => {
+
+examBox.classList.remove("hidden")
 
 loadQuestion()
 
 }
 
+
+
+/* LOAD QUESTION */
+
 function loadQuestion(){
 
 let q = questions[currentQuestion]
 
-document.getElementById("questionImage").src = q.image
+questionImage.src = q.image
 
-document.getElementById("answers").innerHTML = `
+answers.innerHTML = `
 
-<label class="block mb-2">
+<label>
 <input type="radio" name="answer" value="a"> ${q.a}
-</label>
+</label><br>
 
-<label class="block mb-2">
+<label>
 <input type="radio" name="answer" value="b"> ${q.b}
-</label>
+</label><br>
 
-<label class="block mb-2">
+<label>
 <input type="radio" name="answer" value="c"> ${q.c}
-</label>
+</label><br>
 
-<label class="block mb-2">
+<label>
 <input type="radio" name="answer" value="d"> ${q.d}
 </label>
 
 `
 
-if(currentQuestion === questions.length - 1){
+if(currentQuestion === questions.length-1){
 
-document.getElementById("nextBtn").innerText =
-"Finish Exam"
-
-}
+nextBtn.innerText = "Finish Exam"
 
 }
 
-document.getElementById("nextBtn").onclick = () => {
+}
+
+
+
+/* NEXT QUESTION */
+
+nextBtn.onclick = () => {
 
 let selected =
 document.querySelector("input[name='answer']:checked")
@@ -128,7 +165,6 @@ document.querySelector("input[name='answer']:checked")
 if(!selected){
 
 alert("Choose answer")
-
 return
 
 }
@@ -142,7 +178,6 @@ if(currentQuestion < questions.length){
 loadQuestion()
 
 }
-
 else{
 
 finishExam()
@@ -151,9 +186,13 @@ finishExam()
 
 }
 
-function finishExam(){
 
-if(!confirm("Are you sure to finish exam?"))
+
+/* FINISH EXAM */
+
+async function finishExam(){
+
+if(!confirm("Finish exam?"))
 return
 
 let score = 0
@@ -167,30 +206,51 @@ if(user === q.correct){
 
 score++
 
-review +=
-`<p style="color:green">
+review += `<p style="color:green">
 Question ${i+1}: Correct
 </p>`
 
 }
-
 else{
 
-review +=
-`<p style="color:red">
+review += `<p style="color:red">
 Question ${i+1}: Wrong
-Correct answer: ${q.correct}
+Correct: ${q.correct}
 </p>`
 
 }
 
 })
 
-document.getElementById("examBox").innerHTML =
 
+await addDoc(collection(db,"results"),{
+
+student: auth.currentUser.email,
+
+lesson: lessonId,
+
+score: score,
+
+answers: answers,
+
+date: Date.now()
+
+})
+
+
+examBox.innerHTML =
 `<h2>Score ${score}/${questions.length}</h2>${review}`
 
-localStorage.setItem("lessonScore",score)
+}
+
+
+
+/* SHOW RESULT IF DONE BEFORE */
+
+function showResult(data){
+
+examBox.innerHTML =
+`<h2>Your Score ${data.score}</h2>`
 
 }
 
