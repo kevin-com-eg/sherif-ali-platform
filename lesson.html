@@ -4,38 +4,182 @@
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>مشاهدة الحصة</title>
+<title>MathPro | Lesson</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+font-family:'Tajawal',sans-serif;
+}
+</style>
+
 </head>
 
-<body class="bg-gray-900 text-white">
+
+<body class="bg-gray-100 dark:bg-gray-900">
 
 
-<div class="max-w-4xl mx-auto p-6">
+<!-- NAVBAR -->
+
+<nav class="bg-orange-500 text-white p-4 flex justify-between">
+
+<h1 class="font-bold text-xl">MathPro</h1>
+
+<span>المدرس: MR Sherif Ali</span>
+
+</nav>
 
 
-<h1 class="text-3xl font-bold mb-6">
+
+<div class="max-w-4xl mx-auto p-6 space-y-8">
+
+
+<!-- EXAM -->
+
+<div id="examBox" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+
+<h2 class="text-xl font-bold mb-4">
+
+اختبار الحصة
+
+</h2>
+
+<p class="mb-4">
+
+ما ناتج 5 × 2 ؟
+
+</p>
+
+<div class="space-y-3">
+
+<button class="answer w-full border p-3 rounded-lg">
+
+A) 8
+
+</button>
+
+<button class="answer w-full border p-3 rounded-lg">
+
+B) 10
+
+</button>
+
+<button class="answer w-full border p-3 rounded-lg">
+
+C) 12
+
+</button>
+
+<button class="answer w-full border p-3 rounded-lg">
+
+D) 6
+
+</button>
+
+</div>
+
+<p id="result" class="mt-4 font-bold text-lg"></p>
+
+</div>
+
+
+
+<!-- VIDEO -->
+
+<div id="videoBox"
+class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hidden">
+
+<h2 class="text-xl font-bold mb-4">
 
 فيديو الحصة
 
-</h1>
-
+</h2>
 
 <iframe
 
-class="w-full h-[500px] rounded-xl"
+class="w-full h-[420px] rounded-xl"
 
-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+src="https://www.youtube.com/embed/VIDEOID?modestbranding=1&rel=0"
 
 allowfullscreen>
 
 </iframe>
 
+</div>
+
+
+
+<!-- PDF -->
+
+<div id="pdfBox"
+class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hidden">
+
+<h2 class="text-xl font-bold mb-4">
+
+ملف الشرح PDF
+
+</h2>
+
+<a href="files/lesson1.pdf"
+
+class="bg-orange-500 text-white px-6 py-3 rounded-lg">
+
+تحميل الملف
+
+</a>
 
 </div>
+
+
+</div>
+
+
+
+<script>
+
+const answers=document.querySelectorAll(".answer")
+
+const videoBox=document.getElementById("videoBox")
+
+const pdfBox=document.getElementById("pdfBox")
+
+const result=document.getElementById("result")
+
+answers.forEach(btn=>{
+
+btn.onclick=()=>{
+
+if(btn.innerText.includes("B")){
+
+result.innerText="إجابة صحيحة ✅"
+
+result.style.color="green"
+
+videoBox.classList.remove("hidden")
+
+pdfBox.classList.remove("hidden")
+
+}
+
+else{
+
+result.innerText="إجابة خاطئة ❌ حاول مرة أخرى"
+
+result.style.color="red"
+
+}
+
+}
+
+})
+
+</script>
+
 
 </body>
 </html>
