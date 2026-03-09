@@ -13,14 +13,18 @@ color:white;
 
 direction:rtl;
 
+min-height:100vh;
+
 }
 
-/* navbar */
+/* NAVBAR */
 
 header{
 
 display:flex;
+
 justify-content:space-between;
+
 align-items:center;
 
 padding:20px 60px;
@@ -34,7 +38,10 @@ border-bottom:1px solid rgba(255,255,255,0.08);
 .logo{
 
 font-size:22px;
+
 font-weight:bold;
+
+color:#facc15;
 
 }
 
@@ -56,17 +63,19 @@ nav a:hover{
 
 color:#facc15;
 
+opacity:1;
+
 }
 
-/* hero */
+/* HERO */
 
 .hero{
 
 display:flex;
 
-justify-content:space-between;
-
 align-items:center;
+
+justify-content:space-between;
 
 padding:100px 80px;
 
@@ -76,15 +85,17 @@ padding:100px 80px;
 
 font-size:70px;
 
+margin-bottom:10px;
+
 }
 
 .hero-text h2{
 
 color:#facc15;
 
-margin:10px 0;
-
 letter-spacing:3px;
+
+margin-bottom:15px;
 
 }
 
@@ -92,9 +103,11 @@ letter-spacing:3px;
 
 opacity:0.8;
 
-margin-top:10px;
+font-size:18px;
 
 }
+
+/* BUTTON */
 
 .btn{
 
@@ -110,11 +123,21 @@ padding:14px 30px;
 
 border-radius:10px;
 
-text-decoration:none;
-
 font-weight:bold;
 
+text-decoration:none;
+
+transition:0.2s;
+
 }
+
+.btn:hover{
+
+transform:translateY(-3px);
+
+}
+
+/* HERO IMAGE */
 
 .hero-image img{
 
@@ -124,7 +147,7 @@ border-radius:20px;
 
 }
 
-/* features */
+/* FEATURES */
 
 .features{
 
@@ -152,7 +175,7 @@ border:1px solid rgba(255,255,255,0.08);
 
 }
 
-/* courses */
+/* COURSES */
 
 .courses{
 
@@ -204,7 +227,113 @@ transform:translateY(-6px);
 
 }
 
-/* footer */
+/* AUTH PAGES */
+
+.auth-section{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+height:80vh;
+
+}
+
+.auth-box{
+
+background:#1e293b;
+
+padding:40px;
+
+border-radius:16px;
+
+width:350px;
+
+border:1px solid rgba(255,255,255,0.08);
+
+text-align:center;
+
+}
+
+.auth-box h2{
+
+margin-bottom:20px;
+
+}
+
+.auth-box input{
+
+width:100%;
+
+padding:12px;
+
+margin-bottom:15px;
+
+border-radius:8px;
+
+border:none;
+
+background:#020617;
+
+color:white;
+
+}
+
+.auth-box input::placeholder{
+
+color:#94a3b8;
+
+}
+
+.auth-box button{
+
+width:100%;
+
+padding:12px;
+
+background:#facc15;
+
+color:#020617;
+
+border:none;
+
+border-radius:8px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+.auth-box button:hover{
+
+opacity:0.9;
+
+}
+
+/* AUTH LINK */
+
+.auth-link{
+
+margin-top:15px;
+
+font-size:14px;
+
+}
+
+.auth-link a{
+
+color:#facc15;
+
+text-decoration:none;
+
+}
+
+/* FOOTER */
 
 footer{
 
@@ -245,5 +374,27 @@ text-align:center;
 opacity:0.6;
 
 font-size:14px;
+
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.hero{
+
+flex-direction:column;
+
+text-align:center;
+
+}
+
+.hero-image img{
+
+margin-top:40px;
+
+width:320px;
+
+}
 
 }
