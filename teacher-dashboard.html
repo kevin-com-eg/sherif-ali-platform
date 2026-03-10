@@ -76,10 +76,18 @@
                 <div class="w-2 h-8 bg-[#10b981] rounded-full"></div> بيانات الحصة الأساسية ➕
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-600 mb-2">اسم الحصة / الدرس</label>
                     <input id="lessonName" placeholder="مثال: الباب الأول - الدرس الثاني" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl outline-none focus:border-[#10b981]">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-2">المرحلة الدراسية</label>
+                    <select id="lessonGrade" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl outline-none focus:border-[#10b981]">
+                        <option value="1">أولى ثانوي</option>
+                        <option value="2">تانية ثانوي</option>
+                        <option value="3">تالتة ثانوي</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-slate-600 mb-2">سعر الحصة (بالجنيه)</label>
@@ -130,13 +138,7 @@
     import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
-        authDomain: "math-e62c9.firebaseapp.com",
-        projectId: "math-e62c9",
-        appId: "1:271507842148:web:2907aad4caf67afd08ab71"
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain: "math-e62c9.firebaseapp.com", projectId: "math-e62c9", appId: "1:271507842148:web:2907aad4caf67afd08ab71" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -146,9 +148,7 @@
         if (user && user.email === MASTER_EMAIL) {
             document.getElementById("secureLayer").classList.add("hidden");
             loadResults(); 
-        } else {
-            window.location.href = "index.html";
-        }
+        } else { window.location.href = "index.html"; }
     });
 
     document.getElementById('sendNotifBtn').onclick = async () => {
@@ -156,117 +156,62 @@
         const btn = document.getElementById('sendNotifBtn');
         if(!msg) return alert("اكتب رسالة التنبيه أولاً!");
         btn.innerText = "جاري الإرسال..."; btn.disabled = true;
-        try {
-            await addDoc(collection(db, "announcements"), { message: msg, createdAt: new Date(), active: true });
-            alert("تم إرسال التنبيه بنجاح! سيظهر لجميع الطلاب فوراً.");
-            document.getElementById('notifMessage').value = "";
-        } catch(e) { alert("خطأ في الإرسال"); }
+        try { await addDoc(collection(db, "announcements"), { message: msg, createdAt: new Date(), active: true }); alert("تم إرسال التنبيه بنجاح!"); document.getElementById('notifMessage').value = ""; } catch(e) { alert("خطأ"); }
         btn.innerText = "إرسال لجميع الطلاب فوراً 🚀"; btn.disabled = false;
     };
 
-    // 🔥 دالة سحب الدرجات مطورة بالاسم والبحث 🔥
     async function loadResults() {
         const resultsTable = document.getElementById("resultsTable");
         try {
-            // 1. جلب أسماء الطلاب من الداتا بيز
             const usersSnap = await getDocs(collection(db, "users"));
             let usersMap = {};
-            usersSnap.forEach(doc => {
-                const data = doc.data();
-                if(data.email) usersMap[data.email] = data.name;
-            });
+            usersSnap.forEach(doc => { const data = doc.data(); if(data.email) usersMap[data.email] = data.name; });
 
-            // 2. جلب النتائج
             let querySnapshot;
-            try {
-                // لو عامل Index هيجيبها مترتبة بالتاريخ
-                const q = query(collection(db, "results"), orderBy("date", "desc"));
-                querySnapshot = await getDocs(q);
-            } catch(e) {
-                // لو مفيش Index هيجيبها عادي ونرتبها إحنا
-                querySnapshot = await getDocs(collection(db, "results"));
-            }
+            try { querySnapshot = await getDocs(query(collection(db, "results"), orderBy("date", "desc"))); } 
+            catch(e) { querySnapshot = await getDocs(collection(db, "results")); }
 
             let resultsArray = [];
             querySnapshot.forEach(doc => resultsArray.push(doc.data()));
-            
-            // ترتيب من الأحدث للأقدم
-            resultsArray.sort((a,b) => {
-                const dateA = a.date ? a.date.seconds : 0;
-                const dateB = b.date ? b.date.seconds : 0;
-                return dateB - dateA;
-            });
+            resultsArray.sort((a,b) => { const dateA = a.date ? a.date.seconds : 0; const dateB = b.date ? b.date.seconds : 0; return dateB - dateA; });
 
             resultsTable.innerHTML = "";
-            if (resultsArray.length === 0) { 
-                resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-500 font-bold">لا توجد نتائج مسجلة حتى الآن.</td></tr>`; 
-                return; 
-            }
+            if (resultsArray.length === 0) { resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-500 font-bold">لا توجد نتائج مسجلة حتى الآن.</td></tr>`; return; }
 
             resultsArray.forEach((res) => {
                 const studentName = usersMap[res.email] || "طالب غير مسجل بالاسم";
                 const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' };
                 const examDate = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG', dateOptions) : "غير محدد";
-                
                 const tr = document.createElement("tr");
                 tr.className = "border-b border-slate-100 hover:bg-slate-50 transition student-row";
                 tr.innerHTML = `
                     <td class="p-4 font-bold text-slate-800">${studentName}</td>
                     <td class="p-4 text-slate-500 font-mono text-sm">${res.email || "-"}</td>
                     <td class="p-4 font-black text-[#10b981]">${res.lesson || "-"}</td>
-                    <td class="p-4">
-                        <span class="bg-[#10b981]/10 text-[#10b981] px-4 py-1.5 rounded-full font-black border border-[#10b981]/20 shadow-sm">
-                            ${res.score} / ${res.total}
-                        </span>
-                    </td>
-                    <td class="p-4 text-xs text-slate-400 font-bold" dir="ltr">${examDate}</td>
-                `;
+                    <td class="p-4"><span class="bg-[#10b981]/10 text-[#10b981] px-4 py-1.5 rounded-full font-black border border-[#10b981]/20 shadow-sm">${res.score} / ${res.total}</span></td>
+                    <td class="p-4 text-xs text-slate-400 font-bold" dir="ltr">${examDate}</td>`;
                 resultsTable.appendChild(tr);
             });
-        } catch (e) {
-            console.error(e);
-            resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>`;
-        }
+        } catch (e) { resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>`; }
     }
 
-    // دالة البحث في الجدول
     window.searchTable = () => {
         const input = document.getElementById("searchInput").value.toLowerCase();
-        const rows = document.querySelectorAll(".student-row");
-        
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            if (text.includes(input)) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
+        document.querySelectorAll(".student-row").forEach(row => { row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none"; });
     }
 
     document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
-        const qHtml = `<div class="question-block bg-white p-6 rounded-3xl border-2 border-emerald-100 mb-4">
-            <p class="font-black mb-4 text-[#10b981] underline">سؤال رقم ${qCount}</p>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <input class="q-image p-3 border rounded-xl" placeholder="رابط صورة السؤال">
-                <select class="q-correct p-3 border rounded-xl font-bold"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select>
-            </div>
-            <div class="grid grid-cols-4 gap-2">
-                <input class="q-a p-2 border rounded-lg text-xs" placeholder="خيار A">
-                <input class="q-b p-2 border rounded-lg text-xs" placeholder="خيار B">
-                <input class="q-c p-2 border rounded-lg text-xs" placeholder="خيار C">
-                <input class="q-d p-2 border rounded-lg text-xs" placeholder="خيار D">
-            </div>
-        </div>`;
+        const qHtml = `<div class="question-block bg-white p-6 rounded-3xl border-2 border-emerald-100 mb-4"><p class="font-black mb-4 text-[#10b981] underline">سؤال رقم ${qCount}</p><div class="grid grid-cols-2 gap-4 mb-4"><input class="q-image p-3 border rounded-xl" placeholder="رابط صورة السؤال"><select class="q-correct p-3 border rounded-xl font-bold"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select></div><div class="grid grid-cols-4 gap-2"><input class="q-a p-2 border rounded-lg text-xs" placeholder="خيار A"><input class="q-b p-2 border rounded-lg text-xs" placeholder="خيار B"><input class="q-c p-2 border rounded-lg text-xs" placeholder="خيار C"><input class="q-d p-2 border rounded-lg text-xs" placeholder="خيار D"></div></div>`;
         document.getElementById("questionsContainer").insertAdjacentHTML('beforeend', qHtml);
     };
 
     document.getElementById("saveBtn").onclick = async () => {
         const name = document.getElementById("lessonName").value;
-        const video = document.getElementById("videoUrl").value;
+        const grade = document.getElementById("lessonGrade").value; // 🔥 السنة
         const price = document.getElementById("lessonPrice").value;
         const image = document.getElementById("lessonImage").value;
+        const video = document.getElementById("videoUrl").value;
         
         if (!name || !video) return alert("ادخل اسم الحصة ورابط الفيديو!");
         
@@ -279,15 +224,7 @@
         btn.innerText = "جاري النشر..."; btn.disabled = true;
 
         try {
-            await addDoc(collection(db, "lessons"), { 
-                name: name, 
-                video: video, 
-                pdf: document.getElementById("attachmentUrl").value, 
-                price: price, 
-                image: image, 
-                questions: questionsData, 
-                createdAt: new Date() 
-            });
+            await addDoc(collection(db, "lessons"), { name, grade, video, pdf: document.getElementById("attachmentUrl").value, price, image, questions: questionsData, createdAt: new Date() });
             alert("تم نشر الحصة بنجاح! ✅"); location.reload();
         } catch (e) { alert("خطأ في الحفظ"); btn.innerText = "نشر الحصة الآن 🚀"; btn.disabled = false; }
     };
