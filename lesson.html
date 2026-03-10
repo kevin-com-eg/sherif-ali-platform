@@ -23,17 +23,17 @@
         .watermark-container {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; /* عشان الطالب يقدر يدوس على الفيديو عادي */
-            z-index: 40; /* تظهر فوق الفيديو */
+            pointer-events: none; 
+            z-index: 40; 
             overflow: hidden;
         }
         .watermark-text {
             position: absolute;
             font-size: 28px;
             font-weight: 900;
-            color: rgba(255, 255, 255, 0.25); /* شفافة */
+            color: rgba(255, 255, 255, 0.25); 
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-            animation: moveWatermark 25s linear infinite alternate; /* بتتحرك ببطء */
+            animation: moveWatermark 25s linear infinite alternate; 
         }
         @keyframes moveWatermark {
             0% { top: 10%; left: 10%; }
@@ -80,6 +80,7 @@
                     <p class="text-gray-400 mb-8">لن يفتح فيديو الشرح والملزمة إلا بعد إنهاء هذا الامتحان</p>
                     <button id="startBtn" class="bg-emerald-600 px-16 py-5 rounded-2xl text-2xl font-black hover:scale-105 transition">ابدأ الآن 🚀</button>
                 </div>
+
                 <div id="quizApp" class="hidden">
                     <div id="qDisplay" class="glass p-10 rounded-[3rem] q-card min-h-[400px]"></div>
                     <div class="flex justify-between items-center mt-8">
@@ -89,6 +90,7 @@
                         <button id="finishBtn" class="hidden bg-blue-600 px-10 py-4 rounded-2xl font-black hover:bg-blue-700 transition">إنهاء وتصحيح 🔓</button>
                     </div>
                 </div>
+
                 <div id="reviewArea" class="hidden space-y-8 mt-10">
                     <div id="scoreBanner" class="glass p-10 rounded-[3rem] text-center border-2 border-emerald-500"></div>
                     <div id="reviewList" class="space-y-6"></div>
@@ -123,7 +125,7 @@
 
         let questions = [], curIdx = 0, userAns = {}, lessonData = null, timeLeft = 40 * 60;
         let plyrPlayer, examTimerInterval;
-        let myStudentId = "000000"; // 🔥 متغير الـ ID الجديد
+        let myStudentId = "000000"; 
 
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
@@ -137,11 +139,13 @@
                 const lessonId = new URLSearchParams(window.location.search).get('id');
                 if(!lessonId) return;
 
-                // 🔥 جلب رقم الطالب من الداتا بيز للعلامة المائية
-                const userSnap = await getDoc(doc(db, "users", user.uid));
-                if(userSnap.exists()){
-                    myStudentId = userSnap.data().studentId || user.uid.substring(0, 6).toUpperCase(); 
-                }
+                // جلب رقم الطالب للعلامة المائية
+                try {
+                    const userSnap = await getDoc(doc(db, "users", user.uid));
+                    if(userSnap.exists()){
+                        myStudentId = userSnap.data().studentId || user.uid.substring(0, 6).toUpperCase(); 
+                    }
+                } catch(e) {}
 
                 const saved = localStorage.getItem(`access_${user.uid}_${lessonId}`);
                 
@@ -149,26 +153,57 @@
                     const q = query(collection(db, "codes"), where("usedBy", "==", user.email));
                     const codesSnap = await getDocs(q);
                     let hasAccess = false; let validExpiry = null; const now = new Date().getTime();
-                    codesSnap.forEach((docSnap) => { const data = docSnap.data(); if (data.lessonId === lessonId && data.expiryAt > now) { hasAccess = true; validExpiry = data.expiryAt; } });
-                    if (hasAccess) { initLesson(); startAccessTimer(validExpiry); } else if (saved && new Date().getTime() < JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); } else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
-                } catch(error) { if (saved && new Date().getTime() < JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); } else { document.getElementById('codeLockScreen').classList.remove('hidden'); } }
+                    
+                    codesSnap.forEach((docSnap) => { 
+                        const data = docSnap.data(); 
+                        if (data.lessonId === lessonId && data.expiryAt > now) { 
+                            hasAccess = true; validExpiry = data.expiryAt; 
+                        } 
+                    });
+
+                    if (hasAccess) { 
+                        initLesson(); 
+                        startAccessTimer(validExpiry); 
+                    } else if (saved && new Date().getTime() < JSON.parse(saved).expiry) { 
+                        initLesson(); 
+                        startAccessTimer(JSON.parse(saved).expiry); 
+                    } else { 
+                        document.getElementById('codeLockScreen').classList.remove('hidden'); 
+                    }
+                } catch(error) { 
+                    if (saved && new Date().getTime() < JSON.parse(saved).expiry) { 
+                        initLesson(); startAccessTimer(JSON.parse(saved).expiry); 
+                    } else { 
+                        document.getElementById('codeLockScreen').classList.remove('hidden'); 
+                    } 
+                }
             } else { window.location.href = "index.html"; }
         });
 
-        // ... [دوال startAccessTimer و verifyBtn كما هي بدون تغيير لتوفير المساحة] ...
         function startAccessTimer(expiryTime) {
             document.getElementById('accessTimerBox').classList.remove('hidden');
             const interval = setInterval(() => {
                 const now = new Date().getTime(); const distance = expiryTime - now;
-                if (distance <= 0) { clearInterval(interval); alert("انتهت صلاحية هذه الحصة."); localStorage.removeItem(`access_${auth.currentUser.uid}_${new URLSearchParams(window.location.search).get('id')}`); location.reload(); return; }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24)); const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                if (distance <= 0) { 
+                    clearInterval(interval); 
+                    alert("انتهت صلاحية هذه الحصة."); 
+                    localStorage.removeItem(`access_${auth.currentUser.uid}_${new URLSearchParams(window.location.search).get('id')}`); 
+                    location.reload(); 
+                    return; 
+                }
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24)); 
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); 
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); 
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 document.getElementById('accessCountdown').innerText = `${days}يوم ${hours}س ${minutes}د ${seconds}ث`;
             }, 1000);
         }
 
         document.getElementById('verifyBtn').onclick = async () => {
-            const code = document.getElementById('accessCodeInput').value.trim(); const lessonId = new URLSearchParams(window.location.search).get('id');
+            const code = document.getElementById('accessCodeInput').value.trim(); 
+            const lessonId = new URLSearchParams(window.location.search).get('id');
             if(!code) return alert("من فضلك أدخل الكود");
+            
             try {
                 const snap = await getDoc(doc(db, "codes", code));
                 if (snap.exists()) {
@@ -176,10 +211,15 @@
                     if (!data.used) {
                         const expiry = now + (7 * 24 * 60 * 60 * 1000); 
                         await updateDoc(doc(db, "codes", code), { used: true, usedBy: auth.currentUser.email, lessonId: lessonId, expiryAt: expiry });
-                        localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ expiry })); location.reload();
+                        localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ expiry })); 
+                        location.reload();
                     } 
-                    else if (data.usedBy === auth.currentUser.email && data.lessonId === lessonId && data.expiryAt > now) { localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ expiry: data.expiryAt })); location.reload(); }
-                    else if (data.expiryAt && data.expiryAt <= now) { alert("عذراً، هذا الكود انتهت صلاحيته!"); } else { alert("هذا الكود مستخدم مسبقاً لحساب آخر أو لحصة أخرى!"); }
+                    else if (data.usedBy === auth.currentUser.email && data.lessonId === lessonId && data.expiryAt > now) { 
+                        localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ expiry: data.expiryAt })); 
+                        location.reload(); 
+                    }
+                    else if (data.expiryAt && data.expiryAt <= now) { alert("عذراً، هذا الكود انتهت صلاحيته!"); } 
+                    else { alert("هذا الكود مستخدم مسبقاً لحساب آخر أو لحصة أخرى!"); }
                 } else { alert("الكود غير صحيح!"); }
             } catch (error) { console.error("خطأ: ", error); }
         };
@@ -198,20 +238,86 @@
                     const querySnapshot = await getDocs(q);
 
                     if (!querySnapshot.empty) {
-                        const examData = querySnapshot.docs[0].data(); userAns = examData.userAns || {}; const score = examData.score; generateReviewList(); 
-                        const msg = `<h2 class="text-4xl font-black mb-2 text-emerald-500">لقد حصلت مسبقاً على: ${score} من ${questions.length} ✅</h2><p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>`; unlockLessonFeatures(msg);
+                        const examData = querySnapshot.docs[0].data(); 
+                        userAns = examData.userAns || {}; 
+                        const score = examData.score; 
+                        generateReviewList(); 
+                        const msg = `<h2 class="text-4xl font-black mb-2 text-emerald-500">لقد حصلت مسبقاً على: ${score} من ${questions.length} ✅</h2><p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>`; 
+                        unlockLessonFeatures(msg);
                     } else {
                         const savedExamData = localStorage.getItem(`exam_data_${auth.currentUser.uid}_${id}`);
                         if(savedExamData) {
-                            const parsedData = JSON.parse(savedExamData); userAns = parsedData.userAns; generateReviewList();
-                            const msg = `<h2 class="text-4xl font-black mb-2 text-emerald-500">لقد حصلت مسبقاً على: ${parsedData.score} من ${questions.length} ✅</h2><p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>`; unlockLessonFeatures(msg);
+                            const parsedData = JSON.parse(savedExamData); 
+                            userAns = parsedData.userAns; 
+                            generateReviewList();
+                            const msg = `<h2 class="text-4xl font-black mb-2 text-emerald-500">لقد حصلت مسبقاً على: ${parsedData.score} من ${questions.length} ✅</h2><p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>`; 
+                            unlockLessonFeatures(msg);
                         }
                     }
                 } catch (error) { console.log("خطأ", error); }
             }
         }
 
-        function generateReviewList() { /* الكود الخاص بك هنا للأسئلة بدون تعديل */ }
+        // كود تشغيل الامتحان وعرض الأسئلة كامل
+        document.getElementById('startBtn').onclick = () => {
+            if(questions.length === 0) return alert("لا يوجد أسئلة في هذا الامتحان بعد.");
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizApp').classList.remove('hidden');
+            document.getElementById('timerBox').classList.remove('hidden');
+            renderQ();
+            startTimer();
+        };
+
+        function renderQ() {
+            const q = questions[curIdx];
+            document.getElementById('qDisplay').innerHTML = `
+                <p class="text-emerald-500 font-black mb-4 underline">السؤال ${curIdx + 1}</p>
+                ${q.image ? `<div class="mb-6 rounded-2xl overflow-hidden border border-gray-700 shadow-lg"><img src="${q.image}" class="w-full object-contain max-h-80 mx-auto"></div>` : ''}
+                <h3 class="text-2xl font-bold mb-8">${q.text || 'اختر الإجابة الصحيحة من الخيارات التالية:'}</h3>
+                <div class="grid gap-4">
+                    ${['a','b','c','d'].map(opt => `
+                        <label class="p-6 bg-gray-800 border border-gray-700 rounded-2xl flex items-center gap-4 cursor-pointer transition-all hover:bg-gray-700 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-900/20">
+                            <input type="radio" name="math" value="${opt}" ${userAns[curIdx] === opt ? 'checked' : ''} class="w-6 h-6 accent-emerald-500">
+                            <span class="text-xl font-bold">${q[opt]}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('qCount').innerText = `${curIdx + 1} / ${questions.length}`;
+            document.getElementById('prevBtn').classList.toggle('hidden', curIdx === 0);
+            document.getElementById('nextBtn').classList.toggle('hidden', curIdx === questions.length - 1);
+            document.getElementById('finishBtn').classList.toggle('hidden', curIdx !== questions.length - 1);
+        }
+
+        document.getElementById('nextBtn').onclick = () => { saveAns(); curIdx++; renderQ(); };
+        document.getElementById('prevBtn').onclick = () => { saveAns(); curIdx--; renderQ(); };
+        
+        function saveAns() { 
+            const sel = document.querySelector('input[name="math"]:checked'); 
+            if(sel) userAns[curIdx] = sel.value; 
+        }
+
+        function generateReviewList() {
+            const reviewList = document.getElementById('reviewList');
+            reviewList.innerHTML = '';
+
+            questions.forEach((q, i) => {
+                const isCorrect = userAns[i] === q.correct;
+                reviewList.innerHTML += `
+                    <div class="glass p-8 rounded-[2rem] border-2 ${isCorrect ? 'border-emerald-500/50' : 'border-red-500/50'}">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-black text-emerald-500 italic underline">السؤال ${i+1}</span>
+                            <span class="px-4 py-1 rounded-full text-sm font-bold text-white ${isCorrect ? 'bg-emerald-600' : 'bg-red-600'}">${isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة'}</span>
+                        </div>
+                        ${q.image ? `<img src="${q.image}" class="max-h-48 mb-4 rounded-xl mx-auto">` : ''}
+                        <h3 class="text-xl font-bold mb-4">${q.text || 'اختر الإجابة الصحيحة:'}</h3>
+                        <p class="text-lg text-gray-400 mb-2">إجابتك كانت: <span class="font-bold text-white">${q[userAns[i]] || 'لم تجب'}</span></p>
+                        ${!isCorrect ? `<p class="text-lg font-bold text-emerald-400">الإجابة الصحيحة: ${q[q.correct]}</p>` : ''}
+                    </div>
+                `;
+            });
+        }
 
         function unlockLessonFeatures(scoreMessage = null) {
             document.getElementById('startScreen').classList.add('hidden');
@@ -219,6 +325,7 @@
             document.getElementById('timerBox').classList.add('hidden');
             document.getElementById('reviewArea').classList.remove('hidden');
             if (scoreMessage) { document.getElementById('scoreBanner').innerHTML = scoreMessage; }
+            
             document.getElementById('btn-video-tab').classList.add('unlocked');
             document.getElementById('btn-pdf-tab').classList.add('unlocked');
             
@@ -227,7 +334,6 @@
                 const getYouTubeId = (url) => { const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/; const match = url.match(regExp); return (match && match[2].length === 11) ? match[2] : null; };
                 const vId = getYouTubeId(lessonData.video);
 
-                // 🔥 حقن العلامة المائية برقم الطالب فوق الفيديو 🔥
                 const watermarkHtml = `
                     <div class="watermark-container">
                         <div class="watermark-text">ID: ${myStudentId}</div>
@@ -253,25 +359,46 @@
             if(lessonData.pdf) { document.getElementById('pdfLink').href = lessonData.pdf; }
         }
 
-        // ... دوال تشغيل الامتحان بدون تغيير ...
-        document.getElementById('startBtn').onclick = () => { /* ... */ document.getElementById('startScreen').classList.add('hidden'); document.getElementById('quizApp').classList.remove('hidden'); document.getElementById('timerBox').classList.remove('hidden'); renderQ(); startTimer(); };
-        function renderQ() { /* ... الكود بتاعك ... */ }
-        document.getElementById('nextBtn').onclick = () => { saveAns(); curIdx++; renderQ(); };
-        document.getElementById('prevBtn').onclick = () => { saveAns(); curIdx--; renderQ(); };
-        function saveAns() { const sel = document.querySelector('input[name="math"]:checked'); if(sel) userAns[curIdx] = sel.value; }
-
         document.getElementById('finishBtn').onclick = async () => {
-            saveAns(); clearInterval(examTimerInterval);
-            let score = 0; questions.forEach((q, i) => { if(userAns[i] === q.correct) score++; });
+            saveAns(); 
+            clearInterval(examTimerInterval);
+            
+            let score = 0; 
+            questions.forEach((q, i) => { if(userAns[i] === q.correct) score++; });
 
-            try { await addDoc(collection(db, "results"), { email: auth.currentUser.email, lesson: lessonData.name, score: score, total: questions.length, date: new Date(), userAns: userAns }); } catch(e) {}
+            try { 
+                await addDoc(collection(db, "results"), { 
+                    email: auth.currentUser.email, 
+                    lesson: lessonData.name, 
+                    score: score, 
+                    total: questions.length, 
+                    date: new Date(), 
+                    userAns: userAns 
+                }); 
+            } catch(e) {}
+            
             const lessonId = new URLSearchParams(window.location.search).get('id');
             localStorage.setItem(`exam_data_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ userAns: userAns, score: score }));
+            
             generateReviewList(); 
+            
             const msg = `<h2 class="text-4xl font-black mb-2">درجتك النهائية: ${score} من ${questions.length}</h2><p class="text-emerald-400 font-bold mt-2 animate-pulse">✅ تم فتح فيديو الشرح والملزمة الآن بنجاح بالأعلى</p>`;
-            unlockLessonFeatures(msg); window.scrollTo({ top: 0, behavior: 'smooth' });
+            unlockLessonFeatures(msg); 
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-        function startTimer() { /* ... */ }
+
+        function startTimer() {
+            examTimerInterval = setInterval(() => {
+                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                document.getElementById('timerBox').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+                if (timeLeft-- <= 0) { 
+                    clearInterval(examTimerInterval); 
+                    alert("انتهى وقت الامتحان!");
+                    document.getElementById('finishBtn').click(); 
+                }
+            }, 1000);
+        }
     </script>
 </body>
 </html>
