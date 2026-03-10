@@ -9,12 +9,12 @@
     <style>
         body { 
             font-family: 'Tajawal', sans-serif; 
-            background-color: #f8fafc; 
-            color: #1e293b; 
+            background-color: #f0fdf4; /* خلفية خضراء باهتة جداً */
+            color: #166534; /* نص أخضر داكن */
             overflow-x: hidden; 
         }
 
-        /* حركات عصرية للخلفية (Blobs) */
+        /* حركات عصرية للخلفية (Blobs) - تم تعديل الألوان للأخضر */
         @keyframes blob {
             0% { transform: translate(0px, 0px) scale(1); }
             33% { transform: translate(30px, -50px) scale(1.1); }
@@ -43,16 +43,16 @@
 
         /* تأثيرات الزجاج (Glassmorphism) */
         .glass-card {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(22, 101, 52, 0.08); /* ظل أخضر خفيف */
         }
 
-        /* نصوص وأزرار متدرجة */
+        /* نصوص وأزرار متدرجة - تم تعديل الألوان للأخضر الملكي */
         .gold-gradient { 
-            background: linear-gradient(to left, #d97706, #fbbf24, #d97706); 
+            background: linear-gradient(to left, #15803d, #4ade80, #15803d); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
             background-size: 200% auto;
@@ -61,38 +61,40 @@
         @keyframes shine { to { background-position: 200% center; } }
 
         .btn-gradient { 
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%); /* أخضر زمردي */
             background-size: 200% auto;
             transition: all 0.4s ease; 
         }
-        .btn-gradient:hover { background-position: right center; transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4); }
+        .btn-gradient:hover { background-position: right center; transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4); }
 
-        /* تنسيق عصري للحقول */
+        /* تنسيق عصري للحقول - تم تعديل التركيز للأخضر */
         input, select { 
             outline: none !important; 
             border: 2px solid transparent !important; 
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.02);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            color: #166534;
         }
+        input::placeholder { color: #a7f3d0; }
         input:focus, select:focus { 
             background: #ffffff;
-            border-color: #f97316 !important; 
-            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15), inset 0 2px 4px 0 rgba(0,0,0,0.02); 
+            border-color: #10b981 !important; /* تركيز أخضر */
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15), inset 0 2px 4px 0 rgba(0,0,0,0.02); 
             transform: translateY(-2px);
         }
 
-        /* كروت المميزات */
+        /* كروت المميزات - تم تعديل الهوفر للأخضر */
         .feature-card { 
             background: white; 
             border-radius: 2rem; 
-            border: 1px solid #f1f5f9; 
+            border: 1px solid #e8f5e9; 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         .feature-card:hover { 
             transform: translateY(-10px);
-            border-color: #fed7aa; 
-            box-shadow: 0 20px 40px -10px rgba(249, 115, 22, 0.1); 
+            border-color: #a7f3d0; 
+            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.1); 
         }
     </style>
 </head>
@@ -100,18 +102,18 @@
 <body class="min-h-screen relative overflow-hidden">
 
     <div class="fixed inset-0 w-full h-full z-[-1] overflow-hidden pointer-events-none">
-        <div class="absolute top-0 -left-4 w-72 h-72 bg-orange-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob"></div>
-        <div class="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-orange-400 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-green-300 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000"></div>
     </div>
 
     <nav class="sticky top-0 z-50 glass-card border-b border-white/40">
         <div class="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
-            <h1 class="text-3xl md:text-4xl font-black text-orange-500 tracking-tighter hover:scale-105 transition duration-300">
+            <h1 class="text-3xl md:text-4xl font-black text-emerald-600 tracking-tighter hover:scale-105 transition duration-300">
                 Math<span class="text-slate-800">Pro</span>
             </h1>
             <div class="flex items-center gap-3 md:gap-5">
-                <div class="hidden md:flex text-orange-600 font-bold bg-orange-100/80 px-5 py-2 rounded-full text-sm border border-orange-200">✨ دفعة 2026</div>
+                <div class="hidden md:flex text-emerald-700 font-bold bg-emerald-100/80 px-5 py-2 rounded-full text-sm border border-emerald-200">✨ دفعة 2026</div>
                 <button onclick="scrollToAuth()" class="btn-gradient text-white px-6 md:px-8 py-2.5 rounded-full font-bold text-sm md:text-base">دخول المنصة 🚀</button>
             </div>
         </div>
@@ -120,13 +122,13 @@
     <div class="max-w-7xl mx-auto px-6 md:px-10 mt-12 mb-24 grid lg:grid-cols-12 gap-12 items-center">
         
         <div class="lg:col-span-7 fade-in-up" style="animation-delay: 0.1s;">
-            <div class="inline-block bg-white px-4 py-2 rounded-full shadow-sm text-sm font-bold text-orange-500 mb-6 border border-gray-100">
+            <div class="inline-block bg-white px-4 py-2 rounded-full shadow-sm text-sm font-bold text-emerald-600 mb-6 border border-gray-100">
                 👑 الأستاذ شريف علي
             </div>
             <h2 class="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[1.15]">
                 طريقك للقمة <br> في <span class="gold-gradient">عالم الرياضيات</span>
             </h2>
-            <p class="text-slate-500 mt-6 text-xl md:text-2xl font-medium leading-relaxed max-w-xl">
+            <p class="text-slate-600 mt-6 text-xl md:text-2xl font-medium leading-relaxed max-w-xl">
                 نظام تعليمي متكامل، شرح مبسط، وتدريبات شاملة تضمن لك الدرجة النهائية وتفوقك الأكاديمي.
             </p>
             
@@ -134,7 +136,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1600&auto=format&fit=crop" alt="Math Abstract" class="w-full h-64 md:h-80 object-cover transform group-hover:scale-110 transition duration-700 ease-in-out">
                 <div class="absolute bottom-6 right-6 z-20 flex items-center gap-4">
-                    <div class="bg-orange-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg animate-pulse">▶️</div>
+                    <div class="bg-emerald-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg animate-pulse">▶️</div>
                     <span class="text-white font-bold text-lg drop-shadow-md">ابدأ رحلة التفوق</span>
                 </div>
             </div>
@@ -142,10 +144,10 @@
 
         <div class="lg:col-span-5 fade-in-up" style="animation-delay: 0.3s;">
             <div id="authArea" class="glass-card p-8 md:p-10 rounded-[2.5rem] relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
 
                 <div class="flex gap-2 mb-8 bg-slate-100/50 p-1.5 rounded-2xl relative z-10">
-                    <button id="loginTab" class="flex-1 py-3.5 rounded-xl font-black bg-white text-orange-600 shadow-md transition-all text-lg">دخول الطالب</button>
+                    <button id="loginTab" class="flex-1 py-3.5 rounded-xl font-black bg-white text-emerald-600 shadow-md transition-all text-lg">دخول الطالب</button>
                     <button id="signupTab" class="flex-1 py-3.5 rounded-xl font-black text-slate-500 transition-all text-lg hover:text-slate-800">حساب جديد</button>
                 </div>
 
@@ -184,14 +186,14 @@
                 </div>
 
                 <div id="forgotArea" class="text-right mt-3 mb-6 relative z-10">
-                    <button id="forgotBtn" class="text-sm font-bold text-slate-500 hover:text-orange-500 transition">نسيت كلمة المرور؟</button>
+                    <button id="forgotBtn" class="text-sm font-bold text-slate-500 hover:text-emerald-600 transition">نسيت كلمة المرور؟</button>
                 </div>
 
                 <button id="actionBtn" class="w-full btn-gradient text-white py-4 rounded-xl font-black text-xl relative z-10 mt-2">تسجيل الدخول</button>
                 
                 <div class="relative my-8 text-center z-10">
                     <hr class="border-slate-200">
-                    <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#fdfefc] px-4 text-sm text-slate-400 font-bold rounded-full">أو سريعاً عبر</span>
+                    <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#f6fff8] px-4 text-sm text-slate-400 font-bold rounded-full">أو سريعاً عبر</span>
                 </div>
 
                 <button id="googleBtn" class="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 py-3.5 rounded-xl font-bold hover:bg-slate-50 transition text-lg relative z-10">
@@ -204,25 +206,25 @@
 
     <section class="max-w-7xl mx-auto px-6 md:px-10 mb-24 fade-in-up" style="animation-delay: 0.5s;">
         <div class="text-center mb-16">
-            <h3 class="text-4xl font-black text-slate-900 leading-tight">لماذا منصة <span class="text-orange-500">MathPro</span>؟ 🎯</h3>
-            <p class="text-slate-500 mt-4 text-xl font-medium max-w-2xl mx-auto">بيئة ذكية، تقنيات حديثة، وشرح لا يُنسى.</p>
+            <h3 class="text-4xl font-black text-slate-900 leading-tight">لماذا منصة <span class="text-emerald-600">MathPro</span>؟ 🎯</h3>
+            <p class="text-slate-600 mt-4 text-xl font-medium max-w-2xl mx-auto">بيئة ذكية، تقنيات حديثة، وشرح لا يُنسى.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="feature-card p-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3 animate-float">📺</div>
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3 animate-float">📺</div>
                 <h4 class="text-2xl font-black text-slate-800">شرح سينمائي</h4>
-                <p class="text-slate-500 mt-4 text-lg leading-relaxed">جودة تصوير عالية وشرح يفكك أعقد المسائل لخطوات بسيطة وممتعة.</p>
+                <p class="text-slate-600 mt-4 text-lg leading-relaxed">جودة تصوير عالية وشرح يفكك أعقد المسائل لخطوات بسيطة وممتعة.</p>
             </div>
             <div class="feature-card p-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform rotate-3 animate-float-delayed">📝</div>
+                <div class="w-20 h-20 bg-gradient-to-br from-teal-100 to-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform rotate-3 animate-float-delayed">📝</div>
                 <h4 class="text-2xl font-black text-slate-800">امتحانات ذكية</h4>
-                <p class="text-slate-500 mt-4 text-lg leading-relaxed">بنك أسئلة متدرج الصعوبة وتصحيح تلقائي مع معرفة إجاباتك الخاطئة فوراً.</p>
+                <p class="text-slate-600 mt-4 text-lg leading-relaxed">بنك أسئلة متدرج الصعوبة وتصحيح تلقائي مع معرفة إجاباتك الخاطئة فوراً.</p>
             </div>
             <div class="feature-card p-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3 animate-float">📊</div>
+                <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3 animate-float">📊</div>
                 <h4 class="text-2xl font-black text-slate-800">متابعة الأبطال</h4>
-                <p class="text-slate-500 mt-4 text-lg leading-relaxed">تحليل دقيق لمستواك وإرسال تقارير مفصلة لولي الأمر لضمان استمرارية التفوق.</p>
+                <p class="text-slate-600 mt-4 text-lg leading-relaxed">تحليل دقيق لمستواك وإرسال تقارير مفصلة لولي الأمر لضمان استمرارية التفوق.</p>
             </div>
         </div>
     </section>
@@ -231,28 +233,28 @@
         <div class="max-w-7xl mx-auto px-6 md:px-10 grid md:grid-cols-3 gap-10 items-center text-center md:text-right">
             
             <div>
-                <h3 class="text-4xl font-black text-orange-500 mb-3 tracking-tighter">Math<span class="text-slate-800">Pro</span></h3>
-                <p class="text-slate-600 font-bold text-lg mb-2">
-                    🏆 خبرة <span class="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg">6 سنوات</span> في صناعة الأوائل.
+                <h3 class="text-4xl font-black text-emerald-600 mb-3 tracking-tighter">Math<span class="text-slate-800">Pro</span></h3>
+                <p class="text-slate-700 font-bold text-lg mb-2">
+                    🏆 خبرة <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">6 سنوات</span> في صناعة الأوائل.
                 </p>
-                <p class="text-slate-500 font-medium">الخيار الأول للتفوق في الرياضيات.</p>
+                <p class="text-slate-600 font-medium">الخيار الأول للتفوق في الرياضيات.</p>
             </div>
 
             <div class="flex flex-col items-center md:items-start">
                 <p class="text-slate-800 font-black mb-4 text-lg">تواصل معنا على صفحاتنا:</p>
                 <div class="flex gap-4">
-                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 hover:-translate-y-1 transition-all shadow-sm">📘</a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 hover:-translate-y-1 transition-all shadow-sm">📘</a>
                     <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-green-50 hover:text-green-500 hover:border-green-200 hover:-translate-y-1 transition-all shadow-sm">💬</a>
-                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 hover:-translate-y-1 transition-all shadow-sm">📺</a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 hover:-translate-y-1 transition-all shadow-sm">📺</a>
                 </div>
             </div>
 
             <div class="flex flex-col items-center md:items-end gap-3">
                 <p class="text-slate-800 font-black mb-1 text-lg">فريق الدعم الفني:</p>
-                <a href="tel:01064233004" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 transition-all w-full md:w-auto shadow-sm">
+                <a href="tel:01064233004" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 transition-all w-full md:w-auto shadow-sm">
                     <span>📞</span> 01064233004
                 </a>
-                <a href="mailto:support@mathpro.com" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 transition-all w-full md:w-auto shadow-sm">
+                <a href="mailto:support@mathpro.com" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 transition-all w-full md:w-auto shadow-sm">
                     <span>✉️</span> راسلنا للإستفسار
                 </a>
             </div>
@@ -262,7 +264,7 @@
         <div class="max-w-7xl mx-auto px-6 md:px-10 mt-12 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
             <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">© 2026 MathPro Platform. All Rights Reserved.</p>
             <p class="text-slate-600 font-black flex items-center gap-2">
-                Developed with <span class="text-red-500 animate-pulse text-lg">❤️</span> By <span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-lg">Kevin</span>
+                Developed with <span class="text-emerald-500 animate-pulse text-lg">❤️</span> By <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg">Kevin</span>
             </p>
         </div>
     </footer>
@@ -298,7 +300,7 @@
             forgotArea.classList.add("hidden");
             actionBtn.innerText = "إنشاء الحساب 🚀";
             
-            signupTab.className = "flex-1 py-3.5 rounded-xl font-black bg-white text-orange-600 shadow-md transition-all text-lg";
+            signupTab.className = "flex-1 py-3.5 rounded-xl font-black bg-white text-emerald-600 shadow-md transition-all text-lg";
             loginTab.className = "flex-1 py-3.5 rounded-xl font-black text-slate-500 hover:text-slate-800 transition-all text-lg bg-transparent shadow-none";
         }
 
@@ -308,7 +310,7 @@
             forgotArea.classList.remove("hidden");
             actionBtn.innerText = "تسجيل الدخول";
             
-            loginTab.className = "flex-1 py-3.5 rounded-xl font-black bg-white text-orange-600 shadow-md transition-all text-lg";
+            loginTab.className = "flex-1 py-3.5 rounded-xl font-black bg-white text-emerald-600 shadow-md transition-all text-lg";
             signupTab.className = "flex-1 py-3.5 rounded-xl font-black text-slate-500 hover:text-slate-800 transition-all text-lg bg-transparent shadow-none";
         }
 
