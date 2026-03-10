@@ -10,137 +10,209 @@
     <style>
         body { font-family: 'Tajawal', sans-serif; background-color: #05070a; color: white; }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .timer-box { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 0 20px rgba(249, 115, 22, 0.4); }
-        .tab-btn.active { border-bottom: 4px solid #f97316; color: #f97316; }
+        .timer-box { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+        .tab-btn.active { border-bottom: 4px solid #f97316; color: #f97316; background: rgba(249, 115, 22, 0.05); }
         .plyr--full-ui.plyr--video .plyr__control--overlaid { background: #f97316; }
-        .plyr--video .plyr__controls { border-radius: 0 0 2rem 2rem; }
         .hidden { display: none; }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6">
-        <div class="glass p-10 rounded-[3rem] w-full max-w-md text-center space-y-6">
-            <h2 class="text-3xl font-black">أدخل كود الحصة</h2>
-            <input id="accessCodeInput" type="text" placeholder="SA-000000" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl outline-none focus:border-orange-500">
-            <button onclick="verifyCode()" id="verifyBtn" class="w-full bg-orange-600 font-black py-5 rounded-2xl text-xl transition-all active:scale-95">تفعيل الحصة ✨</button>
+        <div class="glass p-10 rounded-[3rem] w-full max-w-md text-center space-y-6 border-orange-500/20 shadow-2xl">
+            <h2 class="text-3xl font-black">أدخل كود الحصة 🎫</h2>
+            <p class="text-gray-500 font-bold">لفتح الفيديو والامتحان، أدخل الكود الخاص بك</p>
+            <input id="accessCodeInput" type="text" placeholder="SA-000000" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center font-mono text-xl tracking-widest outline-none focus:border-orange-500 transition-all">
+            <button onclick="verifyCode()" id="verifyBtn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-5 rounded-2xl text-xl shadow-xl transition-all active:scale-95">تفعيل ودخول الحصة ✨</button>
         </div>
     </div>
 
     <div id="lessonContent" class="hidden">
         <nav class="glass sticky top-0 z-50 p-4 mb-8">
-            <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
                 <h1 id="lessonTitle" class="text-xl font-black text-orange-500">جاري التحميل...</h1>
                 
-                <div class="timer-box px-6 py-2 rounded-full flex items-center gap-3 animate-pulse">
-                    <span class="text-sm font-bold">الوقت المتبقي:</span>
+                <div class="timer-box px-6 py-2 rounded-full flex items-center gap-3">
+                    <span class="text-sm font-bold opacity-80">الوقت المتبقي:</span>
                     <span id="examTimer" class="text-xl font-black font-mono">40:00</span>
                 </div>
 
                 <div class="flex gap-2">
-                    <button onclick="switchTab('video')" id="btn-video" class="tab-btn active px-4 py-2 font-black transition-all">📺 الشرح</button>
-                    <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn px-4 py-2 font-black text-gray-500 transition-all">📝 الامتحان</button>
+                    <button onclick="switchTab('video')" id="btn-video" class="tab-btn active px-4 py-2 rounded-xl font-black transition-all">📺 فيديو الشرح</button>
+                    <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn px-4 py-2 rounded-xl font-black text-gray-500 transition-all">📝 الامتحان</button>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-6xl mx-auto px-6">
-            <div id="tab-video" class="tab-pane space-y-6">
-                <div class="rounded-[2rem] overflow-hidden shadow-2xl border border-white/5">
+        <main class="max-w-6xl mx-auto px-6 pb-20">
+            <div id="tab-video" class="tab-pane space-y-8">
+                <div class="rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/5">
                     <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
                 </div>
-                <div class="flex justify-center mt-4">
-                    <a id="pdfLink" href="#" target="_blank" class="bg-white/5 border border-white/10 px-8 py-3 rounded-full hover:bg-white/10 transition flex items-center gap-2">
-                        <span>📚 تحميل ملزمة الحصة (PDF)</span>
-                    </a>
+                <div class="flex flex-col md:flex-row justify-between items-center glass p-8 rounded-[2rem] gap-6">
+                    <div>
+                        <h3 class="text-2xl font-black">ملزمة الحصة (PDF) 📚</h3>
+                        <p class="text-gray-500">حمل الملزمة للمتابعة مع المستر أثناء الشرح</p>
+                    </div>
+                    <a id="pdfLink" href="#" target="_blank" class="bg-white text-black font-black px-10 py-4 rounded-2xl hover:bg-orange-600 hover:text-white transition-all">تحميل الملف الآن ⬇️</a>
                 </div>
             </div>
 
-            <div id="tab-quiz" class="tab-pane hidden pb-20">
-                <div id="questionsList" class="grid grid-cols-1 gap-6">
+            <div id="tab-quiz" class="tab-pane hidden">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-black mb-2">اختبر فهمك 📝</h2>
+                    <p class="text-gray-500">أجب بدقة، سيتم إرسال درجتك فوراً لمستر كيفين</p>
+                </div>
+                <div id="questionsList" class="space-y-8">
                     </div>
-                <button id="submitQuizBtn" class="w-full mt-10 bg-orange-600 text-white font-black py-6 rounded-[2.5rem] text-2xl shadow-2xl hover:bg-orange-700 transition-all">إرسال الإجابات الآن 🚀</button>
+                <button id="submitQuizBtn" class="w-full mt-12 bg-orange-600 text-white font-black py-6 rounded-[2.5rem] text-2xl shadow-2xl hover:bg-orange-700 transition-all active:scale-95">إرسال الإجابات وإنهاء الامتحان 🚀</button>
             </div>
         </main>
     </div>
 
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+
 <script type="module">
-    // ... (Firebase Imports) ...
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = { /* تنظیمات شما */ };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
+        authDomain: "math-e62c9.firebaseapp.com",
+        projectId: "math-e62c9",
+        appId: "1:271507842148:web:2907aad4caf67afd08ab71"
+    };
 
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentStudent = null;
+    let lessonData = null;
     let timerInterval;
-    let timeLeft = 40 * 60; // ۴۰ دقیقه به ثانیه
+    let timeLeft = 40 * 60; // 40 دقيقة بالثواني
     let player;
 
-    // تفعيل المديا پلير
-    function initPlayer(videoId) {
-        player = new Plyr('#player');
-        player.source = {
-            type: 'video',
-            sources: [{ src: videoId, provider: 'youtube' }],
-        };
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            currentStudent = { uid: user.uid, email: user.email, name: userSnap.exists() ? userSnap.data().name : user.email.split('@')[0] };
+        } else { window.location.href = "index.html"; }
+    });
+
+    // 1. التحقق من الكود وبدء التايمر
+    window.verifyCode = async () => {
+        const code = document.getElementById('accessCodeInput').value.trim();
+        if(!code) return alert("أدخل الكود أولاً!");
+
+        const btn = document.getElementById('verifyBtn');
+        btn.innerText = "جاري التحقق... ⏳";
+
+        const codeRef = doc(db, "codes", code);
+        const codeSnap = await getDoc(codeRef);
+
+        if (codeSnap.exists() && !codeSnap.data().used) {
+            await updateDoc(codeRef, { used: true, usedBy: currentStudent.email, usedAt: new Date() });
+            document.getElementById('codeLockScreen').classList.add('hidden');
+            document.getElementById('lessonContent').classList.remove('hidden');
+            
+            await loadLessonData();
+            startTimer(); // ابدأ الـ 40 دقيقة
+        } else {
+            alert("الكود غير صحيح أو تم استخدامه! ❌");
+            btn.innerText = "تفعيل ودخول الحصة ✨";
+        }
+    };
+
+    // 2. تحميل بيانات الحصة وتشغيل الميديا بلير
+    async function loadLessonData() {
+        const lessonId = new URLSearchParams(window.location.search).get('id');
+        const snap = await getDoc(doc(db, "lessons", lessonId));
+        
+        if (snap.exists()) {
+            lessonData = snap.data();
+            document.getElementById('lessonTitle').innerText = lessonData.name;
+            document.getElementById('pdfLink').href = lessonData.pdf || "#";
+
+            // تشغيل Plyr Player
+            player = new Plyr('#player');
+            const videoId = lessonData.video.split('v=')[1] || lessonData.video.split('/').pop();
+            player.source = { type: 'video', sources: [{ src: videoId, provider: 'youtube' }] };
+
+            renderQuiz(lessonData.questions);
+        }
     }
 
-    // تایمر معکوس
+    // 3. نظام التايمر
     function startTimer() {
         timerInterval = setInterval(() => {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('examTimer').innerText = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            document.getElementById('examTimer').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                finishExam(); // ارسال خودکار در صورت اتمام وقت
+                finishExam(); // اقفل الامتحان تلقائياً
             }
             timeLeft--;
         }, 1000);
     }
 
-    // تحقق الكود والدخول
-    window.verifyCode = async () => {
-        const code = document.getElementById('accessCodeInput').value;
-        const codeRef = doc(db, "codes", code);
-        const snap = await getDoc(codeRef);
-
-        if (snap.exists() && !snap.data().used) {
-            await updateDoc(codeRef, { used: true, usedBy: auth.currentUser.email });
-            document.getElementById('codeLockScreen').classList.add('hidden');
-            document.getElementById('lessonContent').classList.remove('hidden');
-            loadLesson();
-            startTimer(); // شروع تایمر ۴۰ دقیقه‌ای
-        } else {
-            alert("الكود غير صالح!");
-        }
+    // 4. عرض الأسئلة والتبديل بين التبويبات
+    window.switchTab = (tab) => {
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'text-white'));
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        document.getElementById(`btn-${tab}`).classList.add('active', 'text-white');
     };
 
-    async function loadLesson() {
-        const lessonId = new URLSearchParams(window.location.search).get('id');
-        const snap = await getDoc(doc(db, "lessons", lessonId));
-        if (snap.exists()) {
-            const data = snap.data();
-            document.getElementById('lessonTitle').innerText = data.name;
-            document.getElementById('pdfLink').href = data.pdf;
-            initPlayer(data.video); // راه‌اندازی پلیر با لینک یوتیوب
-            renderQuiz(data.questions);
-        }
+    function renderQuiz(questions) {
+        const container = document.getElementById('questionsList');
+        questions.forEach((q, i) => {
+            container.innerHTML += `
+                <div class="glass p-8 rounded-[2.5rem] q-block" data-correct="${q.correct}">
+                    <p class="text-orange-500 font-black mb-4 underline">سؤال ${i+1}</p>
+                    ${q.image ? `<img src="${q.image}" class="rounded-2xl max-h-80 mx-auto mb-6">` : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${['a','b','c','d'].map(opt => `
+                            <label class="flex items-center gap-3 p-5 bg-white/5 rounded-2xl cursor-pointer hover:bg-white/10 border border-transparent has-[:checked]:border-orange-500 has-[:checked]:bg-orange-500/10 transition">
+                                <input type="radio" name="q${i}" value="${opt}" class="w-5 h-5 accent-orange-500">
+                                <span class="font-bold">${q[opt]}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+        });
     }
 
+    // 5. إنهاء الامتحان وإرسال النتيجة لـ Firebase
     async function finishExam() {
-        // ... (کد محاسبه امتیاز که قبلاً نوشتیم) ...
-        alert("انتهى الوقت! تم إرسال إجاباتك تلقائياً.");
-        // ارسال نتيجه به Firebase
+        const blocks = document.querySelectorAll('.q-block');
+        let score = 0;
+        blocks.forEach((b, i) => {
+            const selected = b.querySelector(`input[name="q${i}"]:checked`);
+            if(selected && selected.value === b.dataset.correct) score++;
+        });
+
+        const btn = document.getElementById('submitQuizBtn');
+        btn.innerText = "جاري إرسال نتيجتك للمستر... ⏳";
+        btn.disabled = true;
+
+        await addDoc(collection(db, "results"), {
+            studentName: currentStudent.name,
+            studentEmail: currentStudent.email,
+            lessonName: lessonData.name,
+            score: score,
+            totalQuestions: blocks.length,
+            submittedAt: new Date()
+        });
+
+        alert(`انتهى الامتحان! درجتك: ${score} من ${blocks.length}\nتم تسجيل النتيجة في لوحة تحكم المعلم.`);
+        window.location.href = "dashboard.html";
     }
 
-    // ... (بقية دوال التبديل بين التبوابات والأسئلة) ...
+    document.getElementById('submitQuizBtn').onclick = finishExam;
 </script>
 </body>
 </html>
