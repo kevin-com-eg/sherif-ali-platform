@@ -3,90 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | Sherif Ali</title>
+    <title>MathPro | الأستاذ شريف علي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f9fafb; color: #1f2937; }
-        .fade-in { animation: fade 1s ease; }
-        @keyframes fade { from { opacity: 0; transform: translateY(20px) } to { opacity: 1 } }
-        .hover-scale { transition: transform .3s; }
-        .hover-scale:hover { transform: translateY(-5px); }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
+        .fade-in { animation: fade 1s ease-out; }
+        @keyframes fade { from { opacity: 0; transform: translateY(30px) } to { opacity: 1; transform: translateY(0) } }
+        
+        .hover-scale { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .hover-scale:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(249, 115, 22, 0.15); }
+        
         .gold-gradient { background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .login-card { background: white; border: 2px solid #f97316; }
+        .btn-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); transition: all 0.3s ease; }
+        .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* تنسيق عصري للخانات */
+        input, select { outline: none !important; border: 2px solid #e2e8f0 !important; transition: all 0.3s ease; background: #fff; }
+        input:focus, select:focus { border-color: #f97316 !important; background: #fff; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
+        
+        .feature-card { background: white; border-radius: 2rem; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+        .feature-card:hover { border-color: #f97316; background: #fff7ed; }
     </style>
 </head>
 
 <body class="min-h-screen">
 
-    <nav class="flex justify-between items-center p-6 max-w-6xl mx-auto">
-        <h1 class="text-4xl font-black text-orange-500 tracking-tighter">
-            Math<span class="text-gray-800">Pro</span>
-        </h1>
-        <div class="text-orange-500 font-bold">🌙 رمضان كريم</div>
+    <nav class="glass sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 p-5">
+        <div class="flex justify-between items-center max-w-7xl mx-auto p-2">
+            <h1 class="text-4xl font-black text-orange-500 tracking-tighter">
+                Math<span class="text-gray-800">Pro</span>
+            </h1>
+            <div class="flex items-center gap-4">
+                <div class="text-orange-500 font-bold bg-orange-50 px-4 py-2 rounded-full text-sm">🌙 رمضان كريم</div>
+                <button onclick="scrollToAuth()" class="btn-gradient text-white px-6 py-2 rounded-full font-bold text-sm shadow-md">ابدأ الآن ✨</button>
+            </div>
+        </div>
     </nav>
 
-    <div class="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto p-6 fade-in mt-10">
+    <div class="grid md:grid-cols-2 gap-12 items-start max-w-7xl mx-auto p-6 md:p-10 fade-in mt-10 mb-20">
         
-        <div class="text-center md:text-right">
-            <div class="relative inline-block">
-                <img src="images/sherif.png" class="w-64 h-64 mx-auto rounded-full shadow-2xl border-[10px] border-orange-500 object-cover">
-                <span class="absolute bottom-2 right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-white animate-pulse"></span>
+        <div class="text-center md:text-right md:sticky md:top-32 self-start">
+            <div class="relative inline-block mb-8">
+                <img src="images/sherif.png" class="w-64 h-64 mx-auto rounded-full shadow-2xl border-[12px] border-orange-500 object-cover transform rotate-2">
+                <span class="absolute bottom-4 right-4 bg-green-500 w-8 h-8 rounded-full border-4 border-white animate-pulse"></span>
             </div>
-            <h2 class="text-4xl font-black mt-8 text-gray-800 leading-tight">
-                أهلاً بك في منصة <br> <span class="gold-gradient">الأستاذ شريف علي</span>
+            <h2 class="text-5xl font-black mt-8 text-gray-900 leading-tight">
+                طريقك للقمة <br> في <span class="gold-gradient">عالم الرياضيات</span>
             </h2>
-            <p class="text-gray-500 mt-4 text-lg font-medium">خطوتك الأولى نحو تقفيل مادة الرياضيات بكل سهولة 🌙</p>
+            <p class="text-gray-600 mt-6 text-xl font-medium leading-relaxed max-w-lg mx-auto md:mr-0">نقدم لك شرحاً مبسطاً وتدريبات شاملة لتضمن الدرجة النهائية مع الأستاذ <span class="text-orange-600 font-bold">شريف علي</span>. 🌟</p>
         </div>
 
-        <div class="login-card p-10 rounded-[2.5rem] shadow-2xl hover-scale">
-            <div class="flex gap-2 mb-8 bg-gray-100 p-1 rounded-2xl">
-                <button id="loginTab" class="flex-1 py-3 font-black rounded-xl bg-orange-500 text-white transition-all shadow-md">دخول</button>
-                <button id="signupTab" class="flex-1 py-3 font-black rounded-xl text-gray-500 transition-all">حساب جديد</button>
+        <div id="authArea" class="bg-white p-8 md:p-10 rounded-[3rem] shadow-2xl hover-scale border-4 border-orange-100">
+            <div class="flex gap-2 mb-10 bg-gray-100 p-2 rounded-2xl border">
+                <button id="loginTab" class="flex-1 py-4 rounded-xl font-black bg-orange-500 text-white transition-all shadow-lg text-lg">دخول الطالب</button>
+                <button id="signupTab" class="flex-1 py-4 rounded-xl font-black text-gray-500 transition-all text-lg hover:text-orange-600">حساب جديد</button>
             </div>
 
-            <div id="nameField" class="hidden animate-fade-in">
-                <label class="block mb-2 text-sm font-bold text-gray-600">الاسم الكامل</label>
-                <input id="name" placeholder="مثال: أحمد محمد" class="w-full p-4 border-2 border-gray-100 rounded-2xl mb-4 outline-none focus:border-orange-500 transition">
+            <div id="authFields" class="space-y-5">
+                <div id="extraFields" class="hidden space-y-5 animate-fade-in">
+                    <div>
+                        <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">اسمك الكامل (الثلاثي)</label>
+                        <input id="userName" placeholder="مثال: أحمد محمد علي" class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">رقم تليفونك</label>
+                            <input id="userPhone" placeholder="010..." class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">تليفون ولي الأمر</label>
+                            <input id="parentPhone" placeholder="011..." class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">الشعبة الدراسية</label>
+                        <select id="userBranch" class="w-full p-5 border-2 rounded-2xl bg-white text-lg font-medium appearance-none">
+                            <option value="علمي رياضة">علمي رياضة 📐</option>
+                            <option value="علمي علوم">علمي علوم 🔬</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">المحافظة</label>
+                            <input id="userCity" placeholder="مثلاً: القاهرة" class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">المنطقة</label>
+                            <input id="userArea" placeholder="مثلاً: المعادي" class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">البريد الإلكتروني</label>
+                    <input id="email" type="email" placeholder="example@mail.com" class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-bold text-gray-600 mr-3">كلمة المرور</label>
+                    <input id="password" type="password" placeholder="••••••••" class="w-full p-5 border-2 rounded-2xl text-lg font-medium">
+                </div>
             </div>
 
-            <label class="block mb-2 text-sm font-bold text-gray-600">البريد الإلكتروني</label>
-            <input id="email" type="email" placeholder="example@mail.com" class="w-full p-4 border-2 border-gray-100 rounded-2xl mb-4 outline-none focus:border-orange-500 transition">
-
-            <label class="block mb-2 text-sm font-bold text-gray-600">كلمة المرور</label>
-            <input id="password" type="password" placeholder="••••••••" class="w-full p-4 border-2 border-gray-100 rounded-2xl mb-2 outline-none focus:border-orange-500 transition">
-
-            <div class="text-left mb-6">
+            <div id="forgotArea" class="text-left mt-3 mb-8">
                 <button id="forgotBtn" class="text-sm font-bold text-orange-500 hover:underline">نسيت كلمة المرور؟</button>
             </div>
 
-            <button id="actionBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-orange-200 transition-all">تسجيل الدخول</button>
+            <button id="actionBtn" class="w-full btn-gradient text-white py-5 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition-all mt-4">تسجيل الدخول</button>
             
-            <div class="relative my-8 text-center">
+            <div class="relative my-10 text-center">
                 <hr class="border-gray-200">
-                <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs text-gray-400 font-bold">أو عن طريق</span>
+                <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-5 text-sm text-gray-400 font-bold">أو سريعاً عن طريق</span>
             </div>
 
-            <button id="googleBtn" class="w-full flex items-center justify-center gap-3 border-2 border-gray-100 py-3 rounded-2xl font-bold hover:bg-gray-50 transition">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5">
-                جوجل
+            <button id="googleBtn" class="w-full flex items-center justify-center gap-3 border-2 border-gray-100 py-4 rounded-2xl font-bold hover:bg-gray-50 transition text-lg shadow-inner">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6">
+                حساب جوجل
             </button>
         </div>
     </div>
 
-    <footer class="text-center mt-20 p-10 border-t border-gray-100">
-        <p class="text-gray-400 font-bold mb-2">© 2026 MathPro Platform — All Rights Reserved</p>
-        <p class="text-gray-800 font-black text-lg">
-            Developed with ❤️ By <span class="text-orange-500">Kevin Hany</span>
-        </p>
-        <a href="tel:01064233004" class="inline-block mt-2 bg-gray-100 px-4 py-2 rounded-full text-sm font-bold text-gray-600 hover:text-orange-500 transition">
-            📞 01064233004
-        </a>
+    <section class="max-w-7xl mx-auto p-6 md:p-10 mb-24 fade-in">
+        <div class="text-center mb-16">
+            <h3 class="text-4xl font-black text-gray-900 leading-tight">لماذا تشترك في منصة <span class="text-orange-500">MathPro</span>؟ 🎯🧑‍🏫</h3>
+            <p class="text-gray-500 mt-5 text-xl font-medium max-w-2xl mx-auto">نحن نوفر لك بيئة تعليمية متكاملة تضمن لك التفوق والوصول للدرجة النهائية.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="feature-card p-10 flex flex-col items-center text-center shadow-sm">
+                <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-8 text-3xl shadow-inner">📺</div>
+                <h4 class="text-2xl font-black text-gray-800">شرح مبسط وواضح</h4>
+                <p class="text-gray-600 mt-4 text-lg leading-relaxed">فيديوهات شرح احترافية تقسم المنهج لأفكار مبسطة ليسهل فهمها واستيعابها، مع إمكانية إعادتها في أي وقت.</p>
+            </div>
+            <div class="feature-card p-10 flex flex-col items-center text-center shadow-sm">
+                <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-8 text-3xl shadow-inner">📝</div>
+                <h4 class="text-2xl font-black text-gray-800">تدريبات وامتحانات مكثفة</h4>
+                <p class="text-gray-600 mt-4 text-lg leading-relaxed">بعد كل درس، يوجد امتحان قبلي وبنك أسئلة شامل يغطي جميع أفكار الامتحانات (S, M, L) لتدريبك على كل المستويات.</p>
+            </div>
+            <div class="feature-card p-10 flex flex-col items-center text-center shadow-sm">
+                <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-8 text-3xl shadow-inner">📊</div>
+                <h4 class="text-2xl font-black text-gray-800">متابعة دقيقة لمستواك</h4>
+                <p class="text-gray-600 mt-4 text-lg leading-relaxed">نظام ذكي يحلل نتائج امتحاناتك ويظهر لك نقاط القوة والضعف، مع تقارير دورية تُرسل لولي الأمر لمتابعة تقدمك.</p>
+            </div>
+            <div class="feature-card p-10 flex flex-col items-center text-center shadow-sm lg:col-start-2">
+                <div class="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-8 text-3xl shadow-inner">💰</div>
+                <h4 class="text-2xl font-black text-gray-800">توفير الوقت والمال</h4>
+                <p class="text-gray-600 mt-4 text-lg leading-relaxed">احصل على كورس كامل من مكانك دون الحاجة للمواصلات، وبأسعار رمزية مقارنة بالسناتر، مع محتوى متاح 24 ساعة.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center mt-20 p-12 border-t border-gray-100 bg-white">
+        <p class="text-gray-400 font-bold mb-3 text-sm">© 2026 MathPro Platform — All Rights Reserved</p>
+        <p class="text-gray-800 font-black text-xl">Developed with ❤️ By <span class="text-orange-500">Kevin Hany</span></p>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-3 mt-4">
+            <a href="tel:01064233004" class="inline-block bg-slate-100 px-5 py-2.5 rounded-full text-sm font-bold text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all shadow-inner">
+                📞 الدعم الفني: 01064233004
+            </a>
+            <a href="mailto:support@mathpro.com" class="inline-block bg-slate-100 px-5 py-2.5 rounded-full text-sm font-bold text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all shadow-inner">
+                ✉️ راسلنا
+            </a>
+        </div>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
@@ -97,6 +184,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const adminEmail = "kevin.hany.08@proton.me";
 
         let mode = "login";
@@ -104,50 +192,83 @@
         const loginTab = document.getElementById("loginTab");
         const signupTab = document.getElementById("signupTab");
         const actionBtn = document.getElementById("actionBtn");
-        const nameField = document.getElementById("nameField");
+        const extraFields = document.getElementById("extraFields");
+        const forgotArea = document.getElementById("forgotArea");
 
         signupTab.onclick = () => {
             mode = "signup";
-            nameField.classList.remove("hidden");
-            actionBtn.innerText = "إنشاء حساب مجاني";
-            signupTab.className = "flex-1 py-3 font-black rounded-xl bg-orange-500 text-white shadow-md";
-            loginTab.className = "flex-1 py-3 font-black rounded-xl text-gray-500";
+            extraFields.classList.remove("hidden");
+            forgotArea.classList.add("hidden");
+            actionBtn.innerText = "إنشاء حساب الطالب الجديد ✨";
+            signupTab.className = "flex-1 py-4 rounded-xl font-black bg-orange-500 text-white shadow-lg text-lg transition-all";
+            loginTab.className = "flex-1 py-4 rounded-xl font-black text-gray-500 hover:text-orange-600 transition-all text-lg";
         }
 
         loginTab.onclick = () => {
             mode = "login";
-            nameField.classList.add("hidden");
+            extraFields.classList.add("hidden");
+            forgotArea.classList.remove("hidden");
             actionBtn.innerText = "تسجيل الدخول";
-            loginTab.className = "flex-1 py-3 font-black rounded-xl bg-orange-500 text-white shadow-md";
-            signupTab.className = "flex-1 py-3 font-black rounded-xl text-gray-500";
-        }
-
-        document.getElementById("forgotBtn").onclick = async () => {
-            const emailVal = document.getElementById("email").value;
-            if(!emailVal) return alert("اكتب إيميلك الأول في خانة البريد الإلكتروني");
-            try {
-                await sendPasswordResetEmail(auth, emailVal);
-                alert("تم إرسال رابط إعادة تعيين كلمة المرور لإيميلك، شيك على الـ Inbox أو الـ Spam");
-            } catch(e) { alert(e.message); }
+            loginTab.className = "flex-1 py-4 rounded-xl font-black bg-orange-500 text-white shadow-lg text-lg transition-all";
+            signupTab.className = "flex-1 py-4 rounded-xl font-black text-gray-500 hover:text-orange-600 transition-all text-lg";
         }
 
         actionBtn.onclick = async () => {
             const emailVal = document.getElementById("email").value;
             const passVal = document.getElementById("password").value;
+
+            if(!emailVal || !passVal) return alert("من فضلك املأ البيانات الأساسية يا بطل!");
+
             try {
-                let res = mode === "login" ? 
-                    await signInWithEmailAndPassword(auth, emailVal, passVal) :
-                    await createUserWithEmailAndPassword(auth, emailVal, passVal);
-                
-                window.location = (res.user.email === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
+                if (mode === "signup") {
+                    // سحب البيانات الإضافية من الفورم
+                    const name = document.getElementById("userName").value;
+                    const phone = document.getElementById("userPhone").value;
+                    const parent = document.getElementById("parentPhone").value;
+                    const branch = document.getElementById("userBranch").value;
+                    const city = document.getElementById("userCity").value;
+                    const area = document.getElementById("userArea").value;
+
+                    if(!name || !phone || !parent || !city || !area) return alert("من فضلك املأ جميع البيانات المطلوبة لإنشاء الحساب!");
+
+                    const res = await createUserWithEmailAndPassword(auth, emailVal, passVal);
+                    
+                    // حفظ البيانات في Firestore تحت الـ UID الفريد للطالب
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        name, phone, parentPhone: parent, branch, city, area,
+                        email: emailVal,
+                        role: "student",
+                        createdAt: new Date()
+                    });
+                    
+                    window.location = "dashboard.html";
+                } else {
+                    const res = await signInWithEmailAndPassword(auth, emailVal, passVal);
+                    window.location = (res.user.email === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
+                }
             } catch(e) { alert("خطأ: " + e.message); }
         }
 
+        // جوجل وباقي الوظائف
         document.getElementById("googleBtn").onclick = async () => {
             try {
                 const res = await signInWithPopup(auth, new GoogleAuthProvider());
                 window.location = (res.user.email === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
             } catch(e) { alert(e.message); }
+        }
+
+        document.getElementById("forgotBtn").onclick = async () => {
+            const emailVal = document.getElementById("email").value;
+            if(!emailVal) return alert("اكتب إيميلك في خانة البريد الإلكتروني الأول يا بطل");
+            try {
+                await sendPasswordResetEmail(auth, emailVal);
+                alert("تم إرسال رابط استعادة كلمة المرور لإيميلك، شيك على الـ Inbox أو الـ Spam");
+            } catch(e) { alert(e.message); }
+        }
+
+        // دالة التمرير لمكان تسجيل الدخول
+        window.scrollToAuth = () => {
+            document.getElementById('authArea').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
