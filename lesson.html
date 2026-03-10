@@ -15,92 +15,72 @@
         
         .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
         .video-container { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 4px solid white; background: #0f172a; position: relative; }
-        .btn-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); transition: all 0.2s; }
         
-        /* منع التفاعل المباشر مع يوتيوب لمنع نسخ الرابط */
+        /* منع التفاعل المباشر مع طبقة يوتيوب لمنع نسخ الرابط */
         .plyr__video-embed iframe { pointer-events: none !important; }
-
-        /* زرار الـ PDF المتحرك */
-        .pdf-download-btn {
-            background: #ef4444;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .pdf-download-btn:hover { transform: scale(1.05); background: #dc2626; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
+        
+        .btn-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); transition: all 0.2s; }
+        .pdf-btn { background: #ef4444; border-bottom: 4px solid #b91c1c; }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <div id="timerBar" class="hidden sticky top-0 z-50 bg-slate-900 text-white py-2 px-4 flex justify-center items-center gap-3 border-b border-orange-500">
-        <span id="countdownDisplay" class="font-black text-orange-400 text-sm tracking-widest">-- : -- : -- : --</span>
-    </div>
-
-    <div id="authArea" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-        <div class="bg-white p-10 rounded-[2.5rem] w-full max-w-md text-center shadow-2xl">
-            <h2 class="text-3xl font-black mb-6 text-slate-800">تفعيل الوصول 🔐</h2>
-            <input id="accessCode" type="text" placeholder="أدخل كود التفعيل" class="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl mb-6 text-center font-black text-2xl uppercase outline-none focus:border-orange-500">
-            <button id="verifyBtn" class="w-full btn-gradient text-white font-black py-4 rounded-2xl text-lg shadow-lg">تفعيل الحصة</button>
+    <div id="authArea" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-lg z-[100] flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-[2.5rem] w-full max-w-md text-center shadow-2xl">
+            <div class="text-5xl mb-4">🔑</div>
+            <h2 class="text-2xl font-black mb-2">تفعيل الحصة</h2>
+            <p class="text-slate-500 mb-6 text-sm">برجاء إدخال كود التفعيل الخاص بك</p>
+            <input id="accessCode" type="text" placeholder="XXXX-XXXX" class="w-full p-4 bg-slate-100 border-2 border-slate-200 rounded-2xl mb-6 text-center font-black text-2xl uppercase outline-none focus:border-orange-500">
+            <button id="verifyBtn" class="w-full btn-gradient text-white font-black py-4 rounded-2xl text-lg">تفعيل الآن</button>
+            <p id="authError" class="hidden text-red-500 mt-4 font-bold text-sm">⚠️ الكود غير صحيح أو مستخدم!</p>
         </div>
     </div>
 
-    <header class="glass-card sticky top-0 z-40 p-4 border-b border-white/50 shadow-sm">
+    <header class="glass-card sticky top-0 z-40 p-4 shadow-sm">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 id="lessonTitle" class="text-xl font-black text-slate-800">جاري التحميل...</h1>
-            <a href="dashboard.html" class="bg-slate-100 text-slate-500 font-bold text-xs px-4 py-2 rounded-xl">خروج</a>
+            <h1 id="lessonTitle" class="text-lg font-black text-slate-800">جاري تحميل الدرس...</h1>
+            <a href="dashboard.html" class="text-sm font-bold text-slate-400 hover:text-red-500 transition-colors">خروج</a>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-8">
-        <section id="startScreen" class="hidden text-center py-16 bg-white rounded-[3rem] shadow-xl">
-            <div class="text-8xl mb-6">📝</div>
-            <h2 class="text-3xl font-black mb-4">امتحان الدخول</h2>
-            <p class="text-slate-500 mb-10 font-bold">حل الأسئلة التالية لفتح محتوى الحصة</p>
-            <button id="startQuizBtn" class="bg-slate-900 text-white px-14 py-5 rounded-2xl font-black text-xl shadow-2xl">بدء الامتحان</button>
-        </section>
-
-        <section id="quizArea" class="hidden space-y-6">
-            <div class="flex justify-between items-center glass-card p-4 rounded-2xl">
-                <div id="quizTimer" class="font-black text-red-600">⏳ <span id="timerMinutes">00</span>:<span id="timerSeconds">00</span></div>
-                <span id="progressText" class="text-sm font-black text-orange-500">السؤال 1</span>
-            </div>
-            <div class="glass-card p-8 rounded-[2.5rem] text-center shadow-xl">
-                <img id="qImg" src="" class="w-full max-h-96 object-contain rounded-2xl mb-8 border-4 border-white">
-                <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
-                <button id="nextBtn" class="w-full btn-gradient text-white py-5 mt-10 rounded-2xl font-black text-xl shadow-lg">تأكيد الإجابة ←</button>
-            </div>
-        </section>
-
-        <section id="resultsArea" class="hidden space-y-8">
-            <div class="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl text-center relative overflow-hidden">
-                <h2 class="text-slate-400 font-bold mb-2">درجتك النهائية</h2>
-                <div id="scoreText" class="text-7xl font-black text-orange-400 mb-6">0/0</div>
-                
-                <div id="pdfContainer" class="hidden">
-                    <a id="pdfLink" href="#" target="_blank" class="pdf-download-btn inline-flex items-center gap-3 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl">
-                        <span>تحميل ملزمة الحصة PDF</span>
-                        <span class="text-2xl">📥</span>
-                    </a>
+        
+        <section id="quizScreen" class="hidden space-y-6">
+            <div class="glass-card p-10 rounded-[3rem] text-center shadow-xl">
+                <div class="text-6xl mb-4">📝</div>
+                <h2 class="text-2xl font-black mb-10">امتحان سريع لفتح الحصة</h2>
+                <div id="qBox" class="space-y-6">
+                    <img id="qImg" src="" class="w-full max-h-80 object-contain rounded-2xl border-2 border-slate-100 bg-slate-50">
+                    <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <button id="nextBtn" class="w-full btn-gradient text-white py-5 rounded-2xl font-black text-xl shadow-lg mt-6">تأكيد الإجابة</button>
                 </div>
             </div>
+        </section>
 
-            <div class="flex bg-slate-200/50 rounded-2xl p-1.5">
-                <button id="tabVideoBtn" class="flex-1 py-4 font-black rounded-xl text-orange-600 bg-white shadow-md transition-all">فيديو الشرح 📺</button>
-                <button id="tabReviewBtn" class="flex-1 py-4 font-black text-slate-500 transition-all">مراجعة الأخطاء 📝</button>
+        <section id="contentScreen" class="hidden space-y-8">
+            <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl text-center relative overflow-hidden">
+                <div id="scoreDisplay" class="text-5xl font-black text-orange-400 mb-4">0 / 0</div>
+                <p class="text-slate-400 font-bold mb-6">درجتك في امتحان الدخول</p>
+                
+                <a id="pdfLink" href="#" target="_blank" class="hidden pdf-btn inline-flex items-center gap-3 text-white px-8 py-4 rounded-2xl font-black hover:scale-105 transition-transform">
+                    <span>تحميل الملزمة PDF</span> 📥
+                </a>
             </div>
 
-            <div id="videoTab" class="video-container hidden">
+            <div class="video-container">
                 <video id="player" playsinline controls></video>
             </div>
-            
-            <div id="reviewTab" class="hidden space-y-4"></div>
         </section>
+
     </main>
 
     <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = { 
             apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", 
             authDomain: "math-e62c9.firebaseapp.com", 
@@ -113,122 +93,128 @@
         const db = getFirestore(app);
         const lessonId = new URLSearchParams(window.location.search).get("id");
 
-        let currentUser, lessonData, questions = [], current = 0, userAns = [];
+        let currentUser, lessonData, currentQ = 0, answers = [];
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) { currentUser = user; await checkAccess(); } 
-            else { window.location.href = "index.html"; }
+            if (user) { 
+                currentUser = user; 
+                await checkEnrollment(); 
+            } else { 
+                window.location.href = "login.html"; 
+            }
         });
 
-        async function checkAccess() {
-            const enrollSnap = await getDoc(doc(db, "enrollments", `${currentUser.uid}_${lessonId}`));
-            if (enrollSnap.exists()) {
-                document.getElementById("authArea").classList.add("hidden");
-                initLesson();
-            } else { document.getElementById("authArea").classList.remove("hidden"); }
-        }
-
-        async function initLesson() {
-            const snap = await getDoc(doc(db, "lessons", lessonId));
-            lessonData = snap.data();
-            questions = lessonData.questions || [];
-            document.getElementById("lessonTitle").innerText = lessonData.name;
-
-            if(localStorage.getItem(`done_${currentUser.uid}_${lessonId}`)) {
-                showFinalUI(JSON.parse(localStorage.getItem(`ans_${currentUser.uid}_${lessonId}`)));
+        // التأكد إذا كان الطالب مفعل الحصة
+        async function checkEnrollment() {
+            const enrollRef = doc(db, "enrollments", `${currentUser.uid}_${lessonId}`);
+            const snap = await getDoc(enrollRef);
+            
+            if (snap.exists()) {
+                loadLessonData();
             } else {
-                document.getElementById("startScreen").classList.remove("hidden");
+                document.getElementById("authArea").classList.remove("hidden");
             }
         }
 
-        document.getElementById("startQuizBtn").onclick = () => {
-            document.getElementById("startScreen").classList.add("hidden");
-            document.getElementById("quizArea").classList.remove("hidden");
-            renderQuestion();
+        // تفعيل الكود
+        document.getElementById("verifyBtn").onclick = async () => {
+            const code = document.getElementById("accessCode").value.trim().toUpperCase();
+            const btn = document.getElementById("verifyBtn");
+            if(!code) return;
+
+            btn.innerText = "جاري التحقق..."; btn.disabled = true;
+
+            const codeRef = doc(db, "codes", code);
+            const codeSnap = await getDoc(codeRef);
+
+            if (codeSnap.exists() && !codeSnap.data().used) {
+                // تفعيل الحصة للطالب وتعطيل الكود
+                await updateDoc(codeRef, { used: true, usedBy: currentUser.email });
+                await setDoc(doc(db, "enrollments", `${currentUser.uid}_${lessonId}`), {
+                    activatedAt: new Date(),
+                    email: currentUser.email
+                });
+                location.reload();
+            } else {
+                document.getElementById("authError").classList.remove("hidden");
+                btn.innerText = "تفعيل الآن"; btn.disabled = false;
+            }
         };
 
+        // تحميل بيانات الدرس من Firestore
+        async function loadLessonData() {
+            const lessonSnap = await getDoc(doc(db, "lessons", lessonId));
+            lessonData = lessonSnap.data();
+            document.getElementById("lessonTitle").innerText = lessonData.name;
+
+            // إذا كان الطالب حل الامتحان من قبل
+            if (localStorage.getItem(`done_${currentUser.uid}_${lessonId}`)) {
+                showFinalContent();
+            } else {
+                document.getElementById("quizScreen").classList.remove("hidden");
+                renderQuestion();
+            }
+        }
+
         function renderQuestion() {
-            const q = questions[current];
-            document.getElementById("progressText").innerText = `السؤال ${current + 1} من ${questions.length}`;
+            const q = lessonData.questions[currentQ];
             document.getElementById("qImg").src = q.image;
-            document.getElementById("optionsGrid").innerHTML = ['a','b','c','d'].map(opt => `
-                <label class="p-5 border-2 rounded-2xl flex items-center gap-4 cursor-pointer bg-white">
-                    <input type="radio" name="choice" value="${opt}" class="w-5 h-5 accent-orange-500">
-                    <span class="font-bold uppercase">${opt}: ${q[opt]}</span>
+            document.getElementById("options").innerHTML = ['a','b','c','d'].map(opt => `
+                <label class="p-4 border-2 rounded-2xl flex items-center gap-3 cursor-pointer bg-white hover:border-orange-500 transition-all">
+                    <input type="radio" name="ans" value="${opt}" class="w-5 h-5 accent-orange-500">
+                    <span class="font-bold text-slate-700 uppercase">${opt}: ${q[opt]}</span>
                 </label>
             `).join('');
         }
 
         document.getElementById("nextBtn").onclick = () => {
-            const sel = document.querySelector('input[name="choice"]:checked');
-            if(!sel) return alert("اختار إجابة!");
-            userAns.push(sel.value);
-            current++;
-            if(current < questions.length) renderQuestion();
-            else {
+            const selected = document.querySelector('input[name="ans"]:checked');
+            if(!selected) return alert("اختار إجابة أولاً!");
+
+            answers.push(selected.value);
+            currentQ++;
+
+            if(currentQ < lessonData.questions.length) {
+                renderQuestion();
+            } else {
                 localStorage.setItem(`done_${currentUser.uid}_${lessonId}`, "true");
-                localStorage.setItem(`ans_${currentUser.uid}_${lessonId}`, JSON.stringify(userAns));
-                showFinalUI(userAns);
+                localStorage.setItem(`ans_${currentUser.uid}_${lessonId}`, JSON.stringify(answers));
+                showFinalContent();
             }
         };
 
-        function showFinalUI(answers) {
-            document.getElementById("quizArea").classList.add("hidden");
-            document.getElementById("resultsArea").classList.remove("hidden");
-            
-            // حساب الدرجة
-            let score = 0;
-            questions.forEach((q, i) => { if(answers[i] === q.correct) score++; });
-            document.getElementById("scoreText").innerText = `${score} / ${questions.length}`;
+        function showFinalContent() {
+            document.getElementById("quizScreen").classList.add("hidden");
+            document.getElementById("authArea").classList.add("hidden");
+            document.getElementById("contentScreen").classList.remove("hidden");
 
-            // إظهار رابط الـ PDF لو موجود
+            // عرض الدرجة
+            const savedAns = JSON.parse(localStorage.getItem(`ans_${currentUser.uid}_${lessonId}`)) || [];
+            let score = 0;
+            lessonData.questions.forEach((q, i) => { if(savedAns[i] === q.correct) score++; });
+            document.getElementById("scoreDisplay").innerText = `${score} / ${lessonData.questions.length}`;
+
+            // رابط الـ PDF
             if (lessonData.pdf) {
-                document.getElementById("pdfContainer").classList.remove("hidden");
-                document.getElementById("pdfLink").href = lessonData.pdf;
+                const pdfBtn = document.getElementById("pdfLink");
+                pdfBtn.href = lessonData.pdf;
+                pdfBtn.classList.remove("hidden");
             }
 
-            // تشغيل الفيديو مع السرعة والجودة
-            if(lessonData.video) {
-                document.getElementById("videoTab").classList.remove("hidden");
-                let vidId = lessonData.video.split('v=')[1]?.split('&')[0] || lessonData.video.split('/').pop();
-                
-                const player = new Plyr('#player', { 
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 
-                        'mute', 'volume', 'settings', 'fullscreen' // أضفنا settings للسرعة
-                    ],
-                    settings: ['quality', 'speed'], // تفعيل اختيار الجودة والسرعة
+            // تشغيل فيديو يوتيوب المحمي
+            if (lessonData.video) {
+                const vidId = lessonData.video.split('v=')[1]?.split('&')[0] || lessonData.video.split('/').pop();
+                const player = new Plyr('#player', {
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+                    settings: ['quality', 'speed'],
                     speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-                    youtube: { 
-                        noCookie: true, 
-                        rel: 0, 
-                        showinfo: 0, 
-                        modestbranding: 1, 
-                        iv_load_policy: 3 
-                    }
+                    youtube: { noCookie: true, rel: 0, showinfo: 0, modestbranding: 1 }
                 });
-                
-                player.source = {
-                    type: 'video',
-                    sources: [{ src: vidId, provider: 'youtube' }]
-                };
+                player.source = { type: 'video', sources: [{ src: vidId, provider: 'youtube' }] };
             }
         }
 
-        // تبديل التابات
-        document.getElementById("tabVideoBtn").onclick = () => {
-            document.getElementById("videoTab").classList.remove("hidden");
-            document.getElementById("reviewTab").classList.add("hidden");
-            document.getElementById("tabVideoBtn").className = "flex-1 py-4 font-black rounded-xl text-orange-600 bg-white shadow-md";
-            document.getElementById("tabReviewBtn").className = "flex-1 py-4 font-black text-slate-500";
-        };
-        document.getElementById("tabReviewBtn").onclick = () => {
-            document.getElementById("reviewTab").classList.remove("hidden");
-            document.getElementById("videoTab").classList.add("hidden");
-            document.getElementById("tabReviewBtn").className = "flex-1 py-4 font-black rounded-xl text-orange-600 bg-white shadow-md";
-            document.getElementById("tabVideoBtn").className = "flex-1 py-4 font-black text-slate-500";
-        };
-        
+        // حماية إضافية
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
