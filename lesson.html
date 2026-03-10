@@ -3,275 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | منطقة الطالب</title>
-    
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <title>MathPro | منطقة المذاكرة ✍️</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #f1f5f9; user-select: none; overflow-x: hidden; }
-        .blur-active { filter: blur(20px); pointer-events: none; transition: all 0.7s ease; }
-        .tab-active { background: #f97316 !important; color: white !important; box-shadow: 0 10px 15px rgba(249, 115, 22, 0.3); }
-        .timer-box { background: #1e293b; color: #fbbf24; font-family: monospace; border: 2px solid #334155; }
-        .glass-auth { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border: 1px solid white; }
-        
-        /* تصميم كارت المراجعة الضخم */
-        .review-card { background: white; border-radius: 2rem; border-right: 12px solid; margin-bottom: 2rem; padding: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .card-correct { border-right-color: #22c55e; background: #f0fdf4; }
-        .card-wrong { border-right-color: #ef4444; background: #fef2f2; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #05070a; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .gold-gradient { background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .q-card { transition: all 0.3s ease; border: 2px solid transparent; }
+        .q-card:hover { border-color: #f97316; background: rgba(249, 115, 22, 0.05); }
+        input[type="radio"]:checked + label { background-color: #f97316; color: white; border-color: #f97316; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="p-4 md:p-8">
 
-    <div id="authArea" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 hidden">
-        <div class="glass-auth p-10 rounded-[3rem] w-full max-w-md text-center shadow-2xl">
-            <div class="text-5xl mb-4">🔐</div>
-            <h2 class="text-3xl font-black mb-2 text-slate-800">تفعيل الحصة</h2>
-            <input id="accessCode" type="text" placeholder="SA-0000-0000" class="w-full p-5 bg-white border-4 border-slate-100 rounded-2xl mb-4 text-center font-black text-2xl uppercase focus:border-orange-500 outline-none transition-all">
-            <button id="verifyBtn" class="w-full bg-orange-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg hover:bg-orange-700 active:scale-95 transition-all">تفعيل الحصة الآن 🚀</button>
-            <p id="authError" class="hidden text-red-500 mt-4 font-bold">⚠️ الكود غير صحيح أو مستخدم</p>
+    <main class="max-w-5xl mx-auto space-y-10">
+        <div class="flex justify-between items-center">
+            <h1 id="lessonTitle" class="text-3xl font-black gold-gradient">جاري تحميل الدرس...</h1>
+            <a href="dashboard.html" class="bg-white/5 px-6 py-2 rounded-full font-bold hover:bg-white/10 transition">خروج</a>
         </div>
-    </div>
 
-    <div id="mainContent" class="blur-active min-h-screen">
-        <header class="bg-white sticky top-0 z-40 shadow-sm p-4 border-b">
-            <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <a href="dashboard.html" class="bg-slate-100 p-3 rounded-xl hover:bg-orange-100 transition-all text-xl" title="الرجوع للرئيسية">🏠</a>
-                    <h1 id="lessonTitle" class="text-2xl font-black text-slate-800 italic">...</h1>
-                </div>
-                <div class="timer-box px-6 py-2 rounded-2xl flex flex-col items-center">
-                    <span class="text-[10px] uppercase font-bold text-slate-400">الوقت المتبقي</span>
-                    <span id="liveTimer" class="text-xl font-black">00:00:00:00</span>
-                </div>
+        <div class="video-container glass">
+            <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+
+        <div id="pdfArea" class="hidden flex justify-center">
+            <a id="pdfLink" href="#" target="_blank" class="flex items-center gap-3 bg-orange-600 hover:bg-orange-700 px-8 py-4 rounded-2xl font-black shadow-xl transition-all">
+                <span>⬇️ تحميل ملزمة الحصة (PDF)</span>
+            </a>
+        </div>
+
+        <hr class="border-white/5">
+
+        <section id="quizSection" class="space-y-8 pb-20">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-black">الاختبار القبلي 📝</h2>
+                <p class="text-gray-500 font-medium">أجب على الأسئلة التالية لتسجيل درجتك في سجل المستر</p>
             </div>
-        </header>
 
-        <main class="max-w-4xl mx-auto px-4 mt-8 pb-20">
-            <nav class="flex bg-white p-2 rounded-3xl shadow-xl mb-10 gap-2 border">
-                <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-active flex-1 py-4 rounded-2xl font-black transition-all">📝 الامتحان</button>
-                <button onclick="switchTab('video')" id="tab-video" class="flex-1 py-4 rounded-2xl font-black bg-slate-100 text-slate-400">📺 فيديو الشرح 🔒</button>
-                <button onclick="switchTab('pdf')" id="tab-pdf" class="flex-1 py-4 rounded-2xl font-black bg-slate-100 text-slate-400">📚 PDF</button>
-            </nav>
+            <div id="questionsList" class="space-y-12">
+                </div>
 
-            <div id="sectionsContainer">
-                <section id="section-quiz" class="space-y-8">
-                    <div id="quizBox" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
-                        <div id="quizStart" class="text-center py-10">
-                            <h2 class="text-3xl font-black mb-4 italic text-slate-700 underline decoration-orange-500 text-orange-600">امتحان الدخول الإجباري</h2>
-                            <p class="text-slate-500 font-bold mb-8">الفيديو لن يفتح إلا بعد إنهاء هذا الاختبار</p>
-                            <button onclick="startQuiz()" class="bg-slate-900 text-white px-16 py-5 rounded-2xl font-black text-xl hover:bg-orange-600 transition-all">ابدأ الآن ✍️</button>
-                        </div>
+            <button id="submitQuizBtn" class="w-full bg-white text-black font-black py-6 rounded-[2rem] text-2xl shadow-2xl hover:bg-orange-500 hover:text-white transition-all transform active:scale-95">
+                إرسال الإجابات وإنهاء الحصة 🚀
+            </button>
+        </section>
+    </main>
 
-                        <div id="quizMain" class="hidden space-y-8">
-                            <div class="flex justify-between font-black text-orange-600"><span id="qNum">سؤال 1</span> <span id="qTotal"></span></div>
-                            <img id="qImg" src="" class="w-full max-h-96 object-contain rounded-3xl bg-slate-50 p-4 border shadow-inner">
-                            <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                            <div class="flex gap-4">
-                                <button id="prevBtn" onclick="prevQ()" class="hidden flex-1 bg-slate-200 py-4 rounded-2xl font-black">السؤال السابق</button>
-                                <button id="nextBtn" onclick="nextQ()" class="flex-[2] bg-slate-900 text-white py-4 rounded-2xl font-black">التالي ←</button>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
+        authDomain: "math-e62c9.firebaseapp.com",
+        projectId: "math-e62c9",
+        appId: "1:271507842148:web:2907aad4caf67afd08ab71"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentStudent = null;
+    let lessonData = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonId = urlParams.get('id');
+
+    // 1. التحقق من هوية الطالب
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            currentStudent = { uid: user.uid, email: user.email, name: userSnap.exists() ? userSnap.data().name : user.email.split('@')[0] };
+            loadLessonDetails();
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    // 2. تحميل بيانات الحصة من Firestore
+    async function loadLessonDetails() {
+        if (!lessonId) return;
+        const lessonSnap = await getDoc(doc(db, "lessons", lessonId));
+        if (lessonSnap.exists()) {
+            lessonData = lessonSnap.data();
+            document.getElementById('lessonTitle').innerText = lessonData.name;
+            document.getElementById('videoFrame').src = lessonData.video.replace("watch?v=", "embed/");
+            
+            if (lessonData.pdf) {
+                document.getElementById('pdfArea').classList.remove('hidden');
+                document.getElementById('pdfLink').href = lessonData.pdf;
+            }
+
+            renderQuestions(lessonData.questions);
+        }
+    }
+
+    // 3. عرض الأسئلة
+    function renderQuestions(questions) {
+        const list = document.getElementById('questionsList');
+        list.innerHTML = "";
+        questions.forEach((q, index) => {
+            list.innerHTML += `
+                <div class="q-card glass p-8 rounded-[2.5rem] space-y-6" data-correct="${q.correct}">
+                    <p class="text-orange-500 font-black tracking-widest text-sm uppercase">السؤال ${index + 1}</p>
+                    ${q.image ? `<img src="${q.image}" class="rounded-xl w-full border border-white/10">` : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${['a', 'b', 'c', 'd'].map(opt => `
+                            <div>
+                                <input type="radio" name="q${index}" id="q${index}${opt}" value="${opt}" class="hidden">
+                                <label for="q${index}${opt}" class="flex items-center p-4 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/5 transition font-bold">
+                                    <span class="w-8 h-8 rounded-full border border-orange-500 flex items-center justify-center ml-3 text-sm">${opt.toUpperCase()}</span>
+                                    ${q[opt]}
+                                </label>
                             </div>
-                        </div>
-
-                        <div id="quizResult" class="hidden text-center py-12">
-                            <div class="text-7xl mb-6">🏆</div>
-                            <h2 class="text-4xl font-black mb-4 text-slate-800">نتيجة الامتحان</h2>
-                            <div class="flex justify-center gap-10 mb-8">
-                                <div class="text-center">
-                                    <p class="text-slate-400 font-bold">الدرجة</p>
-                                    <p id="finalScore" class="text-5xl font-black text-orange-600">0 / 0</p>
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-slate-400 font-bold">النسبة المئوية</p>
-                                    <p id="finalPercent" class="text-5xl font-black text-orange-600">0%</p>
-                                </div>
-                            </div>
-                            <button onclick="switchTab('video')" class="bg-orange-600 text-white px-12 py-5 rounded-2xl font-black shadow-xl animate-bounce text-xl">انقر لمشاهدة الفيديو 📺</button>
-                        </div>
+                        `).join('')}
                     </div>
+                </div>
+            `;
+        });
+    }
 
-                    <div id="reviewContainer" class="hidden space-y-6">
-                        <h3 class="text-2xl font-black text-slate-800 mr-4 italic">مراجعة الإجابات بالتفصيل 🔍</h3>
-                        <div id="reviewList"></div>
-                    </div>
-                </section>
+    // 4. تصحيح الامتحان وإرسال النتيجة للمدرس
+    document.getElementById('submitQuizBtn').onclick = async () => {
+        const questions = document.querySelectorAll('.q-card');
+        let score = 0;
+        let total = questions.length;
+        let allAnswered = true;
 
-                <section id="section-video" class="hidden space-y-6">
-                    <div class="rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl bg-black">
-                        <video id="player" playsinline controls></video>
-                    </div>
-                </section>
-
-                <section id="section-pdf" class="hidden">
-                    <div class="bg-white p-16 rounded-[2.5rem] text-center shadow-xl border border-slate-100">
-                        <div class="text-7xl mb-6">📂</div>
-                        <h2 class="text-3xl font-black mb-8">تحميل ملزمة الدرس</h2>
-                        <a id="pdfLink" href="#" target="_blank" class="bg-red-600 text-white px-16 py-6 rounded-2xl font-black text-2xl shadow-xl hover:bg-red-700 transition-all">تحميل PDF 📥</a>
-                    </div>
-                </section>
-            </div>
-        </main>
-    </div>
-
-    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-        const firebaseConfig = { 
-            apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", 
-            authDomain: "math-e62c9.firebaseapp.com", 
-            projectId: "math-e62c9", 
-            appId: "1:271507842148:web:2907aad4caf67afd08ab71" 
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const lessonId = new URLSearchParams(window.location.search).get("id");
-
-        let currentUser, lessonData, currentQ = 0, userAnswers = [], isDone = false;
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) { currentUser = user; checkFlow(); }
-            else { window.location.href = "login.html"; }
+        questions.forEach((qCard, index) => {
+            const selected = qCard.querySelector(`input[name="q${index}"]:checked`);
+            if (selected) {
+                if (selected.value === qCard.dataset.correct) score++;
+            } else {
+                allAnswered = false;
+            }
         });
 
-        async function checkFlow() {
-            const enrollSnap = await getDoc(doc(db, "enrollments", `${currentUser.uid}_${lessonId}`));
-            if (!enrollSnap.exists()) {
-                document.getElementById("authArea").classList.remove("hidden");
-                document.getElementById("mainContent").classList.add("blur-active");
-            } else {
-                document.getElementById("authArea").classList.add("hidden");
-                document.getElementById("mainContent").classList.remove("blur-active");
-                const lessonSnap = await getDoc(doc(db, "lessons", lessonId));
-                lessonData = lessonSnap.data();
-                document.getElementById("lessonTitle").innerText = lessonData.name;
-                document.getElementById("pdfLink").href = lessonData.pdf || "#";
-                document.getElementById("qTotal").innerText = `من ${lessonData.questions.length}`;
-
-                // التايمر
-                const actDate = enrollSnap.data().activatedAt.toDate();
-                const expDate = new Date(actDate.getTime() + (7 * 24 * 60 * 60 * 1000));
-                setInterval(() => {
-                    const diff = expDate - new Date();
-                    if(diff <= 0) window.location.href = "dashboard.html";
-                    const d = Math.floor(diff/(1000*60*60*24)), h = Math.floor((diff/(1000*60*60))%24), m = Math.floor((diff/(1000*60))%60), s = Math.floor((diff/1000)%60);
-                    document.getElementById("liveTimer").innerText = `${d}ي : ${h}س : ${m}د : ${s}ث`;
-                }, 1000);
-
-                if (localStorage.getItem(`done_${currentUser.uid}_${lessonId}`)) {
-                    isDone = true; 
-                    userAnswers = JSON.parse(localStorage.getItem(`ans_${currentUser.uid}_${lessonId}`));
-                    unlockContent();
-                }
-            }
+        if (!allAnswered) {
+            if (!confirm("لم تجب على جميع الأسئلة، هل تريد الاستمرار؟")) return;
         }
 
-        window.switchTab = (tab) => {
-            if ((tab === 'video' || tab === 'pdf') && !isDone) {
-                alert("🔒 لازم تخلص الامتحان الأول!");
-                return;
-            }
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
-            document.querySelectorAll('#sectionsContainer section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(`tab-${tab}`).classList.add('tab-active');
-            document.getElementById(`section-${tab}`).classList.remove('hidden');
-            if (tab === 'video') initVideo();
-        };
+        const btn = document.getElementById('submitQuizBtn');
+        btn.innerText = "جاري حفظ النتيجة... ⏳";
+        btn.disabled = true;
 
-        window.startQuiz = () => {
-            document.getElementById("quizStart").classList.add("hidden");
-            document.getElementById("quizMain").classList.remove("hidden");
-            renderQ();
-        };
-
-        function renderQ() {
-            const q = lessonData.questions[currentQ];
-            document.getElementById("qNum").innerText = `سؤال ${currentQ + 1}`;
-            document.getElementById("qImg").src = q.image;
-            document.getElementById("prevBtn").classList.toggle("hidden", currentQ === 0);
-            document.getElementById("options").innerHTML = ['a','b','c','d'].map(opt => `
-                <button onclick="selectOpt('${opt}')" class="p-6 border-4 rounded-2xl font-black text-xl text-right transition-all ${userAnswers[currentQ] === opt ? 'border-orange-500 bg-orange-50' : 'border-slate-100 bg-white hover:border-slate-300'}">
-                    ${opt.toUpperCase()}: ${q[opt]}
-                </button>
-            `).join('');
-        }
-
-        window.selectOpt = (o) => { userAnswers[currentQ] = o; renderQ(); };
-        window.nextQ = () => { 
-            if(!userAnswers[currentQ]) return alert("اختار إجابة!");
-            if(currentQ < lessonData.questions.length - 1) { currentQ++; renderQ(); }
-            else { finishQuiz(); }
-        };
-        window.prevQ = () => { if(currentQ > 0) { currentQ--; renderQ(); } };
-
-        function finishQuiz() {
-            isDone = true;
-            localStorage.setItem(`done_${currentUser.uid}_${lessonId}`, "true");
-            localStorage.setItem(`ans_${currentUser.uid}_${lessonId}`, JSON.stringify(userAnswers));
-            unlockContent();
-        }
-
-        function unlockContent() {
-            let score = 0;
-            lessonData.questions.forEach((q, i) => { if(userAnswers[i] === q.correct) score++; });
-            const percent = Math.round((score / lessonData.questions.length) * 100);
-
-            document.getElementById("quizStart").classList.add("hidden");
-            document.getElementById("quizMain").classList.add("hidden");
-            document.getElementById("quizResult").classList.remove("hidden");
-            document.getElementById("finalScore").innerText = `${score} / ${lessonData.questions.length}`;
-            document.getElementById("finalPercent").innerText = `${percent}%`;
-
-            document.getElementById("tab-video").innerText = "📺 فيديو الشرح";
-            document.getElementById("tab-video").classList.remove("text-slate-400");
-            document.getElementById("tab-pdf").classList.remove("text-slate-400");
-
-            renderReview();
-        }
-
-        function renderReview() {
-            let html = "";
-            lessonData.questions.forEach((q, i) => {
-                const isCorrect = userAnswers[i] === q.correct;
-                html += `
-                    <div class="review-card ${isCorrect ? 'card-correct' : 'card-wrong'}">
-                        <div class="flex flex-col md:flex-row gap-8 items-center">
-                            <img src="${q.image}" class="w-full md:w-1/2 rounded-2xl border bg-white p-2">
-                            <div class="w-full md:w-1/2 text-center md:text-right">
-                                <h4 class="text-3xl font-black mb-4">${isCorrect ? '✅ صح' : '❌ غلط'}</h4>
-                                <div class="space-y-4">
-                                    <div class="p-4 rounded-xl bg-white border font-bold text-xl">إجابتك: (${userAnswers[i].toUpperCase()})</div>
-                                    <div class="p-4 rounded-xl bg-green-100 border border-green-200 font-bold text-xl text-green-700">الصح: (${q.correct.toUpperCase()})</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+        try {
+            // إرسال النتيجة لمجموعة results اللي بيقرأ منها المدرس
+            await addDoc(collection(db, "results"), {
+                studentName: currentStudent.name,
+                studentEmail: currentStudent.email,
+                lessonName: lessonData.name,
+                score: score,
+                totalQuestions: total,
+                submittedAt: new Date()
             });
-            document.getElementById("reviewList").innerHTML = html;
-            document.getElementById("reviewContainer").classList.remove("hidden");
-        }
 
-        function initVideo() {
-            if (window.playerInst) return;
-            const vidId = lessonData.video.split('v=')[1]?.split('&')[0] || lessonData.video.split('/').pop();
-            window.playerInst = new Plyr('#player');
-            window.playerInst.source = { type: 'video', sources: [{ src: vidId, provider: 'youtube' }] };
+            alert(`أحسنت يا ${currentStudent.name}! درجتك هي: ${score} من ${total}\nتم إرسال نتيجتك لمستر كيفين هاني.`);
+            window.location.href = "dashboard.html";
+        } catch (e) {
+            alert("حدث خطأ أثناء حفظ النتيجة، حاول مرة أخرى.");
+            btn.disabled = false;
+            btn.innerText = "إرسال الإجابات وإنهاء الحصة 🚀";
         }
-
-        document.getElementById("verifyBtn").onclick = async () => {
-            const code = document.getElementById("accessCode").value.trim().toUpperCase();
-            const snap = await getDoc(doc(db, "codes", code));
-            if(snap.exists() && !snap.data().used) {
-                await updateDoc(doc(db, "codes", code), { used: true, usedBy: currentUser.email });
-                await setDoc(doc(db, "enrollments", `${currentUser.uid}_${lessonId}`), { activatedAt: new Date() });
-                location.reload();
-            } else { alert("كود خاطئ!"); }
-        };
-    </script>
+    };
+</script>
 </body>
 </html>
