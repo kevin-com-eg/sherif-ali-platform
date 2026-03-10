@@ -42,6 +42,36 @@
         </div>
 
         <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-8 bg-green-500 rounded-full"></div>
+                    <h2 class="text-2xl font-black text-slate-800">سجل درجات الطلاب 📊</h2>
+                </div>
+                <div class="w-full md:w-1/3 relative">
+                    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="ابحث باسم الطالب، الإيميل، أو الحصة..." class="w-full p-3 pl-10 bg-slate-50 border-2 border-emerald-100 rounded-xl outline-none focus:border-[#10b981] text-sm font-bold text-slate-700">
+                    <span class="absolute left-3 top-3 text-slate-400">🔍</span>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                <table class="w-full text-right border-collapse" id="resultsMainTable">
+                    <thead class="sticky top-0 bg-white shadow-sm z-10">
+                        <tr class="border-b-2 border-emerald-100">
+                            <th class="p-4 text-slate-500 font-black">اسم الطالب</th>
+                            <th class="p-4 text-slate-500 font-black">البريد الإلكتروني</th>
+                            <th class="p-4 text-slate-500 font-black">اسم الحصة</th>
+                            <th class="p-4 text-slate-500 font-black">الدرجة</th>
+                            <th class="p-4 text-slate-500 font-black">الوقت والتاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTable" class="text-slate-700">
+                        <tr><td colspan="5" class="p-10 text-center text-slate-400 font-bold">جاري تحميل وسحب الدرجات... ⏳</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100">
             <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-2">
                 <div class="w-2 h-8 bg-[#10b981] rounded-full"></div> بيانات الحصة الأساسية ➕
             </h2>
@@ -89,7 +119,7 @@
             <div id="codesResultArea" class="hidden">
                 <div class="bg-emerald-50 border-2 border-emerald-200 p-6 rounded-3xl">
                     <button id="copyCodesBtn" class="mb-4 bg-[#10b981] text-white px-4 py-2 rounded-lg text-sm font-bold">نسخ الأكواد للطباعة 📋</button>
-                    <div id="codesGrid" class="grid grid-cols-2 md:grid-cols-5 gap-2 font-mono text-xs"></div>
+                    <div id="codesGrid" class="grid grid-cols-2 md:grid-cols-5 gap-2 font-mono text-xs text-center"></div>
                 </div>
             </div>
         </div>
@@ -115,6 +145,7 @@
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === MASTER_EMAIL) {
             document.getElementById("secureLayer").classList.add("hidden");
+            loadResults(); 
         } else {
             window.location.href = "index.html";
         }
@@ -132,6 +163,86 @@
         } catch(e) { alert("خطأ في الإرسال"); }
         btn.innerText = "إرسال لجميع الطلاب فوراً 🚀"; btn.disabled = false;
     };
+
+    // 🔥 دالة سحب الدرجات مطورة بالاسم والبحث 🔥
+    async function loadResults() {
+        const resultsTable = document.getElementById("resultsTable");
+        try {
+            // 1. جلب أسماء الطلاب من الداتا بيز
+            const usersSnap = await getDocs(collection(db, "users"));
+            let usersMap = {};
+            usersSnap.forEach(doc => {
+                const data = doc.data();
+                if(data.email) usersMap[data.email] = data.name;
+            });
+
+            // 2. جلب النتائج
+            let querySnapshot;
+            try {
+                // لو عامل Index هيجيبها مترتبة بالتاريخ
+                const q = query(collection(db, "results"), orderBy("date", "desc"));
+                querySnapshot = await getDocs(q);
+            } catch(e) {
+                // لو مفيش Index هيجيبها عادي ونرتبها إحنا
+                querySnapshot = await getDocs(collection(db, "results"));
+            }
+
+            let resultsArray = [];
+            querySnapshot.forEach(doc => resultsArray.push(doc.data()));
+            
+            // ترتيب من الأحدث للأقدم
+            resultsArray.sort((a,b) => {
+                const dateA = a.date ? a.date.seconds : 0;
+                const dateB = b.date ? b.date.seconds : 0;
+                return dateB - dateA;
+            });
+
+            resultsTable.innerHTML = "";
+            if (resultsArray.length === 0) { 
+                resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-500 font-bold">لا توجد نتائج مسجلة حتى الآن.</td></tr>`; 
+                return; 
+            }
+
+            resultsArray.forEach((res) => {
+                const studentName = usersMap[res.email] || "طالب غير مسجل بالاسم";
+                const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' };
+                const examDate = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG', dateOptions) : "غير محدد";
+                
+                const tr = document.createElement("tr");
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition student-row";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-800">${studentName}</td>
+                    <td class="p-4 text-slate-500 font-mono text-sm">${res.email || "-"}</td>
+                    <td class="p-4 font-black text-[#10b981]">${res.lesson || "-"}</td>
+                    <td class="p-4">
+                        <span class="bg-[#10b981]/10 text-[#10b981] px-4 py-1.5 rounded-full font-black border border-[#10b981]/20 shadow-sm">
+                            ${res.score} / ${res.total}
+                        </span>
+                    </td>
+                    <td class="p-4 text-xs text-slate-400 font-bold" dir="ltr">${examDate}</td>
+                `;
+                resultsTable.appendChild(tr);
+            });
+        } catch (e) {
+            console.error(e);
+            resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>`;
+        }
+    }
+
+    // دالة البحث في الجدول
+    window.searchTable = () => {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const rows = document.querySelectorAll(".student-row");
+        
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
 
     document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
@@ -154,7 +265,6 @@
     document.getElementById("saveBtn").onclick = async () => {
         const name = document.getElementById("lessonName").value;
         const video = document.getElementById("videoUrl").value;
-        // استدعاء السعر والصورة
         const price = document.getElementById("lessonPrice").value;
         const image = document.getElementById("lessonImage").value;
         
@@ -165,18 +275,21 @@
             questionsData.push({ image: block.querySelector('.q-image').value, a: block.querySelector('.q-a').value || "A", b: block.querySelector('.q-b').value || "B", c: block.querySelector('.q-c').value || "C", d: block.querySelector('.q-d').value || "D", correct: block.querySelector('.q-correct').value });
         });
         
+        const btn = document.getElementById('saveBtn');
+        btn.innerText = "جاري النشر..."; btn.disabled = true;
+
         try {
             await addDoc(collection(db, "lessons"), { 
                 name: name, 
                 video: video, 
                 pdf: document.getElementById("attachmentUrl").value, 
-                price: price, // حفظ السعر
-                image: image, // حفظ الصورة
+                price: price, 
+                image: image, 
                 questions: questionsData, 
                 createdAt: new Date() 
             });
             alert("تم نشر الحصة بنجاح! ✅"); location.reload();
-        } catch (e) { alert("خطأ في الحفظ"); }
+        } catch (e) { alert("خطأ في الحفظ"); btn.innerText = "نشر الحصة الآن 🚀"; btn.disabled = false; }
     };
 
     document.getElementById('genCodesBtn').onclick = async () => {
@@ -186,7 +299,7 @@
         for (let i = 0; i < 50; i++) {
             const code = "SA-" + Math.floor(Math.random() * 1e12);
             await setDoc(doc(db, "codes", code), { used: false, createdAt: new Date() });
-            grid.innerHTML += `<div class="p-1 border rounded bg-white">${code}</div>`;
+            grid.innerHTML += `<div class="p-1 border rounded bg-white shadow-sm font-bold text-slate-700">${code}</div>`;
         }
         document.getElementById('codesResultArea').classList.remove('hidden');
     };
