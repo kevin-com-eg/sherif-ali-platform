@@ -7,41 +7,41 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #f1f5f9; }
+        body { font-family: 'Tajawal', sans-serif; background: #f0fdf4; } /* خلفية خضراء فاتحة */
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .btn-cyan { background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); }
-        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); }
+        .btn-green { background: linear-gradient(135deg, #10b981 0%, #047857 100%); } /* تدرج أخضر */
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.1); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div id="secureLayer" class="fixed inset-0 bg-white z-[100] flex items-center justify-center">
         <div class="text-center">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-[#00b4d8] border-solid mx-auto"></div>
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-[#10b981] border-solid mx-auto"></div>
             <p class="mt-4 font-bold text-slate-600">جاري التحقق من صلاحيات المعلم...</p>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto space-y-10">
         
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white flex justify-between items-center">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-black text-slate-800">لوحة تحكم المعلم 🎓</h1>
-                <p class="text-[#00b4d8] font-bold">مستر شريف علي | إدارة المنصة</p>
+                <p class="text-[#10b981] font-bold">مستر شريف علي | إدارة المنصة</p>
             </div>
             <button onclick="signOut()" class="bg-red-50 text-red-600 px-6 py-2 rounded-xl font-bold hover:bg-red-100 transition">خروج</button>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white bg-blue-50/50">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100 bg-emerald-50/50">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">📢</span>
                 <h2 class="text-2xl font-black text-slate-800">إرسال تنبيه عام للطلاب</h2>
             </div>
-            <textarea id="notifMessage" placeholder="اكتب رسالتك هنا (مثلاً: تم رفع ملزمة المراجعة النهائية مجاناً على المنصة)..." class="w-full p-5 bg-white border-2 border-slate-200 rounded-2xl outline-none focus:border-[#00b4d8] mb-4 h-28 font-medium text-lg"></textarea>
-            <button id="sendNotifBtn" class="btn-cyan text-white px-8 py-4 rounded-2xl font-black hover:opacity-90 transition w-full md:w-auto shadow-lg text-lg">إرسال لجميع الطلاب فوراً 🚀</button>
+            <textarea id="notifMessage" placeholder="اكتب رسالتك هنا (مثلاً: تم رفع ملزمة المراجعة النهائية مجاناً على المنصة)..." class="w-full p-5 bg-white border-2 border-emerald-200 rounded-2xl outline-none focus:border-[#10b981] mb-4 h-28 font-medium text-lg"></textarea>
+            <button id="sendNotifBtn" class="btn-green text-white px-8 py-4 rounded-2xl font-black hover:opacity-90 transition w-full md:w-auto shadow-lg text-lg">إرسال لجميع الطلاب فوراً 🚀</button>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100">
             <div class="flex items-center gap-3 mb-8">
                 <div class="w-2 h-8 bg-green-500 rounded-full"></div>
                 <h2 class="text-2xl font-black text-slate-800">نتائج امتحانات الطلاب 📊</h2>
@@ -49,7 +49,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-right border-collapse">
                     <thead>
-                        <tr class="border-b-2 border-slate-100">
+                        <tr class="border-b-2 border-emerald-100">
                             <th class="p-4 text-slate-500 font-black">البريد الإلكتروني</th>
                             <th class="p-4 text-slate-500 font-black">الحصة</th>
                             <th class="p-4 text-slate-500 font-black">الدرجة</th>
@@ -63,30 +63,30 @@
             </div>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100">
             <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-2">
-                <div class="w-2 h-8 bg-[#00b4d8] rounded-full"></div> إضافة حصة جديدة ➕
+                <div class="w-2 h-8 bg-[#10b981] rounded-full"></div> إضافة حصة جديدة ➕
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <input id="lessonName" placeholder="اسم الحصة" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#00b4d8]">
-                <input id="videoUrl" placeholder="رابط اليوتيوب" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#00b4d8]">
-                <input id="attachmentUrl" placeholder="رابط الملزمة PDF" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#00b4d8]">
+                <input id="lessonName" placeholder="اسم الحصة" class="p-4 bg-slate-50 border-2 border-emerald-100 rounded-2xl outline-none focus:border-[#10b981]">
+                <input id="videoUrl" placeholder="رابط اليوتيوب" class="p-4 bg-slate-50 border-2 border-emerald-100 rounded-2xl outline-none focus:border-[#10b981]">
+                <input id="attachmentUrl" placeholder="رابط الملزمة PDF" class="p-4 bg-slate-50 border-2 border-emerald-100 rounded-2xl outline-none focus:border-[#10b981]">
             </div>
             <div id="questionsContainer" class="space-y-6"></div>
             <div class="mt-10 flex flex-col md:flex-row gap-4">
                 <button id="addNewQBtn" class="flex-1 bg-slate-100 text-slate-700 font-black py-4 rounded-2xl border-2 border-slate-200 hover:bg-slate-200">+ إضافة سؤال</button>
-                <button id="saveBtn" class="flex-1 btn-cyan text-white font-black py-4 rounded-2xl text-xl shadow-lg active:scale-95">نشر الحصة الآن 🚀</button>
+                <button id="saveBtn" class="flex-1 btn-green text-white font-black py-4 rounded-2xl text-xl shadow-lg active:scale-95">نشر الحصة الآن 🚀</button>
             </div>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-emerald-100">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-black text-slate-800">توليد أكواد الاشتراك 🎫</h2>
-                <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-[#00b4d8] transition shadow-lg">توليد 50 كود جديد</button>
+                <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-[#10b981] transition shadow-lg">توليد 50 كود جديد</button>
             </div>
             <div id="codesResultArea" class="hidden">
-                <div class="bg-blue-50 border-2 border-blue-200 p-6 rounded-3xl">
-                    <button id="copyCodesBtn" class="mb-4 bg-[#00b4d8] text-white px-4 py-2 rounded-lg text-sm font-bold">نسخ الأكواد للطباعة 📋</button>
+                <div class="bg-emerald-50 border-2 border-emerald-200 p-6 rounded-3xl">
+                    <button id="copyCodesBtn" class="mb-4 bg-[#10b981] text-white px-4 py-2 rounded-lg text-sm font-bold">نسخ الأكواد للطباعة 📋</button>
                     <div id="codesGrid" class="grid grid-cols-2 md:grid-cols-5 gap-2 font-mono text-xs"></div>
                 </div>
             </div>
@@ -154,10 +154,10 @@
                 const res = doc.data();
                 const date = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG') : "---";
                 resultsTable.innerHTML += `
-                    <tr class="border-b border-slate-100">
+                    <tr class="border-b border-emerald-100">
                         <td class="p-4 text-slate-500 font-mono">${res.email || "-"}</td>
                         <td class="p-4 font-bold text-slate-700">${res.lesson || "-"}</td>
-                        <td class="p-4"><span class="bg-[#00b4d8]/10 text-[#00b4d8] px-4 py-1 rounded-full font-black">${res.score} / ${res.total}</span></td>
+                        <td class="p-4"><span class="bg-[#10b981]/10 text-[#10b981] px-4 py-1 rounded-full font-black">${res.score} / ${res.total}</span></td>
                         <td class="p-4 text-xs text-slate-500">${date}</td>
                     </tr>`;
             });
@@ -166,8 +166,8 @@
 
     document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
-        const qHtml = `<div class="question-block bg-white p-6 rounded-3xl border-2 border-slate-100 mb-4">
-            <p class="font-black mb-4 text-[#00b4d8] underline">سؤال رقم ${qCount}</p>
+        const qHtml = `<div class="question-block bg-white p-6 rounded-3xl border-2 border-emerald-100 mb-4">
+            <p class="font-black mb-4 text-[#10b981] underline">سؤال رقم ${qCount}</p>
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <input class="q-image p-3 border rounded-xl" placeholder="رابط صورة السؤال">
                 <select class="q-correct p-3 border rounded-xl font-bold"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select>
