@@ -65,7 +65,7 @@
                 </div>
 
                 <div id="reviewArea" class="hidden space-y-8 mt-10">
-                    <div id="scoreBanner" class="glass p-10 rounded-[3rem] text-center border-2 border-orange-500 animate-pulse"></div>
+                    <div id="scoreBanner" class="glass p-10 rounded-[3rem] text-center border-2 border-orange-500"></div>
                     <div id="reviewList" class="space-y-6"></div>
                 </div>
             </div>
@@ -119,9 +119,8 @@
                     const expiry = JSON.parse(saved).expiry;
                     if (new Date().getTime() < expiry) {
                         initLesson();
-                        startAccessTimer(expiry); // تشغيل عداد الـ 7 أيام
+                        startAccessTimer(expiry);
                     } else {
-                        // الكود انتهت صلاحيته
                         localStorage.removeItem(`access_${lessonId}`);
                         document.getElementById('codeLockScreen').classList.remove('hidden');
                     }
@@ -131,7 +130,6 @@
             } else { window.location.href = "index.html"; }
         });
 
-        // تشغيل عداد صلاحية الكود (7 أيام)
         function startAccessTimer(expiryTime) {
             document.getElementById('accessTimerBox').classList.remove('hidden');
             const interval = setInterval(() => {
@@ -162,7 +160,6 @@
             try {
                 const snap = await getDoc(doc(db, "codes", code));
                 if (snap.exists() && (!snap.data().used || snap.data().usedBy === auth.currentUser.email)) {
-                    // الكود صالح لمدة 7 أيام
                     const expiry = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
                     await updateDoc(doc(db, "codes", code), { used: true, usedBy: auth.currentUser.email, expiryAt: expiry });
                     localStorage.setItem(`access_${new URLSearchParams(window.location.search).get('id')}`, JSON.stringify({ expiry }));
@@ -171,7 +168,7 @@
                     alert("هذا الكود غير صالح أو تم استخدامه مسبقاً!"); 
                 }
             } catch (error) {
-                console.error("خطأ في التحقق من الكود: ", error);
+                console.error("خطأ: ", error);
             }
         };
 
@@ -182,6 +179,43 @@
             if (snap.exists()) {
                 lessonData = snap.data();
                 questions = lessonData.questions || [];
+
+                // التحقق مما إذا كان الطالب قد أدى الامتحان مسبقاً
+                const hasTakenExam = localStorage.getItem(`exam_taken_${id}`);
+                if (hasTakenExam) {
+                    unlockLessonFeatures(); // تفعيل الميديا فوراً وتخطي الامتحان
+                }
+            }
+        }
+
+        // دالة لفتح الميديا مباشرة لو الطالب ممتحن مسبقاً
+        function unlockLessonFeatures(scoreMessage = null) {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizApp').classList.add('hidden');
+            document.getElementById('timerBox').classList.add('hidden');
+            document.getElementById('reviewArea').classList.remove('hidden');
+            
+            if (scoreMessage) {
+                document.getElementById('scoreBanner').innerHTML = scoreMessage;
+            } else {
+                document.getElementById('scoreBanner').innerHTML = `
+                    <h2 class="text-4xl font-black mb-2 text-green-500">لقد قمت بأداء هذا الامتحان مسبقاً ✅</h2>
+                    <p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>
+                `;
+            }
+
+            document.getElementById('btn-video-tab').classList.add('unlocked');
+            document.getElementById('btn-pdf-tab').classList.add('unlocked');
+            
+            if(lessonData.video && !plyrPlayer) {
+                const videoUrl = lessonData.video;
+                const vId = videoUrl.includes('v=') ? videoUrl.split('v=')[1].split('&')[0] : videoUrl.split('/').pop();
+                plyrPlayer = new Plyr('#player');
+                plyrPlayer.source = { type: 'video', sources: [{ src: vId, provider: 'youtube' }] };
+            }
+            
+            if(lessonData.pdf) {
+                document.getElementById('pdfLink').href = lessonData.pdf;
             }
         }
 
@@ -211,8 +245,6 @@
             `;
             
             document.getElementById('qCount').innerText = `${curIdx + 1} / ${questions.length}`;
-            
-            // إظهار وإخفاء الأزرار حسب رقم السؤال الحالي
             document.getElementById('prevBtn').classList.toggle('hidden', curIdx === 0);
             document.getElementById('nextBtn').classList.toggle('hidden', curIdx === questions.length - 1);
             document.getElementById('finishBtn').classList.toggle('hidden', curIdx !== questions.length - 1);
@@ -228,7 +260,7 @@
 
         document.getElementById('finishBtn').onclick = async () => {
             saveAns();
-            clearInterval(examTimerInterval); // إيقاف عداد الامتحان
+            clearInterval(examTimerInterval);
             
             let score = 0;
             const reviewList = document.getElementById('reviewList');
@@ -252,34 +284,18 @@
 
             try {
                 await addDoc(collection(db, "results"), { email: auth.currentUser.email, lesson: lessonData.name, score, total: questions.length, date: new Date() });
-            } catch(e) { console.log("نتيجة غير مسجلة في الداتا بيز مؤقتاً"); }
+            } catch(e) { console.log("نتيجة غير مسجلة مؤقتاً"); }
 
-            // إخفاء الامتحان وإظهار شاشة المراجعة
-            document.getElementById('quizApp').classList.add('hidden');
-            document.getElementById('timerBox').classList.add('hidden');
-            document.getElementById('reviewArea').classList.remove('hidden');
-            
-            document.getElementById('scoreBanner').innerHTML = `
+            // حفظ حالة إنهاء الامتحان عشان ميمتحنش تاني
+            const lessonId = new URLSearchParams(window.location.search).get('id');
+            localStorage.setItem(`exam_taken_${lessonId}`, true);
+
+            // تفعيل الميديا وعرض النتيجة
+            const msg = `
                 <h2 class="text-4xl font-black mb-2">درجتك النهائية: ${score} من ${questions.length}</h2>
-                <p class="text-green-400 font-bold mt-2">✅ تم فتح فيديو الشرح والملزمة الآن بنجاح بالأعلى</p>
+                <p class="text-green-400 font-bold mt-2 animate-pulse">✅ تم فتح فيديو الشرح والملزمة الآن بنجاح بالأعلى</p>
             `;
-
-            // فتح التبويبات والميديا (الفيديو والملزمة)
-            document.getElementById('btn-video-tab').classList.add('unlocked');
-            document.getElementById('btn-pdf-tab').classList.add('unlocked');
-            
-            // تهيئة مشغل الفيديو Plyr بعد فتح التبويبات لتجنب أخطاء الأبعاد
-            if(lessonData.video) {
-                const videoUrl = lessonData.video;
-                const vId = videoUrl.includes('v=') ? videoUrl.split('v=')[1].split('&')[0] : videoUrl.split('/').pop();
-                plyrPlayer = new Plyr('#player');
-                plyrPlayer.source = { type: 'video', sources: [{ src: vId, provider: 'youtube' }] };
-            }
-            
-            // تجهيز رابط الملزمة
-            if(lessonData.pdf) {
-                document.getElementById('pdfLink').href = lessonData.pdf;
-            }
+            unlockLessonFeatures(msg);
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
