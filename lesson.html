@@ -3,71 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | الدرس المحمي</title>
+    <title>MathPro | الحصة الذكية</title>
     
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; user-select: none; background-color: #f3f4f6; }
+        body { font-family: 'Tajawal', sans-serif; user-select: none; background-color: #f8fafc; }
         :root { --plyr-color-main: #f97316; }
-        .video-container { position: relative; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 8px solid white; background: #000; }
-        .option-card { cursor: pointer; transition: all 0.2s; border: 2px solid #f1f5f9; background: white; }
+        .video-container { border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); border: 8px solid white; background: #000; }
+        .option-card { cursor: pointer; transition: all 0.2s; border: 2px solid #e2e8f0; background: white; }
         .option-card:hover { border-color: #f97316; background-color: #fff7ed; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        #quizTimer { background: #fee2e2; color: #ef4444; padding: 8px 20px; border-radius: 999px; font-weight: 900; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .shake-error { animation: shake 0.4s ease-in-out; border-color: #ef4444 !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     </style>
 </head>
 <body class="min-h-screen">
 
     <div id="timerBar" class="hidden sticky top-0 z-50 bg-gray-900 text-white py-2 px-4 flex justify-center items-center gap-3 border-b border-orange-500 shadow-lg">
-        <span class="text-orange-500 text-lg animate-pulse">⏳</span>
-        <span class="text-xs md:text-sm font-bold opacity-80">الوقت المتبقي لحسابك:</span>
-        <span id="countdownDisplay" class="font-black text-orange-500 tracking-tighter text-sm md:text-base">-- : -- : -- : --</span>
+        <span class="text-orange-500 animate-pulse">⏳</span>
+        <span class="text-xs font-bold opacity-80">صلاحية الحصة لحسابك:</span>
+        <span id="countdownDisplay" class="font-black text-orange-500 text-sm">-- : -- : --</span>
     </div>
 
     <div id="authArea" class="hidden fixed inset-0 bg-gray-900/95 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-        <div id="authContent" class="bg-white p-8 md:p-12 rounded-[3rem] w-full max-w-md text-center shadow-2xl border-t-8 border-orange-500">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-50 rounded-full mb-6 text-3xl">🔑</div>
-            <h2 class="text-2xl font-black mb-3 text-gray-800">تفعيل الحصة</h2>
-            <p class="text-gray-500 mb-8 text-sm leading-relaxed">أدخل الكود لربط الحصة بحسابك <span class="text-orange-600 font-bold">7 أيام</span>.</p>
-            <input id="accessCode" type="text" placeholder="ABC-123" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl mb-4 text-center font-black text-xl uppercase focus:border-orange-500 outline-none transition-all">
-            <button id="verifyBtn" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-orange-600 transition-all">تفعيل الآن</button>
-            <div id="errorMsg" class="hidden mt-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm font-bold">⚠️ الكود غير صحيح أو مستخدم مسبقاً!</div>
+        <div id="authContent" class="bg-white p-8 rounded-[2.5rem] w-full max-w-md text-center shadow-2xl border-t-8 border-orange-500">
+            <h2 class="text-2xl font-black mb-2 text-gray-800">تفعيل الوصول</h2>
+            <p class="text-gray-400 mb-6 text-sm italic">اربط الحصة بحسابك الآن</p>
+            <input id="accessCode" type="text" placeholder="أدخل الكود هنا" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl mb-4 text-center font-black text-xl uppercase outline-none focus:border-orange-500">
+            <button id="verifyBtn" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-orange-600 transition-all">تفعيل الحصة</button>
+            <div id="errorMsg" class="hidden mt-4 text-red-500 font-bold text-sm">⚠️ الكود غير صحيح!</div>
         </div>
     </div>
 
-    <header class="glass-nav sticky top-0 z-40 p-4 border-b border-gray-200">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 p-4 border-b border-gray-100">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 id="lessonTitle" class="text-lg font-black text-gray-800">جاري التحقق...</h1>
-            <a href="dashboard.html" class="text-orange-600 font-bold text-xs bg-orange-50 px-4 py-2 rounded-xl">خروج</a>
+            <h1 id="lessonTitle" class="text-lg font-black text-gray-800 tracking-tight">جاري التحميل...</h1>
+            <a href="dashboard.html" class="text-gray-400 font-bold text-xs hover:text-red-500 transition-colors">خروج</a>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-8">
+        
+        <section id="startScreen" class="hidden text-center py-12 space-y-6 bg-white rounded-[3rem] shadow-xl border border-gray-50">
+            <div class="text-7xl">⏱️</div>
+            <h2 class="text-3xl font-black text-gray-800">اختبار مستوى سريع</h2>
+            <p class="text-gray-500 px-6">يجب اجتياز الاختبار لفتح فيديو الشرح. <br> الوقت المحدد: <span id="limitText" class="text-orange-600 font-black">--</span> دقيقة.</p>
+            <button id="startQuizBtn" class="bg-gray-900 text-white px-12 py-4 rounded-2xl font-black text-lg shadow-xl hover:scale-105 active:scale-95 transition-all">بدء الامتحان الآن</button>
+        </section>
+
         <section id="quizArea" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-white text-center">
-                <div class="flex justify-between items-center mb-6">
-                    <span id="progressText" class="bg-orange-100 text-orange-600 px-4 py-1 rounded-full text-xs font-black uppercase">Question 1/0</span>
-                    <div class="w-1/2 bg-gray-200 h-2 rounded-full overflow-hidden"><div id="progressBar" class="bg-orange-500 h-full transition-all duration-500" style="width: 0%"></div></div>
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
+                <div id="quizTimer" class="flex items-center gap-2">⏳ <span id="timerMinutes">00</span>:<span id="timerSeconds">00</span></div>
+                <span id="progressText" class="text-xs font-black text-orange-500">Question 1/0</span>
+            </div>
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-white text-center">
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden mb-8">
+                    <div id="progressBar" class="bg-orange-500 h-full transition-all duration-500" style="width: 0%"></div>
                 </div>
-                <img id="qImg" src="" class="w-full max-h-96 object-contain rounded-2xl mb-8 border-4 border-gray-50">
+                <img id="qImg" src="" class="w-full max-h-80 object-contain rounded-2xl mb-8 border border-gray-50">
                 <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-                <button id="nextBtn" class="w-full bg-gray-900 text-white py-5 mt-10 rounded-2xl font-black text-lg shadow-xl hover:bg-black">تأكيد الإجابة ←</button>
+                <button id="nextBtn" class="w-full bg-orange-500 text-white py-5 mt-10 rounded-2xl font-black text-lg shadow-xl hover:bg-orange-600 transition-all">تأكيد الإجابة</button>
             </div>
         </section>
 
-        <section id="resultsArea" class="hidden space-y-6">
-            <div class="bg-orange-600 text-white p-10 rounded-[2.5rem] shadow-2xl text-center">
-                <h2 class="text-lg font-bold opacity-80 mb-2">درجتك في الامتحان</h2>
-                <div id="scoreText" class="text-7xl font-black mb-2">0/0</div>
+        <section id="resultsArea" class="hidden space-y-8">
+            <div class="bg-gray-900 text-white p-10 rounded-[3rem] shadow-2xl text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16"></div>
+                <h2 class="text-lg font-bold opacity-60 mb-2">درجتك النهائية</h2>
+                <div id="scoreText" class="text-7xl font-black text-orange-500">0/0</div>
             </div>
 
-            <div class="flex bg-white rounded-2xl shadow-sm p-1 border border-gray-200">
-                <button id="tabVideoBtn" class="flex-1 py-4 font-black rounded-xl text-orange-600 border-b-4 border-orange-500">فيديو الشرح 📺</button>
-                <button id="tabReviewBtn" class="flex-1 py-4 font-black text-gray-400 rounded-xl">مراجعة الأخطاء 📝</button>
+            <div class="flex bg-gray-100 rounded-2xl p-1">
+                <button id="tabVideoBtn" class="flex-1 py-4 font-black rounded-xl text-orange-600 bg-white shadow-sm transition-all">فيديو الشرح 📺</button>
+                <button id="tabReviewBtn" class="flex-1 py-4 font-black text-gray-400 transition-all">مراجعة الأخطاء 📝</button>
             </div>
 
             <div id="videoTab" class="video-container">
@@ -95,7 +106,7 @@
         const db = getFirestore(app);
         const lessonId = new URLSearchParams(window.location.search).get("id");
 
-        let currentUser, lessonData, questions = [], current = 0, userAns = [], timerInt;
+        let currentUser, lessonData, questions = [], current = 0, userAns = [], examTimer, timeLeft;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) { currentUser = user; await checkAccess(); } 
@@ -103,77 +114,94 @@
         });
 
         async function checkAccess() {
-            const enrollId = `${currentUser.uid}_${lessonId}`;
-            const enrollSnap = await getDoc(doc(db, "enrollments", enrollId));
-
+            const enrollSnap = await getDoc(doc(db, "enrollments", `${currentUser.uid}_${lessonId}`));
             if (enrollSnap.exists()) {
                 const data = enrollSnap.data();
-                const now = new Date().getTime();
-                if (now - data.activatedAt > 7 * 24 * 60 * 60 * 1000) {
-                    showLockScreen("انتهت الصلاحية ⏰", "يجب تفعيل كود جديد.");
+                if (new Date().getTime() - data.activatedAt > 7 * 24 * 60 * 60 * 1000) {
+                    showLockScreen("انتهت صلاحية الحصة ⏰", "يجب استخدام كود تفعيل جديد.");
                 } else {
                     document.getElementById("authArea").classList.add("hidden");
-                    startTimer(data.activatedAt);
+                    startLifeTimer(data.activatedAt);
                     initLesson();
                 }
-            } else {
-                document.getElementById("authArea").classList.remove("hidden");
-            }
+            } else { document.getElementById("authArea").classList.remove("hidden"); }
         }
 
         document.getElementById("verifyBtn").onclick = async () => {
             const code = document.getElementById("accessCode").value.trim().toUpperCase();
             if (!code) return;
             const btn = document.getElementById("verifyBtn");
-            btn.innerText = "جاري الربط..."; btn.disabled = true;
+            btn.innerText = "جاري التحقق..."; btn.disabled = true;
             try {
                 const codeRef = doc(db, "codes", code);
-                const codeSnap = await getDoc(codeRef);
-                if (codeSnap.exists() && codeSnap.data().used === false) {
+                const snap = await getDoc(codeRef);
+                if (snap.exists() && !snap.data().used) {
                     const now = new Date().getTime();
                     await updateDoc(codeRef, { used: true, usedBy: currentUser.email, uid: currentUser.uid });
                     await setDoc(doc(db, "enrollments", `${currentUser.uid}_${lessonId}`), {
                         uid: currentUser.uid, email: currentUser.email, lessonId: lessonId, activatedAt: now
                     });
                     location.reload();
-                } else {
-                    document.getElementById("authContent").classList.add("shake-error");
-                    document.getElementById("errorMsg").classList.remove("hidden");
-                    setTimeout(() => document.getElementById("authContent").classList.remove("shake-error"), 500);
-                }
-            } catch (e) { alert("خطأ في الشبكة"); }
-            btn.disabled = false; btn.innerText = "تفعيل الآن";
+                } else { throw new Error(); }
+            } catch (e) {
+                document.getElementById("authContent").classList.add("shake-error");
+                document.getElementById("errorMsg").classList.remove("hidden");
+                setTimeout(() => document.getElementById("authContent").classList.remove("shake-error"), 500);
+            }
+            btn.disabled = false; btn.innerText = "تفعيل الحصة";
         };
 
         async function initLesson() {
             const snap = await getDoc(doc(db, "lessons", lessonId));
-            if(!snap.exists()) return;
             lessonData = snap.data();
             questions = lessonData.questions || [];
             document.getElementById("lessonTitle").innerText = lessonData.name;
+            document.getElementById("limitText").innerText = lessonData.duration || 10;
 
-            // مفتاح تخزين فريد لكل طالب ولكل حصة لضمان عدم تداخل الدرجات
             const storageKey = `done_${currentUser.uid}_${lessonId}`;
-            const answersKey = `ans_${currentUser.uid}_${lessonId}`;
-
             if(localStorage.getItem(storageKey)) {
-                showFinalUI(JSON.parse(localStorage.getItem(answersKey)));
+                showFinalUI(JSON.parse(localStorage.getItem(`ans_${currentUser.uid}_${lessonId}`)));
             } else {
-                document.getElementById("quizArea").classList.remove("hidden");
-                document.getElementById("resultsArea").classList.add("hidden");
-                renderQuestion();
+                document.getElementById("startScreen").classList.remove("hidden");
             }
         }
 
+        // --- نظام التايمر الخاص بالامتحان ---
+        document.getElementById("startQuizBtn").onclick = () => {
+            document.getElementById("startScreen").classList.add("hidden");
+            document.getElementById("quizArea").classList.remove("hidden");
+            startExamTimer(lessonData.duration || 10);
+            renderQuestion();
+        };
+
+        function startExamTimer(minutes) {
+            timeLeft = minutes * 60;
+            examTimer = setInterval(() => {
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                document.getElementById("timerMinutes").innerText = m.toString().padStart(2, '0');
+                document.getElementById("timerSeconds").innerText = s.toString().padStart(2, '0');
+                if (timeLeft <= 0) { finishExam(); }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function finishExam() {
+            clearInterval(examTimer);
+            while(userAns.length < questions.length) userAns.push("no_answer");
+            localStorage.setItem(`done_${currentUser.uid}_${lessonId}`, "true");
+            localStorage.setItem(`ans_${currentUser.uid}_${lessonId}`, JSON.stringify(userAns));
+            showFinalUI(userAns);
+        }
+
         function renderQuestion() {
-            if (questions.length === 0) return;
             const q = questions[current];
             document.getElementById("progressText").innerText = `السؤال ${current + 1} / ${questions.length}`;
             document.getElementById("progressBar").style.width = `${((current + 1) / questions.length) * 100}%`;
             document.getElementById("qImg").src = q.image;
             document.getElementById("optionsGrid").innerHTML = ['a','b','c','d'].map(opt => `
                 <label class="option-card flex items-center p-5 rounded-2xl shadow-sm border-2 border-transparent">
-                    <input type="radio" name="choice" value="${opt}" class="w-6 h-6 ml-4 accent-orange-500">
+                    <input type="radio" name="choice" value="${opt}" class="w-5 h-5 ml-4 accent-orange-500">
                     <span class="font-bold text-gray-700 uppercase">${opt}: ${q[opt]}</span>
                 </label>
             `).join('');
@@ -181,20 +209,15 @@
 
         document.getElementById("nextBtn").onclick = () => {
             const sel = document.querySelector('input[name="choice"]:checked');
-            if(!sel) return alert("اختار إجابة!");
+            if(!sel) return alert("اختار إجابة أولاً!");
             userAns.push(sel.value);
             current++;
             if(current < questions.length) renderQuestion();
-            else {
-                const storageKey = `done_${currentUser.uid}_${lessonId}`;
-                const answersKey = `ans_${currentUser.uid}_${lessonId}`;
-                localStorage.setItem(storageKey, "true");
-                localStorage.setItem(answersKey, JSON.stringify(userAns));
-                showFinalUI(userAns);
-            }
+            else finishExam();
         };
 
         function showFinalUI(answers) {
+            document.getElementById("startScreen").classList.add("hidden");
             document.getElementById("quizArea").classList.add("hidden");
             document.getElementById("resultsArea").classList.remove("hidden");
             let score = 0;
@@ -202,9 +225,9 @@
             questions.forEach((q, i) => {
                 const correct = answers[i] === q.correct;
                 if(correct) score++;
-                revHtml += `<div class="bg-white p-4 rounded-xl border-r-8 ${correct ? 'border-green-500':'border-red-500'} shadow-sm flex items-center gap-4 text-right">
-                    <img src="${q.image}" class="w-20 h-12 rounded object-cover border">
-                    <p class="font-bold text-xs text-gray-600">${correct ? '✅':'❌'} س${i+1}: الحل (${q.correct.toUpperCase()})</p>
+                revHtml += `<div class="bg-white p-4 rounded-xl border-r-8 ${correct ? 'border-green-500':'border-red-500'} shadow-sm flex items-center gap-4">
+                    <img src="${q.image}" class="w-16 h-10 rounded object-cover border">
+                    <p class="font-bold text-xs text-gray-500">${correct ? '✅':'❌'} س${i+1}: الحل (${q.correct.toUpperCase()})</p>
                 </div>`;
             });
             document.getElementById("scoreText").innerText = `${score} / ${questions.length}`;
@@ -216,38 +239,37 @@
             }
         }
 
-        function startTimer(startTime) {
+        function startLifeTimer(startTime) {
             const display = document.getElementById("countdownDisplay");
             document.getElementById("timerBar").classList.remove("hidden");
             const expiry = parseInt(startTime) + (7 * 24 * 60 * 60 * 1000);
-            timerInt = setInterval(() => {
-                const now = new Date().getTime();
-                const diff = expiry - now;
-                if (diff <= 0) { clearInterval(timerInt); location.reload(); return; }
+            setInterval(() => {
+                const diff = expiry - new Date().getTime();
+                if (diff <= 0) location.reload();
                 const d = Math.floor(diff / 86400000);
                 const h = Math.floor((diff % 86400000) / 3600000);
                 const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                display.innerText = `${d} يوم و ${h}:${m}:${s}`;
-            }, 1000);
+                display.innerText = `${d} يوم و ${h}:${m}`;
+            }, 60000);
         }
 
         function showLockScreen(title, msg) {
             document.getElementById("authArea").classList.remove("hidden");
-            document.getElementById("authContent").innerHTML = `<h2 class='text-red-600 font-black text-2xl'>${title}</h2><p class='mt-4'>${msg}</p>`;
+            document.getElementById("authContent").innerHTML = `<h2 class='text-red-500 font-black text-2xl'>${title}</h2><p class='mt-4'>${msg}</p>`;
         }
 
+        // تبديل التابات
         document.getElementById("tabVideoBtn").onclick = () => {
             document.getElementById("videoTab").classList.remove("hidden");
             document.getElementById("reviewTab").classList.add("hidden");
-            document.getElementById("tabVideoBtn").className = "flex-1 py-4 font-black rounded-xl text-orange-600 border-b-4 border-orange-500";
-            document.getElementById("tabReviewBtn").className = "flex-1 py-4 font-black text-gray-400 rounded-xl";
+            document.getElementById("tabVideoBtn").className = "flex-1 py-4 font-black rounded-xl text-orange-600 bg-white shadow-sm transition-all";
+            document.getElementById("tabReviewBtn").className = "flex-1 py-4 font-black text-gray-400 transition-all";
         };
         document.getElementById("tabReviewBtn").onclick = () => {
             document.getElementById("reviewTab").classList.remove("hidden");
             document.getElementById("videoTab").classList.add("hidden");
-            document.getElementById("tabReviewBtn").className = "flex-1 py-4 font-black rounded-xl text-orange-600 border-b-4 border-orange-500";
-            document.getElementById("tabVideoBtn").className = "flex-1 py-4 font-black text-gray-400 rounded-xl";
+            document.getElementById("tabReviewBtn").className = "flex-1 py-4 font-black rounded-xl text-orange-600 bg-white shadow-sm transition-all";
+            document.getElementById("tabVideoBtn").className = "flex-1 py-4 font-black text-gray-400 transition-all";
         };
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
