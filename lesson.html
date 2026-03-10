@@ -15,13 +15,16 @@
         .tab-btn.active { border-bottom: 4px solid #f97316; color: #f97316; }
         .hidden { display: none !important; }
         .q-card { transition: all 0.3s ease; }
+        
+        /* حماية الفيديو من نسخ الرابط ومنع كليك يمين على يوتيوب */
+        .plyr__video-wrapper iframe { pointer-events: none !important; }
+        .plyr__control--overlaid { z-index: 10 !important; }
     </style>
 </head>
-<body>
-
-    <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6 hidden">
+<body oncontextmenu="return false;"> <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6 hidden">
         <div class="glass p-10 rounded-[3rem] w-full max-w-md text-center space-y-6 border-orange-500/20 shadow-2xl">
-            <h2 class="text-3xl font-black text-white">تفعيل الحصة 🎫</h2>
+            <button onclick="window.history.back()" class="absolute top-6 right-6 text-gray-400 hover:text-white transition font-bold bg-white/5 px-4 py-2 rounded-xl">↩️ رجوع</button>
+            <h2 class="text-3xl font-black text-white mt-4">تفعيل الحصة 🎫</h2>
             <input id="accessCodeInput" type="text" placeholder="أدخل الكود" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-white text-xl outline-none focus:border-orange-500">
             <button id="verifyBtn" class="w-full bg-orange-600 font-black py-5 rounded-2xl text-xl hover:bg-orange-700 transition shadow-lg shadow-orange-600/20">تفعيل الحصة</button>
         </div>
@@ -30,10 +33,16 @@
     <div id="lessonContent" class="hidden">
         <nav class="glass sticky top-0 z-50 p-4 mb-6">
             <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex gap-6">
-                    <button id="btn-quiz-tab" onclick="switchTab('quiz')" class="tab-btn unlocked active px-4 py-2 font-black text-lg">📝 الامتحان</button>
-                    <button id="btn-video-tab" onclick="switchTab('video')" class="tab-btn px-4 py-2 font-black text-lg">📺 الشرح</button>
-                    <button id="btn-pdf-tab" onclick="switchTab('pdf')" class="tab-btn px-4 py-2 font-black text-lg">📚 الملزمة</button>
+                
+                <div class="flex items-center gap-4 flex-wrap justify-center">
+                    <button onclick="window.history.back()" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl font-bold transition flex items-center gap-2">
+                        ↩️ رجوع
+                    </button>
+                    <div class="flex gap-2 sm:gap-6">
+                        <button id="btn-quiz-tab" onclick="switchTab('quiz')" class="tab-btn unlocked active px-4 py-2 font-black text-lg">📝 الامتحان</button>
+                        <button id="btn-video-tab" onclick="switchTab('video')" class="tab-btn px-4 py-2 font-black text-lg">📺 الشرح</button>
+                        <button id="btn-pdf-tab" onclick="switchTab('pdf')" class="tab-btn px-4 py-2 font-black text-lg">📚 الملزمة</button>
+                    </div>
                 </div>
                 
                 <div class="flex flex-col items-end gap-2">
@@ -125,7 +134,7 @@
                 } else {
                     document.getElementById('codeLockScreen').classList.remove('hidden');
                 }
-            } else { window.location.href = "index.html"; }
+            } else { window.location.href = "index.html"; } // العودة لتسجيل الدخول إذا لم يكن مسجلاً
         });
 
         function startAccessTimer(expiryTime) {
@@ -178,12 +187,11 @@
                 lessonData = snap.data();
                 questions = lessonData.questions || [];
 
-                // استرجاع الإجابات والدرجة لو الطالب امتحن قبل كدا
                 const savedExamData = localStorage.getItem(`exam_data_${id}`);
                 if (savedExamData) {
                     const parsedData = JSON.parse(savedExamData);
                     userAns = parsedData.userAns; 
-                    generateReviewList(); // توليد قائمة المراجعة
+                    generateReviewList(); 
                     
                     const msg = `
                         <h2 class="text-4xl font-black mb-2 text-green-500">لقد حصلت مسبقاً على: ${parsedData.score} من ${questions.length} ✅</h2>
@@ -194,7 +202,6 @@
             }
         }
 
-        // دالة لإنشاء قائمة المراجعة للأسئلة
         function generateReviewList() {
             const reviewList = document.getElementById('reviewList');
             reviewList.innerHTML = '';
@@ -239,11 +246,21 @@
                 const vId = getYouTubeId(lessonData.video);
 
                 if (vId) {
-                    videoContainer.innerHTML = `<div class="rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/5 bg-black"><div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div></div>`;
+                    videoContainer.innerHTML = `<div class="rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/5 bg-black" oncontextmenu="return false;"><div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div></div>`;
                 } else {
-                    videoContainer.innerHTML = `<div class="rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/5 bg-black"><video id="player" playsinline controls><source src="${lessonData.video}" type="video/mp4" /></video></div>`;
+                    videoContainer.innerHTML = `<div class="rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/5 bg-black" oncontextmenu="return false;"><video id="player" playsinline controlsList="nodownload"><source src="${lessonData.video}" type="video/mp4" /></video></div>`;
                 }
-                plyrPlayer = new Plyr('#player');
+                
+                // إعدادات مخصصة لـ Plyr لإخفاء أزرار يوتيوب والمقترحات
+                plyrPlayer = new Plyr('#player', {
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+                    youtube: { 
+                        rel: 0, 
+                        showinfo: 0, 
+                        modestbranding: 1, 
+                        disablekb: 1 
+                    }
+                });
             }
             
             if(lessonData.pdf) { document.getElementById('pdfLink').href = lessonData.pdf; }
@@ -299,11 +316,10 @@
                 await addDoc(collection(db, "results"), { email: auth.currentUser.email, lesson: lessonData.name, score, total: questions.length, date: new Date() });
             } catch(e) { console.log("نتيجة غير مسجلة مؤقتاً"); }
 
-            // حفظ إجابات الطالب والدرجة في المتصفح عشان تفضل موجودة
             const lessonId = new URLSearchParams(window.location.search).get('id');
             localStorage.setItem(`exam_data_${lessonId}`, JSON.stringify({ userAns: userAns, score: score }));
 
-            generateReviewList(); // توليد وعرض المراجعة
+            generateReviewList(); 
 
             const msg = `
                 <h2 class="text-4xl font-black mb-2">درجتك النهائية: ${score} من ${questions.length}</h2>
