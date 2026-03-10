@@ -17,9 +17,7 @@
         }
 
         .bg-card { background-color: #151e32; transition: background-color 0.3s ease; }
-        
-        /* الثيم الأخضر الجديد */
-        .text-green-theme { color: #10b981; } /* أخضر زمردي */
+        .text-green-theme { color: #10b981; } 
         .bg-green-theme { background-color: #10b981; }
         .bg-gold { background-color: #9a7b4f; }
         
@@ -31,7 +29,7 @@
         .course-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border-color: rgba(16, 185, 129, 0.4); /* ظل أخضر */
+            border-color: rgba(16, 185, 129, 0.4);
         }
 
         .ribbon-wrapper { position: absolute; top: 0; right: 0; width: 100px; height: 100px; overflow: hidden; z-index: 10; }
@@ -40,7 +38,7 @@
         .modal-blur { backdrop-filter: blur(10px); background: rgba(11, 17, 32, 0.85); }
 
         /* ---------- إضافات الوضع الفاتح (Light Mode) ---------- */
-        body.light-mode { background-color: #f0fdf4; color: #1e293b; } /* خلفية خضراء باهتة جداً للمود الفاتح */
+        body.light-mode { background-color: #f0fdf4; color: #1e293b; } 
         body.light-mode .bg-card { background-color: #ffffff; border-color: #e2e8f0; }
         body.light-mode .course-card { background-color: #ffffff; border-color: #e2e8f0; }
         body.light-mode .course-card h3 { color: #0f172a; }
@@ -62,11 +60,6 @@
                     <div id="lightIcon" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors">☀️</div>
                     <div id="darkIcon" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-700 text-white transition-colors">🌙</div>
                 </div>
-
-                <div class="hidden md:flex items-center bg-gray-800 rounded-full px-4 py-1.5 border border-gray-700">
-                    <span class="text-sm font-bold ml-2 text-gray-300">0 جنيه</span>
-                    <div class="w-6 h-6 bg-green-theme rounded-full flex items-center justify-center text-xs text-white">💰</div>
-                </div>
                 
                 <button onclick="openProfile()" class="w-10 h-10 rounded-full bg-gradient-to-tr from-green-theme to-emerald-700 flex items-center justify-center text-white font-black overflow-hidden border-2 border-transparent hover:border-green-theme transition-all">
                     <img src="https://ui-avatars.com/api/?name=Student&background=10b981&color=fff" id="avatarImg" class="w-full h-full object-cover">
@@ -78,15 +71,6 @@
             </div>
         </div>
     </nav>
-
-    <div class="bg-card border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
-            <h2 class="text-center font-bold text-lg mb-4 text-gray-400">أختر القسم المراد عرض الكورسات الخاصة به</h2>
-            <div class="flex gap-3 overflow-x-auto pb-2 justify-center flex-wrap">
-                <button class="bg-green-theme text-white px-6 py-2 rounded-lg font-bold text-sm whitespace-nowrap shadow-md">الرياضيات (أساسي)</button>
-            </div>
-        </div>
-    </div>
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-10">
         
@@ -140,7 +124,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, limit, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
@@ -153,8 +137,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     let currentUser;
+    let myActiveLessons = []; // مصفوفة لتخزين الحصص التي يمتلكها الطالب
 
-    // --- وظيفة Dark/Light Mode ---
     window.toggleTheme = () => {
         document.body.classList.toggle('light-mode');
         const isLight = document.body.classList.contains('light-mode');
@@ -178,7 +162,6 @@
     }
     if (localStorage.getItem('theme') === 'light') { document.body.classList.add('light-mode'); updateThemeUI(true); }
 
-    // --- وظيفة جلب التنبيهات (الـ Notification) ---
     const qNotif = query(collection(db, "announcements"), orderBy("createdAt", "desc"), limit(1));
     onSnapshot(qNotif, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
@@ -203,6 +186,18 @@
                 document.getElementById('editParentPhone').value = data.parentPhone || "";
                 document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=10b981&color=fff&bold=true`;
             }
+
+            // جلب الأكواد التي قام الطالب بتفعيلها وتخزينها
+            const qCodes = query(collection(db, "codes"), where("usedBy", "==", user.email));
+            const codesSnap = await getDocs(qCodes);
+            const now = new Date().getTime();
+            codesSnap.forEach(c => {
+                const cData = c.data();
+                if(cData.expiryAt > now && cData.lessonId) {
+                    myActiveLessons.push(cData.lessonId);
+                }
+            });
+
             loadLessons();
         } else { window.location.href = "index.html"; }
     });
@@ -219,11 +214,28 @@
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
+            const isOwned = myActiveLessons.includes(doc.id); // هل الطالب يمتلك هذه الحصة؟
+            const price = data.price ? `${data.price} ج.م` : 'مجاناً';
+            const courseImage = data.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
+
+            // تحديد شكل الزر بناءً على حالة الشراء
+            let actionButton = '';
+            if (isOwned) {
+                actionButton = `
+                    <a href="lesson.html?id=${doc.id}" class="bg-green-theme text-white hover:bg-emerald-600 w-full py-2.5 rounded-lg font-bold text-center transition-colors block">
+                        أكمل الكورس ▶
+                    </a>`;
+            } else {
+                actionButton = `
+                    <a href="lesson.html?id=${doc.id}" class="bg-transparent border-2 border-green-theme text-green-theme hover:bg-green-theme hover:text-white w-full py-2.5 rounded-lg font-bold text-center transition-colors block">
+                        شراء بالكود (${price}) 🛒
+                    </a>`;
+            }
+
             grid.innerHTML += `
                 <div class="course-card bg-card rounded-[1.5rem] overflow-hidden relative flex flex-col group">
-                    <div class="ribbon-wrapper"><div class="ribbon">كورس مثبت</div></div>
                     <div class="h-44 bg-gray-800 relative overflow-hidden">
-                        <img src="${data.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop'}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-500">
+                        <img src="${courseImage}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#151e32] to-transparent"></div>
                     </div>
                     <div class="p-5 flex flex-col flex-grow relative z-10 -mt-8">
@@ -232,9 +244,7 @@
                         </div>
                         <h3 class="text-2xl font-black text-center mb-6 mt-2 leading-tight">${data.name}</h3>
                         <div class="mt-auto border-t border-gray-700 pt-4 flex justify-center">
-                            <a href="lesson.html?id=${doc.id}" class="bg-transparent border border-green-theme text-green-theme hover:bg-green-theme hover:text-white w-full py-2.5 rounded-lg font-bold text-center transition-colors">
-                                عرض التفاصيل والاشتراك
-                            </a>
+                            ${actionButton}
                         </div>
                     </div>
                 </div>
@@ -242,6 +252,7 @@
         });
     }
 
+    // ... باقي أكواد البروفايل وتسجيل الخروج ...
     window.updateProfile = async () => {
         const name = document.getElementById('editName').value;
         const phone = document.getElementById('editPhone').value;
