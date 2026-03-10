@@ -7,13 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background: #f8fafc; }
+        body { font-family: 'Tajawal', sans-serif; background: #f1f5f9; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .btn-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
-        .btn-dark { background: #1e293b; }
-        /* أنيميشن بسيط لظهور الأكواد */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-up { animation: slideUp 0.5s ease-out forwards; }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -25,82 +24,70 @@
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto space-y-8">
+    <div class="max-w-6xl mx-auto space-y-10">
         
-        <div class="glass p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-white">
-            <div class="flex justify-between items-center mb-10 border-b-2 border-slate-100 pb-6">
-                <div>
-                    <h1 class="text-3xl font-black text-slate-800">لوحة تحكم المعلم 🎓</h1>
-                    <p class="text-slate-500 font-bold mt-1">أهلاً بك مستر كيفين هاني</p>
-                </div>
-                <button onclick="signOut()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl font-bold text-sm">تسجيل خروج</button>
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800">لوحة تحكم المعلم 🎓</h1>
+                <p class="text-orange-600 font-bold">مستر كيفين هاني | إدارة المنصة</p>
+            </div>
+            <button onclick="signOut()" class="bg-red-50 text-red-600 px-6 py-2 rounded-xl font-bold hover:bg-red-100 transition">خروج</button>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white animate-in">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-2 h-8 bg-green-500 rounded-full"></div>
+                <h2 class="text-2xl font-black text-slate-800">نتائج امتحانات الطلاب 📊</h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-slate-100">
+                            <th class="p-4 text-slate-500 font-black">اسم الطالب</th>
+                            <th class="p-4 text-slate-500 font-black">البريد الإلكتروني</th>
+                            <th class="p-4 text-slate-500 font-black">الحصة</th>
+                            <th class="p-4 text-slate-500 font-black">الدرجة</th>
+                            <th class="p-4 text-slate-500 font-black">التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTable" class="text-slate-700">
+                        <tr><td colspan="5" class="p-10 text-center text-slate-400">جاري تحميل النتائج...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white animate-in" style="animation-delay: 0.1s;">
+            <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-2">
+                <div class="w-2 h-8 bg-orange-500 rounded-full"></div>
+                إضافة حصة جديدة ➕
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <input id="lessonName" placeholder="اسم الحصة" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition">
+                <input id="videoUrl" placeholder="رابط اليوتيوب" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition">
+                <input id="attachmentUrl" placeholder="رابط الملزمة PDF" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="md:col-span-1">
-                    <label class="block mb-2 font-bold text-slate-700">اسم الحصة</label>
-                    <input id="lessonName" placeholder="مثلاً: مراجعة ليلة الامتحان" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
+            <div id="questionsContainer" class="space-y-6">
                 </div>
-                <div class="md:col-span-1">
-                    <label class="block mb-2 font-bold text-slate-700">رابط الفيديو (YouTube)</label>
-                    <input id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
-                </div>
-                <div class="md:col-span-1">
-                    <label class="block mb-2 font-bold text-slate-700">رابط الملزمة / PDF</label>
-                    <input id="attachmentUrl" placeholder="رابط الملف" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
-                </div>
+
+            <div class="mt-10 flex flex-col md:flex-row gap-4">
+                <button id="addNewQBtn" class="flex-1 bg-slate-100 text-slate-700 font-black py-4 rounded-2xl border-2 border-slate-200 hover:bg-slate-200 transition">+ إضافة سؤال</button>
+                <button id="saveBtn" class="flex-1 btn-orange text-white font-black py-4 rounded-2xl text-xl shadow-lg active:scale-95 transition">نشر الحصة الآن 🚀</button>
             </div>
+        </div>
 
-            <div id="questionsContainer" class="space-y-8">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-black text-slate-800">أسئلة الاختبار القبلي 📝</h2>
-                </div>
-                <div class="question-block bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-sm relative">
-                    <div class="absolute -top-4 right-6 bg-slate-900 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Question 1</div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                        <div>
-                            <label class="block mb-2 font-bold text-slate-600 text-sm">رابط صورة السؤال</label>
-                            <input class="q-image w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-orange-400" placeholder="رابط الصورة">
-                            <label class="block mb-2 font-bold text-slate-600 text-sm">الإجابة الصحيحة</label>
-                            <select class="q-correct w-full p-3 bg-orange-50 border-2 border-orange-200 rounded-xl font-bold text-orange-700 outline-none">
-                                <option value="a">الاختيار (A)</option><option value="b">الاختيار (B)</option><option value="c">الاختيار (C)</option><option value="d">الاختيار (D)</option>
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <input class="q-a p-3 border rounded-xl text-sm" placeholder="نص A">
-                            <input class="q-b p-3 border rounded-xl text-sm" placeholder="نص B">
-                            <input class="q-c p-3 border rounded-xl text-sm" placeholder="نص C">
-                            <input class="q-d p-3 border rounded-xl text-sm" placeholder="نص D">
-                        </div>
-                    </div>
-                </div>
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white animate-in" style="animation-delay: 0.2s;">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-black text-slate-800">توليد أكواد الاشتراك 🎫</h2>
+                <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-orange-600 transition shadow-lg">توليد 50 كود جديد</button>
             </div>
-
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 border-b-2 border-slate-100 pb-12">
-                <button id="addNewQBtn" class="bg-slate-100 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-200 border-2 border-slate-200 transition-all">+ إضافة سؤال</button>
-                <button id="saveBtn" class="btn-orange text-white font-black py-4 rounded-2xl text-xl shadow-xl active:scale-95 transition-all">حفظ ونشر الحصة 🚀</button>
-            </div>
-
-            <div class="mt-12">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                    <div>
-                        <h2 class="text-2xl font-black text-slate-800">مولد أكواد الطلاب 🎫</h2>
-                        <p class="text-slate-500 font-bold">توليد 50 كود تلقائياً (SA-xxxxxxxxxxxx)</p>
-                    </div>
-                    <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-orange-600 transition-all shadow-lg active:scale-95">
-                        توليد 50 كود جديد 🚀
-                    </button>
-                </div>
-
-                <div id="codesResultArea" class="hidden animate-up">
-                    <div class="bg-orange-50 border-2 border-orange-200 p-6 rounded-[2rem]">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="font-black text-orange-800 underline">الأكواد جاهزة (تم حفظها في Firebase):</span>
-                            <button id="copyCodesBtn" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md">نسخ الكل للطباعة 📋</button>
-                        </div>
-                        <div id="codesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 font-mono text-sm font-bold text-slate-700 max-h-60 overflow-y-auto p-2">
-                            </div>
-                    </div>
+            <div id="codesResultArea" class="hidden">
+                <div class="bg-orange-50 border-2 border-orange-200 p-6 rounded-3xl">
+                    <button id="copyCodesBtn" class="mb-4 bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-bold">نسخ الأكواد للطباعة 📋</button>
+                    <div id="codesGrid" class="grid grid-cols-2 md:grid-cols-5 gap-2 font-mono text-xs"></div>
                 </div>
             </div>
         </div>
@@ -108,8 +95,8 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut as firebaseSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
@@ -121,131 +108,123 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     const MASTER_EMAIL = "kevin.hany.08@proton.me";
 
+    // حماية الصفحة
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === MASTER_EMAIL) {
             document.getElementById("secureLayer").classList.add("hidden");
+            loadResults(); // تحميل النتائج فور الدخول
         } else {
-            alert("غير مسموح لك بدخول هذه الصفحة!");
-            window.location.href = "index.html"; 
+            window.location.href = "index.html";
         }
     });
 
-    // وظيفة إضافة سؤال جديد
+    // --- دالة تحميل درجات الطلاب ---
+    async function loadResults() {
+        const resultsTable = document.getElementById("resultsTable");
+        try {
+            // ملاحظة: يجب أن يكون لديك مجموعة (collection) باسم "results" تُخزن فيها إجابات الطلاب
+            const q = query(collection(db, "results"), orderBy("submittedAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            resultsTable.innerHTML = "";
+            
+            if (querySnapshot.empty) {
+                resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center">لا توجد نتائج مسجلة حتى الآن</td></tr>`;
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const res = doc.data();
+                const date = res.submittedAt ? new Date(res.submittedAt.seconds * 1000).toLocaleDateString('ar-EG') : "---";
+                
+                resultsTable.innerHTML += `
+                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
+                        <td class="p-4 font-bold text-slate-800">${res.studentName || 'مجهول'}</td>
+                        <td class="p-4 text-slate-500 text-sm">${res.studentEmail}</td>
+                        <td class="p-4 font-medium">${res.lessonName}</td>
+                        <td class="p-4">
+                            <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-black">
+                                ${res.score} / ${res.totalQuestions}
+                            </span>
+                        </td>
+                        <td class="p-4 text-xs text-slate-400">${date}</td>
+                    </tr>
+                `;
+            });
+        } catch (e) {
+            console.error(e);
+            resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>`;
+        }
+    }
+
+    // --- إضافة الأسئلة (نفس منطقك السابق مع تحسين الشكل) ---
     document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
         const qHtml = `
-            <div class="question-block bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-sm relative mt-6">
-                <div class="absolute -top-4 right-6 bg-slate-900 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Question ${qCount}</div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div>
-                        <input class="q-image w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 outline-none" placeholder="رابط الصورة">
-                        <select class="q-correct w-full p-3 bg-orange-50 border-2 border-orange-200 rounded-xl font-bold text-orange-700">
-                            <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input class="q-a p-3 border rounded-xl text-sm" placeholder="A">
-                        <input class="q-b p-3 border rounded-xl text-sm" placeholder="B">
-                        <input class="q-c p-3 border rounded-xl text-sm" placeholder="C">
-                        <input class="q-d p-3 border rounded-xl text-sm" placeholder="D">
-                    </div>
+            <div class="question-block bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm animate-in">
+                <p class="font-black mb-4 text-orange-600 underline">سؤال رقم ${qCount}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input class="q-image p-3 border rounded-xl" placeholder="رابط صورة السؤال">
+                    <select class="q-correct p-3 border rounded-xl font-bold bg-orange-50">
+                        <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+                    <input class="q-a p-2 border rounded-lg text-xs" placeholder="خيار A">
+                    <input class="q-b p-2 border rounded-lg text-xs" placeholder="خيار B">
+                    <input class="q-c p-2 border rounded-lg text-xs" placeholder="خيار C">
+                    <input class="q-d p-2 border rounded-lg text-xs" placeholder="خيار D">
                 </div>
             </div>`;
         document.getElementById("questionsContainer").insertAdjacentHTML('beforeend', qHtml);
     };
 
-    // وظيفة حفظ الحصة
+    // --- حفظ الحصة ---
     document.getElementById("saveBtn").onclick = async () => {
         const name = document.getElementById("lessonName").value;
         const video = document.getElementById("videoUrl").value;
-        const attachment = document.getElementById("attachmentUrl").value;
-        if (!name || !video) return alert("ادخل البيانات الأساسية!");
-
-        const questionBlocks = document.querySelectorAll('.question-block');
-        let questionsData = [];
-        questionBlocks.forEach(block => {
-            const img = block.querySelector('.q-image').value;
-            if (img) {
-                questionsData.push({
-                    image: img,
-                    a: block.querySelector('.q-a').value || "أ",
-                    b: block.querySelector('.q-b').value || "ب",
-                    c: block.querySelector('.q-c').value || "ج",
-                    d: block.querySelector('.q-d').value || "د",
-                    correct: block.querySelector('.q-correct').value
-                });
-            }
-        });
+        if (!name || !video) return alert("ادخل اسم الحصة ورابط الفيديو!");
 
         const btn = document.getElementById("saveBtn");
-        btn.innerText = "جاري الحفظ... ⏳"; btn.disabled = true;
+        btn.innerText = "جاري النشر... ⏳"; btn.disabled = true;
+
+        let questionsData = [];
+        document.querySelectorAll('.question-block').forEach(block => {
+            questionsData.push({
+                image: block.querySelector('.q-image').value,
+                a: block.querySelector('.q-a').value || "A",
+                b: block.querySelector('.q-b').value || "B",
+                c: block.querySelector('.q-c').value || "C",
+                d: block.querySelector('.q-d').value || "D",
+                correct: block.querySelector('.q-correct').value
+            });
+        });
 
         try {
             await addDoc(collection(db, "lessons"), {
-                name, video, pdf: attachment, questions: questionsData, createdAt: new Date(), teacher: MASTER_EMAIL
+                name, video, pdf: document.getElementById("attachmentUrl").value,
+                questions: questionsData, createdAt: new Date()
             });
-            alert("تم النشر بنجاح!"); location.reload();
+            alert("تم نشر الحصة بنجاح! ✅"); location.reload();
         } catch (e) { alert("خطأ في الحفظ"); btn.disabled = false; }
     };
 
-    // --- نظام توليد الـ 50 كود أوتوماتيكياً ---
-    window.generateBulkCodes = async () => {
-        const btn = document.getElementById('genCodesBtn');
+    // --- توليد الأكواد ---
+    document.getElementById('genCodesBtn').onclick = async () => {
+        if(!confirm("توليد 50 كود؟")) return;
         const grid = document.getElementById('codesGrid');
-        const area = document.getElementById('codesResultArea');
-        
-        if(!confirm("توليد 50 كود جديد وحفظهم الآن؟")) return;
-
-        btn.innerText = "جاري الرفع... ⏳";
-        btn.disabled = true;
-        grid.innerHTML = "";
-        let codesArray = [];
-
-        try {
-            for (let i = 0; i < 50; i++) {
-                // توليد كود SA- متبوع بـ 12 رقم عشوائي
-                const newCode = "SA-" + Math.floor(100000000000 + Math.random() * 900000000000);
-                
-                // الرفع لـ Firebase
-                await setDoc(doc(db, "codes", newCode), {
-                    used: false,
-                    usedBy: "",
-                    createdAt: new Date()
-                });
-
-                codesArray.push(newCode);
-                
-                // إضافة الكود للشبكة في الصفحة
-                const codeDiv = document.createElement('div');
-                codeDiv.className = "bg-white p-2 rounded border text-center shadow-sm";
-                codeDiv.innerText = newCode;
-                grid.appendChild(codeDiv);
-            }
-            area.classList.remove('hidden');
-            alert("✅ تم توليد 50 كود وحفظهم بنجاح في قاعدة البيانات!");
-        } catch (e) {
-            console.error(e);
-            alert("حدث خطأ أثناء الاتصال بـ Firebase");
-        } finally {
-            btn.innerText = "توليد 50 كود جديد 🚀";
-            btn.disabled = false;
+        grid.innerHTML = "جاري الرفع...";
+        for (let i = 0; i < 50; i++) {
+            const code = "SA-" + Math.floor(Math.random() * 1e12);
+            await setDoc(doc(db, "codes", code), { used: false, createdAt: new Date() });
+            grid.innerHTML += `<div class="p-1 border rounded bg-white">${code}</div>`;
         }
+        document.getElementById('codesResultArea').classList.remove('hidden');
     };
 
-    // زر النسخ
-    window.copyCodes = () => {
-        const codes = Array.from(document.querySelectorAll('#codesGrid div'))
-                          .map(div => div.innerText)
-                          .join('\n');
-        navigator.clipboard.writeText(codes).then(() => alert("📋 تم نسخ الـ 50 كود بنجاح!"));
-    };
-
-    document.getElementById('genCodesBtn').onclick = window.generateBulkCodes;
-    document.getElementById('copyCodesBtn').onclick = window.copyCodes;
-    window.signOut = () => auth.signOut();
+    window.signOut = () => firebaseSignOut(auth).then(() => window.location.href = "index.html");
 </script>
 </body>
 </html>
