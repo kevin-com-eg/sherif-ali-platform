@@ -110,56 +110,80 @@
     const db = getFirestore(app);
     const MASTER_EMAIL = "kevin.hany.08@proton.me";
 
-    // حماية الصفحة
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === MASTER_EMAIL) {
             document.getElementById("secureLayer").classList.add("hidden");
-            loadResults(); // تحميل النتائج فور الدخول
+            loadResults(); 
         } else {
             window.location.href = "index.html";
         }
     });
 
-    // --- دالة تحميل درجات الطلاب ---
+    // التعديل الرئيسي تم هنا في دالة تحميل النتائج
     async function loadResults() {
         const resultsTable = document.getElementById("resultsTable");
         try {
-            // ملاحظة: يجب أن يكون لديك مجموعة (collection) باسم "results" تُخزن فيها إجابات الطلاب
-            const q = query(collection(db, "results"), orderBy("submittedAt", "desc"));
+            // استخدام حقل "date" اللي بيتم إرساله من صفحة الطالب لترتيب النتائج
+            const q = query(collection(db, "results"), orderBy("date", "desc"));
             const querySnapshot = await getDocs(q);
             
             resultsTable.innerHTML = "";
             
             if (querySnapshot.empty) {
-                resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center">لا توجد نتائج مسجلة حتى الآن</td></tr>`;
+                resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-500 font-bold">لا توجد نتائج مسجلة حتى الآن</td></tr>`;
                 return;
             }
 
             querySnapshot.forEach((doc) => {
                 const res = doc.data();
-                const date = res.submittedAt ? new Date(res.submittedAt.seconds * 1000).toLocaleDateString('ar-EG') : "---";
+                // قراءة البيانات بأسماء المتغيرات الصحيحة المرسلة من الطالب
+                const date = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }) : "---";
+                const studentEmail = res.email || "غير متوفر";
+                const lesson = res.lesson || "غير متوفر";
+                const score = res.score !== undefined ? res.score : "-";
+                const total = res.total || "-";
                 
                 resultsTable.innerHTML += `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
-                        <td class="p-4 font-bold text-slate-800">${res.studentName || 'مجهول'}</td>
-                        <td class="p-4 text-slate-500 text-sm">${res.studentEmail}</td>
-                        <td class="p-4 font-medium">${res.lessonName}</td>
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="p-4 font-bold text-slate-800">طالب مسجل</td>
+                        <td class="p-4 text-slate-500 text-sm font-mono">${studentEmail}</td>
+                        <td class="p-4 font-bold text-slate-700">${lesson}</td>
                         <td class="p-4">
-                            <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full font-black">
-                                ${res.score} / ${res.totalQuestions}
+                            <span class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full font-black shadow-sm border border-orange-200">
+                                ${score} / ${total}
                             </span>
                         </td>
-                        <td class="p-4 text-xs text-slate-400">${date}</td>
+                        <td class="p-4 text-xs text-slate-500 font-bold">${date}</td>
                     </tr>
                 `;
             });
         } catch (e) {
             console.error(e);
-            resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>`;
+            resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء جلب البيانات. قد تحتاج لإنشاء Index في قواعد بيانات Firebase. راجع الكونسول (F12).</td></tr>`;
+            
+            // محاولة بديلة لعمل Fetch بدون orderBy في حال وجود مشكلة Index في Firebase
+            try {
+                const altQ = query(collection(db, "results"));
+                const altSnapshot = await getDocs(altQ);
+                resultsTable.innerHTML = "";
+                if(altSnapshot.empty) return;
+                
+                altSnapshot.forEach((doc) => {
+                    const res = doc.data();
+                    const date = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG') : "---";
+                    resultsTable.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                            <td class="p-4 font-bold text-slate-800">طالب مسجل</td>
+                            <td class="p-4 text-slate-500 text-sm font-mono">${res.email || "-"}</td>
+                            <td class="p-4 font-bold text-slate-700">${res.lesson || "-"}</td>
+                            <td class="p-4"><span class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full font-black">${res.score} / ${res.total}</span></td>
+                            <td class="p-4 text-xs text-slate-500 font-bold">${date}</td>
+                        </tr>`;
+                });
+            } catch (err) {}
         }
     }
 
-    // --- إضافة الأسئلة (نفس منطقك السابق مع تحسين الشكل) ---
     document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
         const qHtml = `
@@ -181,7 +205,6 @@
         document.getElementById("questionsContainer").insertAdjacentHTML('beforeend', qHtml);
     };
 
-    // --- حفظ الحصة ---
     document.getElementById("saveBtn").onclick = async () => {
         const name = document.getElementById("lessonName").value;
         const video = document.getElementById("videoUrl").value;
@@ -211,7 +234,6 @@
         } catch (e) { alert("خطأ في الحفظ"); btn.disabled = false; }
     };
 
-    // --- توليد الأكواد ---
     document.getElementById('genCodesBtn').onclick = async () => {
         if(!confirm("توليد 50 كود؟")) return;
         const grid = document.getElementById('codesGrid');
@@ -222,6 +244,12 @@
             grid.innerHTML += `<div class="p-1 border rounded bg-white">${code}</div>`;
         }
         document.getElementById('codesResultArea').classList.remove('hidden');
+    };
+
+    // كود زر النسخ
+    document.getElementById('copyCodesBtn').onclick = () => {
+        const codes = Array.from(document.getElementById('codesGrid').children).map(div => div.innerText).join('\n');
+        navigator.clipboard.writeText(codes).then(() => alert("تم النسخ بنجاح! ✅"));
     };
 
     window.signOut = () => firebaseSignOut(auth).then(() => window.location.href = "index.html");
