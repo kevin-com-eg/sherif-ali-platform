@@ -218,16 +218,43 @@
         </div>
     </section>
 
-    <footer class="text-center mt-20 p-10 border-t border-slate-200 bg-white relative z-10">
-        <p class="text-slate-400 font-bold mb-2 text-sm uppercase tracking-wider">© 2026 MathPro Platform</p>
-        <p class="text-slate-800 font-black text-xl">Developed with ❤️ By <span class="text-orange-500">Kevin Hany</span></p>
-        <div class="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
-            <a href="tel:01064233004" class="inline-flex items-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 transition-all">
-                <span>📞</span> الدعم الفني: 01064233004
-            </a>
-            <a href="mailto:support@mathpro.com" class="inline-flex items-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 transition-all">
-                <span>✉️</span> راسلنا
-            </a>
+    <footer class="bg-white border-t border-slate-200 relative z-10 pt-16 pb-8 mt-10">
+        <div class="max-w-7xl mx-auto px-6 md:px-10 grid md:grid-cols-3 gap-10 items-center text-center md:text-right">
+            
+            <div>
+                <h3 class="text-4xl font-black text-orange-500 mb-3 tracking-tighter">Math<span class="text-slate-800">Pro</span></h3>
+                <p class="text-slate-600 font-bold text-lg mb-2">
+                    🏆 خبرة <span class="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg">6 سنوات</span> في صناعة الأوائل.
+                </p>
+                <p class="text-slate-500 font-medium">الخيار الأول للتفوق في الرياضيات.</p>
+            </div>
+
+            <div class="flex flex-col items-center md:items-start">
+                <p class="text-slate-800 font-black mb-4 text-lg">تواصل معنا على صفحاتنا:</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 hover:-translate-y-1 transition-all shadow-sm">📘</a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-green-50 hover:text-green-500 hover:border-green-200 hover:-translate-y-1 transition-all shadow-sm">💬</a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 hover:-translate-y-1 transition-all shadow-sm">📺</a>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center md:items-end gap-3">
+                <p class="text-slate-800 font-black mb-1 text-lg">فريق الدعم الفني:</p>
+                <a href="tel:01064233004" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 transition-all w-full md:w-auto shadow-sm">
+                    <span>📞</span> 01064233004
+                </a>
+                <a href="mailto:support@mathpro.com" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200 transition-all w-full md:w-auto shadow-sm">
+                    <span>✉️</span> راسلنا للإستفسار
+                </a>
+            </div>
+
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 md:px-10 mt-12 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+            <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">© 2026 MathPro Platform. All Rights Reserved.</p>
+            <p class="text-slate-600 font-black flex items-center gap-2">
+                Developed with <span class="text-red-500 animate-pulse text-lg">❤️</span> By <span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-lg">Kevin</span>
+            </p>
         </div>
     </footer>
 
@@ -262,7 +289,6 @@
             forgotArea.classList.add("hidden");
             actionBtn.innerText = "إنشاء الحساب 🚀";
             
-            // ستايلات التابات
             signupTab.className = "flex-1 py-3.5 rounded-xl font-black bg-white text-orange-600 shadow-md transition-all text-lg";
             loginTab.className = "flex-1 py-3.5 rounded-xl font-black text-slate-500 hover:text-slate-800 transition-all text-lg bg-transparent shadow-none";
         }
@@ -273,7 +299,6 @@
             forgotArea.classList.remove("hidden");
             actionBtn.innerText = "تسجيل الدخول";
             
-            // ستايلات التابات
             loginTab.className = "flex-1 py-3.5 rounded-xl font-black bg-white text-orange-600 shadow-md transition-all text-lg";
             signupTab.className = "flex-1 py-3.5 rounded-xl font-black text-slate-500 hover:text-slate-800 transition-all text-lg bg-transparent shadow-none";
         }
