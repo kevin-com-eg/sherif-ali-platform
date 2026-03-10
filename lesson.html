@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | المنطقة التعليمية 🧠</title>
+    <title>MathPro | المنصة التعليمية 🎓</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #05070a; color: white; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #05070a; color: white; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .timer-box { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+        .tab-btn.active { border-bottom: 4px solid #f97316; color: #f97316; }
         .hidden { display: none !important; }
         .correct-ans { background: rgba(22, 163, 74, 0.2) !important; border: 2px solid #16a34a !important; }
         .wrong-ans { background: rgba(220, 38, 38, 0.2) !important; border: 2px solid #dc2626 !important; }
@@ -18,42 +18,57 @@
 </head>
 <body>
 
-    <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6">
+    <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6 hidden">
         <div class="glass p-10 rounded-[3rem] w-full max-w-md text-center space-y-6">
-            <h2 class="text-3xl font-black">أدخل كود الحصة 🎫</h2>
-            <input id="accessCodeInput" type="text" placeholder="SA-000000" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-xl text-white outline-none">
-            <button id="verifyBtn" class="w-full bg-orange-600 font-black py-5 rounded-2xl text-xl hover:bg-orange-700 transition">دخول (صلاحية 7 أيام) ✨</button>
+            <h2 class="text-3xl font-black">تفعيل الحصة 🎫</h2>
+            <input id="accessCodeInput" type="text" placeholder="أدخل الكود هنا" class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-center text-white outline-none">
+            <button id="verifyBtn" class="w-full bg-orange-600 font-black py-5 rounded-2xl text-xl transition">تفعيل (صلاحية 7 أيام)</button>
         </div>
     </div>
 
     <div id="lessonContent" class="hidden">
-        <nav class="glass sticky top-0 z-50 p-4 mb-8">
+        <nav class="glass sticky top-0 z-50 p-4 mb-4">
             <div class="max-w-6xl mx-auto flex justify-between items-center">
-                <div class="text-right">
-                    <h1 id="lessonTitle" class="text-xl font-black text-orange-500 underline">جاري التحميل...</h1>
-                    <p id="expiryCountdown" class="text-[10px] text-red-400 font-bold"></p>
+                <div id="tabsSection" class="flex gap-4 opacity-30 pointer-events-none">
+                    <button onclick="switchTab('video')" id="tab-v" class="tab-btn px-4 py-2 font-black">📺 الشرح</button>
+                    <button onclick="switchTab('pdf')" id="tab-p" class="tab-btn px-4 py-2 font-black">📚 الملزمة</button>
+                    <button onclick="switchTab('quiz')" id="tab-q" class="tab-btn active px-4 py-2 font-black">📝 الامتحان</button>
                 </div>
-                <div id="examTimerWrapper" class="timer-box px-6 py-2 rounded-full flex items-center gap-3">
-                    <span id="examTimer" class="text-xl font-black font-mono">40:00</span>
-                </div>
+                <div class="bg-orange-600 px-4 py-1 rounded-full text-sm font-bold" id="examTimer">40:00</div>
             </div>
         </nav>
 
         <main class="max-w-4xl mx-auto px-6 pb-20">
-            <section id="quizSection" class="space-y-8">
-                <div id="questionsList" class="space-y-8"></div>
-                <button id="submitQuizBtn" class="w-full bg-orange-600 py-6 rounded-[2.5rem] text-2xl font-black shadow-xl">إرسال الإجابات وفتح الحصة 🚀</button>
-            </section>
+            <div id="content-quiz" class="tab-content space-y-8">
+                <div id="quizIntro" class="text-center space-y-4">
+                    <h2 class="text-3xl font-black">جاهز للامتحان؟ 🚀</h2>
+                    <p class="text-gray-400">لن يفتح الفيديو إلا بعد إرسال الدرجة</p>
+                    <button id="startQuizBtn" class="bg-white text-black font-black px-10 py-4 rounded-2xl text-xl">ابدأ الامتحان الآن</button>
+                </div>
 
-            <section id="mediaSection" class="hidden space-y-10 mt-10">
-                <div class="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/5">
-                    <div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div>
+                <div id="quizApp" class="hidden">
+                    <div id="questionContainer" class="glass p-10 rounded-[2.5rem] min-h-[300px]">
+                        </div>
+                    <div class="flex justify-between mt-6">
+                        <button id="prevBtn" class="bg-white/10 px-8 py-3 rounded-xl font-bold">السابق</button>
+                        <span id="qCounter" class="font-bold text-orange-500">1 / 10</span>
+                        <button id="nextBtn" class="bg-orange-600 px-8 py-3 rounded-xl font-bold">التالي</button>
+                    </div>
+                    <button id="finishBtn" class="hidden w-full mt-10 bg-green-600 py-6 rounded-2xl text-2xl font-black">إرسال الدرجة وفتح الشرح 🔓</button>
                 </div>
-                <div class="glass p-8 rounded-[2.5rem] flex flex-col items-center gap-4 text-center">
-                    <h3 class="text-2xl font-black text-green-400">ملزمة الحصة متاحة الآن 📚</h3>
-                    <a id="pdfLink" href="#" target="_blank" class="bg-white text-black font-black px-12 py-4 rounded-2xl hover:bg-orange-600 hover:text-white transition">تحميل PDF ⬇️</a>
-                </div>
-            </section>
+
+                <div id="quizResult" class="hidden glass p-8 rounded-[2rem] text-center border-2 border-green-500">
+                    </div>
+            </div>
+
+            <div id="content-video" class="tab-content hidden space-y-6">
+                <div class="rounded-[2rem] overflow-hidden shadow-2xl"><div id="player" data-plyr-provider="youtube" data-plyr-embed-id=""></div></div>
+            </div>
+
+            <div id="content-pdf" class="tab-content hidden text-center p-10 glass rounded-[2rem]">
+                <h3 class="text-2xl font-black mb-6">ملزمة الحصة جاهزة للتحميل</h3>
+                <a id="pdfLink" href="#" target="_blank" class="bg-white text-black font-black px-12 py-4 rounded-xl">تحميل PDF ⬇️</a>
+            </div>
         </main>
     </div>
 
@@ -74,108 +89,135 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        let currentStudent = null, lessonData = null, examTimeLeft = 40 * 60;
+        let currentStudent = null, lessonData = null, questions = [], currentQIndex = 0, userAnswers = {};
+        let examTimeLeft = 40 * 60;
 
         onAuthStateChanged(auth, async (u) => {
             if (u) {
-                const snap = await getDoc(doc(db, "users", u.uid));
-                currentStudent = { email: u.email, name: snap.exists() ? snap.data().name : u.email.split('@')[0] };
+                currentStudent = { uid: u.uid, email: u.email };
+                checkAccess();
             } else { window.location.href = "index.html"; }
         });
 
+        // 1. فحص الدخول التلقائي أو الكود
+        async function checkAccess() {
+            const lessonId = new URLSearchParams(window.location.search).get('id');
+            const localKey = `access_${lessonId}_${currentStudent.uid}`;
+            const savedAccess = localStorage.getItem(localKey);
+
+            if (savedAccess) {
+                const data = JSON.parse(savedAccess);
+                if (new Date().getTime() < data.expiry) {
+                    showLesson();
+                    return;
+                }
+            }
+            document.getElementById('codeLockScreen').classList.remove('hidden');
+        }
+
         document.getElementById('verifyBtn').onclick = async () => {
             const code = document.getElementById('accessCodeInput').value.trim();
-            const codeRef = doc(db, "codes", code);
-            const snap = await getDoc(codeRef);
-
-            if (snap.exists()) {
-                const data = snap.data();
-                const now = new Date().getTime();
-                let expiryAt = data.expiryAt || now + (7 * 24 * 60 * 60 * 1000);
-
-                if (data.used && data.usedBy !== currentStudent.email) return alert("الكود مستخدم لشخص آخر");
-                if (now > expiryAt) return alert("انتهت صلاحية الـ 7 أيام");
-
-                if (!data.used) await updateDoc(codeRef, { used: true, usedBy: currentStudent.email, expiryAt: expiryAt });
-
-                document.getElementById('codeLockScreen').classList.add('hidden');
-                document.getElementById('lessonContent').classList.remove('hidden');
-                startExpiryTimer(expiryAt);
-                loadLesson();
-                startExamTimer();
-            } else { alert("كود خطأ"); }
+            const snap = await getDoc(doc(db, "codes", code));
+            if (snap.exists() && (!snap.data().used || snap.data().usedBy === currentStudent.email)) {
+                const expiry = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+                await updateDoc(doc(db, "codes", code), { used: true, usedBy: currentStudent.email, expiryAt: expiry });
+                localStorage.setItem(`access_${new URLSearchParams(window.location.search).get('id')}_${currentStudent.uid}`, JSON.stringify({ expiry }));
+                location.reload();
+            } else { alert("الكود غير صالح"); }
         };
 
-        async function loadLesson() {
+        async function showLesson() {
+            document.getElementById('lessonContent').classList.remove('hidden');
             const id = new URLSearchParams(window.location.search).get('id');
             const snap = await getDoc(doc(db, "lessons", id));
             if (snap.exists()) {
                 lessonData = snap.data();
+                questions = lessonData.questions;
                 document.getElementById('lessonTitle').innerText = lessonData.name;
-                const container = document.getElementById('questionsList');
-                lessonData.questions.forEach((q, i) => {
-                    container.innerHTML += `
-                    <div class="glass p-8 rounded-[2rem] q-block" data-correct="${q.correct}">
-                        <p class="text-orange-500 font-bold mb-4">سؤال ${i+1}</p>
-                        ${q.image ? `<img src="${q.image}" class="rounded-xl mb-4 mx-auto max-h-60">` : ''}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            ${['a','b','c','d'].map(opt => `
-                                <label class="p-4 bg-white/5 rounded-xl flex gap-3 cursor-pointer border border-transparent transition opt-label">
-                                    <input type="radio" name="q${i}" value="${opt}" class="accent-orange-500"> ${q[opt]}
-                                </label>
-                            `).join('')}
-                        </div>
-                    </div>`;
-                });
             }
         }
 
-        function startExamTimer() {
-            const int = setInterval(() => {
-                const m = Math.floor(examTimeLeft / 60), s = examTimeLeft % 60;
-                document.getElementById('examTimer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                if (examTimeLeft-- <= 0) { clearInterval(int); submitQuiz(); }
-            }, 1000);
+        // 2. نظام الامتحان (سؤال بسؤال)
+        document.getElementById('startQuizBtn').onclick = () => {
+            document.getElementById('quizIntro').classList.add('hidden');
+            document.getElementById('quizApp').classList.remove('hidden');
+            renderQuestion();
+            startTimer();
+        };
+
+        function renderQuestion() {
+            const q = questions[currentQIndex];
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = `
+                <p class="text-orange-500 font-bold mb-4">سؤال ${currentQIndex + 1}</p>
+                <h3 class="text-xl font-bold mb-6">${q.image ? `<img src="${q.image}" class="max-h-60 mx-auto mb-4">` : ''} اطلق الإجابة الصحيحة:</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    ${['a','b','c','d'].map(opt => `
+                        <label class="p-5 glass rounded-2xl flex items-center gap-4 cursor-pointer hover:bg-white/5 border border-transparent has-[:checked]:border-orange-500">
+                            <input type="radio" name="q" value="${opt}" ${userAnswers[currentQIndex] === opt ? 'checked' : ''} class="w-5 h-5 accent-orange-500">
+                            <span>${q[opt]}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('qCounter').innerText = `${currentQIndex + 1} / ${questions.length}`;
+            document.getElementById('prevBtn').disabled = currentQIndex === 0;
+            document.getElementById('nextBtn').classList.toggle('hidden', currentQIndex === questions.length - 1);
+            document.getElementById('finishBtn').classList.toggle('hidden', currentQIndex !== questions.length - 1);
         }
 
-        async function submitQuiz() {
+        document.getElementById('nextBtn').onclick = () => { saveAns(); currentQIndex++; renderQuestion(); };
+        document.getElementById('prevBtn').onclick = () => { saveAns(); currentQIndex--; renderQuestion(); };
+        function saveAns() { 
+            const sel = document.querySelector('input[name="q"]:checked');
+            if(sel) userAnswers[currentQIndex] = sel.value;
+        }
+
+        // 3. إنهاء الامتحان وعرض الإجابات
+        document.getElementById('finishBtn').onclick = async () => {
+            saveAns();
             let score = 0;
-            const blocks = document.querySelectorAll('.q-block');
+            let reviewHtml = `<h2 class="text-2xl font-black mb-6">نتيجتك النهائية</h2>`;
             
-            blocks.forEach((b, i) => {
-                const sel = b.querySelector(`input[name="q${i}"]:checked`);
-                const correct = b.dataset.correct;
-                b.querySelectorAll('.opt-label').forEach(lbl => {
-                    const val = lbl.querySelector('input').value;
-                    if(val === correct) lbl.classList.add('correct-ans');
-                    if(sel && sel.value === val && val !== correct) lbl.classList.add('wrong-ans');
-                });
-                if(sel && sel.value === correct) score++;
+            questions.forEach((q, i) => {
+                const isCorrect = userAnswers[i] === q.correct;
+                if(isCorrect) score++;
+                reviewHtml += `
+                    <div class="p-4 mb-4 rounded-xl text-right ${isCorrect ? 'bg-green-600/20' : 'bg-red-600/20'} border">
+                        <p class="font-bold">سؤال ${i+1}: ${isCorrect ? '✅ صح' : '❌ خطأ'}</p>
+                        <p class="text-sm">الإجابة الصحيحة هي: (${q.correct.toUpperCase()})</p>
+                    </div>
+                `;
             });
 
-            await addDoc(collection(db, "results"), { studentName: currentStudent.name, lessonName: lessonData.name, score: score, total: blocks.length, submittedAt: new Date() });
-            
-            document.getElementById('submitQuizBtn').classList.add('hidden');
-            document.getElementById('examTimerWrapper').classList.add('hidden');
-            document.getElementById('mediaSection').classList.remove('hidden');
+            await addDoc(collection(db, "results"), { studentEmail: currentStudent.email, lessonName: lessonData.name, score });
 
+            document.getElementById('quizApp').classList.add('hidden');
+            const resBox = document.getElementById('quizResult');
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = ` <div class="text-4xl font-black mb-4">${score} / ${questions.length}</div> ` + reviewHtml;
+
+            // فتح الـ Tabs والميديا
+            document.getElementById('tabsSection').classList.remove('opacity-30', 'pointer-events-none');
             const player = new Plyr('#player');
-            const vId = lessonData.video.split('v=')[1] || lessonData.video.split('/').pop();
-            player.source = { type: 'video', sources: [{ src: vId, provider: 'youtube' }] };
+            player.source = { type: 'video', sources: [{ src: lessonData.video.split('v=')[1] || lessonData.video.split('/').pop(), provider: 'youtube' }] };
             document.getElementById('pdfLink').href = lessonData.pdf || "#";
-            
-            window.scrollTo({ top: document.getElementById('mediaSection').offsetTop - 100, behavior: 'smooth' });
-            alert(`درجتك: ${score} من ${blocks.length}. تم فتح الشرح.`);
-        }
+            alert("تم فتح الحصة! يمكنك الآن مشاهدة الشرح وتحميل الملزمة من التبويبات بالأعلى.");
+        };
 
-        document.getElementById('submitQuizBtn').onclick = submitQuiz;
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab[0]}`).classList.add('active');
+        };
 
-        function startExpiryTimer(expiry) {
-            setInterval(() => {
-                const diff = expiry - new Date().getTime();
-                const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000);
-                document.getElementById('expiryCountdown').innerText = `تنتهي الصلاحية بعد: ${d} يوم و ${h} ساعة و ${m} دقيقة`;
-            }, 60000);
+        function startTimer() {
+            const int = setInterval(() => {
+                const m = Math.floor(examTimeLeft/60), s = examTimeLeft%60;
+                document.getElementById('examTimer').innerText = `${m}:${s<10?'0'+s:s}`;
+                if(examTimeLeft-- <= 0) { clearInterval(int); document.getElementById('finishBtn').click(); }
+            }, 1000);
         }
     </script>
 </body>
