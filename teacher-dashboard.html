@@ -10,6 +10,10 @@
         body { font-family: 'Tajawal', sans-serif; background: #f8fafc; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .btn-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .btn-dark { background: #1e293b; }
+        /* أنيميشن بسيط لظهور الأكواد */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-up { animation: slideUp 0.5s ease-out forwards; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -21,77 +25,91 @@
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto glass p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-white">
-        <div class="flex justify-between items-center mb-10 border-b-2 border-slate-100 pb-6">
-            <div>
-                <h1 class="text-3xl font-black text-slate-800">لوحة تحكم المعلم 🎓</h1>
-                <p class="text-slate-500 font-bold mt-1">أهلاً بك مستر كيفين هاني</p>
+    <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="glass p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-white">
+            <div class="flex justify-between items-center mb-10 border-b-2 border-slate-100 pb-6">
+                <div>
+                    <h1 class="text-3xl font-black text-slate-800">لوحة تحكم المعلم 🎓</h1>
+                    <p class="text-slate-500 font-bold mt-1">أهلاً بك مستر كيفين هاني</p>
+                </div>
+                <button onclick="signOut()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl font-bold text-sm">تسجيل خروج</button>
             </div>
-            <button onclick="signOut()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl font-bold text-sm">تسجيل خروج</button>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="md:col-span-1">
-                <label class="block mb-2 font-bold text-slate-700">اسم الحصة</label>
-                <input id="lessonName" placeholder="مثلاً: مراجعة ليلة الامتحان" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="md:col-span-1">
+                    <label class="block mb-2 font-bold text-slate-700">اسم الحصة</label>
+                    <input id="lessonName" placeholder="مثلاً: مراجعة ليلة الامتحان" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
+                </div>
+                <div class="md:col-span-1">
+                    <label class="block mb-2 font-bold text-slate-700">رابط الفيديو (YouTube)</label>
+                    <input id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
+                </div>
+                <div class="md:col-span-1">
+                    <label class="block mb-2 font-bold text-slate-700">رابط الملزمة / PDF</label>
+                    <input id="attachmentUrl" placeholder="رابط الملف" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
+                </div>
             </div>
-            <div class="md:col-span-1">
-                <label class="block mb-2 font-bold text-slate-700">رابط الفيديو (YouTube)</label>
-                <input id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
-            </div>
-            <div class="md:col-span-1">
-                <label class="block mb-2 font-bold text-slate-700">رابط الملزمة / PDF (اختياري)</label>
-                <input id="attachmentUrl" placeholder="رابط Google Drive أو ميديا فاير" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition-all shadow-inner">
-            </div>
-        </div>
 
-        <div id="questionsContainer" class="space-y-8">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-black text-slate-800">أسئلة الاختبار القبلي 📝</h2>
-                <span class="text-sm bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold">يجب حلها لفتح الفيديو</span>
-            </div>
-            
-            <div class="question-block bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-sm relative">
-                <div class="absolute -top-4 right-6 bg-slate-900 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Question 1</div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div>
-                        <label class="block mb-2 font-bold text-slate-600 text-sm">رابط صورة السؤال</label>
-                        <input class="q-image w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-orange-400" placeholder="ضع رابط الصورة هنا">
-                        
-                        <label class="block mb-2 font-bold text-slate-600 text-sm">الإجابة الصحيحة</label>
-                        <select class="q-correct w-full p-3 bg-orange-50 border-2 border-orange-200 rounded-xl font-bold text-orange-700 outline-none">
-                            <option value="a">الاختيار (A)</option>
-                            <option value="b">الاختيار (B)</option>
-                            <option value="c">الاختيار (C)</option>
-                            <option value="d">الاختيار (D)</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <input class="q-a p-3 border rounded-xl text-sm" placeholder="نص الاختيار A">
-                        <input class="q-b p-3 border rounded-xl text-sm" placeholder="نص الاختيار B">
-                        <input class="q-c p-3 border rounded-xl text-sm" placeholder="نص الاختيار C">
-                        <input class="q-d p-3 border rounded-xl text-sm" placeholder="نص الاختيار D">
+            <div id="questionsContainer" class="space-y-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-black text-slate-800">أسئلة الاختبار القبلي 📝</h2>
+                </div>
+                <div class="question-block bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-sm relative">
+                    <div class="absolute -top-4 right-6 bg-slate-900 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Question 1</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label class="block mb-2 font-bold text-slate-600 text-sm">رابط صورة السؤال</label>
+                            <input class="q-image w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-orange-400" placeholder="رابط الصورة">
+                            <label class="block mb-2 font-bold text-slate-600 text-sm">الإجابة الصحيحة</label>
+                            <select class="q-correct w-full p-3 bg-orange-50 border-2 border-orange-200 rounded-xl font-bold text-orange-700 outline-none">
+                                <option value="a">الاختيار (A)</option><option value="b">الاختيار (B)</option><option value="c">الاختيار (C)</option><option value="d">الاختيار (D)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input class="q-a p-3 border rounded-xl text-sm" placeholder="نص A">
+                            <input class="q-b p-3 border rounded-xl text-sm" placeholder="نص B">
+                            <input class="q-c p-3 border rounded-xl text-sm" placeholder="نص C">
+                            <input class="q-d p-3 border rounded-xl text-sm" placeholder="نص D">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button id="addNewQBtn" class="bg-slate-100 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-200 transition-all border-2 border-slate-200">
-                + إضافة سؤال جديد
-            </button>
-            <button id="saveBtn" class="btn-orange text-white font-black py-4 rounded-2xl text-xl shadow-xl hover:opacity-90 transition-all transform active:scale-95">
-                حفظ ونشر الحصة الآن 🚀
-            </button>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 border-b-2 border-slate-100 pb-12">
+                <button id="addNewQBtn" class="bg-slate-100 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-200 border-2 border-slate-200 transition-all">+ إضافة سؤال</button>
+                <button id="saveBtn" class="btn-orange text-white font-black py-4 rounded-2xl text-xl shadow-xl active:scale-95 transition-all">حفظ ونشر الحصة 🚀</button>
+            </div>
+
+            <div class="mt-12">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">مولد أكواد الطلاب 🎫</h2>
+                        <p class="text-slate-500 font-bold">توليد 50 كود تلقائياً (SA-xxxxxxxxxxxx)</p>
+                    </div>
+                    <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-orange-600 transition-all shadow-lg active:scale-95">
+                        توليد 50 كود جديد 🚀
+                    </button>
+                </div>
+
+                <div id="codesResultArea" class="hidden animate-up">
+                    <div class="bg-orange-50 border-2 border-orange-200 p-6 rounded-[2rem]">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-black text-orange-800 underline">الأكواد جاهزة (تم حفظها في Firebase):</span>
+                            <button id="copyCodesBtn" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-md">نسخ الكل للطباعة 📋</button>
+                        </div>
+                        <div id="codesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 font-mono text-sm font-bold text-slate-700 max-h-60 overflow-y-auto p-2">
+                            </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
@@ -104,7 +122,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // الحماية: التحقق من أن المستخدم هو "كيفين هاني" فقط
     const MASTER_EMAIL = "kevin.hany.08@proton.me";
 
     onAuthStateChanged(auth, (user) => {
@@ -116,22 +133,17 @@
         }
     });
 
-    const questionsContainer = document.getElementById("questionsContainer");
-    const addNewQBtn = document.getElementById("addNewQBtn");
-    const saveBtn = document.getElementById("saveBtn");
-
-    addNewQBtn.onclick = () => {
+    // وظيفة إضافة سؤال جديد
+    document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
         const qHtml = `
-            <div class="question-block bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-sm relative animate-fade-in">
+            <div class="question-block bg-white p-6 rounded-[2rem] border-2 border-slate-100 shadow-sm relative mt-6">
                 <div class="absolute -top-4 right-6 bg-slate-900 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Question ${qCount}</div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                     <div>
-                        <label class="block mb-2 font-bold text-slate-600 text-sm">رابط صورة السؤال</label>
-                        <input class="q-image w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-orange-400" placeholder="ضع رابط الصورة هنا">
-                        <label class="block mb-2 font-bold text-slate-600 text-sm">الإجابة الصحيحة</label>
-                        <select class="q-correct w-full p-3 bg-orange-50 border-2 border-orange-200 rounded-xl font-bold text-orange-700 outline-none">
-                            <option value="a">الاختيار (A)</option><option value="b">الاختيار (B)</option><option value="c">الاختيار (C)</option><option value="d">الاختيار (D)</option>
+                        <input class="q-image w-full p-3 bg-slate-50 border border-slate-200 rounded-xl mb-4 outline-none" placeholder="رابط الصورة">
+                        <select class="q-correct w-full p-3 bg-orange-50 border-2 border-orange-200 rounded-xl font-bold text-orange-700">
+                            <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
@@ -142,19 +154,18 @@
                     </div>
                 </div>
             </div>`;
-        questionsContainer.insertAdjacentHTML('beforeend', qHtml);
+        document.getElementById("questionsContainer").insertAdjacentHTML('beforeend', qHtml);
     };
 
-    saveBtn.onclick = async () => {
+    // وظيفة حفظ الحصة
+    document.getElementById("saveBtn").onclick = async () => {
         const name = document.getElementById("lessonName").value;
         const video = document.getElementById("videoUrl").value;
         const attachment = document.getElementById("attachmentUrl").value;
-        
-        if (!name || !video) return alert("من فضلك ادخل اسم الحصة ورابط الفيديو");
+        if (!name || !video) return alert("ادخل البيانات الأساسية!");
 
         const questionBlocks = document.querySelectorAll('.question-block');
         let questionsData = [];
-
         questionBlocks.forEach(block => {
             const img = block.querySelector('.q-image').value;
             if (img) {
@@ -169,28 +180,71 @@
             }
         });
 
-        if (questionsData.length === 0) return alert("يجب إضافة سؤال واحد على الأقل بصورته");
-
-        saveBtn.innerText = "جاري الحفظ والنشر... ⏳";
-        saveBtn.disabled = true;
+        const btn = document.getElementById("saveBtn");
+        btn.innerText = "جاري الحفظ... ⏳"; btn.disabled = true;
 
         try {
             await addDoc(collection(db, "lessons"), {
-                name: name,
-                video: video,
-                pdf: attachment, // حفظ رابط الملف المرفق
-                questions: questionsData,
-                createdAt: new Date(),
-                teacher: MASTER_EMAIL
+                name, video, pdf: attachment, questions: questionsData, createdAt: new Date(), teacher: MASTER_EMAIL
             });
-            alert("تم نشر الحصة بنجاح يا مستر كيفين!");
-            location.reload();
+            alert("تم النشر بنجاح!"); location.reload();
+        } catch (e) { alert("خطأ في الحفظ"); btn.disabled = false; }
+    };
+
+    // --- نظام توليد الـ 50 كود أوتوماتيكياً ---
+    window.generateBulkCodes = async () => {
+        const btn = document.getElementById('genCodesBtn');
+        const grid = document.getElementById('codesGrid');
+        const area = document.getElementById('codesResultArea');
+        
+        if(!confirm("توليد 50 كود جديد وحفظهم الآن؟")) return;
+
+        btn.innerText = "جاري الرفع... ⏳";
+        btn.disabled = true;
+        grid.innerHTML = "";
+        let codesArray = [];
+
+        try {
+            for (let i = 0; i < 50; i++) {
+                // توليد كود SA- متبوع بـ 12 رقم عشوائي
+                const newCode = "SA-" + Math.floor(100000000000 + Math.random() * 900000000000);
+                
+                // الرفع لـ Firebase
+                await setDoc(doc(db, "codes", newCode), {
+                    used: false,
+                    usedBy: "",
+                    createdAt: new Date()
+                });
+
+                codesArray.push(newCode);
+                
+                // إضافة الكود للشبكة في الصفحة
+                const codeDiv = document.createElement('div');
+                codeDiv.className = "bg-white p-2 rounded border text-center shadow-sm";
+                codeDiv.innerText = newCode;
+                grid.appendChild(codeDiv);
+            }
+            area.classList.remove('hidden');
+            alert("✅ تم توليد 50 كود وحفظهم بنجاح في قاعدة البيانات!");
         } catch (e) {
-            alert("حدث خطأ أثناء الحفظ");
-            saveBtn.disabled = false;
+            console.error(e);
+            alert("حدث خطأ أثناء الاتصال بـ Firebase");
+        } finally {
+            btn.innerText = "توليد 50 كود جديد 🚀";
+            btn.disabled = false;
         }
     };
 
+    // زر النسخ
+    window.copyCodes = () => {
+        const codes = Array.from(document.querySelectorAll('#codesGrid div'))
+                          .map(div => div.innerText)
+                          .join('\n');
+        navigator.clipboard.writeText(codes).then(() => alert("📋 تم نسخ الـ 50 كود بنجاح!"));
+    };
+
+    document.getElementById('genCodesBtn').onclick = window.generateBulkCodes;
+    document.getElementById('copyCodesBtn').onclick = window.copyCodes;
     window.signOut = () => auth.signOut();
 </script>
 </body>
