@@ -7,26 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ألوان ثيم منصة بسطتهالك */
+        /* الأساس (الوضع المظلم) */
         body { 
             font-family: 'Tajawal', sans-serif; 
-            background-color: #0b1120; /* لون الخلفية الكحلي الغامق */
+            background-color: #0b1120; 
             color: #ffffff; 
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .bg-card { background-color: #151e32; } /* لون الكروت والنافبار */
+        .bg-card { background-color: #151e32; transition: background-color 0.3s ease; }
         .text-cyan-theme { color: #00b4d8; }
         .bg-cyan-theme { background-color: #00b4d8; }
         .bg-gold { background-color: #9a7b4f; }
         
-        /* شريط التصفية (التابات) */
-        .filter-scroll::-webkit-scrollbar { height: 4px; }
-        .filter-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-
         /* كارت الكورس */
         .course-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .course-card:hover {
@@ -35,63 +32,42 @@
             border-color: rgba(0, 180, 216, 0.3);
         }
 
-        /* الشريط الأحمر المائل (Ribbon) */
-        .ribbon-wrapper {
-            position: absolute;
-            top: 0; right: 0;
-            width: 100px; height: 100px;
-            overflow: hidden;
-            z-index: 10;
-        }
-        .ribbon {
-            background: #ef4444;
-            color: white;
-            font-size: 11px;
-            font-weight: 900;
-            text-align: center;
-            transform: rotate(45deg);
-            position: relative;
-            padding: 5px 0;
-            top: 15px; left: -25px;
-            width: 150px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+        .ribbon-wrapper { position: absolute; top: 0; right: 0; width: 100px; height: 100px; overflow: hidden; z-index: 10; }
+        .ribbon { background: #ef4444; color: white; font-size: 11px; font-weight: 900; text-align: center; transform: rotate(45deg); position: relative; padding: 5px 0; top: 15px; left: -25px; width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        /* الـ Profile Modal */
-        .modal-blur {
-            backdrop-filter: blur(10px);
-            background: rgba(11, 17, 32, 0.85);
-        }
+        .modal-blur { backdrop-filter: blur(10px); background: rgba(11, 17, 32, 0.85); }
+
+        /* ---------- إضافات الوضع الفاتح (Light Mode) ---------- */
+        body.light-mode { background-color: #f1f5f9; color: #1e293b; }
+        body.light-mode .bg-card { background-color: #ffffff; border-color: #e2e8f0; }
+        body.light-mode .course-card { background-color: #ffffff; border-color: #e2e8f0; }
+        body.light-mode .course-card h3 { color: #0f172a; }
+        body.light-mode .text-gray-400 { color: #64748b; }
+        body.light-mode .bg-gray-800 { background-color: #f1f5f9; }
+        body.light-mode .border-gray-800, body.light-mode .border-gray-700 { border-color: #e2e8f0; }
     </style>
 </head>
 <body>
 
-    <nav class="bg-card sticky top-0 z-50 border-b border-gray-800">
+    <nav class="bg-card sticky top-0 z-50 border-b border-gray-800 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 lg:px-8 h-20 flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <h1 class="text-3xl font-black text-cyan-theme tracking-tighter">Math<span class="text-white">Pro</span></h1>
+                <h1 class="text-3xl font-black text-cyan-theme tracking-tighter">Math<span class="text-gray-400 light-mode:text-gray-800" id="logoText">Pro</span></h1>
             </div>
             
             <div class="flex items-center gap-3 md:gap-5">
-                <div class="hidden md:flex bg-gray-800/50 rounded-full p-1 border border-gray-700">
-                    <button class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/></svg></button>
-                    <button class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-700 text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg></button>
+                <div class="hidden md:flex bg-gray-800/50 rounded-full p-1 border border-gray-700 cursor-pointer transition-colors" onclick="toggleTheme()">
+                    <div id="lightIcon" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors">☀️</div>
+                    <div id="darkIcon" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-700 text-white transition-colors">🌙</div>
                 </div>
 
-                <button class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></button>
-                
                 <div class="hidden md:flex items-center bg-gray-800 rounded-full px-4 py-1.5 border border-gray-700">
-                    <span class="text-sm font-bold ml-2">0 جنيه</span>
-                    <div class="w-6 h-6 bg-cyan-theme rounded-full flex items-center justify-center text-xs">💰</div>
+                    <span class="text-sm font-bold ml-2 text-gray-300">0 جنيه</span>
+                    <div class="w-6 h-6 bg-cyan-theme rounded-full flex items-center justify-center text-xs text-white">💰</div>
                 </div>
-
-                <button class="text-gray-400 hover:text-white relative">
-                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                </button>
                 
                 <button onclick="openProfile()" class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-theme to-blue-500 flex items-center justify-center text-white font-black overflow-hidden border-2 border-transparent hover:border-cyan-theme transition-all">
-                    <img src="https://ui-avatars.com/api/?name=Student&background=0D8ABC&color=fff" id="avatarImg" class="w-full h-full object-cover">
+                    <img src="https://ui-avatars.com/api/?name=Student&background=00b4d8&color=fff" id="avatarImg" class="w-full h-full object-cover">
                 </button>
 
                 <button id="logoutBtn" title="تسجيل الخروج" class="text-red-500 hover:text-red-400 transition-colors ml-2">
@@ -103,18 +79,26 @@
 
     <div class="bg-card border-b border-gray-800">
         <div class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
-            <h2 class="text-center font-bold text-lg mb-4 text-gray-200">أختر القسم المراد عرض الكورسات الخاصة به</h2>
-            
-            <div class="flex gap-3 overflow-x-auto filter-scroll pb-2 justify-center flex-wrap">
+            <h2 class="text-center font-bold text-lg mb-4 text-gray-400">أختر القسم المراد عرض الكورسات الخاصة به</h2>
+            <div class="flex gap-3 overflow-x-auto pb-2 justify-center flex-wrap">
                 <button class="bg-cyan-theme text-white px-6 py-2 rounded-lg font-bold text-sm whitespace-nowrap shadow-md">الرياضيات (أساسي)</button>
-                <button class="bg-gray-800/50 hover:bg-gray-800 text-gray-300 border border-gray-700 px-6 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-colors">مراجعات نهائية</button>
-                <button class="bg-gray-800/50 hover:bg-gray-800 text-gray-300 border border-gray-700 px-6 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-colors">كويزات أسبوعية</button>
-                <button class="bg-gray-800/50 hover:bg-gray-800 text-gray-300 border border-gray-700 px-6 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-colors">حصص لايف</button>
             </div>
         </div>
     </div>
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-10">
+        
+        <div id="announcementBox" class="hidden mb-8 animate-pulse">
+            <div class="bg-cyan-theme/10 border-2 border-cyan-theme p-4 rounded-2xl flex items-center gap-4 shadow-lg shadow-cyan-theme/20">
+                <span class="text-3xl">📢</span>
+                <div class="flex-1">
+                    <h4 class="font-black text-cyan-theme text-sm">رسالة هامة من الأستاذ</h4>
+                    <p id="announcementText" class="font-bold text-lg"></p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-red-500 font-bold bg-gray-800/50 rounded-full w-8 h-8 flex items-center justify-center">✖</button>
+            </div>
+        </div>
+
         <div class="mb-10 text-right">
             <h2 class="text-2xl md:text-3xl font-black mb-2">مرحباً، <span class="text-cyan-theme" id="userNameDisplay">جاري التحميل...</span> 👋</h2>
             <p class="text-gray-400">تابع كورساتك وابدأ التعلم الآن.</p>
@@ -125,38 +109,25 @@
         </div>
     </main>
 
-    <div class="fixed bottom-6 left-6 flex flex-col gap-3 z-50">
-        <button class="w-12 h-12 bg-gray-800 text-gray-300 rounded-full flex items-center justify-center shadow-lg border border-gray-700 hover:bg-gray-700 transition relative group">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <div class="absolute right-14 bg-gray-800 text-xs px-3 py-2 rounded border border-gray-700 opacity-0 group-hover:opacity-100 transition whitespace-nowrap">اضغط هنا عشان تكتب ملاحظاتك</div>
-        </button>
-        <a href="https://wa.me/201064233004" target="_blank" class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:bg-green-600 transition">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-        </a>
-    </div>
-
     <div id="profileModal" class="fixed inset-0 modal-blur hidden z-[100] flex items-center justify-center p-4">
         <div class="bg-card border border-gray-700 p-8 rounded-[2rem] w-full max-w-lg shadow-2xl relative">
             <button onclick="closeProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            <h3 class="text-2xl font-black mb-8 text-white text-center">بيانات الحساب ⚙️</h3>
-            
+            <h3 class="text-2xl font-black mb-8 text-center">بيانات الحساب ⚙️</h3>
             <div class="space-y-5">
                 <div>
                     <label class="text-sm text-gray-400 font-bold mb-2 block">الاسم بالكامل</label>
-                    <input id="editName" type="text" class="w-full bg-[#0b1120] border border-gray-700 p-4 rounded-xl outline-none focus:border-cyan-theme text-white transition-all font-bold">
+                    <input id="editName" type="text" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none focus:border-cyan-theme transition-all font-bold text-gray-200">
                 </div>
-                
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-sm text-gray-400 font-bold mb-2 block">رقم تليفونك</label>
-                        <input id="editPhone" type="tel" class="w-full bg-[#0b1120] border border-gray-700 p-4 rounded-xl outline-none focus:border-cyan-theme text-white transition-all font-bold">
+                        <input id="editPhone" type="tel" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none focus:border-cyan-theme transition-all font-bold text-gray-200">
                     </div>
                     <div>
                         <label class="text-sm text-gray-400 font-bold mb-2 block">رقم ولي الأمر</label>
-                        <input id="editParentPhone" type="tel" class="w-full bg-[#0b1120] border border-gray-700 p-4 rounded-xl outline-none focus:border-cyan-theme text-white transition-all font-bold">
+                        <input id="editParentPhone" type="tel" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none focus:border-cyan-theme transition-all font-bold text-gray-200">
                     </div>
                 </div>
-                
                 <div class="pt-4">
                     <button onclick="updateProfile()" id="saveBtn" class="w-full bg-cyan-theme hover:bg-[#0096b4] text-white font-black py-4 rounded-xl text-lg transition-colors">حفظ التغييرات</button>
                 </div>
@@ -167,7 +138,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
@@ -181,12 +152,46 @@
     const db = getFirestore(app);
     let currentUser;
 
+    // --- وظيفة Dark/Light Mode ---
+    window.toggleTheme = () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        updateThemeUI(isLight);
+    };
+
+    function updateThemeUI(isLight) {
+        const lightIcon = document.getElementById('lightIcon');
+        const darkIcon = document.getElementById('darkIcon');
+        const logoText = document.getElementById('logoText');
+        if(isLight) {
+            lightIcon.classList.add('bg-gray-200', 'text-yellow-500'); lightIcon.classList.remove('text-gray-400');
+            darkIcon.classList.remove('bg-gray-700', 'text-white'); darkIcon.classList.add('text-gray-400');
+            logoText.classList.remove('text-white'); logoText.classList.add('text-gray-800');
+        } else {
+            lightIcon.classList.remove('bg-gray-200', 'text-yellow-500'); lightIcon.classList.add('text-gray-400');
+            darkIcon.classList.add('bg-gray-700', 'text-white'); darkIcon.classList.remove('text-gray-400');
+            logoText.classList.add('text-white'); logoText.classList.remove('text-gray-800');
+        }
+    }
+    if (localStorage.getItem('theme') === 'light') { document.body.classList.add('light-mode'); updateThemeUI(true); }
+
+    // --- وظيفة جلب التنبيهات (الـ Notification) ---
+    const qNotif = query(collection(db, "announcements"), orderBy("createdAt", "desc"), limit(1));
+    onSnapshot(qNotif, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+                const data = change.doc.data();
+                document.getElementById('announcementText').innerText = data.message;
+                document.getElementById('announcementBox').classList.remove('hidden');
+            }
+        });
+    });
+
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
+            const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
                 const data = userSnap.data();
                 const studentName = data.name || "يا بطل";
@@ -194,14 +199,10 @@
                 document.getElementById('editName').value = data.name || "";
                 document.getElementById('editPhone').value = data.phone || "";
                 document.getElementById('editParentPhone').value = data.parentPhone || "";
-                
-                // تحديث صورة البروفايل بأول حرف من الاسم
                 document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=00b4d8&color=fff&bold=true`;
             }
             loadLessons();
-        } else {
-            window.location.href = "index.html";
-        }
+        } else { window.location.href = "index.html"; }
     });
 
     async function loadLessons() {
@@ -216,25 +217,18 @@
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            // تم تصميم الكارت ليكون مطابق لطلبك (بسطتهالك ستايل)
             grid.innerHTML += `
                 <div class="course-card bg-card rounded-[1.5rem] overflow-hidden relative flex flex-col group">
-                    <div class="ribbon-wrapper">
-                        <div class="ribbon">كورس مثبت</div>
-                    </div>
-                    
+                    <div class="ribbon-wrapper"><div class="ribbon">كورس مثبت</div></div>
                     <div class="h-44 bg-gray-800 relative overflow-hidden">
                         <img src="${data.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop'}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#151e32] to-transparent"></div>
                     </div>
-
                     <div class="p-5 flex flex-col flex-grow relative z-10 -mt-8">
                         <div class="bg-gold text-white text-center py-2 px-4 rounded-lg font-bold text-sm mb-4 mx-auto shadow-md w-11/12 border border-white/20">
                             الرياضيات - أ. شريف علي 3ث
                         </div>
-                        
-                        <h3 class="text-2xl font-black text-center text-white mb-6 mt-2 leading-tight">${data.name}</h3>
-                        
+                        <h3 class="text-2xl font-black text-center mb-6 mt-2 leading-tight">${data.name}</h3>
                         <div class="mt-auto border-t border-gray-700 pt-4 flex justify-center">
                             <a href="lesson.html?id=${doc.id}" class="bg-transparent border border-cyan-theme text-cyan-theme hover:bg-cyan-theme hover:text-white w-full py-2.5 rounded-lg font-bold text-center transition-colors">
                                 عرض التفاصيل والاشتراك
@@ -256,9 +250,7 @@
 
         btn.innerText = "جاري الحفظ... ⏳";
         try {
-            await setDoc(doc(db, "users", currentUser.uid), {
-                name, phone, parentPhone: pPhone
-            }, { merge: true });
+            await setDoc(doc(db, "users", currentUser.uid), { name, phone, parentPhone: pPhone }, { merge: true });
             document.getElementById('userNameDisplay').innerText = name;
             alert("تم تحديث بروفايلك بنجاح! 🔥");
             closeProfile();
@@ -269,7 +261,6 @@
     window.openProfile = () => document.getElementById('profileModal').classList.remove('hidden');
     window.closeProfile = () => document.getElementById('profileModal').classList.add('hidden');
     document.getElementById('logoutBtn').onclick = () => { if(confirm("هل تريد تسجيل الخروج؟")) signOut(auth); };
-
 </script>
 </body>
 </html>
