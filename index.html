@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro | الأستاذ شريف علي</title>
+    
+    <meta name="theme-color" content="#10b981">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -103,6 +108,28 @@
         </div>
     </div>
 
+    <footer class="bg-white border-t border-slate-200 relative z-10 pt-16 pb-8 mt-10">
+        <div class="max-w-7xl mx-auto px-6 md:px-10 grid md:grid-cols-3 gap-10 items-center text-center md:text-right">
+            <div>
+                <h3 class="text-4xl font-black text-emerald-600 mb-3 tracking-tighter">Math<span class="text-slate-800">Pro</span></h3>
+                <p class="text-slate-700 font-bold text-lg mb-2">🏆 خبرة <span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">6 سنوات</span> في صناعة الأوائل.</p>
+                <p class="text-slate-600 font-medium">الخيار الأول للتفوق في الرياضيات.</p>
+            </div>
+            <div class="flex flex-col items-center md:items-end gap-3">
+                <p class="text-slate-800 font-black mb-1 text-lg">فريق الدعم الفني:</p>
+                <a href="tel:01064233004" class="inline-flex items-center justify-center gap-2 bg-slate-50 border border-slate-100 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-emerald-600 transition-all w-full md:w-auto shadow-sm">
+                    <span>📞</span> 01064233004
+                </a>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 md:px-10 mt-12 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+            <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">© 2026 MathPro Platform. All Rights Reserved.</p>
+            <p class="text-slate-600 font-black flex items-center gap-2">
+                Developed with <span class="text-emerald-500 animate-pulse text-lg">❤️</span> By <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg">Kevin</span>
+            </p>
+        </div>
+    </footer>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -161,15 +188,11 @@
 
                     const res = await createUserWithEmailAndPassword(auth, emailVal, passVal);
                     
-                    // 🔥 الكود السري اللي هيولد رقم تعريفي فريد لكل طالب 🔥
                     const randomStudentId = Math.floor(100000 + Math.random() * 900000).toString();
                     
                     await setDoc(doc(db, "users", res.user.uid), {
                         name, phone, parentPhone: parent, branch, city, area,
-                        email: emailVal,
-                        role: "student",
-                        studentId: randomStudentId, // حفظ الرقم في الداتا بيز
-                        createdAt: new Date()
+                        email: emailVal, role: "student", studentId: randomStudentId, createdAt: new Date()
                     });
                     
                     window.location = "dashboard.html";
@@ -187,13 +210,17 @@
             } catch(e) { alert(e.message); }
         }
 
-        document.getElementById("forgotBtn").onclick = async () => {
-            const emailVal = document.getElementById("email").value;
-            if(!emailVal) return alert("اكتب إيميلك في خانة البريد الإلكتروني الأول يا بطل");
-            try { await sendPasswordResetEmail(auth, emailVal); alert("تم إرسال رابط استعادة كلمة المرور لإيميلك."); } catch(e) { alert(e.message); }
-        }
-
         window.scrollToAuth = () => { document.getElementById('authArea').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('تم تفعيل التطبيق!', reg))
+                    .catch(err => console.log('خطأ', err));
+            });
+        }
     </script>
 </body>
 </html>
