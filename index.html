@@ -32,6 +32,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* الحركة الجديدة: يطلع وينزل ببطء (Floating) */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 4s ease-in-out infinite; animation-delay: 2s; }
+
         /* تأثيرات الزجاج (Glassmorphism) */
         .glass-card {
             background: rgba(255, 255, 255, 0.7);
@@ -121,7 +130,7 @@
                 نظام تعليمي متكامل، شرح مبسط، وتدريبات شاملة تضمن لك الدرجة النهائية وتفوقك الأكاديمي.
             </p>
             
-            <div class="mt-10 relative group rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+            <div class="mt-10 relative group rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white animate-float">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
                 <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1600&auto=format&fit=crop" alt="Math Abstract" class="w-full h-64 md:h-80 object-cover transform group-hover:scale-110 transition duration-700 ease-in-out">
                 <div class="absolute bottom-6 right-6 z-20 flex items-center gap-4">
@@ -201,17 +210,17 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="feature-card p-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3">📺</div>
+                <div class="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3 animate-float">📺</div>
                 <h4 class="text-2xl font-black text-slate-800">شرح سينمائي</h4>
                 <p class="text-slate-500 mt-4 text-lg leading-relaxed">جودة تصوير عالية وشرح يفكك أعقد المسائل لخطوات بسيطة وممتعة.</p>
             </div>
             <div class="feature-card p-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform rotate-3">📝</div>
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform rotate-3 animate-float-delayed">📝</div>
                 <h4 class="text-2xl font-black text-slate-800">امتحانات ذكية</h4>
                 <p class="text-slate-500 mt-4 text-lg leading-relaxed">بنك أسئلة متدرج الصعوبة وتصحيح تلقائي مع معرفة إجاباتك الخاطئة فوراً.</p>
             </div>
             <div class="feature-card p-10 flex flex-col items-center text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3">📊</div>
+                <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-6 text-4xl shadow-sm transform -rotate-3 animate-float">📊</div>
                 <h4 class="text-2xl font-black text-slate-800">متابعة الأبطال</h4>
                 <p class="text-slate-500 mt-4 text-lg leading-relaxed">تحليل دقيق لمستواك وإرسال تقارير مفصلة لولي الأمر لضمان استمرارية التفوق.</p>
             </div>
