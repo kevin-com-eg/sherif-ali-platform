@@ -9,17 +9,15 @@
     <style>
         body { font-family: 'Tajawal', sans-serif; background: #f1f5f9; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .btn-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .btn-cyan { background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); }
         .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div id="secureLayer" class="fixed inset-0 bg-white z-[100] flex items-center justify-center">
         <div class="text-center">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 border-solid mx-auto"></div>
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-[#00b4d8] border-solid mx-auto"></div>
             <p class="mt-4 font-bold text-slate-600">جاري التحقق من صلاحيات المعلم...</p>
         </div>
     </div>
@@ -29,22 +27,29 @@
         <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-black text-slate-800">لوحة تحكم المعلم 🎓</h1>
-                <p class="text-orange-600 font-bold">مستر كيفين هاني | إدارة المنصة</p>
+                <p class="text-[#00b4d8] font-bold">مستر شريف علي | إدارة المنصة</p>
             </div>
             <button onclick="signOut()" class="bg-red-50 text-red-600 px-6 py-2 rounded-xl font-bold hover:bg-red-100 transition">خروج</button>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white animate-in">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white bg-blue-50/50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">📢</span>
+                <h2 class="text-2xl font-black text-slate-800">إرسال تنبيه عام للطلاب</h2>
+            </div>
+            <textarea id="notifMessage" placeholder="اكتب رسالتك هنا (مثلاً: تم رفع ملزمة المراجعة النهائية مجاناً على المنصة)..." class="w-full p-5 bg-white border-2 border-slate-200 rounded-2xl outline-none focus:border-[#00b4d8] mb-4 h-28 font-medium text-lg"></textarea>
+            <button id="sendNotifBtn" class="btn-cyan text-white px-8 py-4 rounded-2xl font-black hover:opacity-90 transition w-full md:w-auto shadow-lg text-lg">إرسال لجميع الطلاب فوراً 🚀</button>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white">
             <div class="flex items-center gap-3 mb-8">
                 <div class="w-2 h-8 bg-green-500 rounded-full"></div>
                 <h2 class="text-2xl font-black text-slate-800">نتائج امتحانات الطلاب 📊</h2>
             </div>
-            
             <div class="overflow-x-auto">
                 <table class="w-full text-right border-collapse">
                     <thead>
                         <tr class="border-b-2 border-slate-100">
-                            <th class="p-4 text-slate-500 font-black">اسم الطالب</th>
                             <th class="p-4 text-slate-500 font-black">البريد الإلكتروني</th>
                             <th class="p-4 text-slate-500 font-black">الحصة</th>
                             <th class="p-4 text-slate-500 font-black">الدرجة</th>
@@ -52,41 +57,36 @@
                         </tr>
                     </thead>
                     <tbody id="resultsTable" class="text-slate-700">
-                        <tr><td colspan="5" class="p-10 text-center text-slate-400">جاري تحميل النتائج...</td></tr>
+                        <tr><td colspan="4" class="p-10 text-center text-slate-400">جاري تحميل النتائج...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white animate-in" style="animation-delay: 0.1s;">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white">
             <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-2">
-                <div class="w-2 h-8 bg-orange-500 rounded-full"></div>
-                إضافة حصة جديدة ➕
+                <div class="w-2 h-8 bg-[#00b4d8] rounded-full"></div> إضافة حصة جديدة ➕
             </h2>
-            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <input id="lessonName" placeholder="اسم الحصة" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition">
-                <input id="videoUrl" placeholder="رابط اليوتيوب" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition">
-                <input id="attachmentUrl" placeholder="رابط الملزمة PDF" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-orange-500 transition">
+                <input id="lessonName" placeholder="اسم الحصة" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#00b4d8]">
+                <input id="videoUrl" placeholder="رابط اليوتيوب" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#00b4d8]">
+                <input id="attachmentUrl" placeholder="رابط الملزمة PDF" class="p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#00b4d8]">
             </div>
-
-            <div id="questionsContainer" class="space-y-6">
-                </div>
-
+            <div id="questionsContainer" class="space-y-6"></div>
             <div class="mt-10 flex flex-col md:flex-row gap-4">
-                <button id="addNewQBtn" class="flex-1 bg-slate-100 text-slate-700 font-black py-4 rounded-2xl border-2 border-slate-200 hover:bg-slate-200 transition">+ إضافة سؤال</button>
-                <button id="saveBtn" class="flex-1 btn-orange text-white font-black py-4 rounded-2xl text-xl shadow-lg active:scale-95 transition">نشر الحصة الآن 🚀</button>
+                <button id="addNewQBtn" class="flex-1 bg-slate-100 text-slate-700 font-black py-4 rounded-2xl border-2 border-slate-200 hover:bg-slate-200">+ إضافة سؤال</button>
+                <button id="saveBtn" class="flex-1 btn-cyan text-white font-black py-4 rounded-2xl text-xl shadow-lg active:scale-95">نشر الحصة الآن 🚀</button>
             </div>
         </div>
 
-        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white animate-in" style="animation-delay: 0.2s;">
+        <div class="glass p-8 rounded-[2.5rem] card-shadow border border-white">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-black text-slate-800">توليد أكواد الاشتراك 🎫</h2>
-                <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-orange-600 transition shadow-lg">توليد 50 كود جديد</button>
+                <button id="genCodesBtn" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-[#00b4d8] transition shadow-lg">توليد 50 كود جديد</button>
             </div>
             <div id="codesResultArea" class="hidden">
-                <div class="bg-orange-50 border-2 border-orange-200 p-6 rounded-3xl">
-                    <button id="copyCodesBtn" class="mb-4 bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-bold">نسخ الأكواد للطباعة 📋</button>
+                <div class="bg-blue-50 border-2 border-blue-200 p-6 rounded-3xl">
+                    <button id="copyCodesBtn" class="mb-4 bg-[#00b4d8] text-white px-4 py-2 rounded-lg text-sm font-bold">نسخ الأكواد للطباعة 📋</button>
                     <div id="codesGrid" class="grid grid-cols-2 md:grid-cols-5 gap-2 font-mono text-xs"></div>
                 </div>
             </div>
@@ -119,89 +119,66 @@
         }
     });
 
-    // التعديل الرئيسي تم هنا في دالة تحميل النتائج
+    // --- كود إرسال التنبيهات ---
+    document.getElementById('sendNotifBtn').onclick = async () => {
+        const msg = document.getElementById('notifMessage').value;
+        const btn = document.getElementById('sendNotifBtn');
+        if(!msg) return alert("اكتب رسالة التنبيه أولاً!");
+        
+        btn.innerText = "جاري الإرسال...";
+        btn.disabled = true;
+        try {
+            await addDoc(collection(db, "announcements"), {
+                message: msg,
+                createdAt: new Date(),
+                active: true
+            });
+            alert("تم إرسال التنبيه بنجاح! سيظهر لجميع الطلاب فوراً.");
+            document.getElementById('notifMessage').value = "";
+        } catch(e) { 
+            alert("خطأ في الإرسال"); 
+            console.error(e);
+        }
+        btn.innerText = "إرسال لجميع الطلاب فوراً 🚀";
+        btn.disabled = false;
+    };
+
     async function loadResults() {
         const resultsTable = document.getElementById("resultsTable");
         try {
-            // استخدام حقل "date" اللي بيتم إرساله من صفحة الطالب لترتيب النتائج
             const q = query(collection(db, "results"), orderBy("date", "desc"));
             const querySnapshot = await getDocs(q);
-            
             resultsTable.innerHTML = "";
-            
-            if (querySnapshot.empty) {
-                resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-500 font-bold">لا توجد نتائج مسجلة حتى الآن</td></tr>`;
-                return;
-            }
-
+            if (querySnapshot.empty) { resultsTable.innerHTML = `<tr><td colspan="4" class="p-10 text-center">لا توجد نتائج مسجلة</td></tr>`; return; }
             querySnapshot.forEach((doc) => {
                 const res = doc.data();
-                // قراءة البيانات بأسماء المتغيرات الصحيحة المرسلة من الطالب
-                const date = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }) : "---";
-                const studentEmail = res.email || "غير متوفر";
-                const lesson = res.lesson || "غير متوفر";
-                const score = res.score !== undefined ? res.score : "-";
-                const total = res.total || "-";
-                
+                const date = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG') : "---";
                 resultsTable.innerHTML += `
-                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                        <td class="p-4 font-bold text-slate-800">طالب مسجل</td>
-                        <td class="p-4 text-slate-500 text-sm font-mono">${studentEmail}</td>
-                        <td class="p-4 font-bold text-slate-700">${lesson}</td>
-                        <td class="p-4">
-                            <span class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full font-black shadow-sm border border-orange-200">
-                                ${score} / ${total}
-                            </span>
-                        </td>
-                        <td class="p-4 text-xs text-slate-500 font-bold">${date}</td>
-                    </tr>
-                `;
+                    <tr class="border-b border-slate-100">
+                        <td class="p-4 text-slate-500 font-mono">${res.email || "-"}</td>
+                        <td class="p-4 font-bold text-slate-700">${res.lesson || "-"}</td>
+                        <td class="p-4"><span class="bg-[#00b4d8]/10 text-[#00b4d8] px-4 py-1 rounded-full font-black">${res.score} / ${res.total}</span></td>
+                        <td class="p-4 text-xs text-slate-500">${date}</td>
+                    </tr>`;
             });
-        } catch (e) {
-            console.error(e);
-            resultsTable.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء جلب البيانات. قد تحتاج لإنشاء Index في قواعد بيانات Firebase. راجع الكونسول (F12).</td></tr>`;
-            
-            // محاولة بديلة لعمل Fetch بدون orderBy في حال وجود مشكلة Index في Firebase
-            try {
-                const altQ = query(collection(db, "results"));
-                const altSnapshot = await getDocs(altQ);
-                resultsTable.innerHTML = "";
-                if(altSnapshot.empty) return;
-                
-                altSnapshot.forEach((doc) => {
-                    const res = doc.data();
-                    const date = res.date ? new Date(res.date.seconds * 1000).toLocaleDateString('ar-EG') : "---";
-                    resultsTable.innerHTML += `
-                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                            <td class="p-4 font-bold text-slate-800">طالب مسجل</td>
-                            <td class="p-4 text-slate-500 text-sm font-mono">${res.email || "-"}</td>
-                            <td class="p-4 font-bold text-slate-700">${res.lesson || "-"}</td>
-                            <td class="p-4"><span class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full font-black">${res.score} / ${res.total}</span></td>
-                            <td class="p-4 text-xs text-slate-500 font-bold">${date}</td>
-                        </tr>`;
-                });
-            } catch (err) {}
-        }
+        } catch (e) {}
     }
 
     document.getElementById("addNewQBtn").onclick = () => {
         const qCount = document.querySelectorAll('.question-block').length + 1;
-        const qHtml = `
-            <div class="question-block bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-sm animate-in">
-                <p class="font-black mb-4 text-orange-600 underline">سؤال رقم ${qCount}</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input class="q-image p-3 border rounded-xl" placeholder="رابط صورة السؤال">
-                    <select class="q-correct p-3 border rounded-xl font-bold bg-orange-50">
-                        <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
-                    <input class="q-a p-2 border rounded-lg text-xs" placeholder="خيار A">
-                    <input class="q-b p-2 border rounded-lg text-xs" placeholder="خيار B">
-                    <input class="q-c p-2 border rounded-lg text-xs" placeholder="خيار C">
-                    <input class="q-d p-2 border rounded-lg text-xs" placeholder="خيار D">
-                </div>
-            </div>`;
+        const qHtml = `<div class="question-block bg-white p-6 rounded-3xl border-2 border-slate-100 mb-4">
+            <p class="font-black mb-4 text-[#00b4d8] underline">سؤال رقم ${qCount}</p>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <input class="q-image p-3 border rounded-xl" placeholder="رابط صورة السؤال">
+                <select class="q-correct p-3 border rounded-xl font-bold"><option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option></select>
+            </div>
+            <div class="grid grid-cols-4 gap-2">
+                <input class="q-a p-2 border rounded-lg text-xs" placeholder="خيار A">
+                <input class="q-b p-2 border rounded-lg text-xs" placeholder="خيار B">
+                <input class="q-c p-2 border rounded-lg text-xs" placeholder="خيار C">
+                <input class="q-d p-2 border rounded-lg text-xs" placeholder="خيار D">
+            </div>
+        </div>`;
         document.getElementById("questionsContainer").insertAdjacentHTML('beforeend', qHtml);
     };
 
@@ -209,29 +186,14 @@
         const name = document.getElementById("lessonName").value;
         const video = document.getElementById("videoUrl").value;
         if (!name || !video) return alert("ادخل اسم الحصة ورابط الفيديو!");
-
-        const btn = document.getElementById("saveBtn");
-        btn.innerText = "جاري النشر... ⏳"; btn.disabled = true;
-
         let questionsData = [];
         document.querySelectorAll('.question-block').forEach(block => {
-            questionsData.push({
-                image: block.querySelector('.q-image').value,
-                a: block.querySelector('.q-a').value || "A",
-                b: block.querySelector('.q-b').value || "B",
-                c: block.querySelector('.q-c').value || "C",
-                d: block.querySelector('.q-d').value || "D",
-                correct: block.querySelector('.q-correct').value
-            });
+            questionsData.push({ image: block.querySelector('.q-image').value, a: block.querySelector('.q-a').value || "A", b: block.querySelector('.q-b').value || "B", c: block.querySelector('.q-c').value || "C", d: block.querySelector('.q-d').value || "D", correct: block.querySelector('.q-correct').value });
         });
-
         try {
-            await addDoc(collection(db, "lessons"), {
-                name, video, pdf: document.getElementById("attachmentUrl").value,
-                questions: questionsData, createdAt: new Date()
-            });
+            await addDoc(collection(db, "lessons"), { name, video, pdf: document.getElementById("attachmentUrl").value, questions: questionsData, createdAt: new Date() });
             alert("تم نشر الحصة بنجاح! ✅"); location.reload();
-        } catch (e) { alert("خطأ في الحفظ"); btn.disabled = false; }
+        } catch (e) { alert("خطأ في الحفظ"); }
     };
 
     document.getElementById('genCodesBtn').onclick = async () => {
@@ -246,7 +208,6 @@
         document.getElementById('codesResultArea').classList.remove('hidden');
     };
 
-    // كود زر النسخ
     document.getElementById('copyCodesBtn').onclick = () => {
         const codes = Array.from(document.getElementById('codesGrid').children).map(div => div.innerText).join('\n');
         navigator.clipboard.writeText(codes).then(() => alert("تم النسخ بنجاح! ✅"));
