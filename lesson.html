@@ -21,7 +21,9 @@
         .plyr__control--overlaid { z-index: 10 !important; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6 hidden">
+<body oncontextmenu="return false;"> 
+
+    <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#05070a] flex items-center justify-center p-6 hidden">
         <div class="glass p-10 rounded-[3rem] w-full max-w-md text-center space-y-6 border-orange-500/20 shadow-2xl">
             <button onclick="window.history.back()" class="absolute top-6 right-6 text-gray-400 hover:text-white transition font-bold bg-white/5 px-4 py-2 rounded-xl">↩️ رجوع</button>
             <h2 class="text-3xl font-black text-white mt-4">تفعيل الحصة 🎫</h2>
@@ -93,7 +95,8 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        // تم إضافة query, where, getDocs هنا لجلب بيانات الامتحان من السيرفر
+        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -134,7 +137,7 @@
                 } else {
                     document.getElementById('codeLockScreen').classList.remove('hidden');
                 }
-            } else { window.location.href = "index.html"; } // العودة لتسجيل الدخول إذا لم يكن مسجلاً
+            } else { window.location.href = "index.html"; }
         });
 
         function startAccessTimer(expiryTime) {
@@ -166,13 +169,14 @@
             
             try {
                 const snap = await getDoc(doc(db, "codes", code));
+                // شرط الأمان هنا بيسمح للطالب يستخدم نفس الكود بتاعه لو فتح من جهاز تاني
                 if (snap.exists() && (!snap.data().used || snap.data().usedBy === auth.currentUser.email)) {
                     const expiry = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
                     await updateDoc(doc(db, "codes", code), { used: true, usedBy: auth.currentUser.email, expiryAt: expiry });
                     localStorage.setItem(`access_${new URLSearchParams(window.location.search).get('id')}`, JSON.stringify({ expiry }));
                     location.reload();
                 } else { 
-                    alert("هذا الكود غير صالح أو تم استخدامه مسبقاً!"); 
+                    alert("هذا الكود غير صالح أو تم استخدامه من حساب آخر!"); 
                 }
             } catch (error) {
                 console.error("خطأ: ", error);
@@ -183,21 +187,36 @@
             document.getElementById('lessonContent').classList.remove('hidden');
             const id = new URLSearchParams(window.location.search).get('id');
             const snap = await getDoc(doc(db, "lessons", id));
+            
             if (snap.exists()) {
                 lessonData = snap.data();
                 questions = lessonData.questions || [];
 
-                const savedExamData = localStorage.getItem(`exam_data_${id}`);
-                if (savedExamData) {
-                    const parsedData = JSON.parse(savedExamData);
-                    userAns = parsedData.userAns; 
-                    generateReviewList(); 
-                    
-                    const msg = `
-                        <h2 class="text-4xl font-black mb-2 text-green-500">لقد حصلت مسبقاً على: ${parsedData.score} من ${questions.length} ✅</h2>
-                        <p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>
-                    `;
-                    unlockLessonFeatures(msg);
+                // التعديل هنا: البحث في السيرفر عن نتيجة هذا الطالب لهذه الحصة تحديداً
+                try {
+                    const q = query(
+                        collection(db, "results"), 
+                        where("email", "==", auth.currentUser.email), 
+                        where("lesson", "==", lessonData.name)
+                    );
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        // لو الطالب امتحن قبل كدا، هات إجاباته ودرجته من السيرفر
+                        const examData = querySnapshot.docs[0].data();
+                        userAns = examData.userAns || {}; 
+                        const score = examData.score;
+                        
+                        generateReviewList(); 
+                        
+                        const msg = `
+                            <h2 class="text-4xl font-black mb-2 text-green-500">لقد حصلت مسبقاً على: ${score} من ${questions.length} ✅</h2>
+                            <p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>
+                        `;
+                        unlockLessonFeatures(msg);
+                    }
+                } catch (error) {
+                    console.log("خطأ في جلب بيانات الامتحان السابقة", error);
                 }
             }
         }
@@ -251,7 +270,6 @@
                     videoContainer.innerHTML = `<div class="rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/5 bg-black" oncontextmenu="return false;"><video id="player" playsinline controlsList="nodownload"><source src="${lessonData.video}" type="video/mp4" /></video></div>`;
                 }
                 
-                // إعدادات مخصصة لـ Plyr لإخفاء أزرار يوتيوب والمقترحات
                 plyrPlayer = new Plyr('#player', {
                     controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
                     youtube: { 
@@ -313,11 +331,16 @@
             questions.forEach((q, i) => { if(userAns[i] === q.correct) score++; });
 
             try {
-                await addDoc(collection(db, "results"), { email: auth.currentUser.email, lesson: lessonData.name, score, total: questions.length, date: new Date() });
+                // التعديل هنا: بيتم حفظ userAns في السيرفر عشان نقدر نسترجعها على أي جهاز
+                await addDoc(collection(db, "results"), { 
+                    email: auth.currentUser.email, 
+                    lesson: lessonData.name, 
+                    score: score, 
+                    total: questions.length, 
+                    date: new Date(),
+                    userAns: userAns 
+                });
             } catch(e) { console.log("نتيجة غير مسجلة مؤقتاً"); }
-
-            const lessonId = new URLSearchParams(window.location.search).get('id');
-            localStorage.setItem(`exam_data_${lessonId}`, JSON.stringify({ userAns: userAns, score: score }));
 
             generateReviewList(); 
 
