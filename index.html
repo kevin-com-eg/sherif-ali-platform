@@ -85,7 +85,8 @@ nav {
     font-family:var(--mono); font-size:.6rem; font-weight:500;
     color:var(--g1); background:rgba(0,229,160,.1);
     border:1px solid rgba(0,229,160,.25);
-    padding:3px 8px; border-radius:20px; letter-spacing:1px; text-transform:uppercase;
+    padding:3px 8px; border-radius:20px;
+    letter-spacing:1px; text-transform:uppercase;
 }
 .logo-chip::before { content:'● '; animation:blink 2s infinite; }
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -108,7 +109,7 @@ nav {
 main {
     display:grid; grid-template-columns:1fr 480px;
     max-width:1300px; margin:0 auto;
-    padding:48px 40px 64px; align-items:center; width:100%;
+    padding:48px 40px 64px; align-items:center; width:100%; gap: 40px;
 }
 @media(max-width:960px){
     main{grid-template-columns:1fr;padding:40px 20px;}
@@ -149,7 +150,8 @@ main {
     display:flex; align-items:stretch;
     margin-bottom:40px; max-width:380px;
     background:rgba(255,255,255,.02);
-    border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    border:1px solid var(--border); border-radius:16px;
+    overflow:hidden;
     opacity:0; animation:riseIn .7s .4s forwards;
 }
 .stat-item{flex:1;padding:18px 20px;position:relative;}
@@ -169,7 +171,8 @@ main {
     font-size:.78rem; font-weight:600; color:var(--text2);
     background:rgba(255,255,255,.03);
     border:1px solid var(--border);
-    padding:7px 14px; border-radius:30px; transition:all .25s; cursor:default;
+    padding:7px 14px; border-radius:30px; transition:all .25s;
+    cursor:default;
 }
 .pill:hover{border-color:rgba(0,229,160,.3);color:var(--g1);background:rgba(0,229,160,.05);}
 /* auth card */
@@ -179,12 +182,14 @@ main {
     background:var(--card);
     backdrop-filter:blur(40px);
     border:1px solid rgba(255,255,255,.07);
-    border-radius:24px; padding:32px 32px 26px;
+    border-radius:24px;
+    padding:32px 32px 26px;
     box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(0,229,160,.04);
     overflow:hidden; transition:box-shadow .4s;
 }
 .auth-card::before {
-    content:''; position:absolute;
+    content:'';
+    position:absolute;
     top:0;left:8%;right:8%;height:1px;
     background:linear-gradient(to right,transparent,var(--g1),transparent);
 }
@@ -226,7 +231,8 @@ input.inp,select.inp {
     color:var(--text)!important;
     padding:12px 14px; border-radius:10px;
     font-family:var(--sans); font-size:.92rem;
-    outline:none!important; transition:all .25s;
+    outline:none!important;
+    transition:all .25s;
     -webkit-appearance:none;
 }
 input.inp:focus,select.inp:focus {
@@ -260,14 +266,16 @@ select.inp option{background:#0b1220;color:var(--text);}
     background:linear-gradient(135deg,var(--g1) 0%,var(--g2) 100%);
     color:#021a10; border:none; padding:14px; border-radius:12px;
     font-family:var(--sans); font-size:1rem; font-weight:900;
-    cursor:pointer; transition:all .3s;
+    cursor:pointer;
+    transition:all .3s;
     box-shadow:0 6px 24px rgba(0,229,160,.22);
     position:relative; overflow:hidden; margin-top:8px;
 }
 .cta-btn::before {
     content:''; position:absolute; inset:0;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
-    transform:translateX(-100%); transition:transform .6s;
+    transform:translateX(-100%);
+    transition:transform .6s;
 }
 .cta-btn:hover::before{transform:translateX(100%);}
 .cta-btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(0,229,160,.35);}
@@ -296,20 +304,23 @@ select.inp option{background:#0b1220;color:var(--text);}
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
     display: flex; align-items: center; justify-content: center;
-    padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    padding: 20px; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 .custom-popup-overlay.show { opacity: 1; pointer-events: all; }
 .custom-popup-card {
-    background: rgba(12,18,32,0.95); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 420px;
+    background: rgba(12,18,32,0.95);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 480px;
     text-align: center; transform: translateY(20px) scale(0.95);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,229,160,0.1);
-    position: relative; overflow: hidden;
+    position: relative; overflow: hidden; max-height: 90vh; overflow-y: auto;
 }
 .custom-popup-overlay.show .custom-popup-card { transform: translateY(0) scale(1); }
 .custom-popup-card::before {
-    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+    content: ''; position: absolute; top: 0;
+    left: 15%; right: 15%; height: 1px;
     background: linear-gradient(to right, transparent, var(--g1), transparent);
 }
 .popup-icon {
@@ -373,8 +384,36 @@ footer {
         <p class="popup-sub">عشان نكمل حسابك ونعرضلك الكورسات المناسبة، محتاجين البيانات دي.</p>
         
         <div class="popup-input-wrap">
+            <span class="flbl">الرقم القومي (14 رقم)</span>
+            <input type="text" id="googleNationalID" maxlength="14" class="inp" placeholder="29901010000000" style="margin-bottom: 12px; font-family: var(--mono);">
+
+            <div class="f2col" style="margin-bottom: 12px;">
+                <div>
+                    <span class="flbl">المحافظة</span>
+                    <select id="googleProvince" class="inp" onchange="updateGoogleCities(); this.classList.add('filled')">
+                        <option value="" disabled selected>اختر المحافظة...</option>
+                        <option value="القاهرة">القاهرة</option><option value="الجيزة">الجيزة</option><option value="الإسكندرية">الإسكندرية</option>
+                        <option value="الدقهلية">الدقهلية</option><option value="البحيرة">البحيرة</option><option value="الشرقية">الشرقية</option>
+                        <option value="الغربية">الغربية</option><option value="المنوفية">المنوفية</option><option value="القليوبية">القليوبية</option>
+                        <option value="كفر الشيخ">كفر الشيخ</option><option value="دمياط">دمياط</option><option value="المنيا">المنيا</option>
+                        <option value="أسيوط">أسيوط</option><option value="سوهاج">سوهاج</option><option value="قنا">قنا</option>
+                        <option value="أسوان">أسوان</option><option value="الأقصر">الأقصر</option><option value="بورسعيد">بورسعيد</option>
+                        <option value="الإسماعيلية">الإسماعيلية</option><option value="السويس">السويس</option><option value="الفيوم">الفيوم</option>
+                        <option value="بني سويف">بني سويف</option><option value="البحر الأحمر">البحر الأحمر</option><option value="مطروح">مطروح</option>
+                        <option value="الوادي الجديد">الوادي الجديد</option><option value="شمال سيناء">شمال سيناء</option><option value="جنوب سيناء">جنوب سيناء</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="flbl">المدينة</span>
+                    <select id="googleCity" class="inp" onchange="this.classList.add('filled')">
+                        <option value="" disabled selected>المدينة...</option>
+                    </select>
+                </div>
+            </div>
+
             <span class="flbl">الصف الدراسي</span>
-            <select id="googleGrade" class="inp" style="margin-bottom: 12px;">
+            <select id="googleGrade" class="inp" style="margin-bottom: 12px;" onchange="this.classList.add('filled')">
+                <option value="" disabled selected>اختر الصف...</option>
                 <option value="1">الصف الأول الثانوي</option>
                 <option value="2">الصف الثاني الثانوي</option>
                 <option value="3">الصف الثالث الثانوي</option>
@@ -445,6 +484,36 @@ footer {
                     <span class="flbl">الاسم الرباعي</span>
                     <input id="userName" class="inp" placeholder="اكتب اسمك كاملاً...">
                 </div>
+
+                <div class="f2col">
+                    <div class="fw">
+                        <span class="flbl">المحافظة</span>
+                        <select id="userProvince" class="inp" onchange="updateMainCities(); this.classList.add('filled')">
+                            <option value="" disabled selected>اختر المحافظة...</option>
+                            <option value="القاهرة">القاهرة</option><option value="الجيزة">الجيزة</option><option value="الإسكندرية">الإسكندرية</option>
+                            <option value="الدقهلية">الدقهلية</option><option value="البحيرة">البحيرة</option><option value="الشرقية">الشرقية</option>
+                            <option value="الغربية">الغربية</option><option value="المنوفية">المنوفية</option><option value="القليوبية">القليوبية</option>
+                            <option value="كفر الشيخ">كفر الشيخ</option><option value="دمياط">دمياط</option><option value="المنيا">المنيا</option>
+                            <option value="أسيوط">أسيوط</option><option value="سوهاج">سوهاج</option><option value="قنا">قنا</option>
+                            <option value="أسوان">أسوان</option><option value="الأقصر">الأقصر</option><option value="بورسعيد">بورسعيد</option>
+                            <option value="الإسماعيلية">الإسماعيلية</option><option value="السويس">السويس</option><option value="الفيوم">الفيوم</option>
+                            <option value="بني سويف">بني سويف</option><option value="البحر الأحمر">البحر الأحمر</option><option value="مطروح">مطروح</option>
+                            <option value="الوادي الجديد">الوادي الجديد</option><option value="شمال سيناء">شمال سيناء</option><option value="جنوب سيناء">جنوب سيناء</option>
+                        </select>
+                    </div>
+                    <div class="fw">
+                        <span class="flbl">المدينة</span>
+                        <select id="userCity" class="inp" onchange="this.classList.add('filled')">
+                            <option value="" disabled selected>المدينة...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fw">
+                    <span class="flbl">الرقم القومي (14 رقم)</span>
+                    <input id="userNationalID" class="inp" type="text" maxlength="14" placeholder="29901010000000" style="font-family: var(--mono); letter-spacing: 2px;">
+                </div>
+
                 <div class="fw">
                     <span class="flbl">الصف الدراسي</span>
                     <select id="userGrade" class="inp" onchange="this.classList.add('filled')">
@@ -548,16 +617,41 @@ document.getElementById('eyeBtn').onclick=()=>{const p=document.getElementById('
 const card=document.getElementById('authCard');
 card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();card.style.background=`radial-gradient(380px circle at ${e.clientX-r.left}px ${e.clientY-r.top}px,rgba(0,229,160,.045),transparent 55%),rgba(12,18,32,.88)`;});
 card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88)';});
+
+// 🔥 بيانات المدن لتحديث القوائم المنسدلة 🔥
+const cityData = {
+    "القاهرة": ["مدينة نصر", "مصر الجديدة", "المعادي", "حلوان", "شبرا", "التجمع الخامس", "وسط البلد"],
+    "الجيزة": ["الدقي", "المهندسين", "الهرم", "فيصل", "6 أكتوبر", "الشيخ زايد", "العجوزة"],
+    "الإسكندرية": ["سيدي بشر", "سموحة", "المنتزة", "العجمي", "الرمل", "محرم بك"],
+    "الدقهلية": ["المنصورة", "طلخا", "ميت غمر", "دكرنس", "السنبلاوين"],
+    "الغربية": ["طنطا", "المحلة الكبرى", "كفر الزيات", "زفتى", "بسيون"],
+    "الشرقية": ["الزقازيق", "العاشر من رمضان", "بلبيس", "منيا القمح", "فاقوس"]
+    // يمكن إضافة باقي المراكز لاحقاً
+};
+
+function populateCities(provId, cityId) {
+    const province = document.getElementById(provId).value;
+    const citySelect = document.getElementById(cityId);
+    citySelect.innerHTML = '<option value="" disabled selected>المدينة...</option>';
+    if (cityData[province]) {
+        cityData[province].forEach(city => {
+            citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+        });
+    } else if(province) {
+        citySelect.innerHTML += `<option value="مركز رئيسي">مركز رئيسي</option>`;
+    }
+}
+function updateMainCities() { populateCities('userProvince', 'userCity'); }
+function updateGoogleCities() { populateCities('googleProvince', 'googleCity'); }
 </script>
 
 <script>
     const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
     const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
-    
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const adminEmail = "kevin.hany.08@proton.me";
 
-    // 🔥 دالة لتوليد وحفظ رقم فريد لكل متصفح/موبايل (بصمة الجهاز) 🔥
+    // توليد وحفظ رقم فريد لكل متصفح/موبايل (بصمة الجهاز)
     function getLocalDeviceId() {
         let did = localStorage.getItem('mp_device_id');
         if (!did) {
@@ -567,22 +661,20 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
         return did;
     }
 
-    // 1. فحص الجلسة عند تحميل الصفحة (عشان لو راجع من جوجل)
+    // 1. فحص الجلسة عند تحميل الصفحة
     async function checkSessionOnLoad() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
             const user = session.user;
-            
-            // لو ده الأدمن، دخله على لوحة التحكم بتاعته بدون قيود أجهزة
+            // لو ده الأدمن، دخله على لوحة التحكم بتاعته
             if (user.email === adminEmail) {
                 window.location.href = "teacher-dashboard.html";
                 return;
             }
 
-            // فحص بيانات المستخدم في جدول users
             const { data: dbUser } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
-
-            // 🚀 --- فحص حد الأجهزة لجوجل --- 🚀
+            
+            // فحص حد الأجهزة لجوجل
             const deviceId = getLocalDeviceId();
             let userDevices = [];
             if (dbUser && dbUser.devices) userDevices = dbUser.devices;
@@ -591,27 +683,35 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                 if (userDevices.length >= 2) {
                     await supabaseClient.auth.signOut();
                     alert("⚠️ عذراً، لا يمكنك الدخول من أكثر من جهازين. هذا الحساب مسجل على الحد الأقصى للأجهزة.");
-                    return; // يوقف الدخول
+                    return;
                 } else {
                     userDevices.push(deviceId);
-                    if (dbUser) { // لو بياناته موجودة حدثها
+                    if (dbUser) { 
                         await supabaseClient.from('users').update({ devices: userDevices }).eq('id', user.id);
                     }
                 }
             }
 
             // لو مفيش بيانات تواصل، طلعله الـ Popup
-            if (!dbUser || !dbUser.phone || !dbUser.parentphone) {
+            if (!dbUser || !dbUser.phone || !dbUser.nationalid) {
                 document.getElementById('googleProfilePopup').classList.add('show');
                 
                 document.getElementById('saveGoogleProfileBtn').onclick = async () => {
+                    const nid = document.getElementById('googleNationalID').value;
+                    const prov = document.getElementById('googleProvince').value;
+                    const city = document.getElementById('googleCity').value;
                     const grade = document.getElementById('googleGrade').value;
                     const phone = document.getElementById('googlePhone').value;
                     const parentPhone = document.getElementById('googleParentPhone').value;
                     const btn = document.getElementById('saveGoogleProfileBtn');
-
-                    if (!phone || !parentPhone) return alert("من فضلك أدخل الأرقام المطلوبة");
                     
+                    if (!nid || !prov || !city || !grade || !phone || !parentPhone) return alert("من فضلك أكمل جميع البيانات!");
+                    if (nid.length !== 14 || isNaN(nid)) return alert("الرقم القومي يجب أن يتكون من 14 رقم بالضبط!");
+
+                    // فحص تكرار الرقم القومي
+                    const { data: checkNid } = await supabaseClient.from('users').select('id').eq('nationalid', nid);
+                    if (checkNid && checkNid.length > 0) return alert("عفواً، هذا الرقم القومي مسجل مسبقاً في حساب آخر!");
+
                     btn.textContent = "جاري الحفظ...";
                     const name = user.user_metadata?.full_name || "طالب جديد";
 
@@ -619,14 +719,17 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                         id: user.id,
                         email: user.email,
                         name: name,
+                        nationalid: nid,
+                        province: prov,
+                        city: city,
                         grade: grade,
                         phone: phone,
                         parentphone: parentPhone,
                         studentid: Math.floor(100000 + Math.random() * 900000).toString(),
                         role: 'student',
-                        devices: userDevices // 🔥 حفظ الأجهزة هنا
+                        devices: userDevices 
                     });
-
+                    
                     if (error) {
                         alert("خطأ: " + error.message);
                         btn.textContent = "حفظ ودخول المنصة 🚀";
@@ -635,13 +738,11 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     }
                 };
             } else {
-                // لو بياناته كاملة والأجهزة مسموحة، دخله على الـ Dashboard على طول
                 window.location.href = "dashboard.html";
             }
         }
     }
     
-    // تشغيل الفحص
     checkSessionOnLoad();
 
     // 2. ربط الـ Popup باستعادة كلمة المرور
@@ -657,7 +758,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
             confirmBtn.onclick = async () => {
                 const newPass = passInput.value;
                 if(newPass.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف أو أكثر");
-                
+             
                 confirmBtn.textContent = "جاري الحفظ...";
                 const { error } = await supabaseClient.auth.updateUser({ password: newPass });
                 
@@ -665,7 +766,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     alert("حدث خطأ أثناء التحديث: " + error.message);
                     confirmBtn.textContent = "حفظ وتأكيد الدخول";
                 } else {
-                    confirmBtn.style.background = "#22c55e"; 
+                    confirmBtn.style.background = "#22c55e";
                     confirmBtn.textContent = "تم التحديث بنجاح! ✅";
                     setTimeout(() => {
                         supabaseClient.auth.signOut(); 
@@ -676,7 +777,6 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     }, 2000);
                 }
             };
-
             cancelBtn.onclick = () => {
                 popup.classList.remove('show');
                 supabaseClient.auth.signOut();
@@ -691,8 +791,10 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
     const btn = document.getElementById("actionBtn");
     const fa = document.getElementById("forgotArea");
 
-    sTab.onclick = () => { mode="signup"; extra.classList.remove("hidden"); btn.textContent="إنشاء حساب جديد ←"; fa.classList.add("hidden"); sTab.classList.add("on"); lTab.classList.remove("on"); };
-    lTab.onclick = () => { mode="login"; extra.classList.add("hidden"); btn.textContent="دخول ←"; fa.classList.remove("hidden"); lTab.classList.add("on"); sTab.classList.remove("on"); };
+    sTab.onclick = () => { mode="signup"; extra.classList.remove("hidden");
+    btn.textContent="إنشاء حساب جديد ←"; fa.classList.add("hidden"); sTab.classList.add("on"); lTab.classList.remove("on"); };
+    lTab.onclick = () => { mode="login"; extra.classList.add("hidden"); btn.textContent="دخول ←"; fa.classList.remove("hidden"); lTab.classList.add("on"); sTab.classList.remove("on");
+    };
 
     btn.onclick = async () => {
         const e = document.getElementById("email").value;
@@ -704,15 +806,28 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                 const g = document.getElementById("userGrade").value;
                 const ph = document.getElementById("userPhone").value;
                 const pp = document.getElementById("parentPhone").value;
-                
-                if(!n || !g || !ph || !e || !p) return alert("من فضلك أكمل جميع بياناتك");
-                btn.textContent = "جاري الإنشاء...";
+                const nid = document.getElementById("userNationalID").value;
+                const prov = document.getElementById("userProvince").value;
+                const city = document.getElementById("userCity").value;
 
+                if(!n || !g || !ph || !pp || !e || !p || !nid || !prov || !city) return alert("من فضلك أكمل جميع البيانات أولاً");
+                if (nid.length !== 14 || isNaN(nid)) return alert("الرقم القومي يجب أن يتكون من 14 رقم بالضبط!");
+
+                btn.textContent = "جاري التحقق...";
+
+                // 🔥 فحص تكرار الرقم القومي قبل إنشاء الحساب 🔥
+                const { data: checkNid } = await supabaseClient.from('users').select('id').eq('nationalid', nid);
+                if (checkNid && checkNid.length > 0) {
+                    btn.textContent = "إنشاء حساب جديد ←";
+                    return alert("عفواً، هذا الرقم القومي مسجل مسبقاً في حساب آخر!");
+                }
+
+                btn.textContent = "جاري الإنشاء...";
                 const { data, error } = await supabaseClient.auth.signUp({ email: e, password: p });
                 if (error) throw error;
-
+                
                 if (data.user) {
-                    const deviceId = getLocalDeviceId(); // 🔥 إنشاء بصمة الجهاز
+                    const deviceId = getLocalDeviceId();
                     const { error: insertError } = await supabaseClient.from('users').insert([{
                         id: data.user.id,
                         name: n,
@@ -720,14 +835,16 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                         grade: g,
                         phone: ph,
                         parentphone: pp,
+                        nationalid: nid,
+                        province: prov,
+                        city: city,
                         studentid: Math.floor(100000 + Math.random() * 900000).toString(),
                         role: "student",
-                        devices: [deviceId] // 🔥 حفظ البصمة كأول جهاز
+                        devices: [deviceId] 
                     }]);
                     if (insertError) throw insertError;
                 }
                 window.location.href = "dashboard.html";
-
             } else {
                 btn.textContent = "جاري الدخول...";
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: e, password: p });
@@ -738,18 +855,17 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     return;
                 }
 
-                // 🚀 --- فحص حد الأجهزة للدخول العادي --- 🚀
+                // فحص حد الأجهزة للدخول العادي
                 const deviceId = getLocalDeviceId();
                 const { data: dbUser } = await supabaseClient.from('users').select('devices').eq('id', data.user.id).single();
                 
                 let userDevices = dbUser?.devices || [];
-                
                 if (!userDevices.includes(deviceId)) {
                     if (userDevices.length >= 2) {
                         await supabaseClient.auth.signOut();
                         alert("⚠️ لا يمكنك الدخول. لقد وصلت للحد الأقصى (جهازين) لهذا الحساب. الرجاء التواصل مع الإدارة.");
                         btn.textContent = "دخول ←";
-                        return; // توقف هنا
+                        return;
                     } else {
                         userDevices.push(deviceId);
                         await supabaseClient.from('users').update({ devices: userDevices }).eq('id', data.user.id);
@@ -769,9 +885,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
         try {
             const { error } = await supabaseClient.auth.signInWithOAuth({ 
                 provider: 'google',
-                options: {
-                    redirectTo: window.location.origin + window.location.pathname 
-                }
+                options: { redirectTo: window.location.origin + window.location.pathname }
             });
             if (error) throw error;
         } catch(e) { alert(e.message); }
@@ -790,7 +904,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
             if (error) throw error;
             alert("تم إرسال رابط الاستعادة لإيميلك! تفقد صندوق الوارد (أو مجلد Spam).");
         } catch(e) { 
-            alert("خطأ: " + e.message); 
+            alert("خطأ: " + e.message);
         }
         document.getElementById("forgotBtn").textContent = "نسيت كلمة المرور؟";
     };
