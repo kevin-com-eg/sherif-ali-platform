@@ -6,6 +6,9 @@
     <title>MathPro | الصفحة الرئيسية</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -841,10 +844,8 @@ body {
 </head>
 <body>
 
-<!-- sidebar backdrop -->
 <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
-<!-- ── SIDEBAR ── -->
 <aside class="sidebar" id="sidebarEl">
     <div class="sidebar-logo">
         <div class="logo-icon">MP</div>
@@ -862,7 +863,6 @@ body {
             <div class="nav-icon">👤</div>
             الملف الشخصي
         </a>
-
 
         <div class="nav-section-label">النتائج</div>
         <a class="nav-link" href="#" onclick="openReports();return false;">
@@ -887,10 +887,8 @@ body {
     </div>
 </aside>
 
-<!-- ── MAIN AREA ── -->
 <div class="main-area">
 
-    <!-- top header -->
     <header class="top-header">
         <div style="display:flex;align-items:center;gap:12px;">
             <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
@@ -906,15 +904,13 @@ body {
                 <span class="notif-dot"></span>
             </button>
             <div class="hdr-avatar" onclick="openProfile()">
-                <img src="https://ui-avatars.com/api/?name=S&background=00b578&color=fff&bold=true" id="avatarImg">
+                <img src="" id="avatarImg">
             </div>
         </div>
     </header>
 
-    <!-- content -->
     <div class="content">
 
-        <!-- announcement -->
         <div id="announcementBox" class="hidden">
             <div class="ann-inner">
                 <span class="ann-icon">📢</span>
@@ -926,7 +922,6 @@ body {
             </div>
         </div>
 
-        <!-- welcome -->
         <div class="welcome-row">
             <div>
                 <div class="welcome-sub">لوحة التحكم / Dashboard</div>
@@ -937,7 +932,6 @@ body {
             </div>
         </div>
 
-        <!-- stats -->
         <div class="stats-row">
             <div class="stat-card">
                 <div class="sc-icon-wrap">🛒</div>
@@ -962,20 +956,17 @@ body {
             </div>
         </div>
 
-        <!-- section head -->
         <div class="section-head">
             <div class="section-title">الدورات المتاحة</div>
             <div class="lesson-count-badge" id="lessonCountBadge">0 دورة</div>
         </div>
 
-        <!-- filter -->
         <div class="filter-row">
             <button class="filter-btn active" onclick="setFilter(this,'all')">كل الدورات</button>
             <button class="filter-btn" onclick="setFilter(this,'owned')">دوراتي فقط</button>
             <button class="filter-btn" onclick="setFilter(this,'free')">المجانية</button>
         </div>
 
-        <!-- grid -->
         <div id="lessonsGrid">
             <div class="empty-state">
                 <div class="empty-icon">⏳</div>
@@ -985,7 +976,6 @@ body {
     </div>
 </div>
 
-<!-- ── REPORTS MODAL ── -->
 <div class="overlay" id="reportsOverlay">
     <div class="modal" style="max-width:580px;">
         <div class="modal-head">
@@ -1010,7 +1000,6 @@ body {
     </div>
 </div>
 
-<!-- ── PROFILE MODAL ── -->
 <div class="overlay" id="profileOverlay">
     <div class="modal" style="max-width:480px;">
         <div class="modal-head">
@@ -1075,168 +1064,213 @@ function staggerCards() {
 }
 </script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, limit, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+    const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const app = initializeApp({ apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain:"math-e62c9.firebaseapp.com", projectId:"math-e62c9", appId:"1:271507842148:web:2907aad4caf67afd08ab71" });
-const auth = getAuth(app), db = getFirestore(app);
-let currentUser, myActiveLessons=[], lessonsMap={};
+    let currentUser = null;
+    let myActiveLessons = [];
+    let lessonsMap = {};
 
-/* announcements */
-const qN = query(collection(db,"announcements"), orderBy("createdAt","desc"), limit(1));
-onSnapshot(qN, snap => {
-    snap.docChanges().forEach(ch => {
-        if(ch.type==="added") {
-            document.getElementById('announcementText').textContent = ch.doc.data().message;
+    async function initDashboard() {
+        // التحقق من تسجيل الدخول
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = "index.html";
+            return;
+        }
+        currentUser = session.user;
+
+        // جلب الإعلانات النشطة
+        const { data: annData } = await supabaseClient.from('announcements')
+            .select('*')
+            .eq('active', true)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        if (annData && annData.length > 0) {
+            document.getElementById('announcementText').textContent = annData[0].message;
             document.getElementById('announcementBox').classList.remove('hidden');
         }
-    });
-});
 
-onAuthStateChanged(auth, async user => {
-    if(!user) { window.location.href="index.html"; return; }
-    currentUser = user;
-    const snap = await getDoc(doc(db,"users",user.uid));
-    if(!snap.exists()) return;
-    const d = snap.data();
-    const name = d.name||"يا بطل";
-    const grade = d.grade||"1";
-    const gradeNames = {"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
+        // جلب بيانات الطالب
+        const { data: d } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
+        if (!d) return;
 
-    document.getElementById('userNameDisplay').textContent = name;
-    document.getElementById('editName').value = d.name||"";
-    document.getElementById('editPhone').value = d.phone||"";
-    document.getElementById('editParentPhone').value = d.parentPhone||"";
-    document.getElementById('gradeBadge').textContent = gradeNames[grade]||"عام";
-    document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true`;
+        const name = d.name || "يا بطل";
+        const grade = d.grade || "1";
+        const gradeNames = {"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
 
-    await fetchReports(user.email);
+        document.getElementById('userNameDisplay').textContent = name;
+        document.getElementById('editName').value = d.name || "";
+        document.getElementById('editPhone').value = d.phone || "";
+        document.getElementById('editParentPhone').value = d.parentphone || ""; // 🔥 حروف صغيرة
+        document.getElementById('gradeBadge').textContent = gradeNames[grade] || "عام";
+        document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true`;
 
-    const qL = query(collection(db,"lessons"), where("grade","==",grade));
-    const lessonsSnap = await getDocs(qL);
-    renderLessons(lessonsSnap);
-});
+        // جلب التقارير
+        await fetchReports(currentUser.email);
 
-async function fetchReports(email) {
-    const lSnap = await getDocs(collection(db,"lessons"));
-    lSnap.forEach(d => { lessonsMap[d.id]=d.data(); });
-
-    const qC = query(collection(db,"codes"), where("usedBy","==",email));
-    const cSnap = await getDocs(qC);
-    const now = Date.now();
-    let spent=0, purchasesHtml='', validCount=0;
-
-    cSnap.forEach(c => {
-        const cd=c.data(), lesson=lessonsMap[cd.lessonId];
-        if(!lesson) return;
-        if(cd.expiryAt>now) { myActiveLessons.push(cd.lessonId); validCount++; }
-        const price=Number(lesson.price)||0; spent+=price;
-        const usedDate=cd.expiryAt ? new Date(cd.expiryAt-(7*24*60*60*1000)).toLocaleDateString('ar-EG') : '—';
-        const expired=cd.expiryAt<now;
-        purchasesHtml+=`<div class="rep-item"><div><div class="rep-item-name">${lesson.name}</div><div class="rep-item-date">تفعيل: ${usedDate}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="${expired?'badge-expired':'badge-active'}">${expired?'منتهية':'فعالة'}</span><span class="rep-price">${price>0?price+' ج':'مجاناً'}</span></div></div>`;
-    });
-
-    const qR=query(collection(db,"results"), where("email","==",email));
-    const rSnap=await getDocs(qR);
-    let examsHtml='', examsCount=0;
-    rSnap.forEach(d=>{
-        examsCount++;const rd=d.data();
-        const dt=rd.date?new Date(rd.date.seconds*1000).toLocaleDateString('ar-EG'):'—';
-        examsHtml+=`<div class="rep-item"><div><div class="rep-item-name">${rd.lesson}</div><div class="rep-item-date">${dt}</div></div><div class="score-box"><div class="score-val">${rd.score}</div><div class="score-total">/ ${rd.total}</div></div></div>`;
-    });
-
-    document.getElementById('totalSpent').textContent=spent;
-    document.getElementById('totalCourses').textContent=validCount;
-    document.getElementById('totalExams').textContent=examsCount;
-    document.getElementById('statSpent').textContent=spent;
-    document.getElementById('statPurchases').textContent=validCount;
-    document.getElementById('statExams').textContent=examsCount;
-    document.getElementById('purchasesList').innerHTML=purchasesHtml||'<div style="color:var(--muted);text-align:center;padding:20px;font-size:.82rem;">لم تشترِ أي كورس بعد.</div>';
-    document.getElementById('examsList').innerHTML=examsHtml||'<div style="color:var(--muted);text-align:center;padding:20px;font-size:.82rem;">لم تؤدِ أي امتحان بعد.</div>';
-}
-
-function renderLessons(snapshot) {
-    const grid=document.getElementById("lessonsGrid");
-    if(snapshot.empty) {
-        grid.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-txt">لا توجد دورات متاحة لصفك حالياً</div></div>`;
-        return;
+        // جلب الحصص المخصصة للصف
+        const { data: lessonsSnap } = await supabaseClient.from('lessons').select('*').eq('grade', grade);
+        renderLessons(lessonsSnap);
     }
-    grid.innerHTML='';
-    let count=0;
-    snapshot.forEach(d=>{
-        count++;
-        const data=d.data(), id=d.id;
-        const owned=myActiveLessons.includes(id);
-        const isFree = !data.price || Number(data.price)===0;
-        const price=isFree?`مجاناً`:`${data.price} جنيه`;
-        const img=data.image||'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
-        const gradeLabels={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
-        const gradeText=gradeLabels[data.grade]||"";
 
-        const badge=owned
-            ?`<span class="owned-badge">✓ مفعّل</span>`
-            :`<span class="locked-badge">🔒 ${price}</span>`;
-        const priceTag=`<span class="price-tag ${isFree?'free':''}">${price}</span>`;
-        const btn=owned
-            ?`<a href="lesson.html?id=${id}" class="btn-access owned">▶ أكمل الدورة</a>`
-            :`<a href="lesson.html?id=${id}" class="btn-access buy">🛒 شراء بكود</a>`;
+    async function fetchReports(email) {
+        // جلب كل الحصص لعمل Map بالأسماء والأسعار
+        const { data: lSnap } = await supabaseClient.from('lessons').select('*');
+        if (lSnap) {
+            lSnap.forEach(d => { lessonsMap[d.id] = d; });
+        }
 
-        const card=document.createElement('div');
-        card.className='lesson-card';
-        card.dataset.name=data.name?.toLowerCase()||'';
-        card.dataset.owned=owned?'true':'false';
-        card.dataset.free=isFree?'true':'false';
-        card.innerHTML=`
-            <div class="lc-img-wrap">
-                <img src="${img}" alt="${data.name}" loading="lazy">
-                <div class="lc-img-fade"></div>
-                ${badge}
-                ${priceTag}
-            </div>
-            <div class="lc-body">
-                <div class="lc-meta">
-                    <span class="lc-grade-tag">${gradeText}</span>
-                    <span class="lc-teacher-tag">أ. شريف علي</span>
+        // جلب الأكواد المستخدمة بواسطة هذا الإيميل
+        const { data: cSnap } = await supabaseClient.from('codes').select('*').eq('usedBy', email);
+        const now = Date.now();
+        let spent = 0, purchasesHtml = '', validCount = 0;
+
+        if (cSnap) {
+            cSnap.forEach(cd => {
+                const lesson = lessonsMap[cd.lessonId];
+                if(!lesson) return;
+                
+                if(cd.expiryAt > now) { 
+                    myActiveLessons.push(cd.lessonId); 
+                    validCount++; 
+                }
+                
+                const price = Number(lesson.price) || 0; 
+                spent += price;
+                
+                const usedDate = cd.expiryAt ? new Date(cd.expiryAt - (7 * 24 * 60 * 60 * 1000)).toLocaleDateString('ar-EG') : '—';
+                const expired = cd.expiryAt < now;
+                
+                purchasesHtml += `<div class="rep-item"><div><div class="rep-item-name">${lesson.name}</div><div class="rep-item-date">تفعيل: ${usedDate}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="${expired?'badge-expired':'badge-active'}">${expired?'منتهية':'فعالة'}</span><span class="rep-price">${price>0?price+' ج':'مجاناً'}</span></div></div>`;
+            });
+        }
+
+        // جلب نتائج الامتحانات
+        const { data: rSnap } = await supabaseClient.from('results').select('*').eq('email', email);
+        let examsHtml = '', examsCount = 0;
+        
+        if (rSnap) {
+            rSnap.forEach(rd => {
+                examsCount++;
+                const dt = rd.date ? new Date(rd.date).toLocaleDateString('ar-EG') : '—'; // 🔥 تعديل صيغة التاريخ
+                examsHtml += `<div class="rep-item"><div><div class="rep-item-name">${rd.lesson}</div><div class="rep-item-date">${dt}</div></div><div class="score-box"><div class="score-val">${rd.score}</div><div class="score-total">/ ${rd.total}</div></div></div>`;
+            });
+        }
+
+        document.getElementById('totalSpent').textContent = spent;
+        document.getElementById('totalCourses').textContent = validCount;
+        document.getElementById('totalExams').textContent = examsCount;
+        document.getElementById('statSpent').textContent = spent;
+        document.getElementById('statPurchases').textContent = validCount;
+        document.getElementById('statExams').textContent = examsCount;
+        document.getElementById('purchasesList').innerHTML = purchasesHtml || '<div style="color:var(--muted);text-align:center;padding:20px;font-size:.82rem;">لم تشترِ أي كورس بعد.</div>';
+        document.getElementById('examsList').innerHTML = examsHtml || '<div style="color:var(--muted);text-align:center;padding:20px;font-size:.82rem;">لم تؤدِ أي امتحان بعد.</div>';
+    }
+
+    function renderLessons(lessonsData) {
+        const grid = document.getElementById("lessonsGrid");
+        if(!lessonsData || lessonsData.length === 0) {
+            grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-txt">لا توجد دورات متاحة لصفك حالياً</div></div>`;
+            return;
+        }
+        
+        grid.innerHTML = '';
+        let count = 0;
+        
+        lessonsData.forEach(data => {
+            count++;
+            const id = data.id;
+            const owned = myActiveLessons.includes(id);
+            const isFree = !data.price || Number(data.price) === 0;
+            const price = isFree ? `مجاناً` : `${data.price} جنيه`;
+            const img = data.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
+            const gradeLabels = {"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
+            const gradeText = gradeLabels[data.grade] || "";
+
+            const badge = owned
+                ? `<span class="owned-badge">✓ مفعّل</span>`
+                : `<span class="locked-badge">🔒 ${price}</span>`;
+            const priceTag = `<span class="price-tag ${isFree?'free':''}">${price}</span>`;
+            const btn = owned
+                ? `<a href="lesson.html?id=${id}" class="btn-access owned">▶ أكمل الدورة</a>`
+                : `<a href="lesson.html?id=${id}" class="btn-access buy">🛒 شراء بكود</a>`;
+
+            const card = document.createElement('div');
+            card.className = 'lesson-card';
+            card.dataset.name = data.name?.toLowerCase() || '';
+            card.dataset.owned = owned ? 'true' : 'false';
+            card.dataset.free = isFree ? 'true' : 'false';
+            card.innerHTML = `
+                <div class="lc-img-wrap">
+                    <img src="${img}" alt="${data.name}" loading="lazy">
+                    <div class="lc-img-fade"></div>
+                    ${badge}
+                    ${priceTag}
                 </div>
-                <div class="lc-title">${data.name}</div>
-                <div class="lc-footer">
-                    <div class="lc-lectures">
-                        <div class="lc-lectures-icon">▶</div>
-                        ${data.lectureCount||'عدة'} محاضرات
+                <div class="lc-body">
+                    <div class="lc-meta">
+                        <span class="lc-grade-tag">${gradeText}</span>
+                        <span class="lc-teacher-tag">أ. شريف علي</span>
                     </div>
-                    ${btn}
+                    <div class="lc-title">${data.name}</div>
+                    <div class="lc-footer">
+                        <div class="lc-lectures">
+                            <div class="lc-lectures-icon">▶</div>
+                            عدة محاضرات
+                        </div>
+                        ${btn}
+                    </div>
                 </div>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-    document.getElementById('lessonCountBadge').textContent=count+' دورة';
-    staggerCards();
-}
+            `;
+            grid.appendChild(card);
+        });
+        document.getElementById('lessonCountBadge').textContent = count + ' دورة';
+        staggerCards();
+    }
 
-window.updateProfile=async()=>{
-    const name=document.getElementById('editName').value;
-    const phone=document.getElementById('editPhone').value;
-    const pPhone=document.getElementById('editParentPhone').value;
-    const btn=document.getElementById('saveBtn');
-    if(!name||!phone||!pPhone) return alert("البيانات ناقصة!");
-    btn.textContent="جاري الحفظ...";
-    try {
-        await setDoc(doc(db,"users",currentUser.uid),{name,phone,parentPhone:pPhone},{merge:true});
-        document.getElementById('userNameDisplay').textContent=name;
-        alert("تم التحديث بنجاح 🔥");
-        closeProfile();
-    } catch(e){ alert(e.message); }
-    btn.textContent="حفظ التغييرات";
-};
+    window.updateProfile = async () => {
+        const name = document.getElementById('editName').value;
+        const phone = document.getElementById('editPhone').value;
+        const pPhone = document.getElementById('editParentPhone').value;
+        const btn = document.getElementById('saveBtn');
+        
+        if(!name || !phone || !pPhone) return alert("البيانات ناقصة!");
+        btn.textContent = "جاري الحفظ...";
+        
+        try {
+            const { error } = await supabaseClient.from('users').update({
+                name: name,
+                phone: phone,
+                parentphone: pPhone // 🔥 حروف صغيرة
+            }).eq('id', currentUser.id);
+            
+            if (error) throw error;
 
-document.getElementById('logoutBtn').onclick=()=>{
-    if(confirm("هل تريد تسجيل الخروج؟")) signOut(auth);
-};
+            document.getElementById('userNameDisplay').textContent = name;
+            alert("تم التحديث بنجاح 🔥");
+            closeProfile();
+        } catch(e){ 
+            alert("خطأ: " + e.message); 
+        }
+        btn.textContent = "حفظ التغييرات";
+    };
+
+    document.getElementById('logoutBtn').onclick = async () => {
+        if(confirm("هل تريد تسجيل الخروج؟")) {
+            await supabaseClient.auth.signOut();
+            window.location.href = "index.html";
+        }
+    };
+
+    // تشغيل الدالة عند تحميل الصفحة
+    initDashboard();
+
 </script>
-<!-- ── BOTTOM NAV (mobile) ── -->
+
 <nav class="bottom-nav">
     <div class="bottom-nav-inner">
         <button class="bn-item active" onclick="bnSelect(this)">
