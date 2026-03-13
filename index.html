@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathPro | الأستاذ شريف علي</title>
     <meta name="theme-color" content="#050810">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="images/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -299,9 +301,6 @@ footer {
 .fd{width:3px;height:3px;background:var(--muted);border-radius:50%;opacity:.4;}
 @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hidden{display:none!important;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px;}
 </style>
 </head>
 <body>
@@ -321,7 +320,6 @@ footer {
 </nav>
 
 <main>
-    <!-- HERO -->
     <div class="hero">
         <div class="eyebrow">
             <span class="eyebrow-line"></span>
@@ -344,11 +342,9 @@ footer {
             <div class="pill">🏆 امتحانات فورية</div>
             <div class="pill">📊 تتبع التقدم</div>
             <div class="pill">🔔 متابعة الأهل</div>
-            <div class="pill">📱 يعمل على الموبايل</div>
         </div>
     </div>
 
-    <!-- AUTH CARD -->
     <div class="card-col">
         <div class="auth-card" id="authCard">
             <div class="card-head">
@@ -361,7 +357,6 @@ footer {
                 <button class="tab" id="signupTab">حساب جديد</button>
             </div>
 
-            <!-- extra signup fields -->
             <div id="extraFields" class="hidden fields" style="margin-bottom:11px;">
                 <div class="fw">
                     <span class="flbl">الاسم الرباعي</span>
@@ -382,7 +377,6 @@ footer {
                 </div>
             </div>
 
-            <!-- common fields -->
             <div class="fields">
                 <div class="fw">
                     <span class="flbl">البريد الإلكتروني</span>
@@ -473,36 +467,87 @@ card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();card.
 card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88)';});
 </script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const app=initializeApp({apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",authDomain:"math-e62c9.firebaseapp.com",projectId:"math-e62c9",appId:"1:271507842148:web:2907aad4caf67afd08ab71"});
-const auth=getAuth(app),db=getFirestore(app),admin="kevin.hany.08@proton.me";
-let mode="login";
-const lTab=document.getElementById("loginTab"),sTab=document.getElementById("signupTab"),extra=document.getElementById("extraFields"),btn=document.getElementById("actionBtn"),fa=document.getElementById("forgotArea");
-sTab.onclick=()=>{mode="signup";extra.classList.remove("hidden");btn.textContent="إنشاء حساب جديد ←";fa.classList.add("hidden");sTab.classList.add("on");lTab.classList.remove("on");};
-lTab.onclick=()=>{mode="login";extra.classList.add("hidden");btn.textContent="دخول ←";fa.classList.remove("hidden");lTab.classList.add("on");sTab.classList.remove("on");};
-btn.onclick=async()=>{
-    const e=document.getElementById("email").value,p=document.getElementById("password").value;
-    try{
-        if(mode==="signup"){
-            const n=document.getElementById("userName").value,g=document.getElementById("userGrade").value,ph=document.getElementById("userPhone").value,pp=document.getElementById("parentPhone").value;
-            if(!n||!g||!ph)return alert("من فضلك أكمل جميع بياناتك");
-            btn.textContent="جاري الإنشاء...";
-            const r=await createUserWithEmailAndPassword(auth,e,p);
-            await setDoc(doc(db,"users",r.user.uid),{name:n,grade:g,phone:ph,parentPhone:pp,email:e,studentId:Math.floor(100000+Math.random()*900000).toString(),role:"student",createdAt:new Date()});
-            window.location="dashboard.html";
-        }else{
-            btn.textContent="جاري الدخول...";
-            await signInWithEmailAndPassword(auth,e,p);
-            window.location=(e===admin)?"teacher-dashboard.html":"dashboard.html";
+<script>
+    const SUPABASE_URL = "https://kspfizewkpfoeyocbzbm.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const adminEmail = "kevin.hany.08@proton.me";
+
+    let mode = "login";
+    const lTab = document.getElementById("loginTab");
+    const sTab = document.getElementById("signupTab");
+    const extra = document.getElementById("extraFields");
+    const btn = document.getElementById("actionBtn");
+    const fa = document.getElementById("forgotArea");
+
+    sTab.onclick = () => { mode="signup"; extra.classList.remove("hidden"); btn.textContent="إنشاء حساب جديد ←"; fa.classList.add("hidden"); sTab.classList.add("on"); lTab.classList.remove("on"); };
+    lTab.onclick = () => { mode="login"; extra.classList.add("hidden"); btn.textContent="دخول ←"; fa.classList.remove("hidden"); lTab.classList.add("on"); sTab.classList.remove("on"); };
+
+    btn.onclick = async () => {
+        const e = document.getElementById("email").value;
+        const p = document.getElementById("password").value;
+        
+        try {
+            if (mode === "signup") {
+                const n = document.getElementById("userName").value;
+                const g = document.getElementById("userGrade").value;
+                const ph = document.getElementById("userPhone").value;
+                const pp = document.getElementById("parentPhone").value;
+                
+                if(!n || !g || !ph || !e || !p) return alert("من فضلك أكمل جميع بياناتك");
+                btn.textContent = "جاري الإنشاء...";
+
+                // تسجيل الحساب في Auth
+                const { data, error } = await supabase.auth.signUp({ email: e, password: p });
+                if (error) throw error;
+
+                // إرسال البيانات لجدول users
+                if (data.user) {
+                    const { error: insertError } = await supabase.from('users').insert([{
+                        id: data.user.id,
+                        name: n,
+                        email: e,
+                        grade: g,
+                        phone: ph,
+                        parentPhone: pp,
+                        studentId: Math.floor(100000 + Math.random() * 900000).toString(),
+                        role: "student"
+                    }]);
+                    if (insertError) throw insertError;
+                }
+                window.location.href = "dashboard.html";
+
+            } else {
+                btn.textContent = "جاري الدخول...";
+                // تسجيل الدخول في Auth
+                const { data, error } = await supabase.auth.signInWithPassword({ email: e, password: p });
+                if (error) throw error;
+                
+                window.location.href = (e === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
+            }
+        } catch(err) {
+            alert("خطأ: " + err.message);
+            btn.textContent = mode === "login" ? "دخول ←" : "إنشاء حساب جديد ←";
         }
-    }catch(err){alert("خطأ: "+err.message);btn.textContent=mode==="login"?"دخول ←":"إنشاء حساب جديد ←";}
-};
-document.getElementById("googleBtn").onclick=async()=>{try{const r=await signInWithPopup(auth,new GoogleAuthProvider());window.location=(r.user.email===admin)?"teacher-dashboard.html":"dashboard.html";}catch(e){alert(e.message);}};
-document.getElementById("forgotBtn").onclick=async()=>{const v=document.getElementById("email").value;if(!v)return alert("اكتب إيميلك أولاً");try{await sendPasswordResetEmail(auth,v);alert("تم إرسال رابط الاستعادة لإيميلك.");}catch(e){alert(e.message);}};
+    };
+
+    document.getElementById("googleBtn").onclick = async () => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+            if (error) throw error;
+        } catch(e) { alert(e.message); }
+    };
+
+    document.getElementById("forgotBtn").onclick = async () => {
+        const v = document.getElementById("email").value;
+        if(!v) return alert("اكتب إيميلك أولاً");
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(v);
+            if (error) throw error;
+            alert("تم إرسال رابط الاستعادة لإيميلك.");
+        } catch(e) { alert(e.message); }
+    };
 </script>
-<script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 </body>
 </html>
