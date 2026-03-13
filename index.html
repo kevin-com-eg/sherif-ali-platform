@@ -301,6 +301,9 @@ footer {
 .fd{width:3px;height:3px;background:var(--muted);border-radius:50%;opacity:.4;}
 @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hidden{display:none!important;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px;}
 </style>
 </head>
 <body>
@@ -471,7 +474,8 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
     const SUPABASE_URL = "https://kspfizewkpfoeyocbzbm.supabase.co"; 
     const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
     
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // 🔥 تم تعديل المتغير لـ supabaseClient لعدم التعارض 🔥
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const adminEmail = "kevin.hany.08@proton.me";
 
     let mode = "login";
@@ -499,12 +503,12 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                 btn.textContent = "جاري الإنشاء...";
 
                 // تسجيل الحساب في Auth
-                const { data, error } = await supabase.auth.signUp({ email: e, password: p });
+                const { data, error } = await supabaseClient.auth.signUp({ email: e, password: p });
                 if (error) throw error;
 
                 // إرسال البيانات لجدول users
                 if (data.user) {
-                    const { error: insertError } = await supabase.from('users').insert([{
+                    const { error: insertError } = await supabaseClient.from('users').insert([{
                         id: data.user.id,
                         name: n,
                         email: e,
@@ -521,7 +525,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
             } else {
                 btn.textContent = "جاري الدخول...";
                 // تسجيل الدخول في Auth
-                const { data, error } = await supabase.auth.signInWithPassword({ email: e, password: p });
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email: e, password: p });
                 if (error) throw error;
                 
                 window.location.href = (e === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
@@ -534,7 +538,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
 
     document.getElementById("googleBtn").onclick = async () => {
         try {
-            const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+            const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
             if (error) throw error;
         } catch(e) { alert(e.message); }
     };
@@ -543,7 +547,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
         const v = document.getElementById("email").value;
         if(!v) return alert("اكتب إيميلك أولاً");
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(v);
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(v);
             if (error) throw error;
             alert("تم إرسال رابط الاستعادة لإيميلك.");
         } catch(e) { alert(e.message); }
