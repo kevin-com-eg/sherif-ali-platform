@@ -290,6 +290,45 @@ select.inp option{background:#0b1220;color:var(--text);}
 .trust{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;}
 .trust-dot{width:5px;height:5px;background:var(--g1);border-radius:50%;opacity:.5;}
 .trust-txt{font-size:.68rem;color:var(--muted);font-weight:600;}
+
+/* 🔥 ستايل النافذة المنبثقة (Popup) الجديدة 🔥 */
+.custom-popup-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.custom-popup-overlay.show { opacity: 1; pointer-events: all; }
+.custom-popup-card {
+    background: rgba(12,18,32,0.95); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 420px;
+    text-align: center; transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,229,160,0.1);
+    position: relative; overflow: hidden;
+}
+.custom-popup-overlay.show .custom-popup-card { transform: translateY(0) scale(1); }
+.custom-popup-card::before {
+    content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--g1), transparent);
+}
+.popup-icon {
+    font-size: 2.8rem; margin-bottom: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px; background: rgba(0,229,160,.08);
+    border: 1px solid rgba(0,229,160,.2); border-radius: 20px;
+}
+.popup-title { font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: 8px; }
+.popup-sub { font-size: 0.88rem; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
+.popup-input-wrap { margin-bottom: 24px; text-align: right; }
+.popup-input-wrap .flbl { display: block; margin-bottom: 8px; }
+.popup-cancel-btn {
+    background: transparent; border: none; color: var(--muted);
+    font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; margin-top: 16px; transition: color 0.2s; padding: 8px;
+}
+.popup-cancel-btn:hover { color: #f87171; }
+
 /* footer */
 footer {
     position:relative;z-index:2;
@@ -310,6 +349,22 @@ footer {
 <div id="cur-dot"></div>
 <div id="cur-ring"></div>
 <canvas id="cvs"></canvas>
+
+<div id="resetPopupOverlay" class="custom-popup-overlay">
+    <div class="custom-popup-card">
+        <div class="popup-icon">🔐</div>
+        <h3 class="popup-title">تحديث كلمة المرور</h3>
+        <p class="popup-sub">أهلاً بك مجدداً! قم بتعيين كلمة مرور جديدة لحسابك تتكون من 6 أحرف أو أرقام على الأقل.</p>
+        
+        <div class="popup-input-wrap">
+            <span class="flbl">كلمة المرور الجديدة</span>
+            <input type="password" id="newPasswordInput" class="inp" placeholder="••••••••">
+        </div>
+        
+        <button id="confirmResetBtn" class="cta-btn">حفظ وتأكيد الدخول</button>
+        <button id="cancelResetBtn" class="popup-cancel-btn">إلغاء التحديث</button>
+    </div>
+</div>
 
 <div class="page">
 <nav>
@@ -477,6 +532,47 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const adminEmail = "kevin.hany.08@proton.me";
 
+    // 🔥 ربط الـ Popup الجديد باستعادة كلمة المرور 🔥
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+            const popup = document.getElementById('resetPopupOverlay');
+            const passInput = document.getElementById('newPasswordInput');
+            const confirmBtn = document.getElementById('confirmResetBtn');
+            const cancelBtn = document.getElementById('cancelResetBtn');
+            
+            // إظهار النافذة
+            popup.classList.add('show');
+            
+            confirmBtn.onclick = async () => {
+                const newPass = passInput.value;
+                if(newPass.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف أو أكثر");
+                
+                confirmBtn.textContent = "جاري الحفظ...";
+                const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+                
+                if(error) {
+                    alert("حدث خطأ أثناء التحديث: " + error.message);
+                    confirmBtn.textContent = "حفظ وتأكيد الدخول";
+                } else {
+                    confirmBtn.style.background = "#22c55e"; // أخضر نجاح
+                    confirmBtn.textContent = "تم التحديث بنجاح! ✅";
+                    setTimeout(() => {
+                        supabaseClient.auth.signOut(); // تسجيل خروج لإجباره يدخل بالجديد
+                        popup.classList.remove('show');
+                        passInput.value = "";
+                        confirmBtn.style.background = "";
+                        confirmBtn.textContent = "حفظ وتأكيد الدخول";
+                    }, 2000);
+                }
+            };
+
+            cancelBtn.onclick = () => {
+                popup.classList.remove('show');
+                supabaseClient.auth.signOut();
+            };
+        }
+    });
+
     let mode = "login";
     const lTab = document.getElementById("loginTab");
     const sTab = document.getElementById("signupTab");
@@ -501,11 +597,9 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                 if(!n || !g || !ph || !e || !p) return alert("من فضلك أكمل جميع بياناتك");
                 btn.textContent = "جاري الإنشاء...";
 
-                // تسجيل الحساب في Auth
                 const { data, error } = await supabaseClient.auth.signUp({ email: e, password: p });
                 if (error) throw error;
 
-                // إرسال البيانات لجدول users
                 if (data.user) {
                     const { error: insertError } = await supabaseClient.from('users').insert([{
                         id: data.user.id,
@@ -513,8 +607,8 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                         email: e,
                         grade: g,
                         phone: ph,
-                        parentphone: pp, // 🔥 تم التعديل إلى حروف صغيرة
-                        studentid: Math.floor(100000 + Math.random() * 900000).toString(), // 🔥 تم التعديل إلى حروف صغيرة
+                        parentphone: pp,
+                        studentid: Math.floor(100000 + Math.random() * 900000).toString(),
                         role: "student"
                     }]);
                     if (insertError) throw insertError;
@@ -523,7 +617,6 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
 
             } else {
                 btn.textContent = "جاري الدخول...";
-                // تسجيل الدخول في Auth
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: e, password: p });
                 if (error) throw error;
                 
@@ -542,14 +635,22 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
         } catch(e) { alert(e.message); }
     };
 
+    // إرسال رابط نسيت كلمة المرور
     document.getElementById("forgotBtn").onclick = async () => {
         const v = document.getElementById("email").value;
-        if(!v) return alert("اكتب إيميلك أولاً");
+        if(!v) return alert("اكتب إيميلك أولاً في خانة البريد الإلكتروني بالأعلى");
+        
+        document.getElementById("forgotBtn").textContent = "جاري الإرسال...";
         try {
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(v);
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(v, {
+                redirectTo: window.location.origin + window.location.pathname,
+            });
             if (error) throw error;
-            alert("تم إرسال رابط الاستعادة لإيميلك.");
-        } catch(e) { alert(e.message); }
+            alert("تم إرسال رابط الاستعادة لإيميلك! تفقد صندوق الوارد (أو مجلد Spam).");
+        } catch(e) { 
+            alert("خطأ: " + e.message); 
+        }
+        document.getElementById("forgotBtn").textContent = "نسيت كلمة المرور؟";
     };
 </script>
 </body>
