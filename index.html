@@ -301,6 +301,9 @@ footer {
 .fd{width:3px;height:3px;background:var(--muted);border-radius:50%;opacity:.4;}
 @keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hidden{display:none!important;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px;}
 </style>
 </head>
 <body>
@@ -471,7 +474,6 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
     const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
     const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
     
-    // 🔥 تم تعديل المتغير لـ supabaseClient لعدم التعارض 🔥
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const adminEmail = "kevin.hany.08@proton.me";
 
@@ -511,8 +513,8 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                         email: e,
                         grade: g,
                         phone: ph,
-                        parentPhone: pp,
-                        studentId: Math.floor(100000 + Math.random() * 900000).toString(),
+                        parentphone: pp, // 🔥 تم التعديل إلى حروف صغيرة
+                        studentid: Math.floor(100000 + Math.random() * 900000).toString(), // 🔥 تم التعديل إلى حروف صغيرة
                         role: "student"
                     }]);
                     if (insertError) throw insertError;
