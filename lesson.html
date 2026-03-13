@@ -393,7 +393,6 @@ main {
 </head>
 <body oncontextmenu="return false;">
 
-<!-- ── LOCK SCREEN ── -->
 <div id="codeLockScreen">
     <div class="lock-card">
         <button class="back-btn-lock" onclick="window.history.back()">↩ رجوع</button>
@@ -405,10 +404,8 @@ main {
     </div>
 </div>
 
-<!-- ── LESSON CONTENT ── -->
 <div id="lessonContent" class="hidden">
 
-    <!-- NAV -->
     <nav>
         <div class="nav-w">
             <div class="nav-left">
@@ -429,13 +426,10 @@ main {
         </div>
     </nav>
 
-    <!-- MAIN -->
     <main>
 
-        <!-- QUIZ TAB -->
         <div id="tab-quiz">
 
-            <!-- start -->
             <div id="startScreen" class="rise">
                 <span class="start-icon">🚀</span>
                 <div class="start-title">جاهز تبدأ الامتحان؟</div>
@@ -444,18 +438,14 @@ main {
                 <button id="startBtn" class="start-btn">ابدأ الامتحان ←</button>
             </div>
 
-            <!-- quiz app -->
             <div id="quizApp" class="hidden quiz-wrap">
-                <!-- progress -->
                 <div class="quiz-progress">
                     <span id="qCount" class="q-counter">1 / 10</span>
                     <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:10%"></div></div>
                 </div>
 
-                <!-- question -->
                 <div class="q-card" id="qDisplay"></div>
 
-                <!-- nav -->
                 <div class="quiz-nav">
                     <button id="prevBtn" class="q-nav-btn ghost hidden">← السابق</button>
                     <button id="nextBtn" class="q-nav-btn primary">التالي →</button>
@@ -463,7 +453,6 @@ main {
                 </div>
             </div>
 
-            <!-- review -->
             <div id="reviewArea" class="hidden">
                 <div class="score-banner" id="scoreBanner"></div>
                 <div id="reviewList"></div>
@@ -471,10 +460,8 @@ main {
 
         </div>
 
-        <!-- VIDEO TAB -->
         <div id="tab-video" class="hidden"></div>
 
-        <!-- PDF TAB -->
         <div id="tab-pdf" class="hidden">
             <div class="pdf-section">
                 <div class="pdf-icon">📚</div>
@@ -555,12 +542,22 @@ document.getElementById('verifyBtn').onclick = async () => {
     const lessonId = new URLSearchParams(window.location.search).get('id');
     if(!code) return alert("من فضلك أدخل الكود");
     document.getElementById('verifyBtn').textContent = "جاري التحقق...";
+    
     try {
         const snap = await getDoc(doc(db,"codes",code));
         if(snap.exists()) {
             const d=snap.data(), now=Date.now();
+            
+            // 🔥 التعديل هنا: سحب صلاحية الحصة من قاعدة البيانات 🔥
+            const lessonSnap = await getDoc(doc(db, "lessons", lessonId));
+            let validityDays = 7; // القيمة الافتراضية
+            if (lessonSnap.exists() && lessonSnap.data().validityDays) {
+                validityDays = lessonSnap.data().validityDays;
+            }
+
             if(!d.used) {
-                const exp = now + 7*24*60*60*1000;
+                // حساب تاريخ الانتهاء بناءً على الأيام اللي المدرس حددها
+                const exp = now + validityDays * 24 * 60 * 60 * 1000;
                 await updateDoc(doc(db,"codes",code), { used:true, usedBy:auth.currentUser.email, lessonId, expiryAt:exp });
                 localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({expiry:exp}));
                 location.reload();
@@ -571,6 +568,7 @@ document.getElementById('verifyBtn').onclick = async () => {
             else { alert("هذا الكود مستخدم لحساب آخر!"); }
         } else { alert("الكود غير صحيح!"); }
     } catch(e) { alert("خطأ: "+e.message); }
+    
     document.getElementById('verifyBtn').textContent = "تفعيل الحصة ←";
 };
 
