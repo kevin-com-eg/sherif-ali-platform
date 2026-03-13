@@ -291,7 +291,7 @@ select.inp option{background:#0b1220;color:var(--text);}
 .trust-dot{width:5px;height:5px;background:var(--g1);border-radius:50%;opacity:.5;}
 .trust-txt{font-size:.68rem;color:var(--muted);font-weight:600;}
 
-/* 🔥 ستايل النافذة المنبثقة (Popup) الجديدة 🔥 */
+/* 🔥 ستايل النافذة المنبثقة (Popup) 🔥 */
 .custom-popup-overlay {
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
@@ -363,6 +363,31 @@ footer {
         
         <button id="confirmResetBtn" class="cta-btn">حفظ وتأكيد الدخول</button>
         <button id="cancelResetBtn" class="popup-cancel-btn">إلغاء التحديث</button>
+    </div>
+</div>
+
+<div id="googleProfilePopup" class="custom-popup-overlay">
+    <div class="custom-popup-card">
+        <div class="popup-icon">📱</div>
+        <h3 class="popup-title">خطوة أخيرة يا بطل!</h3>
+        <p class="popup-sub">عشان نكمل حسابك ونعرضلك الكورسات المناسبة، محتاجين البيانات دي.</p>
+        
+        <div class="popup-input-wrap">
+            <span class="flbl">الصف الدراسي</span>
+            <select id="googleGrade" class="inp" style="margin-bottom: 12px;">
+                <option value="1">الصف الأول الثانوي</option>
+                <option value="2">الصف الثاني الثانوي</option>
+                <option value="3">الصف الثالث الثانوي</option>
+            </select>
+            
+            <span class="flbl">رقم تليفونك</span>
+            <input type="text" id="googlePhone" class="inp" placeholder="01xxxxxxxxx" style="margin-bottom: 12px;">
+            
+            <span class="flbl">رقم ولي الأمر</span>
+            <input type="text" id="googleParentPhone" class="inp" placeholder="01xxxxxxxxx">
+        </div>
+        
+        <button id="saveGoogleProfileBtn" class="cta-btn">حفظ ودخول المنصة 🚀</button>
     </div>
 </div>
 
@@ -532,7 +557,66 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const adminEmail = "kevin.hany.08@proton.me";
 
-    // 🔥 ربط الـ Popup الجديد باستعادة كلمة المرور 🔥
+    // 1. فحص الجلسة عند تحميل الصفحة (عشان لو راجع من جوجل)
+    async function checkSessionOnLoad() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            const user = session.user;
+            
+            // لو ده الأدمن، دخله على لوحة التحكم بتاعته
+            if (user.email === adminEmail) {
+                window.location.href = "teacher-dashboard.html";
+                return;
+            }
+
+            // فحص بيانات المستخدم في جدول users
+            const { data: dbUser } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
+
+            // لو مفيش بيانات تواصل، طلعله الـ Popup
+            if (!dbUser || !dbUser.phone || !dbUser.parentphone) {
+                document.getElementById('googleProfilePopup').classList.add('show');
+                
+                document.getElementById('saveGoogleProfileBtn').onclick = async () => {
+                    const grade = document.getElementById('googleGrade').value;
+                    const phone = document.getElementById('googlePhone').value;
+                    const parentPhone = document.getElementById('googleParentPhone').value;
+                    const btn = document.getElementById('saveGoogleProfileBtn');
+
+                    if (!phone || !parentPhone) return alert("من فضلك أدخل الأرقام المطلوبة");
+                    
+                    btn.textContent = "جاري الحفظ...";
+                    const name = user.user_metadata?.full_name || "طالب جديد";
+
+                    // استخدام upsert عشان لو الصف موجود يحدّثه، ولو مش موجود يضيفه
+                    const { error } = await supabaseClient.from('users').upsert({
+                        id: user.id,
+                        email: user.email,
+                        name: name,
+                        grade: grade,
+                        phone: phone,
+                        parentphone: parentPhone,
+                        studentid: Math.floor(100000 + Math.random() * 900000).toString(),
+                        role: 'student'
+                    });
+
+                    if (error) {
+                        alert("خطأ: " + error.message);
+                        btn.textContent = "حفظ ودخول المنصة 🚀";
+                    } else {
+                        window.location.href = "dashboard.html";
+                    }
+                };
+            } else {
+                // لو بياناته كاملة، دخله على الـ Dashboard على طول
+                window.location.href = "dashboard.html";
+            }
+        }
+    }
+    
+    // تشغيل الفحص
+    checkSessionOnLoad();
+
+    // 2. ربط الـ Popup باستعادة كلمة المرور
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
             const popup = document.getElementById('resetPopupOverlay');
@@ -540,7 +624,6 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
             const confirmBtn = document.getElementById('confirmResetBtn');
             const cancelBtn = document.getElementById('cancelResetBtn');
             
-            // إظهار النافذة
             popup.classList.add('show');
             
             confirmBtn.onclick = async () => {
@@ -554,10 +637,10 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     alert("حدث خطأ أثناء التحديث: " + error.message);
                     confirmBtn.textContent = "حفظ وتأكيد الدخول";
                 } else {
-                    confirmBtn.style.background = "#22c55e"; // أخضر نجاح
+                    confirmBtn.style.background = "#22c55e"; 
                     confirmBtn.textContent = "تم التحديث بنجاح! ✅";
                     setTimeout(() => {
-                        supabaseClient.auth.signOut(); // تسجيل خروج لإجباره يدخل بالجديد
+                        supabaseClient.auth.signOut(); 
                         popup.classList.remove('show');
                         passInput.value = "";
                         confirmBtn.style.background = "";
@@ -628,9 +711,15 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
         }
     };
 
+    // 🔥 3. تعديل زرار جوجل 🔥
     document.getElementById("googleBtn").onclick = async () => {
         try {
-            const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
+            const { error } = await supabaseClient.auth.signInWithOAuth({ 
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname // يرجع لنفس الصفحة دي
+                }
+            });
             if (error) throw error;
         } catch(e) { alert(e.message); }
     };
