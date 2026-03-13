@@ -557,13 +557,23 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const adminEmail = "kevin.hany.08@proton.me";
 
+    // 🔥 دالة لتوليد وحفظ رقم فريد لكل متصفح/موبايل (بصمة الجهاز) 🔥
+    function getLocalDeviceId() {
+        let did = localStorage.getItem('mp_device_id');
+        if (!did) {
+            did = 'dev_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem('mp_device_id', did);
+        }
+        return did;
+    }
+
     // 1. فحص الجلسة عند تحميل الصفحة (عشان لو راجع من جوجل)
     async function checkSessionOnLoad() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
             const user = session.user;
             
-            // لو ده الأدمن، دخله على لوحة التحكم بتاعته
+            // لو ده الأدمن، دخله على لوحة التحكم بتاعته بدون قيود أجهزة
             if (user.email === adminEmail) {
                 window.location.href = "teacher-dashboard.html";
                 return;
@@ -571,6 +581,24 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
 
             // فحص بيانات المستخدم في جدول users
             const { data: dbUser } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
+
+            // 🚀 --- فحص حد الأجهزة لجوجل --- 🚀
+            const deviceId = getLocalDeviceId();
+            let userDevices = [];
+            if (dbUser && dbUser.devices) userDevices = dbUser.devices;
+            
+            if (!userDevices.includes(deviceId)) {
+                if (userDevices.length >= 2) {
+                    await supabaseClient.auth.signOut();
+                    alert("⚠️ عذراً، لا يمكنك الدخول من أكثر من جهازين. هذا الحساب مسجل على الحد الأقصى للأجهزة.");
+                    return; // يوقف الدخول
+                } else {
+                    userDevices.push(deviceId);
+                    if (dbUser) { // لو بياناته موجودة حدثها
+                        await supabaseClient.from('users').update({ devices: userDevices }).eq('id', user.id);
+                    }
+                }
+            }
 
             // لو مفيش بيانات تواصل، طلعله الـ Popup
             if (!dbUser || !dbUser.phone || !dbUser.parentphone) {
@@ -587,7 +615,6 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     btn.textContent = "جاري الحفظ...";
                     const name = user.user_metadata?.full_name || "طالب جديد";
 
-                    // استخدام upsert عشان لو الصف موجود يحدّثه، ولو مش موجود يضيفه
                     const { error } = await supabaseClient.from('users').upsert({
                         id: user.id,
                         email: user.email,
@@ -596,7 +623,8 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                         phone: phone,
                         parentphone: parentPhone,
                         studentid: Math.floor(100000 + Math.random() * 900000).toString(),
-                        role: 'student'
+                        role: 'student',
+                        devices: userDevices // 🔥 حفظ الأجهزة هنا
                     });
 
                     if (error) {
@@ -607,7 +635,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                     }
                 };
             } else {
-                // لو بياناته كاملة، دخله على الـ Dashboard على طول
+                // لو بياناته كاملة والأجهزة مسموحة، دخله على الـ Dashboard على طول
                 window.location.href = "dashboard.html";
             }
         }
@@ -684,6 +712,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                 if (error) throw error;
 
                 if (data.user) {
+                    const deviceId = getLocalDeviceId(); // 🔥 إنشاء بصمة الجهاز
                     const { error: insertError } = await supabaseClient.from('users').insert([{
                         id: data.user.id,
                         name: n,
@@ -692,7 +721,8 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                         phone: ph,
                         parentphone: pp,
                         studentid: Math.floor(100000 + Math.random() * 900000).toString(),
-                        role: "student"
+                        role: "student",
+                        devices: [deviceId] // 🔥 حفظ البصمة كأول جهاز
                     }]);
                     if (insertError) throw insertError;
                 }
@@ -703,7 +733,30 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: e, password: p });
                 if (error) throw error;
                 
-                window.location.href = (e === adminEmail) ? "teacher-dashboard.html" : "dashboard.html";
+                if (e === adminEmail) {
+                    window.location.href = "teacher-dashboard.html";
+                    return;
+                }
+
+                // 🚀 --- فحص حد الأجهزة للدخول العادي --- 🚀
+                const deviceId = getLocalDeviceId();
+                const { data: dbUser } = await supabaseClient.from('users').select('devices').eq('id', data.user.id).single();
+                
+                let userDevices = dbUser?.devices || [];
+                
+                if (!userDevices.includes(deviceId)) {
+                    if (userDevices.length >= 2) {
+                        await supabaseClient.auth.signOut();
+                        alert("⚠️ لا يمكنك الدخول. لقد وصلت للحد الأقصى (جهازين) لهذا الحساب. الرجاء التواصل مع الإدارة.");
+                        btn.textContent = "دخول ←";
+                        return; // توقف هنا
+                    } else {
+                        userDevices.push(deviceId);
+                        await supabaseClient.from('users').update({ devices: userDevices }).eq('id', data.user.id);
+                    }
+                }
+
+                window.location.href = "dashboard.html";
             }
         } catch(err) {
             alert("خطأ: " + err.message);
@@ -711,13 +764,13 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88
         }
     };
 
-    // 🔥 3. تعديل زرار جوجل 🔥
+    // 3. زرار جوجل
     document.getElementById("googleBtn").onclick = async () => {
         try {
             const { error } = await supabaseClient.auth.signInWithOAuth({ 
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.origin + window.location.pathname // يرجع لنفس الصفحة دي
+                    redirectTo: window.location.origin + window.location.pathname 
                 }
             });
             if (error) throw error;
