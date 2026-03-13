@@ -9,6 +9,15 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+/* ── TOUCH FIXES ── */
+a, button, [onclick], .nav-link, .btn-access, .lesson-card,
+.bn-item, .modal-close, .ann-close, .filter-btn, .hdr-icon-btn,
+.sidebar-toggle, .logout-btn-side, .save-btn, .hdr-avatar {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+}
+input, textarea { touch-action: manipulation; }
 :root {
     --bg:      #111111;
     --bg2:     #1a1a1a;
@@ -512,7 +521,8 @@ body {
     backdrop-filter: blur(12px);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
-    opacity: 0; pointer-events: none;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity .3s;
 }
 .overlay.open { opacity: 1; pointer-events: all; }
@@ -642,14 +652,15 @@ body {
 
 /* sidebar backdrop overlay */
 .sidebar-backdrop {
-    display: none;
+    display: block;
     position: fixed; inset: 0; z-index: 49;
     background: rgba(0,0,0,.65);
     backdrop-filter: blur(4px);
     opacity: 0;
+    pointer-events: none;
     transition: opacity .3s;
 }
-.sidebar-backdrop.show { opacity: 1; }
+.sidebar-backdrop.show { opacity: 1; pointer-events: all; }
 
 /* ── BOTTOM NAV (mobile only) ── */
 .bottom-nav {
@@ -700,9 +711,22 @@ body {
     border: 1.5px solid #141414;
 }
 
-/* ── RESPONSIVE ── */
 @media(max-width: 768px) {
     :root { --sidebar-w: 260px; }
+
+    /* ensure tap targets are big enough */
+    .btn-access { min-height: 44px; }
+    .nav-link { min-height: 48px; }
+    .bn-item { min-height: 50px; min-width: 50px; }
+    .filter-btn { min-height: 38px; }
+    .modal-close { width: 38px; height: 38px; }
+
+    /* remove hover transform on touch — prevents stuck states */
+    .lesson-card:hover { transform: none; }
+    .btn-access.owned:hover { transform: none; }
+    .btn-access.buy:hover { transform: none; }
+    .save-btn:hover { transform: none; }
+    .stat-card:hover { transform: none; }
 
     /* sidebar slides in from right */
     .sidebar {
@@ -711,7 +735,6 @@ body {
         box-shadow: -8px 0 40px rgba(0,0,0,.5);
     }
     .sidebar.open { transform: translateX(0); }
-    .sidebar-backdrop { display: block; }
 
     /* main takes full width */
     .main-area { margin-right: 0; padding-bottom: 72px; }
