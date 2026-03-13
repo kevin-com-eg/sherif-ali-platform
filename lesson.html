@@ -3,402 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | منطقة الحصة 🎓</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-    <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0b1120; color: white; }
-        .glass { background: #151e32; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .tab-btn { opacity: 0.3; pointer-events: none; transition: 0.3s; border-bottom: 4px solid transparent; }
-        .tab-btn.unlocked { opacity: 1; pointer-events: auto; }
-        .tab-btn.active { border-bottom: 4px solid #10b981; color: #10b981; } 
-        .hidden { display: none !important; }
-        .q-card { transition: all 0.3s ease; }
-        
-        .plyr__video-wrapper iframe { pointer-events: none !important; }
-        .plyr__control--overlaid { z-index: 10 !important; }
+    <title>MathPro | منطقة الحصة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --bg:    #050810;
+    --card:  #0e1828;
+    --panel: #0c1322;
+    --border:rgba(255,255,255,0.07);
+    --g1:    #00e5a0;
+    --g2:    #00b578;
+    --g3:    #007a52;
+    --red:   #ef4444;
+    --gold:  #c9933a;
+    --glow:  rgba(0,229,160,0.15);
+    --muted: #4b5e7a;
+    --text:  #e8f4f0;
+    --text2: #8ba8b8;
+    --mono:  'DM Mono', monospace;
+    --sans:  'Tajawal', sans-serif;
+    --r:     16px;
+}
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .022;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--g3); border-radius: 2px; }
+.hidden { display: none !important; }
 
-        /* 🔥 العلامة المائية المتحركة لحماية الفيديو 🔥 */
-        .watermark-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; 
-            z-index: 40; 
-            overflow: hidden;
-        }
-        .watermark-text {
-            position: absolute;
-            font-size: 28px;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.25); 
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-            animation: moveWatermark 25s linear infinite alternate; 
-        }
-        @keyframes moveWatermark {
-            0% { top: 10%; left: 10%; }
-            25% { top: 80%; left: 20%; }
-            50% { top: 50%; left: 70%; }
-            75% { top: 20%; left: 50%; }
-            100% { top: 70%; left: 80%; }
-        }
-    </style>
+/* ── LOCK SCREEN ─────────────────────── */
+#codeLockScreen {
+    position: fixed; inset: 0; z-index: 200;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+}
+.lock-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 28px;
+    padding: 44px 40px;
+    width: 100%; max-width: 440px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 40px 80px rgba(0,0,0,.6);
+    overflow: hidden;
+}
+.lock-card::before {
+    content: '';
+    position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--g1), transparent);
+}
+.lock-icon {
+    font-size: 2.8rem; margin-bottom: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px;
+    background: rgba(0,229,160,.08);
+    border: 1px solid rgba(0,229,160,.2);
+    border-radius: 18px;
+}
+.lock-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; }
+.lock-sub { font-size: .85rem; color: var(--text2); margin-bottom: 28px; }
+.lock-input {
+    width: 100%;
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    color: var(--text) !important;
+    padding: 14px 18px; border-radius: 12px;
+    font-family: var(--mono); font-size: 1rem; letter-spacing: 3px;
+    text-align: center; outline: none !important; margin-bottom: 14px;
+    transition: all .25s;
+}
+.lock-input:focus { border-color: var(--g1) !important; background: rgba(0,229,160,.04) !important; box-shadow: 0 0 0 3px rgba(0,229,160,.1); }
+.lock-input::placeholder { color: #344558; letter-spacing: 1px; font-size: .85rem; }
+.lock-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    color: #021a10; border: none; padding: 14px;
+    border-radius: 12px; font-family: var(--sans); font-size: 1rem;
+    font-weight: 900; cursor: pointer; transition: all .3s;
+    box-shadow: 0 6px 24px rgba(0,229,160,.2);
+    position: relative; overflow: hidden;
+}
+.lock-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+    transform: translateX(-100%); transition: transform .5s;
+}
+.lock-btn:hover::before { transform: translateX(100%); }
+.lock-btn:hover { box-shadow: 0 10px 30px rgba(0,229,160,.35); transform: translateY(-1px); }
+.back-btn-lock {
+    position: absolute; top: 16px; right: 16px;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.05); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 14px;
+    font-family: var(--sans); font-size: .8rem; font-weight: 700;
+    color: var(--text2); cursor: pointer; transition: all .2s;
+}
+.back-btn-lock:hover { border-color: var(--g1); color: var(--g1); }
+
+/* ── LESSON CONTENT ──────────────────── */
+#lessonContent { position: relative; z-index: 1; min-height: 100vh; }
+
+/* ── NAV ─────────────────────────────── */
+nav {
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(1.8);
+    background: rgba(5,8,16,.85);
+}
+.nav-w {
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 28px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+}
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.05); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 14px;
+    font-size: .8rem; font-weight: 700; color: var(--text2); cursor: pointer;
+    transition: all .2s; white-space: nowrap;
+}
+.back-btn:hover { border-color: var(--g1); color: var(--g1); }
+
+/* TABS */
+.tabs-wrap { display: flex; gap: 2px; }
+.tab-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 10px; border: none;
+    background: none; font-family: var(--sans); font-weight: 700; font-size: .85rem;
+    cursor: pointer; color: var(--muted); transition: all .25s;
+    opacity: .4; pointer-events: none;
+    white-space: nowrap;
+}
+.tab-btn.unlocked { opacity: 1; pointer-events: auto; }
+.tab-btn.active { background: rgba(0,229,160,.1); color: var(--g1); border: 1px solid rgba(0,229,160,.2); opacity: 1; pointer-events: auto; }
+.tab-btn.locked-dim::after { content: ' 🔒'; font-size: .7rem; }
+
+/* NAV RIGHT */
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.access-timer {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,229,160,.07); border: 1px solid rgba(0,229,160,.2);
+    border-radius: 10px; padding: 7px 14px;
+    font-family: var(--mono); font-size: .72rem; color: var(--g1);
+    white-space: nowrap;
+}
+.access-timer-label { color: var(--text2); font-size: .68rem; margin-left: 4px; }
+#timerBox {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
+    color: var(--red); border-radius: 10px; padding: 7px 16px;
+    font-family: var(--mono); font-size: .88rem; font-weight: 500;
+}
+#timerBox.urgent { background: rgba(239,68,68,.2); animation: pulseRed 1s infinite; }
+@keyframes pulseRed { 0%,100%{border-color:rgba(239,68,68,.3)} 50%{border-color:rgba(239,68,68,.8)} }
+
+/* ── MAIN ────────────────────────────── */
+main {
+    max-width: 1100px; margin: 0 auto;
+    padding: 36px 28px 80px;
+}
+
+/* ── START SCREEN ────────────────────── */
+#startScreen {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 28px; padding: 64px 40px;
+    text-align: center; position: relative; overflow: hidden;
+}
+#startScreen::before {
+    content: '';
+    position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--g1), transparent);
+}
+.start-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
+.start-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 10px; }
+.start-sub { color: var(--text2); font-size: .95rem; margin-bottom: 10px; line-height: 1.7; }
+.start-warn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.2);
+    color: #fca5a5; font-size: .78rem; font-weight: 700;
+    padding: 8px 16px; border-radius: 10px; margin-bottom: 36px;
+    font-family: var(--mono);
+}
+.start-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    color: #021a10; border: none; padding: 16px 48px;
+    border-radius: 14px; font-family: var(--sans); font-size: 1.1rem;
+    font-weight: 900; cursor: pointer; transition: all .3s;
+    box-shadow: 0 8px 28px rgba(0,229,160,.25);
+    position: relative; overflow: hidden;
+}
+.start-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+    transform: translateX(-100%); transition: transform .6s;
+}
+.start-btn:hover::before { transform: translateX(100%); }
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(0,229,160,.4); }
+
+/* ── QUIZ ────────────────────────────── */
+.quiz-wrap { display: flex; flex-direction: column; gap: 24px; }
+/* progress */
+.quiz-progress {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: .78rem; color: var(--text2);
+}
+.prog-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,.06); border-radius: 2px; overflow: hidden; }
+.prog-bar-fill { height: 100%; background: linear-gradient(to left, var(--g1), var(--g2)); border-radius: 2px; transition: width .4s; }
+.q-counter { color: var(--g1); font-weight: 500; white-space: nowrap; }
+
+/* question card */
+.q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px; padding: 36px;
+    transition: border-color .3s;
+}
+.q-num {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: 1.5px;
+    color: var(--g1); text-transform: uppercase; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+}
+.q-num::before { content: ''; width: 16px; height: 1px; background: var(--g1); }
+.q-img { width: 100%; max-height: 260px; object-fit: contain; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+.q-text { font-size: 1.15rem; font-weight: 700; line-height: 1.65; margin-bottom: 24px; }
+
+/* options */
+.options { display: flex; flex-direction: column; gap: 10px; }
+.opt-label {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+    border-radius: 12px; padding: 14px 18px; cursor: pointer;
+    transition: all .22s;
+}
+.opt-label:hover { border-color: rgba(0,229,160,.3); background: rgba(0,229,160,.04); }
+.opt-label:has(input:checked) { border-color: var(--g1); background: rgba(0,229,160,.08); }
+.opt-label input[type=radio] { width: 18px; height: 18px; accent-color: var(--g1); flex-shrink: 0; }
+.opt-key {
+    font-family: var(--mono); font-size: .65rem; font-weight: 500;
+    color: var(--muted); background: rgba(255,255,255,.05);
+    border: 1px solid var(--border); width: 24px; height: 24px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; text-transform: uppercase;
+}
+.opt-label:has(input:checked) .opt-key { background: rgba(0,229,160,.2); border-color: var(--g1); color: var(--g1); }
+.opt-text { font-size: .95rem; font-weight: 600; flex: 1; }
+
+/* nav row */
+.quiz-nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.q-nav-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 11px 22px; border-radius: 12px; border: none;
+    font-family: var(--sans); font-weight: 700; font-size: .88rem;
+    cursor: pointer; transition: all .25s; white-space: nowrap;
+}
+.q-nav-btn.ghost { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text2); }
+.q-nav-btn.ghost:hover { border-color: var(--g1); color: var(--g1); }
+.q-nav-btn.primary { background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%); color: #021a10; box-shadow: 0 4px 14px rgba(0,229,160,.2); }
+.q-nav-btn.primary:hover { box-shadow: 0 8px 22px rgba(0,229,160,.35); transform: translateY(-1px); }
+.q-nav-btn.finish { background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3); color: #93c5fd; }
+.q-nav-btn.finish:hover { background: rgba(59,130,246,.2); }
+
+/* ── REVIEW ──────────────────────────── */
+.score-banner {
+    background: var(--card); border-radius: 24px; padding: 40px;
+    text-align: center; border: 1px solid var(--border);
+    position: relative; overflow: hidden; margin-bottom: 24px;
+}
+.score-banner::before {
+    content: '';
+    position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--g1), transparent);
+}
+.score-val { font-family: var(--mono); font-size: 3.5rem; font-weight: 500; color: var(--g1); line-height: 1; }
+.score-of { font-family: var(--mono); font-size: 1.2rem; color: var(--muted); }
+.score-msg { color: var(--text2); font-size: .9rem; margin-top: 8px; }
+.score-unlock { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: .82rem; font-weight: 700; color: var(--g1); background: rgba(0,229,160,.08); border: 1px solid rgba(0,229,160,.2); padding: 8px 18px; border-radius: 20px; font-family: var(--mono); }
+
+/* review items */
+.review-item {
+    background: var(--card); border-radius: 20px; padding: 28px;
+    border: 1px solid var(--border); margin-bottom: 14px;
+    transition: border-color .25s;
+}
+.review-item.correct { border-color: rgba(0,229,160,.25); }
+.review-item.wrong   { border-color: rgba(239,68,68,.25); }
+.review-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 10px; }
+.review-q-label { font-family: var(--mono); font-size: .68rem; color: var(--g1); text-transform: uppercase; letter-spacing: 1px; }
+.badge-correct { font-family: var(--mono); font-size: .65rem; font-weight: 700; padding: 4px 12px; border-radius: 8px; background: rgba(0,229,160,.12); color: var(--g1); border: 1px solid rgba(0,229,160,.25); }
+.badge-wrong   { font-family: var(--mono); font-size: .65rem; font-weight: 700; padding: 4px 12px; border-radius: 8px; background: rgba(239,68,68,.1); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+.review-q-text { font-size: 1rem; font-weight: 700; margin-bottom: 12px; line-height: 1.55; }
+.review-ans { font-size: .85rem; color: var(--text2); margin-bottom: 4px; }
+.review-ans span { color: var(--text); font-weight: 700; }
+.review-correct-ans { font-size: .85rem; color: var(--g1); font-weight: 700; margin-top: 6px; }
+
+/* ── VIDEO ───────────────────────────── */
+#tab-video { width: 100%; }
+.video-wrap {
+    border-radius: 20px; overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+/* watermark */
+.watermark-container {
+    position: absolute; inset: 0;
+    pointer-events: none; z-index: 40; overflow: hidden;
+}
+.watermark-text {
+    position: absolute;
+    font-family: var(--mono); font-size: 1.2rem; font-weight: 500;
+    color: rgba(255,255,255,.22);
+    text-shadow: 1px 1px 3px rgba(0,0,0,.8);
+    animation: wmMove 25s linear infinite alternate;
+    white-space: nowrap;
+}
+@keyframes wmMove {
+    0%   { top:10%; left:10%; }
+    25%  { top:75%; left:15%; }
+    50%  { top:45%; left:65%; }
+    75%  { top:20%; left:45%; }
+    100% { top:65%; left:75%; }
+}
+/* plyr overrides */
+.plyr__control--overlaid { z-index: 10 !important; }
+.plyr__video-wrapper iframe { pointer-events: none !important; }
+.plyr--video .plyr__controls { background: linear-gradient(transparent, rgba(0,0,0,.7)); }
+.plyr__progress input[type=range]::-webkit-slider-thumb { background: var(--g1); }
+.plyr__volume input[type=range]::-webkit-slider-thumb { background: var(--g1); }
+
+/* ── PDF TAB ─────────────────────────── */
+.pdf-section {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 64px 40px;
+    text-align: center; position: relative; overflow: hidden;
+}
+.pdf-section::before {
+    content: '';
+    position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.pdf-icon {
+    font-size: 3rem; margin-bottom: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px;
+    background: rgba(201,147,58,.08); border: 1px solid rgba(201,147,58,.2);
+    border-radius: 18px;
+}
+.pdf-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; }
+.pdf-sub { color: var(--text2); font-size: .9rem; margin-bottom: 32px; }
+.pdf-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+    color: #fff; border: none; padding: 15px 40px; border-radius: 14px;
+    font-family: var(--sans); font-size: 1rem; font-weight: 900;
+    cursor: pointer; text-decoration: none; transition: all .3s;
+    box-shadow: 0 6px 24px rgba(201,147,58,.25);
+}
+.pdf-btn:hover { box-shadow: 0 12px 32px rgba(201,147,58,.4); transform: translateY(-2px); }
+
+/* ── ANIM ────────────────────────────── */
+@keyframes riseIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.rise { opacity: 0; animation: riseIn .5s forwards; }
+</style>
 </head>
-<body oncontextmenu="return false;"> 
+<body oncontextmenu="return false;">
 
-    <div id="codeLockScreen" class="fixed inset-0 z-[100] bg-[#0b1120] flex items-center justify-center p-6 hidden">
-        <div class="glass p-10 rounded-[3rem] w-full max-w-md text-center space-y-6 shadow-2xl border-emerald-500/20">
-            <button onclick="window.history.back()" class="absolute top-6 right-6 text-gray-400 hover:text-white transition font-bold bg-white/5 px-4 py-2 rounded-xl">↩️ رجوع</button>
-            <h2 class="text-3xl font-black text-white mt-4">تفعيل الحصة 🎫</h2>
-            <input id="accessCodeInput" type="text" placeholder="أدخل الكود هنا" class="w-full bg-[#0b1120] border border-gray-700 p-5 rounded-2xl text-center text-white text-xl outline-none focus:border-emerald-500">
-            <button id="verifyBtn" class="w-full bg-emerald-600 font-black py-5 rounded-2xl text-xl hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/20">تفعيل الحصة</button>
+<!-- ── LOCK SCREEN ── -->
+<div id="codeLockScreen">
+    <div class="lock-card">
+        <button class="back-btn-lock" onclick="window.history.back()">↩ رجوع</button>
+        <div class="lock-icon">🎫</div>
+        <div class="lock-title">تفعيل الحصة</div>
+        <div class="lock-sub">أدخل الكود الذي حصلت عليه من الأستاذ لفتح هذه الحصة</div>
+        <input id="accessCodeInput" class="lock-input" placeholder="XXXXXX" autocomplete="off" spellcheck="false">
+        <button id="verifyBtn" class="lock-btn">تفعيل الحصة ←</button>
+    </div>
+</div>
+
+<!-- ── LESSON CONTENT ── -->
+<div id="lessonContent" class="hidden">
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-w">
+            <div class="nav-left">
+                <button class="back-btn" onclick="window.history.back()">↩ رجوع</button>
+                <div class="tabs-wrap">
+                    <button id="btn-quiz-tab" class="tab-btn unlocked active" onclick="switchTab('quiz')">📝 الامتحان</button>
+                    <button id="btn-video-tab" class="tab-btn locked-dim" onclick="switchTab('video')">📺 الشرح</button>
+                    <button id="btn-pdf-tab" class="tab-btn locked-dim" onclick="switchTab('pdf')">📚 الملزمة</button>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div id="accessTimerBox" class="access-timer hidden">
+                    <span class="access-timer-label">صلاحية:</span>
+                    <span id="accessCountdown">--:--:--</span>
+                </div>
+                <div id="timerBox" class="hidden">⏱ <span id="timerVal">40:00</span></div>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <div id="lessonContent" class="hidden">
-        <nav class="glass sticky top-0 z-50 p-4 mb-6 shadow-sm">
-            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4 flex-wrap justify-center">
-                    <button onclick="window.history.back()" class="bg-gray-800 hover:bg-gray-700 border border-gray-700 px-4 py-2 rounded-xl font-bold transition flex items-center gap-2">↩️ رجوع</button>
-                    <div class="flex gap-2 sm:gap-6">
-                        <button id="btn-quiz-tab" onclick="switchTab('quiz')" class="tab-btn unlocked active px-4 py-2 font-black text-lg">📝 الامتحان</button>
-                        <button id="btn-video-tab" onclick="switchTab('video')" class="tab-btn px-4 py-2 font-black text-lg">📺 الشرح</button>
-                        <button id="btn-pdf-tab" onclick="switchTab('pdf')" class="tab-btn px-4 py-2 font-black text-lg">📚 الملزمة</button>
-                    </div>
-                </div>
-                <div class="flex flex-col items-end gap-2">
-                    <div id="accessTimerBox" class="hidden bg-emerald-900/30 text-emerald-400 border border-emerald-500/50 px-4 py-1 rounded-full text-sm font-bold">صلاحية الحصة: <span id="accessCountdown" class="font-mono">--:--:--:--</span></div>
-                    <div id="timerBox" class="bg-red-600 px-6 py-2 rounded-full font-black font-mono shadow-lg shadow-red-600/20 hidden">40:00</div>
-                </div>
+    <!-- MAIN -->
+    <main>
+
+        <!-- QUIZ TAB -->
+        <div id="tab-quiz">
+
+            <!-- start -->
+            <div id="startScreen" class="rise">
+                <span class="start-icon">🚀</span>
+                <div class="start-title">جاهز تبدأ الامتحان؟</div>
+                <p class="start-sub">بعد إنهاء الامتحان هتفتح فيديو الشرح والملزمة تلقائياً</p>
+                <div class="start-warn">⏱ مدة الامتحان: 40 دقيقة فقط</div>
+                <button id="startBtn" class="start-btn">ابدأ الامتحان ←</button>
             </div>
-        </nav>
 
-        <main class="max-w-4xl mx-auto px-6 pb-20">
-            <div id="tab-quiz" class="tab-pane">
-                <div id="startScreen" class="text-center py-20 glass rounded-[3rem]">
-                    <h2 class="text-3xl font-black mb-6">جاهز تبدأ الامتحان؟</h2>
-                    <p class="text-gray-400 mb-8">لن يفتح فيديو الشرح والملزمة إلا بعد إنهاء هذا الامتحان</p>
-                    <button id="startBtn" class="bg-emerald-600 px-16 py-5 rounded-2xl text-2xl font-black hover:scale-105 transition">ابدأ الآن 🚀</button>
+            <!-- quiz app -->
+            <div id="quizApp" class="hidden quiz-wrap">
+                <!-- progress -->
+                <div class="quiz-progress">
+                    <span id="qCount" class="q-counter">1 / 10</span>
+                    <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill" style="width:10%"></div></div>
                 </div>
 
-                <div id="quizApp" class="hidden">
-                    <div id="qDisplay" class="glass p-10 rounded-[3rem] q-card min-h-[400px]"></div>
-                    <div class="flex justify-between items-center mt-8">
-                        <button id="prevBtn" class="bg-gray-800 border border-gray-700 px-10 py-4 rounded-2xl font-bold hover:bg-gray-700 transition hidden">السابق</button>
-                        <span id="qCount" class="text-2xl font-black text-emerald-500">1 / 10</span>
-                        <button id="nextBtn" class="bg-emerald-600 px-10 py-4 rounded-2xl font-bold hover:bg-emerald-700 transition">التالي</button>
-                        <button id="finishBtn" class="hidden bg-blue-600 px-10 py-4 rounded-2xl font-black hover:bg-blue-700 transition">إنهاء وتصحيح 🔓</button>
-                    </div>
-                </div>
+                <!-- question -->
+                <div class="q-card" id="qDisplay"></div>
 
-                <div id="reviewArea" class="hidden space-y-8 mt-10">
-                    <div id="scoreBanner" class="glass p-10 rounded-[3rem] text-center border-2 border-emerald-500"></div>
-                    <div id="reviewList" class="space-y-6"></div>
+                <!-- nav -->
+                <div class="quiz-nav">
+                    <button id="prevBtn" class="q-nav-btn ghost hidden">← السابق</button>
+                    <button id="nextBtn" class="q-nav-btn primary">التالي →</button>
+                    <button id="finishBtn" class="q-nav-btn finish hidden">إنهاء وتصحيح ✓</button>
                 </div>
             </div>
 
-            <div id="tab-video" class="tab-pane hidden w-full"></div>
-
-            <div id="tab-pdf" class="tab-pane hidden text-center p-20 glass rounded-[3rem]">
-                <h3 class="text-3xl font-black mb-10 text-white">ملزمة الحصة بصيغة PDF 📚</h3>
-                <a id="pdfLink" href="#" target="_blank" class="bg-emerald-600 text-white px-16 py-6 rounded-2xl font-black text-2xl hover:bg-emerald-700 transition shadow-xl">تحميل الملزمة الآن</a>
+            <!-- review -->
+            <div id="reviewArea" class="hidden">
+                <div class="score-banner" id="scoreBanner"></div>
+                <div id="reviewList"></div>
             </div>
-        </main>
-    </div>
 
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo",
-            authDomain: "math-e62c9.firebaseapp.com",
-            projectId: "math-e62c9",
-            appId: "1:271507842148:web:2907aad4caf67afd08ab71"
-        };
+        <!-- VIDEO TAB -->
+        <div id="tab-video" class="hidden"></div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        <!-- PDF TAB -->
+        <div id="tab-pdf" class="hidden">
+            <div class="pdf-section">
+                <div class="pdf-icon">📚</div>
+                <div class="pdf-title">ملزمة الحصة</div>
+                <p class="pdf-sub">حمّل الملزمة بصيغة PDF واطبعها أو احتفظ بها على جهازك</p>
+                <a id="pdfLink" href="#" target="_blank" class="pdf-btn">تحميل الملزمة ↓</a>
+            </div>
+        </div>
 
-        let questions = [], curIdx = 0, userAns = {}, lessonData = null, timeLeft = 40 * 60;
-        let plyrPlayer, examTimerInterval;
-        let myStudentId = "000000"; 
+    </main>
+</div>
 
-        window.switchTab = (tab) => {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`btn-${tab}-tab`).classList.add('active');
-        };
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const lessonId = new URLSearchParams(window.location.search).get('id');
-                if(!lessonId) return;
+const app = initializeApp({ apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain:"math-e62c9.firebaseapp.com", projectId:"math-e62c9", appId:"1:271507842148:web:2907aad4caf67afd08ab71" });
+const db = getFirestore(app), auth = getAuth(app);
 
-                // جلب رقم الطالب للعلامة المائية
-                try {
-                    const userSnap = await getDoc(doc(db, "users", user.uid));
-                    if(userSnap.exists()){
-                        myStudentId = userSnap.data().studentId || user.uid.substring(0, 6).toUpperCase(); 
-                    }
-                } catch(e) {}
+let questions=[], curIdx=0, userAns={}, lessonData=null, timeLeft=40*60;
+let plyrPlayer, examTimer, myStudentId="000000";
 
-                const saved = localStorage.getItem(`access_${user.uid}_${lessonId}`);
-                
-                try {
-                    const q = query(collection(db, "codes"), where("usedBy", "==", user.email));
-                    const codesSnap = await getDocs(q);
-                    let hasAccess = false; let validExpiry = null; const now = new Date().getTime();
-                    
-                    codesSnap.forEach((docSnap) => { 
-                        const data = docSnap.data(); 
-                        if (data.lessonId === lessonId && data.expiryAt > now) { 
-                            hasAccess = true; validExpiry = data.expiryAt; 
-                        } 
-                    });
+/* tabs */
+window.switchTab = (tab) => {
+    document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    document.getElementById(`btn-${tab}-tab`).classList.add('active');
+};
 
-                    if (hasAccess) { 
-                        initLesson(); 
-                        startAccessTimer(validExpiry); 
-                    } else if (saved && new Date().getTime() < JSON.parse(saved).expiry) { 
-                        initLesson(); 
-                        startAccessTimer(JSON.parse(saved).expiry); 
-                    } else { 
-                        document.getElementById('codeLockScreen').classList.remove('hidden'); 
-                    }
-                } catch(error) { 
-                    if (saved && new Date().getTime() < JSON.parse(saved).expiry) { 
-                        initLesson(); startAccessTimer(JSON.parse(saved).expiry); 
-                    } else { 
-                        document.getElementById('codeLockScreen').classList.remove('hidden'); 
-                    } 
-                }
-            } else { window.location.href = "index.html"; }
+/* auth */
+onAuthStateChanged(auth, async user => {
+    if(!user) { window.location.href="index.html"; return; }
+    const lessonId = new URLSearchParams(window.location.search).get('id');
+    if(!lessonId) return;
+
+    try {
+        const uSnap = await getDoc(doc(db,"users",user.uid));
+        if(uSnap.exists()) myStudentId = uSnap.data().studentId || user.uid.substring(0,6).toUpperCase();
+    } catch(e){}
+
+    const saved = localStorage.getItem(`access_${user.uid}_${lessonId}`);
+    try {
+        const qC = query(collection(db,"codes"), where("usedBy","==",user.email));
+        const cSnap = await getDocs(qC);
+        let hasAccess=false, validExpiry=null;
+        const now = Date.now();
+        cSnap.forEach(d => {
+            const cd=d.data();
+            if(cd.lessonId===lessonId && cd.expiryAt>now) { hasAccess=true; validExpiry=cd.expiryAt; }
         });
+        if(hasAccess) { initLesson(); startAccessTimer(validExpiry); }
+        else if(saved && Date.now()<JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); }
+        else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
+    } catch(err) {
+        if(saved && Date.now()<JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); }
+        else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
+    }
+});
 
-        function startAccessTimer(expiryTime) {
-            document.getElementById('accessTimerBox').classList.remove('hidden');
-            const interval = setInterval(() => {
-                const now = new Date().getTime(); const distance = expiryTime - now;
-                if (distance <= 0) { 
-                    clearInterval(interval); 
-                    alert("انتهت صلاحية هذه الحصة."); 
-                    localStorage.removeItem(`access_${auth.currentUser.uid}_${new URLSearchParams(window.location.search).get('id')}`); 
-                    location.reload(); 
-                    return; 
-                }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24)); 
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); 
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); 
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                document.getElementById('accessCountdown').innerText = `${days}يوم ${hours}س ${minutes}د ${seconds}ث`;
-            }, 1000);
-        }
+function startAccessTimer(expiryTime) {
+    document.getElementById('accessTimerBox').classList.remove('hidden');
+    const tick = () => {
+        const dist = expiryTime - Date.now();
+        if(dist<=0) { clearInterval(iv); alert("انتهت صلاحية هذه الحصة."); location.reload(); return; }
+        const d=Math.floor(dist/86400000), h=Math.floor((dist%86400000)/3600000);
+        const m=Math.floor((dist%3600000)/60000), s=Math.floor((dist%60000)/1000);
+        document.getElementById('accessCountdown').textContent = `${d}يوم ${h}س ${m}د ${s}ث`;
+    };
+    tick(); const iv = setInterval(tick, 1000);
+}
 
-        document.getElementById('verifyBtn').onclick = async () => {
-            const code = document.getElementById('accessCodeInput').value.trim(); 
-            const lessonId = new URLSearchParams(window.location.search).get('id');
-            if(!code) return alert("من فضلك أدخل الكود");
-            
-            try {
-                const snap = await getDoc(doc(db, "codes", code));
-                if (snap.exists()) {
-                    const data = snap.data(); const now = new Date().getTime();
-                    if (!data.used) {
-                        const expiry = now + (7 * 24 * 60 * 60 * 1000); 
-                        await updateDoc(doc(db, "codes", code), { used: true, usedBy: auth.currentUser.email, lessonId: lessonId, expiryAt: expiry });
-                        localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ expiry })); 
-                        location.reload();
-                    } 
-                    else if (data.usedBy === auth.currentUser.email && data.lessonId === lessonId && data.expiryAt > now) { 
-                        localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ expiry: data.expiryAt })); 
-                        location.reload(); 
-                    }
-                    else if (data.expiryAt && data.expiryAt <= now) { alert("عذراً، هذا الكود انتهت صلاحيته!"); } 
-                    else { alert("هذا الكود مستخدم مسبقاً لحساب آخر أو لحصة أخرى!"); }
-                } else { alert("الكود غير صحيح!"); }
-            } catch (error) { console.error("خطأ: ", error); }
-        };
+/* verify */
+document.getElementById('verifyBtn').onclick = async () => {
+    const code = document.getElementById('accessCodeInput').value.trim();
+    const lessonId = new URLSearchParams(window.location.search).get('id');
+    if(!code) return alert("من فضلك أدخل الكود");
+    document.getElementById('verifyBtn').textContent = "جاري التحقق...";
+    try {
+        const snap = await getDoc(doc(db,"codes",code));
+        if(snap.exists()) {
+            const d=snap.data(), now=Date.now();
+            if(!d.used) {
+                const exp = now + 7*24*60*60*1000;
+                await updateDoc(doc(db,"codes",code), { used:true, usedBy:auth.currentUser.email, lessonId, expiryAt:exp });
+                localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({expiry:exp}));
+                location.reload();
+            } else if(d.usedBy===auth.currentUser.email && d.lessonId===lessonId && d.expiryAt>now) {
+                localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({expiry:d.expiryAt}));
+                location.reload();
+            } else if(d.expiryAt && d.expiryAt<=now) { alert("هذا الكود انتهت صلاحيته!"); }
+            else { alert("هذا الكود مستخدم لحساب آخر!"); }
+        } else { alert("الكود غير صحيح!"); }
+    } catch(e) { alert("خطأ: "+e.message); }
+    document.getElementById('verifyBtn').textContent = "تفعيل الحصة ←";
+};
 
-        async function initLesson() {
-            document.getElementById('lessonContent').classList.remove('hidden');
-            const id = new URLSearchParams(window.location.search).get('id');
-            const snap = await getDoc(doc(db, "lessons", id));
-            
-            if (snap.exists()) {
-                lessonData = snap.data();
-                questions = lessonData.questions || [];
+async function initLesson() {
+    document.getElementById('codeLockScreen').classList.add('hidden');
+    document.getElementById('lessonContent').classList.remove('hidden');
+    const id = new URLSearchParams(window.location.search).get('id');
+    const snap = await getDoc(doc(db,"lessons",id));
+    if(!snap.exists()) return;
+    lessonData = snap.data();
+    questions = lessonData.questions||[];
 
-                try {
-                    const q = query(collection(db, "results"), where("email", "==", auth.currentUser.email), where("lesson", "==", lessonData.name));
-                    const querySnapshot = await getDocs(q);
-
-                    if (!querySnapshot.empty) {
-                        const examData = querySnapshot.docs[0].data(); 
-                        userAns = examData.userAns || {}; 
-                        const score = examData.score; 
-                        generateReviewList(); 
-                        const msg = `<h2 class="text-4xl font-black mb-2 text-emerald-500">لقد حصلت مسبقاً على: ${score} من ${questions.length} ✅</h2><p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>`; 
-                        unlockLessonFeatures(msg);
-                    } else {
-                        const savedExamData = localStorage.getItem(`exam_data_${auth.currentUser.uid}_${id}`);
-                        if(savedExamData) {
-                            const parsedData = JSON.parse(savedExamData); 
-                            userAns = parsedData.userAns; 
-                            generateReviewList();
-                            const msg = `<h2 class="text-4xl font-black mb-2 text-emerald-500">لقد حصلت مسبقاً على: ${parsedData.score} من ${questions.length} ✅</h2><p class="text-gray-400 font-bold mt-2">فيديو الشرح والملزمة متاحين لك الآن بالأعلى.</p>`; 
-                            unlockLessonFeatures(msg);
-                        }
-                    }
-                } catch (error) { console.log("خطأ", error); }
+    try {
+        const qR = query(collection(db,"results"), where("email","==",auth.currentUser.email), where("lesson","==",lessonData.name));
+        const rSnap = await getDocs(qR);
+        if(!rSnap.empty) {
+            const ed=rSnap.docs[0].data();
+            userAns=ed.userAns||{};
+            const msg=buildScoreMsg(ed.score, questions.length, true);
+            generateReview(); unlockFeatures(msg);
+        } else {
+            const saved=localStorage.getItem(`exam_data_${auth.currentUser.uid}_${id}`);
+            if(saved) {
+                const pd=JSON.parse(saved); userAns=pd.userAns;
+                const msg=buildScoreMsg(pd.score, questions.length, true);
+                generateReview(); unlockFeatures(msg);
             }
         }
+    } catch(e){ console.log(e); }
+}
 
-        // كود تشغيل الامتحان وعرض الأسئلة كامل
-        document.getElementById('startBtn').onclick = () => {
-            if(questions.length === 0) return alert("لا يوجد أسئلة في هذا الامتحان بعد.");
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('quizApp').classList.remove('hidden');
-            document.getElementById('timerBox').classList.remove('hidden');
-            renderQ();
-            startTimer();
-        };
+function buildScoreMsg(score, total, wasPrev) {
+    const pct = total>0 ? Math.round(score/total*100) : 0;
+    return { score, total, pct, wasPrev };
+}
 
-        function renderQ() {
-            const q = questions[curIdx];
-            document.getElementById('qDisplay').innerHTML = `
-                <p class="text-emerald-500 font-black mb-4 underline">السؤال ${curIdx + 1}</p>
-                ${q.image ? `<div class="mb-6 rounded-2xl overflow-hidden border border-gray-700 shadow-lg"><img src="${q.image}" class="w-full object-contain max-h-80 mx-auto"></div>` : ''}
-                <h3 class="text-2xl font-bold mb-8">${q.text || 'اختر الإجابة الصحيحة من الخيارات التالية:'}</h3>
-                <div class="grid gap-4">
-                    ${['a','b','c','d'].map(opt => `
-                        <label class="p-6 bg-gray-800 border border-gray-700 rounded-2xl flex items-center gap-4 cursor-pointer transition-all hover:bg-gray-700 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-900/20">
-                            <input type="radio" name="math" value="${opt}" ${userAns[curIdx] === opt ? 'checked' : ''} class="w-6 h-6 accent-emerald-500">
-                            <span class="text-xl font-bold">${q[opt]}</span>
-                        </label>
-                    `).join('')}
+/* start exam */
+document.getElementById('startBtn').onclick = () => {
+    if(questions.length===0) return alert("لا توجد أسئلة في هذا الامتحان بعد.");
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('quizApp').classList.remove('hidden');
+    document.getElementById('timerBox').classList.remove('hidden');
+    renderQ(); startTimer();
+};
+
+function renderQ() {
+    const q = questions[curIdx];
+    const pct = Math.round((curIdx+1)/questions.length*100);
+    document.getElementById('qCount').textContent = `${curIdx+1} / ${questions.length}`;
+    document.getElementById('progFill').style.width = pct+'%';
+    document.getElementById('qDisplay').innerHTML = `
+        <div class="q-num">السؤال ${curIdx+1}</div>
+        ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
+        <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
+        <div class="options">
+            ${['a','b','c','d'].map(opt=>`
+                <label class="opt-label">
+                    <input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}>
+                    <span class="opt-key">${opt}</span>
+                    <span class="opt-text">${q[opt]||''}</span>
+                </label>
+            `).join('')}
+        </div>
+    `;
+    document.getElementById('prevBtn').classList.toggle('hidden', curIdx===0);
+    document.getElementById('nextBtn').classList.toggle('hidden', curIdx===questions.length-1);
+    document.getElementById('finishBtn').classList.toggle('hidden', curIdx!==questions.length-1);
+}
+
+function saveAns(){ const s=document.querySelector('input[name="math"]:checked'); if(s) userAns[curIdx]=s.value; }
+document.getElementById('nextBtn').onclick=()=>{ saveAns(); curIdx++; renderQ(); };
+document.getElementById('prevBtn').onclick=()=>{ saveAns(); curIdx--; renderQ(); };
+
+document.getElementById('finishBtn').onclick = async () => {
+    saveAns(); clearInterval(examTimer);
+    let score=0;
+    questions.forEach((q,i)=>{ if(userAns[i]===q.correct) score++; });
+    try {
+        await addDoc(collection(db,"results"),{
+            email:auth.currentUser.email, lesson:lessonData.name,
+            score, total:questions.length, date:new Date(), userAns
+        });
+    } catch(e){}
+    const id=new URLSearchParams(window.location.search).get('id');
+    localStorage.setItem(`exam_data_${auth.currentUser.uid}_${id}`, JSON.stringify({userAns, score}));
+    generateReview();
+    unlockFeatures(buildScoreMsg(score, questions.length, false));
+    window.scrollTo({top:0,behavior:'smooth'});
+};
+
+function generateReview() {
+    const list = document.getElementById('reviewList');
+    list.innerHTML = '';
+    questions.forEach((q,i)=>{
+        const ok=userAns[i]===q.correct;
+        list.innerHTML+=`
+            <div class="review-item ${ok?'correct':'wrong'}">
+                <div class="review-meta">
+                    <span class="review-q-label">سؤال ${i+1}</span>
+                    <span class="${ok?'badge-correct':'badge-wrong'}">${ok?'صح ✓':'خطأ ✗'}</span>
                 </div>
-            `;
-            
-            document.getElementById('qCount').innerText = `${curIdx + 1} / ${questions.length}`;
-            document.getElementById('prevBtn').classList.toggle('hidden', curIdx === 0);
-            document.getElementById('nextBtn').classList.toggle('hidden', curIdx === questions.length - 1);
-            document.getElementById('finishBtn').classList.toggle('hidden', curIdx !== questions.length - 1);
-        }
+                ${q.image?`<img src="${q.image}" style="max-height:160px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border);">`:''}
+                <div class="review-q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
+                <div class="review-ans">إجابتك: <span>${q[userAns[i]]||'لم تجب'}</span></div>
+                ${!ok?`<div class="review-correct-ans">✓ الصحيحة: ${q[q.correct]}</div>`:''}
+            </div>`;
+    });
+}
 
-        document.getElementById('nextBtn').onclick = () => { saveAns(); curIdx++; renderQ(); };
-        document.getElementById('prevBtn').onclick = () => { saveAns(); curIdx--; renderQ(); };
-        
-        function saveAns() { 
-            const sel = document.querySelector('input[name="math"]:checked'); 
-            if(sel) userAns[curIdx] = sel.value; 
-        }
+function unlockFeatures(msgObj) {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('quizApp').classList.add('hidden');
+    document.getElementById('timerBox').classList.add('hidden');
+    document.getElementById('reviewArea').classList.remove('hidden');
 
-        function generateReviewList() {
-            const reviewList = document.getElementById('reviewList');
-            reviewList.innerHTML = '';
+    const pct = msgObj.pct;
+    const clr = pct>=70?'var(--g1)':pct>=50?'var(--gold)':'#f87171';
+    document.getElementById('scoreBanner').innerHTML = `
+        <div class="score-val" style="color:${clr}">${msgObj.score}</div>
+        <div class="score-of">من ${msgObj.total} سؤال · ${pct}%</div>
+        <div class="score-msg">${msgObj.wasPrev?'لقد أديت هذا الامتحان من قبل':'تم تسجيل درجتك بنجاح'}</div>
+        <div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>
+    `;
 
-            questions.forEach((q, i) => {
-                const isCorrect = userAns[i] === q.correct;
-                reviewList.innerHTML += `
-                    <div class="glass p-8 rounded-[2rem] border-2 ${isCorrect ? 'border-emerald-500/50' : 'border-red-500/50'}">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="font-black text-emerald-500 italic underline">السؤال ${i+1}</span>
-                            <span class="px-4 py-1 rounded-full text-sm font-bold text-white ${isCorrect ? 'bg-emerald-600' : 'bg-red-600'}">${isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة'}</span>
-                        </div>
-                        ${q.image ? `<img src="${q.image}" class="max-h-48 mb-4 rounded-xl mx-auto">` : ''}
-                        <h3 class="text-xl font-bold mb-4">${q.text || 'اختر الإجابة الصحيحة:'}</h3>
-                        <p class="text-lg text-gray-400 mb-2">إجابتك كانت: <span class="font-bold text-white">${q[userAns[i]] || 'لم تجب'}</span></p>
-                        ${!isCorrect ? `<p class="text-lg font-bold text-emerald-400">الإجابة الصحيحة: ${q[q.correct]}</p>` : ''}
-                    </div>
-                `;
-            });
-        }
+    document.getElementById('btn-video-tab').classList.add('unlocked');
+    document.getElementById('btn-video-tab').classList.remove('locked-dim');
+    document.getElementById('btn-pdf-tab').classList.add('unlocked');
+    document.getElementById('btn-pdf-tab').classList.remove('locked-dim');
 
-        function unlockLessonFeatures(scoreMessage = null) {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('quizApp').classList.add('hidden');
-            document.getElementById('timerBox').classList.add('hidden');
-            document.getElementById('reviewArea').classList.remove('hidden');
-            if (scoreMessage) { document.getElementById('scoreBanner').innerHTML = scoreMessage; }
-            
-            document.getElementById('btn-video-tab').classList.add('unlocked');
-            document.getElementById('btn-pdf-tab').classList.add('unlocked');
-            
-            if (lessonData.video && !plyrPlayer) {
-                const videoContainer = document.getElementById('tab-video');
-                const getYouTubeId = (url) => { const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/; const match = url.match(regExp); return (match && match[2].length === 11) ? match[2] : null; };
-                const vId = getYouTubeId(lessonData.video);
+    if(lessonData.video && !plyrPlayer) {
+        const vc = document.getElementById('tab-video');
+        const getYtId=(url)=>{ const m=url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/); return m?m[1]:null; };
+        const vId=getYtId(lessonData.video);
+        const wm=`<div class="watermark-container"><div class="watermark-text">ID: ${myStudentId}</div></div>`;
+        vc.innerHTML=`<div class="video-wrap" oncontextmenu="return false;">${wm}${
+            vId
+                ?`<div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div>`
+                :`<video id="player" playsinline controlsList="nodownload"><source src="${lessonData.video}" type="video/mp4"/></video>`
+        }</div>`;
+        plyrPlayer=new Plyr('#player',{
+            controls:['play-large','play','progress','current-time','mute','volume','fullscreen'],
+            youtube:{rel:0,showinfo:0,modestbranding:1,disablekb:1}
+        });
+    }
+    if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
+}
 
-                const watermarkHtml = `
-                    <div class="watermark-container">
-                        <div class="watermark-text">ID: ${myStudentId}</div>
-                    </div>
-                `;
-
-                if (vId) {
-                    videoContainer.innerHTML = `
-                        <div class="rounded-[3rem] overflow-hidden shadow-2xl border border-gray-800 bg-black relative" oncontextmenu="return false;">
-                            ${watermarkHtml}
-                            <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div>
-                        </div>`;
-                } else {
-                    videoContainer.innerHTML = `
-                        <div class="rounded-[3rem] overflow-hidden shadow-2xl border border-gray-800 bg-black relative" oncontextmenu="return false;">
-                            ${watermarkHtml}
-                            <video id="player" playsinline controlsList="nodownload"><source src="${lessonData.video}" type="video/mp4" /></video>
-                        </div>`;
-                }
-                
-                plyrPlayer = new Plyr('#player', { controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'], youtube: { rel: 0, showinfo: 0, modestbranding: 1, disablekb: 1 } });
-            }
-            if(lessonData.pdf) { document.getElementById('pdfLink').href = lessonData.pdf; }
-        }
-
-        document.getElementById('finishBtn').onclick = async () => {
-            saveAns(); 
-            clearInterval(examTimerInterval);
-            
-            let score = 0; 
-            questions.forEach((q, i) => { if(userAns[i] === q.correct) score++; });
-
-            try { 
-                await addDoc(collection(db, "results"), { 
-                    email: auth.currentUser.email, 
-                    lesson: lessonData.name, 
-                    score: score, 
-                    total: questions.length, 
-                    date: new Date(), 
-                    userAns: userAns 
-                }); 
-            } catch(e) {}
-            
-            const lessonId = new URLSearchParams(window.location.search).get('id');
-            localStorage.setItem(`exam_data_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({ userAns: userAns, score: score }));
-            
-            generateReviewList(); 
-            
-            const msg = `<h2 class="text-4xl font-black mb-2">درجتك النهائية: ${score} من ${questions.length}</h2><p class="text-emerald-400 font-bold mt-2 animate-pulse">✅ تم فتح فيديو الشرح والملزمة الآن بنجاح بالأعلى</p>`;
-            unlockLessonFeatures(msg); 
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        function startTimer() {
-            examTimerInterval = setInterval(() => {
-                const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-                document.getElementById('timerBox').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-                if (timeLeft-- <= 0) { 
-                    clearInterval(examTimerInterval); 
-                    alert("انتهى وقت الامتحان!");
-                    document.getElementById('finishBtn').click(); 
-                }
-            }, 1000);
-        }
-    </script>
+function startTimer() {
+    examTimer = setInterval(()=>{
+        const m=Math.floor(timeLeft/60), s=timeLeft%60;
+        document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;
+        if(timeLeft<=120) document.getElementById('timerBox').classList.add('urgent');
+        if(timeLeft--<=0){ clearInterval(examTimer); alert("انتهى وقت الامتحان!"); document.getElementById('finishBtn').click(); }
+    },1000);
+}
+</script>
 </body>
 </html>
