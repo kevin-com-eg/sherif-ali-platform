@@ -3,249 +3,925 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPro | لوحة الأبطال 🚀</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0b1120; color: #ffffff; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease; }
-        .bg-card { background-color: #151e32; transition: background-color 0.3s ease; }
-        .text-green-theme { color: #10b981; } .bg-green-theme { background-color: #10b981; } .bg-gold { background-color: #9a7b4f; }
-        .course-card { transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .course-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); border-color: rgba(16, 185, 129, 0.4); }
-        .ribbon-wrapper { position: absolute; top: 0; right: 0; width: 100px; height: 100px; overflow: hidden; z-index: 10; }
-        .ribbon { background: #ef4444; color: white; font-size: 11px; font-weight: 900; text-align: center; transform: rotate(45deg); position: relative; padding: 5px 0; top: 15px; left: -25px; width: 150px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .modal-blur { backdrop-filter: blur(10px); background: rgba(11, 17, 32, 0.85); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
-        body.light-mode { background-color: #f0fdf4; color: #1e293b; } body.light-mode .bg-card { background-color: #ffffff; border-color: #e2e8f0; } body.light-mode .course-card { background-color: #ffffff; border-color: #e2e8f0; } body.light-mode .course-card h3 { color: #0f172a; } body.light-mode .text-gray-400 { color: #64748b; } body.light-mode .bg-gray-800 { background-color: #f8fafc; } body.light-mode .border-gray-800, body.light-mode .border-gray-700 { border-color: #e2e8f0; }
-    </style>
+    <title>MathPro | Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+:root {
+    --bg:     #050810;
+    --bg2:    #080d1a;
+    --panel:  #0c1322;
+    --card:   #0e1828;
+    --border: rgba(255,255,255,0.06);
+    --border2:rgba(255,255,255,0.10);
+    --g1:     #00e5a0;
+    --g2:     #00b578;
+    --g3:     #007a52;
+    --gold:   #c9933a;
+    --gold2:  #a87428;
+    --glow:   rgba(0,229,160,0.15);
+    --muted:  #4b5e7a;
+    --text:   #e8f4f0;
+    --text2:  #8ba8b8;
+    --mono:   'DM Mono', monospace;
+    --sans:   'Tajawal', sans-serif;
+    --r:      16px;
+}
+body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--g3); border-radius: 2px; }
+
+/* noise */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; opacity: .02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px;
+}
+/* ambient orb */
+body::after {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,229,160,.06) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none; z-index: 0;
+    animation: ambientDrift 20s ease-in-out infinite alternate;
+}
+@keyframes ambientDrift { 0% { transform: translate(0,0); } 100% { transform: translate(80px, 60px); } }
+
+.page { position: relative; z-index: 1; }
+
+/* ── NAV ───────────────────────────────── */
+nav {
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(24px) saturate(1.8);
+    background: rgba(5,8,16,.82);
+}
+.nav-w {
+    max-width: 1340px; margin: 0 auto;
+    padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+}
+.logo-wm {
+    font-family: var(--mono); font-size: 1.4rem; font-weight: 500;
+    color: #fff; letter-spacing: -1px;
+}
+.logo-wm b { color: var(--g1); }
+.logo-chip {
+    font-family: var(--mono); font-size: .58rem; letter-spacing: 1.5px;
+    color: var(--g1); background: rgba(0,229,160,.1);
+    border: 1px solid rgba(0,229,160,.25);
+    padding: 2px 8px; border-radius: 20px;
+    text-transform: uppercase; margin-right: 10px;
+}
+.logo-chip::before { content: '● '; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* search */
+.nav-search {
+    flex: 1; max-width: 320px;
+    position: relative;
+}
+.nav-search input {
+    width: 100%;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 16px 9px 38px;
+    border-radius: 10px;
+    font-family: var(--sans); font-size: .875rem;
+    outline: none; transition: all .25s;
+}
+.nav-search input:focus { border-color: var(--g1); background: rgba(0,229,160,.04); }
+.nav-search input::placeholder { color: var(--muted); }
+.nav-search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: .85rem;
+}
+
+/* nav actions */
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-icon-btn {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: all .25s;
+    color: var(--text2);
+    font-size: .9rem;
+}
+.nav-icon-btn:hover { border-color: var(--g1); color: var(--g1); background: rgba(0,229,160,.05); }
+.nav-icon-btn.danger:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,.05); }
+
+.theme-toggle {
+    display: flex; align-items: center; gap: 2px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 4px;
+}
+.theme-btn {
+    width: 30px; height: 30px;
+    border: none; background: none; cursor: pointer;
+    border-radius: 7px; font-size: .85rem;
+    transition: all .2s; color: var(--muted);
+}
+.theme-btn.active { background: rgba(0,229,160,.15); }
+
+.report-btn {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--sans); font-size: .8rem; font-weight: 700;
+    color: var(--text2);
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 10px;
+    cursor: pointer; transition: all .25s;
+    white-space: nowrap;
+}
+.report-btn:hover { border-color: var(--g1); color: var(--g1); }
+
+.avatar-btn {
+    width: 38px; height: 38px;
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer; transition: all .25s;
+}
+.avatar-btn:hover { border-color: var(--g1); }
+.avatar-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── GRADE BAR ───────────────────────── */
+.grade-bar {
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,13,26,.7);
+    backdrop-filter: blur(10px);
+}
+.grade-bar-w {
+    max-width: 1340px; margin: 0 auto;
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.grade-label {
+    font-size: .78rem; color: var(--text2); font-weight: 600;
+}
+.grade-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    color: #021a10;
+    font-weight: 900; font-size: .82rem;
+    padding: 8px 18px; border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,229,160,.2);
+    cursor: default;
+}
+.grade-pill-icon { font-size: .9rem; }
+
+/* ── MAIN ────────────────────────────── */
+main {
+    max-width: 1340px; margin: 0 auto;
+    padding: 36px 32px 64px;
+}
+@media(max-width:700px){ main { padding: 24px 16px 48px; } }
+
+/* ── WELCOME ─────────────────────────── */
+.welcome-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; margin-bottom: 32px;
+    flex-wrap: wrap;
+    opacity: 0; animation: riseIn .6s .05s forwards;
+}
+.welcome-sub { font-size: .78rem; color: var(--muted); font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); }
+.welcome-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; }
+.welcome-title span { color: var(--g1); }
+
+/* ── STATS ROW ───────────────────────── */
+.stats-row {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 14px; margin-bottom: 36px;
+}
+@media(max-width:640px){ .stats-row { grid-template-columns: 1fr 1fr; } }
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r); padding: 20px 22px;
+    position: relative; overflow: hidden;
+    opacity: 0; animation: riseIn .6s forwards;
+    transition: border-color .25s;
+}
+.stat-card:hover { border-color: rgba(0,229,160,.25); }
+.stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--g1), transparent);
+    opacity: 0; transition: opacity .25s;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-card:nth-child(1){ animation-delay: .1s; }
+.stat-card:nth-child(2){ animation-delay: .18s; }
+.stat-card:nth-child(3){ animation-delay: .26s; }
+.sc-icon {
+    font-size: 1.3rem; margin-bottom: 12px;
+    width: 40px; height: 40px;
+    background: rgba(0,229,160,.08);
+    border: 1px solid rgba(0,229,160,.12);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+}
+.sc-num {
+    font-family: var(--mono); font-size: 1.7rem; font-weight: 500;
+    color: var(--g1); line-height: 1;
+}
+.sc-lbl { font-size: .7rem; color: var(--muted); font-weight: 700; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+
+/* ── ANNOUNCEMENT ────────────────────── */
+#announcementBox {
+    margin-bottom: 28px; opacity: 0; animation: riseIn .6s .05s forwards;
+}
+.ann-inner {
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(0,229,160,.06);
+    border: 1px solid rgba(0,229,160,.25);
+    border-radius: var(--r); padding: 18px 20px;
+    box-shadow: 0 0 30px rgba(0,229,160,.06);
+}
+.ann-icon { font-size: 1.5rem; flex-shrink: 0; }
+.ann-label { font-family: var(--mono); font-size: .62rem; letter-spacing: 1px; color: var(--g1); text-transform: uppercase; margin-bottom: 4px; }
+.ann-text { font-size: .95rem; font-weight: 700; }
+.ann-close {
+    margin-right: auto; flex-shrink: 0;
+    background: rgba(255,255,255,.05); border: 1px solid var(--border);
+    width: 30px; height: 30px; border-radius: 8px;
+    color: var(--muted); font-size: .8rem;
+    cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.ann-close:hover { color: #ef4444; border-color: #ef4444; }
+
+/* ── SECTION HEADER ──────────────────── */
+.section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    opacity: 0; animation: riseIn .6s .3s forwards;
+}
+.section-title {
+    font-size: 1.05rem; font-weight: 900;
+    display: flex; align-items: center; gap: 10px;
+}
+.section-title::before {
+    content: '';
+    width: 3px; height: 18px;
+    background: linear-gradient(to bottom, var(--g1), var(--g2));
+    border-radius: 2px;
+}
+.lesson-count {
+    font-family: var(--mono); font-size: .68rem; font-weight: 500;
+    color: var(--g1); background: rgba(0,229,160,.1);
+    border: 1px solid rgba(0,229,160,.2);
+    padding: 3px 10px; border-radius: 20px;
+}
+
+/* ── LESSON GRID ─────────────────────── */
+#lessonsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 18px;
+}
+.lesson-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: transform .3s, box-shadow .3s, border-color .3s;
+    opacity: 0;
+    animation: riseIn .6s forwards;
+    display: flex; flex-direction: column;
+}
+.lesson-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,229,160,.3);
+    box-shadow: 0 16px 40px rgba(0,0,0,.4), 0 0 30px rgba(0,229,160,.06);
+}
+/* image */
+.lc-img-wrap {
+    position: relative; height: 160px; overflow: hidden;
+}
+.lc-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: .75; transition: opacity .4s, transform .4s;
+}
+.lesson-card:hover .lc-img-wrap img { opacity: .95; transform: scale(1.05); }
+.lc-img-fade {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, var(--card) 100%);
+}
+/* owned badge */
+.owned-badge {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(0,229,160,.15);
+    border: 1px solid rgba(0,229,160,.4);
+    backdrop-filter: blur(8px);
+    color: var(--g1); font-size: .65rem; font-weight: 900;
+    padding: 4px 10px; border-radius: 20px;
+    font-family: var(--mono); letter-spacing: .5px;
+    text-transform: uppercase;
+}
+.owned-badge::before { content: '✓ '; }
+/* locked badge */
+.locked-badge {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(0,0,0,.5);
+    border: 1px solid rgba(255,255,255,.1);
+    backdrop-filter: blur(8px);
+    color: #aaa; font-size: .65rem; font-weight: 900;
+    padding: 4px 10px; border-radius: 20px;
+    font-family: var(--mono); letter-spacing: .5px;
+}
+/* body */
+.lc-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+.lc-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+}
+.lc-grade-tag {
+    font-size: .68rem; font-weight: 700;
+    background: rgba(201,147,58,.12);
+    border: 1px solid rgba(201,147,58,.25);
+    color: var(--gold); padding: 3px 10px; border-radius: 6px;
+}
+.lc-subject-tag {
+    font-size: .65rem; font-weight: 700;
+    color: var(--muted); background: rgba(255,255,255,.04);
+    border: 1px solid var(--border); padding: 3px 10px; border-radius: 6px;
+}
+.lc-title {
+    font-size: 1.1rem; font-weight: 900;
+    line-height: 1.35; margin-bottom: auto; padding-bottom: 16px;
+}
+.lc-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+}
+.lc-price {
+    font-family: var(--mono); font-size: .82rem; font-weight: 500;
+    color: var(--text2);
+}
+.lc-price .free { color: var(--g1); }
+/* buttons */
+.btn-access {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 18px; border-radius: 10px;
+    font-family: var(--sans); font-weight: 900; font-size: .82rem;
+    cursor: pointer; transition: all .25s; text-decoration: none;
+    border: none; position: relative; overflow: hidden;
+}
+.btn-access::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+    transform: translateX(-100%); transition: transform .5s;
+}
+.btn-access:hover::before { transform: translateX(100%); }
+.btn-access.owned {
+    background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    color: #021a10;
+    box-shadow: 0 4px 14px rgba(0,229,160,.22);
+}
+.btn-access.owned:hover { box-shadow: 0 8px 20px rgba(0,229,160,.35); transform: translateY(-1px); }
+.btn-access.buy {
+    background: transparent;
+    border: 1.5px solid var(--g1);
+    color: var(--g1);
+}
+.btn-access.buy:hover { background: rgba(0,229,160,.08); transform: translateY(-1px); }
+
+/* empty state */
+.empty-state {
+    grid-column: 1/-1; text-align: center; padding: 80px 20px;
+}
+.empty-icon { font-size: 3rem; margin-bottom: 16px; opacity: .4; }
+.empty-txt { color: var(--muted); font-weight: 700; font-size: .95rem; }
+
+/* ── MODAL OVERLAY ───────────────────── */
+.overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(5,8,16,.88);
+    backdrop-filter: blur(14px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 24px;
+    width: 100%; max-width: 580px;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 40px 80px rgba(0,0,0,.6);
+    position: relative; overflow: hidden;
+    transform: translateY(20px) scale(.97);
+    transition: transform .3s;
+}
+.overlay.open .modal { transform: translateY(0) scale(1); }
+/* modal top accent */
+.modal::before {
+    content: '';
+    position: absolute; top: 0; left: 8%; right: 8%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--g1), transparent);
+}
+.modal-head {
+    padding: 24px 28px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    flex-shrink: 0;
+}
+.modal-title {
+    font-size: 1.2rem; font-weight: 900;
+}
+.modal-title span { color: var(--g1); }
+.modal-close {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .2s;
+    color: var(--muted); font-size: .75rem;
+    flex-shrink: 0;
+}
+.modal-close:hover { border-color: #ef4444; color: #ef4444; }
+.modal-body {
+    flex: 1; overflow-y: auto; padding: 20px 28px 28px;
+}
+.modal-body::-webkit-scrollbar { width: 3px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--g3); border-radius: 2px; }
+
+/* reports stats */
+.rep-stats {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+    margin-bottom: 24px;
+}
+.rep-stat {
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    text-align: center;
+}
+.rep-stat-num {
+    font-family: var(--mono); font-size: 1.3rem; font-weight: 500;
+    color: var(--g1); margin-bottom: 4px;
+}
+.rep-stat-lbl { font-size: .65rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+
+.rep-section { margin-bottom: 24px; }
+.rep-section-title {
+    font-size: .8rem; font-weight: 900; color: var(--text2);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 12px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+}
+.rep-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 8px;
+}
+.rep-item-name { font-size: .88rem; font-weight: 700; }
+.rep-item-date { font-size: .68rem; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
+.rep-price { font-family: var(--mono); font-size: .82rem; color: var(--g1); font-weight: 500; }
+.badge-active {
+    font-size: .6rem; font-weight: 900; padding: 3px 8px; border-radius: 6px;
+    background: rgba(0,229,160,.12); color: var(--g1); border: 1px solid rgba(0,229,160,.25);
+    font-family: var(--mono);
+}
+.badge-expired {
+    font-size: .6rem; font-weight: 900; padding: 3px 8px; border-radius: 6px;
+    background: rgba(239,68,68,.1); color: #ef4444; border: 1px solid rgba(239,68,68,.25);
+    font-family: var(--mono);
+}
+.score-box {
+    background: rgba(255,255,255,.04); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 12px; text-align: center;
+}
+.score-val { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--g1); }
+.score-total { font-family: var(--mono); font-size: .65rem; color: var(--muted); }
+
+/* profile modal */
+.prof-field { margin-bottom: 16px; }
+.prof-lbl { font-size: .68rem; font-weight: 700; color: var(--text2); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+.prof-input {
+    width: 100%;
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    color: var(--text) !important;
+    padding: 12px 14px; border-radius: 10px;
+    font-family: var(--sans); font-size: .92rem;
+    outline: none !important; transition: all .25s;
+}
+.prof-input:focus { border-color: var(--g1) !important; background: rgba(0,229,160,.04) !important; box-shadow: 0 0 0 3px rgba(0,229,160,.1); }
+.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.save-btn {
+    width: 100%; margin-top: 8px;
+    background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    color: #021a10; border: none; padding: 13px;
+    border-radius: 12px; font-family: var(--sans); font-size: 1rem;
+    font-weight: 900; cursor: pointer; transition: all .3s;
+    box-shadow: 0 6px 24px rgba(0,229,160,.2);
+}
+.save-btn:hover { box-shadow: 0 10px 30px rgba(0,229,160,.35); transform: translateY(-2px); }
+
+/* ── ANIMATIONS ──────────────────────── */
+@keyframes riseIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+.hidden { display: none !important; }
+</style>
 </head>
 <body>
+<div class="page">
 
-    <nav class="bg-card sticky top-0 z-50 border-b border-gray-800 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <h1 class="text-3xl font-black text-green-theme tracking-tighter">Math<span class="text-gray-400 light-mode:text-gray-800" id="logoText">Pro</span></h1>
-            </div>
-            <div class="flex items-center gap-3 md:gap-5">
-                <div class="hidden md:flex bg-gray-800/50 rounded-full p-1 border border-gray-700 cursor-pointer transition-colors" onclick="toggleTheme()">
-                    <div id="lightIcon" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-yellow-500 transition-colors">☀️</div>
-                    <div id="darkIcon" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-700 text-white transition-colors">🌙</div>
-                </div>
-                <button onclick="openReports()" class="hidden md:flex items-center bg-gray-800 hover:bg-gray-700 transition rounded-full px-4 py-1.5 border border-gray-700 text-sm font-bold text-gray-300">تقاريري 📊</button>
-                <button onclick="openProfile()" class="w-10 h-10 rounded-full bg-gradient-to-tr from-green-theme to-emerald-700 flex items-center justify-center text-white font-black overflow-hidden border-2 border-transparent hover:border-green-theme transition-all">
-                    <img src="https://ui-avatars.com/api/?name=Student&background=10b981&color=fff" id="avatarImg" class="w-full h-full object-cover">
-                </button>
-                <button id="logoutBtn" title="تسجيل الخروج" class="text-red-500 hover:text-red-400 transition-colors ml-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                </button>
-            </div>
+<!-- ── NAV ── -->
+<nav>
+    <div class="nav-w">
+        <!-- Logo -->
+        <div style="display:flex;align-items:center;">
+            <span class="logo-wm">Math<b>Pro</b></span>
+            <span class="logo-chip">LIVE</span>
         </div>
-    </nav>
 
-    <div class="bg-card border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <h2 class="font-bold text-lg text-gray-400">أختر القسم المراد عرض الكورسات الخاصة به</h2>
-            <div class="flex gap-3 overflow-x-auto pb-2 justify-center flex-wrap">
-                <button class="bg-green-theme text-white px-6 py-2 rounded-lg font-bold text-sm whitespace-nowrap shadow-md">الرياضيات (<span id="gradeBadge">حسب صفي</span>)</button>
+        <!-- Search -->
+        <div class="nav-search">
+            <span class="nav-search-icon">🔍</span>
+            <input id="searchInput" placeholder="ابحث عن حصة..." oninput="filterLessons()">
+        </div>
+
+        <!-- Actions -->
+        <div class="nav-actions">
+            <!-- theme -->
+            <div class="theme-toggle">
+                <button class="theme-btn" onclick="setTheme('light')" id="themeLight" title="فاتح">☀️</button>
+                <button class="theme-btn active" onclick="setTheme('dark')" id="themeDark" title="داكن">🌙</button>
             </div>
-            <button onclick="openReports()" class="md:hidden w-full bg-gray-800 border border-gray-700 text-gray-300 py-2 rounded-lg font-bold">تقاريري ومشترياتي 📊</button>
+
+            <!-- reports -->
+            <button class="report-btn" onclick="openReports()">
+                <span>📊</span> تقاريري
+            </button>
+
+            <!-- avatar -->
+            <button class="avatar-btn" onclick="openProfile()">
+                <img src="https://ui-avatars.com/api/?name=S&background=10b981&color=fff" id="avatarImg">
+            </button>
+
+            <!-- logout -->
+            <button class="nav-icon-btn danger" id="logoutBtn" title="تسجيل الخروج">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ── GRADE BAR ── -->
+<div class="grade-bar">
+    <div class="grade-bar-w">
+        <span class="grade-label">الصف الدراسي الحالي</span>
+        <div class="grade-pill">
+            <span class="grade-pill-icon">🎓</span>
+            الرياضيات — <span id="gradeBadge">جاري التحميل...</span>
+        </div>
+        <button class="report-btn" onclick="openReports()" style="margin-right:auto;">
+            مشترياتي ومشترياتي 📊
+        </button>
+    </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+
+    <!-- announcement -->
+    <div id="announcementBox" class="hidden">
+        <div class="ann-inner">
+            <span class="ann-icon">📢</span>
+            <div>
+                <div class="ann-label">رسالة من الأستاذ</div>
+                <p id="announcementText" class="ann-text"></p>
+            </div>
+            <button class="ann-close" onclick="this.closest('#announcementBox').classList.add('hidden')">✕</button>
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-10">
-        <div id="announcementBox" class="hidden mb-8 animate-pulse">
-            <div class="bg-green-theme/10 border-2 border-green-theme p-4 rounded-2xl flex items-center gap-4 shadow-lg shadow-green-theme/20">
-                <span class="text-3xl">📢</span>
-                <div class="flex-1">
-                    <h4 class="font-black text-green-theme text-sm">رسالة هامة من الأستاذ</h4>
-                    <p id="announcementText" class="font-bold text-lg"></p>
-                </div>
-                <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-red-500 font-bold bg-gray-800/50 rounded-full w-8 h-8 flex items-center justify-center">✖</button>
-            </div>
-        </div>
-
-        <div class="mb-10 text-right">
-            <h2 class="text-2xl md:text-3xl font-black mb-2">مرحباً، <span class="text-green-theme" id="userNameDisplay">جاري التحميل...</span> 👋</h2>
-            <p class="text-gray-400">هذه هي حصصك المتاحة لصفك الدراسي.</p>
-        </div>
-
-        <div id="lessonsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-20 text-gray-500 font-bold">جاري سحب الحصص من السيرفر...</div>
-        </div>
-    </main>
-
-    <div id="reportsModal" class="fixed inset-0 modal-blur hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-card border border-gray-700 p-6 md:p-8 rounded-[2rem] w-full max-w-2xl shadow-2xl relative max-h-[90vh] flex flex-col">
-            <button onclick="closeReports()" class="absolute top-6 right-6 text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            <h3 class="text-2xl font-black mb-6 text-center text-green-theme">سجل الطالب 📈</h3>
-            
-            <div class="grid grid-cols-3 gap-3 mb-6 text-center">
-                <div class="bg-gray-800 border border-gray-700 p-3 rounded-xl"><p class="text-xs text-gray-400 font-bold mb-1">المدفوعات</p><p class="text-lg font-black text-white"><span id="totalSpent">0</span> ج</p></div>
-                <div class="bg-gray-800 border border-gray-700 p-3 rounded-xl"><p class="text-xs text-gray-400 font-bold mb-1">الكورسات</p><p class="text-lg font-black text-white" id="totalCourses">0</p></div>
-                <div class="bg-gray-800 border border-gray-700 p-3 rounded-xl"><p class="text-xs text-gray-400 font-bold mb-1">الامتحانات</p><p class="text-lg font-black text-white" id="totalExams">0</p></div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-8">
-                <div><h4 class="text-lg font-bold text-white mb-3 border-b border-gray-700 pb-2">🛒 مشترياتي</h4><div id="purchasesList" class="space-y-3"><p class="text-gray-500 text-sm text-center py-4">جاري التحميل...</p></div></div>
-                <div><h4 class="text-lg font-bold text-white mb-3 border-b border-gray-700 pb-2">📝 درجات الامتحانات</h4><div id="examsList" class="space-y-3"><p class="text-gray-500 text-sm text-center py-4">جاري التحميل...</p></div></div>
-            </div>
+    <!-- welcome -->
+    <div class="welcome-row">
+        <div>
+            <div class="welcome-sub">لوحة التحكم</div>
+            <div class="welcome-title">أهلاً، <span id="userNameDisplay">جاري التحميل...</span> 👋</div>
         </div>
     </div>
 
-    <div id="profileModal" class="fixed inset-0 modal-blur hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-card border border-gray-700 p-8 rounded-[2rem] w-full max-w-lg shadow-2xl relative">
-            <button onclick="closeProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            <h3 class="text-2xl font-black mb-8 text-center">بيانات الحساب ⚙️</h3>
-            <div class="space-y-5">
-                <div><label class="text-sm text-gray-400 font-bold mb-2 block">الاسم بالكامل</label><input id="editName" type="text" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none focus:border-green-theme transition-all font-bold text-gray-200"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-sm text-gray-400 font-bold mb-2 block">رقم تليفونك</label><input id="editPhone" type="tel" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none focus:border-green-theme transition-all font-bold text-gray-200"></div>
-                    <div><label class="text-sm text-gray-400 font-bold mb-2 block">رقم ولي الأمر</label><input id="editParentPhone" type="tel" class="w-full bg-gray-800 border border-gray-700 p-4 rounded-xl outline-none focus:border-green-theme transition-all font-bold text-gray-200"></div>
-                </div>
-                <div class="pt-4"><button onclick="updateProfile()" id="saveBtn" class="w-full bg-green-theme hover:bg-emerald-600 text-white font-black py-4 rounded-xl text-lg transition-colors">حفظ التغييرات</button></div>
+    <!-- stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="sc-icon">🛒</div>
+            <div class="sc-num" id="statPurchases">—</div>
+            <div class="sc-lbl">كورسات نشطة</div>
+        </div>
+        <div class="stat-card">
+            <div class="sc-icon">📝</div>
+            <div class="sc-num" id="statExams">—</div>
+            <div class="sc-lbl">امتحانات أديتها</div>
+        </div>
+        <div class="stat-card">
+            <div class="sc-icon">💳</div>
+            <div class="sc-num" id="statSpent">—</div>
+            <div class="sc-lbl">إجمالي المدفوع ج.م</div>
+        </div>
+    </div>
+
+    <!-- section header -->
+    <div class="section-head">
+        <div class="section-title">الحصص المتاحة</div>
+        <div class="lesson-count" id="lessonCountBadge">0 حصة</div>
+    </div>
+
+    <!-- lessons -->
+    <div id="lessonsGrid">
+        <div class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <div class="empty-txt">جاري سحب الحصص من السيرفر...</div>
+        </div>
+    </div>
+
+</main>
+</div>
+
+<!-- ── REPORTS MODAL ── -->
+<div class="overlay" id="reportsOverlay">
+    <div class="modal" style="max-width:600px;">
+        <div class="modal-head">
+            <div class="modal-title">سجل الطالب <span>📈</span></div>
+            <button class="modal-close" onclick="closeReports()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="rep-stats">
+                <div class="rep-stat"><div class="rep-stat-num" id="totalSpent">—</div><div class="rep-stat-lbl">المدفوع ج.م</div></div>
+                <div class="rep-stat"><div class="rep-stat-num" id="totalCourses">—</div><div class="rep-stat-lbl">الكورسات</div></div>
+                <div class="rep-stat"><div class="rep-stat-num" id="totalExams">—</div><div class="rep-stat-lbl">الامتحانات</div></div>
+            </div>
+            <div class="rep-section">
+                <div class="rep-section-title">مشترياتي</div>
+                <div id="purchasesList"><div style="color:var(--muted);text-align:center;padding:20px;font-size:.85rem;">جاري التحميل...</div></div>
+            </div>
+            <div class="rep-section">
+                <div class="rep-section-title">درجات الامتحانات</div>
+                <div id="examsList"><div style="color:var(--muted);text-align:center;padding:20px;font-size:.85rem;">جاري التحميل...</div></div>
             </div>
         </div>
     </div>
+</div>
+
+<!-- ── PROFILE MODAL ── -->
+<div class="overlay" id="profileOverlay">
+    <div class="modal" style="max-width:500px;">
+        <div class="modal-head">
+            <div class="modal-title">بيانات الحساب <span>⚙️</span></div>
+            <button class="modal-close" onclick="closeProfile()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="prof-field">
+                <label class="prof-lbl">الاسم بالكامل</label>
+                <input id="editName" class="prof-input" placeholder="اسمك رباعي...">
+            </div>
+            <div class="f2">
+                <div class="prof-field">
+                    <label class="prof-lbl">رقم تليفونك</label>
+                    <input id="editPhone" class="prof-input" placeholder="01xxxxxxxxx">
+                </div>
+                <div class="prof-field">
+                    <label class="prof-lbl">رقم ولي الأمر</label>
+                    <input id="editParentPhone" class="prof-input" placeholder="01xxxxxxxxx">
+                </div>
+            </div>
+            <button class="save-btn" onclick="updateProfile()" id="saveBtn">حفظ التغييرات</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* theme */
+function setTheme(t) {
+    document.body.style.setProperty('--card', t === 'light' ? '#f0f7f4' : '#0e1828');
+    document.body.style.setProperty('--bg', t === 'light' ? '#f8fffe' : '#050810');
+    document.body.style.background = t === 'light' ? '#f8fffe' : '#050810';
+    document.body.style.color = t === 'light' ? '#0a2218' : '';
+    document.getElementById('themeLight').classList.toggle('active', t === 'light');
+    document.getElementById('themeDark').classList.toggle('active', t === 'dark');
+    localStorage.setItem('theme', t);
+}
+if (localStorage.getItem('theme') === 'light') setTheme('light');
+
+/* overlays */
+window.openReports = () => document.getElementById('reportsOverlay').classList.add('open');
+window.closeReports = () => document.getElementById('reportsOverlay').classList.remove('open');
+window.openProfile = () => document.getElementById('profileOverlay').classList.add('open');
+window.closeProfile = () => document.getElementById('profileOverlay').classList.remove('open');
+document.getElementById('reportsOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeReports(); });
+document.getElementById('profileOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeProfile(); });
+
+/* lesson filter */
+let allLessonsData = [];
+function filterLessons() {
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    const cards = document.querySelectorAll('.lesson-card');
+    cards.forEach(c => {
+        const name = c.dataset.name || '';
+        c.style.display = (q === '' || name.includes(q)) ? '' : 'none';
+    });
+}
+
+/* stagger cards */
+function staggerCards() {
+    document.querySelectorAll('.lesson-card').forEach((c, i) => {
+        c.style.animationDelay = (.35 + i * .07) + 's';
+    });
+}
+</script>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, limit, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, query, orderBy, limit, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain: "math-e62c9.firebaseapp.com", projectId: "math-e62c9", appId: "1:271507842148:web:2907aad4caf67afd08ab71" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    let currentUser;
-    let myActiveLessons = []; 
-    let lessonsMap = {}; 
+const app = initializeApp({ apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain:"math-e62c9.firebaseapp.com", projectId:"math-e62c9", appId:"1:271507842148:web:2907aad4caf67afd08ab71" });
+const auth = getAuth(app), db = getFirestore(app);
+let currentUser, myActiveLessons=[], lessonsMap={};
 
-    window.toggleTheme = () => { document.body.classList.toggle('light-mode'); const isLight = document.body.classList.contains('light-mode'); localStorage.setItem('theme', isLight ? 'light' : 'dark'); updateThemeUI(isLight); };
-    function updateThemeUI(isLight) { const lightIcon = document.getElementById('lightIcon'); const darkIcon = document.getElementById('darkIcon'); const logoText = document.getElementById('logoText'); if(isLight) { lightIcon.classList.add('bg-gray-200', 'text-yellow-500'); lightIcon.classList.remove('text-gray-400'); darkIcon.classList.remove('bg-gray-700', 'text-white'); darkIcon.classList.add('text-gray-400'); logoText.classList.remove('text-white'); logoText.classList.add('text-gray-800'); } else { lightIcon.classList.remove('bg-gray-200', 'text-yellow-500'); lightIcon.classList.add('text-gray-400'); darkIcon.classList.add('bg-gray-700', 'text-white'); darkIcon.classList.remove('text-gray-400'); logoText.classList.add('text-white'); logoText.classList.remove('text-gray-800'); } }
-    if (localStorage.getItem('theme') === 'light') { document.body.classList.add('light-mode'); updateThemeUI(true); }
+/* announcements */
+const qN = query(collection(db,"announcements"), orderBy("createdAt","desc"), limit(1));
+onSnapshot(qN, snap => {
+    snap.docChanges().forEach(ch => {
+        if(ch.type==="added") {
+            document.getElementById('announcementText').textContent = ch.doc.data().message;
+            document.getElementById('announcementBox').classList.remove('hidden');
+        }
+    });
+});
 
-    const qNotif = query(collection(db, "announcements"), orderBy("createdAt", "desc"), limit(1));
-    onSnapshot(qNotif, (snapshot) => { snapshot.docChanges().forEach((change) => { if (change.type === "added") { document.getElementById('announcementText').innerText = change.doc.data().message; document.getElementById('announcementBox').classList.remove('hidden'); } }); });
+onAuthStateChanged(auth, async user => {
+    if(!user) { window.location.href="index.html"; return; }
+    currentUser = user;
+    const snap = await getDoc(doc(db,"users",user.uid));
+    if(!snap.exists()) return;
+    const d = snap.data();
+    const name = d.name||"يا بطل";
+    const grade = d.grade||"1";
+    const gradeNames = {"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
 
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUser = user;
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                const studentName = data.name || "يا بطل";
-                const studentGrade = data.grade || "1"; // جلب سنة الطالب
+    document.getElementById('userNameDisplay').textContent = name;
+    document.getElementById('editName').value = d.name||"";
+    document.getElementById('editPhone').value = d.phone||"";
+    document.getElementById('editParentPhone').value = d.parentPhone||"";
+    document.getElementById('gradeBadge').textContent = gradeNames[grade]||"عام";
+    document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true`;
 
-                document.getElementById('userNameDisplay').innerText = studentName;
-                document.getElementById('editName').value = data.name || "";
-                document.getElementById('editPhone').value = data.phone || "";
-                document.getElementById('editParentPhone').value = data.parentPhone || "";
-                document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=10b981&color=fff&bold=true`;
-                
-                // تحديث اسم الشارة للسنة
-                const gradeNames = {"1": "أولى ثانوي", "2": "تانية ثانوي", "3": "تالتة ثانوي"};
-                document.getElementById('gradeBadge').innerText = gradeNames[studentGrade] || "عام";
+    await fetchReports(user.email);
 
-                await fetchReportsData(user.email);
-                
-                // 🔥 جلب الحصص المخصصة لسنة الطالب فقط 🔥
-                const qLessons = query(collection(db, "lessons"), where("grade", "==", studentGrade));
-                const querySnapshot = await getDocs(qLessons);
-                renderLessons(querySnapshot);
-            }
-        } else { window.location.href = "index.html"; }
+    const qL = query(collection(db,"lessons"), where("grade","==",grade));
+    const lessonsSnap = await getDocs(qL);
+    renderLessons(lessonsSnap);
+});
+
+async function fetchReports(email) {
+    const lSnap = await getDocs(collection(db,"lessons"));
+    lSnap.forEach(d => { lessonsMap[d.id]=d.data(); });
+
+    const qC = query(collection(db,"codes"), where("usedBy","==",email));
+    const cSnap = await getDocs(qC);
+    const now = Date.now();
+    let spent=0, purchasesHtml='', validCount=0;
+
+    cSnap.forEach(c => {
+        const cd=c.data(), lesson=lessonsMap[cd.lessonId];
+        if(!lesson) return;
+        if(cd.expiryAt>now) { myActiveLessons.push(cd.lessonId); validCount++; }
+        const price=Number(lesson.price)||0; spent+=price;
+        const usedDate=cd.expiryAt ? new Date(cd.expiryAt-(7*24*60*60*1000)).toLocaleDateString('ar-EG') : '—';
+        const expired=cd.expiryAt<now;
+        purchasesHtml+=`<div class="rep-item"><div><div class="rep-item-name">${lesson.name}</div><div class="rep-item-date">تفعيل: ${usedDate}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="${expired?'badge-expired':'badge-active'}">${expired?'منتهية':'فعالة'}</span><span class="rep-price">${price>0?price+' ج':'مجاناً'}</span></div></div>`;
     });
 
-    async function fetchReportsData(userEmail) {
-        const lessonsSnap = await getDocs(collection(db, "lessons"));
-        lessonsSnap.forEach(doc => { lessonsMap[doc.id] = doc.data(); });
+    const qR=query(collection(db,"results"), where("email","==",email));
+    const rSnap=await getDocs(qR);
+    let examsHtml='', examsCount=0;
+    rSnap.forEach(d=>{
+        examsCount++;const rd=d.data();
+        const dt=rd.date?new Date(rd.date.seconds*1000).toLocaleDateString('ar-EG'):'—';
+        examsHtml+=`<div class="rep-item"><div><div class="rep-item-name">${rd.lesson}</div><div class="rep-item-date">${dt}</div></div><div class="score-box"><div class="score-val">${rd.score}</div><div class="score-total">/ ${rd.total}</div></div></div>`;
+    });
 
-        const qCodes = query(collection(db, "codes"), where("usedBy", "==", userEmail));
-        const codesSnap = await getDocs(qCodes);
-        const now = new Date().getTime();
-        
-        let totalSpent = 0; let purchasesHtml = ''; let validCoursesCount = 0;
+    document.getElementById('totalSpent').textContent=spent;
+    document.getElementById('totalCourses').textContent=validCount;
+    document.getElementById('totalExams').textContent=examsCount;
+    document.getElementById('statSpent').textContent=spent;
+    document.getElementById('statPurchases').textContent=validCount;
+    document.getElementById('statExams').textContent=examsCount;
+    document.getElementById('purchasesList').innerHTML=purchasesHtml||'<div style="color:var(--muted);text-align:center;padding:20px;font-size:.85rem;">لم تشترِ أي كورس بعد.</div>';
+    document.getElementById('examsList').innerHTML=examsHtml||'<div style="color:var(--muted);text-align:center;padding:20px;font-size:.85rem;">لم تؤدِ أي امتحان بعد.</div>';
+}
 
-        codesSnap.forEach(c => {
-            const cData = c.data(); const lesson = lessonsMap[cData.lessonId];
-            if(lesson) {
-                if(cData.expiryAt > now) { myActiveLessons.push(cData.lessonId); validCoursesCount++; }
-                const price = Number(lesson.price) || 0; totalSpent += price;
-                const usedDate = cData.expiryAt ? new Date(cData.expiryAt - (7*24*60*60*1000)).toLocaleDateString('ar-EG') : 'غير محدد';
-                const isExpired = cData.expiryAt < now;
-                purchasesHtml += `<div class="bg-gray-800/50 p-3 rounded-xl border border-gray-700 flex justify-between items-center"><div><p class="font-bold text-sm text-white">${lesson.name}</p><p class="text-xs text-gray-400 mt-1">تاريخ التفعيل: ${usedDate}</p></div><div class="text-left"><p class="text-green-theme font-black">${price > 0 ? price + ' ج' : 'مجاناً'}</p><span class="text-[10px] px-2 py-1 rounded-md font-bold ${isExpired ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}">${isExpired ? 'منتهية' : 'فعالة'}</span></div></div>`;
-            }
-        });
-
-        const qResults = query(collection(db, "results"), where("email", "==", userEmail));
-        const resultsSnap = await getDocs(qResults);
-        let examsHtml = ''; let examsCount = 0;
-
-        resultsSnap.forEach(doc => {
-            examsCount++; const rData = doc.data(); const examDate = rData.date ? new Date(rData.date.seconds * 1000).toLocaleDateString('ar-EG') : 'غير محدد';
-            examsHtml += `<div class="bg-gray-800/50 p-3 rounded-xl border border-gray-700 flex justify-between items-center"><div><p class="font-bold text-sm text-white">${rData.lesson}</p><p class="text-xs text-gray-400 mt-1">التاريخ: ${examDate}</p></div><div class="bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700"><span class="text-green-theme font-black text-lg">${rData.score}</span><span class="text-gray-500 text-xs">/ ${rData.total}</span></div></div>`;
-        });
-
-        document.getElementById('totalSpent').innerText = totalSpent; document.getElementById('totalCourses').innerText = validCoursesCount; document.getElementById('totalExams').innerText = examsCount;
-        document.getElementById('purchasesList').innerHTML = purchasesHtml || '<p class="text-gray-500 text-sm text-center">لم تقم بشراء أي كورس بعد.</p>';
-        document.getElementById('examsList').innerHTML = examsHtml || '<p class="text-gray-500 text-sm text-center">لم تقم بأداء أي امتحان بعد.</p>';
+function renderLessons(snapshot) {
+    const grid=document.getElementById("lessonsGrid");
+    if(snapshot.empty) {
+        grid.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-txt">لا توجد حصص متاحة لصفك حالياً</div></div>`;
+        return;
     }
+    grid.innerHTML='';
+    let count=0;
+    snapshot.forEach(d=>{
+        count++;
+        const data=d.data(), id=d.id;
+        const owned=myActiveLessons.includes(id);
+        const price=data.price?`${data.price} ج.م`:'مجاناً';
+        const img=data.image||'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
+        const gradeLabels={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
+        const gradeText=gradeLabels[data.grade]||"";
 
-    async function renderLessons(snapshot) {
-        const grid = document.getElementById("lessonsGrid");
-        grid.innerHTML = "";
-        
-        if (snapshot.empty) {
-            grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500 font-bold">لا توجد كورسات متاحة لصفك الدراسي حالياً.. ⏳</div>`;
-            return;
-        }
+        const badge=owned
+            ?`<span class="owned-badge">مفعّل</span>`
+            :`<span class="locked-badge">🔒 ${price}</span>`;
+        const btn=owned
+            ?`<a href="lesson.html?id=${id}" class="btn-access owned">▶ أكمل الكورس</a>`
+            :`<a href="lesson.html?id=${id}" class="btn-access buy">🛒 شراء بكود</a>`;
 
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const id = doc.id;
-            const isOwned = myActiveLessons.includes(id); 
-            const price = data.price ? `${data.price} ج.م` : 'مجاناً';
-            const courseImage = data.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
-            const gradeText = data.grade === "1" ? "أولى ثانوي" : data.grade === "2" ? "تانية ثانوي" : "تالتة ثانوي";
-
-            let actionButton = isOwned ? 
-                `<a href="lesson.html?id=${id}" class="bg-green-theme text-white hover:bg-emerald-600 w-full py-2.5 rounded-lg font-bold text-center transition-colors block">أكمل الكورس ▶</a>` : 
-                `<a href="lesson.html?id=${id}" class="bg-transparent border-2 border-green-theme text-green-theme hover:bg-green-theme hover:text-white w-full py-2.5 rounded-lg font-bold text-center transition-colors block">شراء بالكود (${price}) 🛒</a>`;
-
-            grid.innerHTML += `
-                <div class="course-card bg-card rounded-[1.5rem] overflow-hidden relative flex flex-col group">
-                    <div class="h-44 bg-gray-800 relative overflow-hidden">
-                        <img src="${courseImage}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#151e32] to-transparent"></div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-grow relative z-10 -mt-8">
-                        <div class="bg-gold text-white text-center py-2 px-4 rounded-lg font-bold text-sm mb-4 mx-auto shadow-md w-11/12 border border-white/20">
-                            الرياضيات - أ. شريف علي (${gradeText})
-                        </div>
-                        <h3 class="text-2xl font-black text-center mb-6 mt-2 leading-tight">${data.name}</h3>
-                        <div class="mt-auto border-t border-gray-700 pt-4 flex justify-center">
-                            ${actionButton}
-                        </div>
-                    </div>
+        const card=document.createElement('div');
+        card.className='lesson-card';
+        card.dataset.name=data.name?.toLowerCase()||'';
+        card.innerHTML=`
+            <div class="lc-img-wrap">
+                <img src="${img}" alt="${data.name}" loading="lazy">
+                <div class="lc-img-fade"></div>
+                ${badge}
+            </div>
+            <div class="lc-body">
+                <div class="lc-meta">
+                    <span class="lc-grade-tag">${gradeText}</span>
+                    <span class="lc-subject-tag">أ. شريف علي</span>
                 </div>
-            `;
-        });
-    }
+                <div class="lc-title">${data.name}</div>
+                <div class="lc-footer">
+                    <div class="lc-price">${owned?`<span class="free">مفعّل ✓</span>`:price}</div>
+                    ${btn}
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    document.getElementById('lessonCountBadge').textContent=count+' حصة';
+    staggerCards();
+}
 
-    window.openReports = () => document.getElementById('reportsModal').classList.remove('hidden');
-    window.closeReports = () => document.getElementById('reportsModal').classList.add('hidden');
-    window.openProfile = () => document.getElementById('profileModal').classList.remove('hidden');
-    window.closeProfile = () => document.getElementById('profileModal').classList.add('hidden');
-    
-    window.updateProfile = async () => {
-        const name = document.getElementById('editName').value; const phone = document.getElementById('editPhone').value; const pPhone = document.getElementById('editParentPhone').value; const btn = document.getElementById('saveBtn');
-        if(!name || !phone || !pPhone) return alert("البيانات ناقصة يا بطل!");
-        btn.innerText = "جاري الحفظ... ⏳";
-        try { await setDoc(doc(db, "users", currentUser.uid), { name, phone, parentPhone: pPhone }, { merge: true }); document.getElementById('userNameDisplay').innerText = name; alert("تم التحديث بنجاح! 🔥"); closeProfile(); } catch (e) {}
-        btn.innerText = "حفظ التغييرات";
-    }
+window.updateProfile=async()=>{
+    const name=document.getElementById('editName').value;
+    const phone=document.getElementById('editPhone').value;
+    const pPhone=document.getElementById('editParentPhone').value;
+    const btn=document.getElementById('saveBtn');
+    if(!name||!phone||!pPhone) return alert("البيانات ناقصة!");
+    btn.textContent="جاري الحفظ...";
+    try {
+        await setDoc(doc(db,"users",currentUser.uid),{name,phone,parentPhone:pPhone},{merge:true});
+        document.getElementById('userNameDisplay').textContent=name;
+        alert("تم التحديث بنجاح 🔥");
+        closeProfile();
+    } catch(e){ alert(e.message); }
+    btn.textContent="حفظ التغييرات";
+};
 
-    document.getElementById('logoutBtn').onclick = () => { if(confirm("هل تريد تسجيل الخروج؟")) signOut(auth); };
+document.getElementById('logoutBtn').onclick=()=>{
+    if(confirm("هل تريد تسجيل الخروج؟")) signOut(auth);
+};
 </script>
 </body>
 </html>
