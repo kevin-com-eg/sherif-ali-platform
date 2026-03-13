@@ -141,6 +141,7 @@ main { max-width:1300px; margin:0 auto; padding:36px 32px 80px; display:flex; fl
 }
 .s-title.gold::before { background:linear-gradient(to bottom,var(--gold),#a07020); }
 .s-title.blue::before { background:linear-gradient(to bottom,var(--blue),#1d4ed8); }
+.s-title.purple::before { background:linear-gradient(to bottom,#a855f7,#7e22ce); }
 .s-body { padding:24px 28px 28px; }
 
 /* ── HEADER CARD ─────────────────────── */
@@ -211,6 +212,11 @@ textarea.finp { resize:vertical; min-height:90px; line-height:1.6; }
     color:var(--text2);
 }
 .btn-ghost:hover { border-color:var(--g1); color:var(--g1); }
+.btn-danger {
+    background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3);
+    color:#f87171;
+}
+.btn-danger:hover { background:rgba(239,68,68,.2); color:#fca5a5; }
 .btn-gold {
     background:linear-gradient(135deg,var(--gold) 0%,#a07020 100%);
     color:#fff; box-shadow:0 6px 20px rgba(201,147,58,.2);
@@ -416,9 +422,9 @@ tbody td { padding:14px 16px; font-size:.875rem; vertical-align:middle; }
     </div>
 </div>
 
-<div class="s-card">
+<div class="s-card" id="addLessonSection">
     <div class="s-head">
-        <div class="s-title gold">نشر حصة جديدة ➕</div>
+        <div class="s-title gold" id="formTitle">نشر حصة جديدة ➕</div>
     </div>
     <div class="s-body">
         
@@ -472,7 +478,33 @@ tbody td { padding:14px 16px; font-size:.875rem; vertical-align:middle; }
         <div id="questionsContainer"></div>
 
         <div class="divider"></div>
-        <button id="saveBtn" class="btn btn-primary btn-full btn-lg">نشر الحصة الآن 🚀</button>
+        <div style="display:flex; gap:12px;">
+            <button id="saveBtn" class="btn btn-primary btn-full btn-lg">نشر الحصة الآن 🚀</button>
+            <button id="cancelEditBtn" class="btn btn-danger btn-lg hidden" style="white-space:nowrap;">إلغاء التعديل ✖</button>
+        </div>
+    </div>
+</div>
+
+<div class="s-card">
+    <div class="s-head">
+        <div class="s-title purple">إدارة الحصص المضافة 📚</div>
+    </div>
+    <div style="padding:0 4px 4px;">
+        <div class="table-wrap">
+            <table id="manageLessonsTable">
+                <thead>
+                    <tr>
+                        <th>اسم الحصة</th>
+                        <th>المرحلة</th>
+                        <th>السعر</th>
+                        <th style="text-align:center;">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="lessonsListBody">
+                    <tr><td colspan="4" class="td-empty">جاري سحب الحصص... ⏳</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -503,17 +535,21 @@ tbody td { padding:14px 16px; font-size:.875rem; vertical-align:middle; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut as fbSignOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, orderBy, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({ apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain:"math-e62c9.firebaseapp.com", projectId:"math-e62c9", appId:"1:271507842148:web:2907aad4caf67afd08ab71" });
 const auth = getAuth(app), db = getFirestore(app);
 const ADMIN = "kevin.hany.08@proton.me";
+
+let editingLessonId = null; // متغير لحفظ الـ ID عند التعديل
+let allLessonsData = {}; // لحفظ بيانات الحصص عشان نستخدمها في التعديل
 
 onAuthStateChanged(auth, user => {
     if(user && user.email === ADMIN) {
         document.getElementById("secureLayer").classList.add("hidden");
         loadResults();
         loadStats();
+        loadLessonsManageList(); // تحميل جدول إدارة الحصص
     } else { window.location.href = "index.html"; }
 });
 
@@ -585,6 +621,105 @@ window.searchTable = () => {
     });
 };
 
+/* 🔥 MANAGE LESSONS (إدارة الحصص المضافة) 🔥 */
+async function loadLessonsManageList() {
+    const tbody = document.getElementById("lessonsListBody");
+    try {
+        let qSnap;
+        try { qSnap = await getDocs(query(collection(db,"lessons"), orderBy("createdAt","desc"))); }
+        catch(e) { qSnap = await getDocs(collection(db,"lessons")); }
+
+        allLessonsData = {};
+        tbody.innerHTML = '';
+        
+        if(qSnap.empty) { tbody.innerHTML=`<tr><td colspan="4" class="td-empty">لا توجد حصص مضافة بعد</td></tr>`; return; }
+        
+        qSnap.forEach(docSnap => {
+            const d = docSnap.data();
+            const id = docSnap.id;
+            allLessonsData[id] = d; // حفظ الداتا عشان زرار التعديل
+            
+            const gradeText = d.grade === "1" ? "أولى ثانوي" : d.grade === "2" ? "تانية ثانوي" : d.grade === "3" ? "تالتة ثانوي" : "عام";
+            const priceText = d.price ? `${d.price} ج` : "مجاني";
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="td-name">${d.name}</td>
+                <td style="color:var(--text2); font-size:0.8rem;">${gradeText}</td>
+                <td style="color:var(--g1); font-weight:700;">${priceText}</td>
+                <td style="text-align:center; display:flex; gap:8px; justify-content:center;">
+                    <button class="btn-ghost" style="padding:6px 12px; font-size:0.75rem; border-radius:8px;" onclick='startEditLesson("${id}")'>تعديل ✏️</button>
+                    <button class="btn-danger" style="padding:6px 12px; font-size:0.75rem; border-radius:8px;" onclick='deleteLesson("${id}")'>حذف 🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch(e) { tbody.innerHTML=`<tr><td colspan="4" class="td-empty" style="color:#f87171;">خطأ في تحميل الحصص</td></tr>`; }
+}
+
+/* Delete Lesson */
+window.deleteLesson = async (id) => {
+    if(confirm("هل أنت متأكد من حذف هذه الحصة نهائياً؟ ⚠️ (سيتم مسحها من حسابات الطلاب أيضاً)")) {
+        try {
+            await deleteDoc(doc(db, "lessons", id));
+            alert("تم حذف الحصة بنجاح!");
+            loadLessonsManageList();
+            loadStats();
+        } catch(e) { alert("حدث خطأ أثناء الحذف: " + e.message); }
+    }
+};
+
+/* Start Edit Lesson */
+window.startEditLesson = (id) => {
+    const d = allLessonsData[id];
+    if(!d) return;
+    
+    editingLessonId = id; // حفظ الـ ID عشان لما ندوس حفظ يعمل تحديث مش إضافة
+    
+    // وضع البيانات في الخانات
+    document.getElementById("lessonName").value = d.name || "";
+    document.getElementById("lessonGrade").value = d.grade || "1";
+    document.getElementById("lessonPrice").value = d.price || "";
+    document.getElementById("lessonValidity").value = d.validityDays || 7;
+    document.getElementById("lessonImage").value = d.image || "";
+    document.getElementById("videoUrl").value = d.video || "";
+    document.getElementById("attachmentUrl").value = d.pdf || "";
+
+    // وضع الأسئلة
+    const qContainer = document.getElementById("questionsContainer");
+    qContainer.innerHTML = ""; // تفريغ الأسئلة القديمة
+    if(d.questions && d.questions.length > 0) {
+        d.questions.forEach(q => {
+            document.getElementById("addNewQBtn").click(); // استدعاء دالة إضافة سؤال فارغ
+            const blocks = document.querySelectorAll('.question-block');
+            const lastBlock = blocks[blocks.length - 1]; // نمسك آخر بلوك تم إضافته
+            
+            if(q.text) lastBlock.querySelector('.q-text').value = q.text;
+            if(q.image) lastBlock.querySelector('.q-image').value = q.image;
+            lastBlock.querySelector('.q-correct').value = q.correct || "a";
+            lastBlock.querySelector('.q-a').value = q.a || "";
+            lastBlock.querySelector('.q-b').value = q.b || "";
+            lastBlock.querySelector('.q-c').value = q.c || "";
+            lastBlock.querySelector('.q-d').value = q.d || "";
+        });
+    }
+
+    // تغيير شكل زرار الحفظ
+    document.getElementById("formTitle").textContent = "تعديل بيانات الحصة ✏️";
+    document.getElementById("saveBtn").textContent = "تحديث بيانات الحصة 🔄";
+    document.getElementById("cancelEditBtn").classList.remove("hidden"); // إظهار زر الإلغاء
+
+    // سكرول للنموذج فوق
+    document.getElementById("addLessonSection").scrollIntoView({ behavior: 'smooth' });
+};
+
+/* Cancel Edit */
+document.getElementById("cancelEditBtn").onclick = () => {
+    // الطريقة الأسهل لتفريغ كل حاجة والرجوع لوضع الإضافة هي عمل ريفريش
+    location.reload(); 
+};
+
+
 /* add question */
 document.getElementById("addNewQBtn").onclick = () => {
     const n = document.querySelectorAll('.question-block').length + 1;
@@ -624,17 +759,17 @@ document.getElementById("addNewQBtn").onclick = () => {
     document.getElementById("questionsContainer").appendChild(div);
 };
 
-/* save lesson */
+/* save or update lesson */
 document.getElementById("saveBtn").onclick = async () => {
-    const name=document.getElementById("lessonName").value;
-    const grade=document.getElementById("lessonGrade").value;
-    const price=document.getElementById("lessonPrice").value;
-    const validity=document.getElementById("lessonValidity").value; // 🔥 قراءة مدة الصلاحية
-    const image=document.getElementById("lessonImage").value;
-    const video=document.getElementById("videoUrl").value;
-    const pdf=document.getElementById("attachmentUrl").value;
+    const name = document.getElementById("lessonName").value;
+    const grade = document.getElementById("lessonGrade").value;
+    const price = document.getElementById("lessonPrice").value;
+    const validity = document.getElementById("lessonValidity").value; 
+    const image = document.getElementById("lessonImage").value;
+    const video = document.getElementById("videoUrl").value;
+    const pdf = document.getElementById("attachmentUrl").value;
     
-    if(!name||!video) return alert("ادخل اسم الحصة ورابط الفيديو!");
+    if(!name || !video) return alert("ادخل اسم الحصة ورابط الفيديو!");
 
     const questionsData = [];
     document.querySelectorAll('.question-block').forEach(b => {
@@ -649,22 +784,34 @@ document.getElementById("saveBtn").onclick = async () => {
         });
     });
 
-    const btn=document.getElementById('saveBtn');
-    btn.textContent="جاري النشر..."; btn.disabled=true;
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = "جاري الحفظ..."; btn.disabled = true;
+    
     try {
-        await addDoc(collection(db,"lessons"), { 
-            name, 
-            grade, 
-            video, 
-            pdf, 
-            price, 
-            validityDays: Number(validity) || 7, // 🔥 الحفظ في الداتا بيز (7 أيام كافتراضي لو تركها فارغة)
-            image, 
-            questions:questionsData, 
-            createdAt:new Date() 
-        });
-        alert("تم نشر الحصة بنجاح! ✅"); location.reload();
-    } catch(e) { alert("خطأ: "+e.message); btn.textContent="نشر الحصة الآن 🚀"; btn.disabled=false; }
+        if(editingLessonId) {
+            // تحديث الحصة القديمة 🔄
+            await updateDoc(doc(db, "lessons", editingLessonId), { 
+                name, grade, video, pdf, price, 
+                validityDays: Number(validity) || 7, 
+                image, questions: questionsData 
+            });
+            alert("تم تحديث الحصة بنجاح! 🔄✅"); 
+        } else {
+            // نشر حصة جديدة 🚀
+            await addDoc(collection(db, "lessons"), { 
+                name, grade, video, pdf, price, 
+                validityDays: Number(validity) || 7, 
+                image, questions: questionsData, 
+                createdAt: new Date() 
+            });
+            alert("تم نشر الحصة الجديدة بنجاح! ✅"); 
+        }
+        location.reload();
+    } catch(e) { 
+        alert("خطأ: " + e.message); 
+        btn.textContent = editingLessonId ? "تحديث بيانات الحصة 🔄" : "نشر الحصة الآن 🚀"; 
+        btn.disabled = false; 
+    }
 };
 
 /* generate codes */
