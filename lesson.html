@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -475,255 +478,343 @@ main {
 </div>
 
 <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-const app = initializeApp({ apiKey:"AIzaSyByKmG7LLj9JMq2O94gS1-da2Kt8ghLzMo", authDomain:"math-e62c9.firebaseapp.com", projectId:"math-e62c9", appId:"1:271507842148:web:2907aad4caf67afd08ab71" });
-const db = getFirestore(app), auth = getAuth(app);
+<script>
+    const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let questions=[], curIdx=0, userAns={}, lessonData=null, timeLeft=40*60;
-let plyrPlayer, examTimer, myStudentId="000000";
+    let currentUser = null;
+    let questions = [], curIdx = 0, userAns = {}, lessonData = null, timeLeft = 40 * 60;
+    let plyrPlayer, examTimer, myStudentId = "000000";
 
-/* tabs */
-window.switchTab = (tab) => {
-    document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.remove('hidden');
-    document.getElementById(`btn-${tab}-tab`).classList.add('active');
-};
-
-/* auth */
-onAuthStateChanged(auth, async user => {
-    if(!user) { window.location.href="index.html"; return; }
-    const lessonId = new URLSearchParams(window.location.search).get('id');
-    if(!lessonId) return;
-
-    try {
-        const uSnap = await getDoc(doc(db,"users",user.uid));
-        if(uSnap.exists()) myStudentId = uSnap.data().studentId || user.uid.substring(0,6).toUpperCase();
-    } catch(e){}
-
-    const saved = localStorage.getItem(`access_${user.uid}_${lessonId}`);
-    try {
-        const qC = query(collection(db,"codes"), where("usedBy","==",user.email));
-        const cSnap = await getDocs(qC);
-        let hasAccess=false, validExpiry=null;
-        const now = Date.now();
-        cSnap.forEach(d => {
-            const cd=d.data();
-            if(cd.lessonId===lessonId && cd.expiryAt>now) { hasAccess=true; validExpiry=cd.expiryAt; }
-        });
-        if(hasAccess) { initLesson(); startAccessTimer(validExpiry); }
-        else if(saved && Date.now()<JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); }
-        else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
-    } catch(err) {
-        if(saved && Date.now()<JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); }
-        else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
-    }
-});
-
-function startAccessTimer(expiryTime) {
-    document.getElementById('accessTimerBox').classList.remove('hidden');
-    const tick = () => {
-        const dist = expiryTime - Date.now();
-        if(dist<=0) { clearInterval(iv); alert("انتهت صلاحية هذه الحصة."); location.reload(); return; }
-        const d=Math.floor(dist/86400000), h=Math.floor((dist%86400000)/3600000);
-        const m=Math.floor((dist%3600000)/60000), s=Math.floor((dist%60000)/1000);
-        document.getElementById('accessCountdown').textContent = `${d}يوم ${h}س ${m}د ${s}ث`;
+    /* tabs */
+    window.switchTab = (tab) => {
+        document.querySelectorAll('[id^="tab-"]').forEach(p => p.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        document.getElementById(`btn-${tab}-tab`).classList.add('active');
     };
-    tick(); const iv = setInterval(tick, 1000);
-}
 
-/* verify */
-document.getElementById('verifyBtn').onclick = async () => {
-    const code = document.getElementById('accessCodeInput').value.trim();
-    const lessonId = new URLSearchParams(window.location.search).get('id');
-    if(!code) return alert("من فضلك أدخل الكود");
-    document.getElementById('verifyBtn').textContent = "جاري التحقق...";
-    
-    try {
-        const snap = await getDoc(doc(db,"codes",code));
-        if(snap.exists()) {
-            const d=snap.data(), now=Date.now();
-            
-            // 🔥 التعديل هنا: سحب صلاحية الحصة من قاعدة البيانات 🔥
-            const lessonSnap = await getDoc(doc(db, "lessons", lessonId));
-            let validityDays = 7; // القيمة الافتراضية
-            if (lessonSnap.exists() && lessonSnap.data().validityDays) {
-                validityDays = lessonSnap.data().validityDays;
+    /* التحقق عند فتح الصفحة */
+    async function initLessonPage() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        
+        if (!session) { 
+            window.location.href = "index.html"; 
+            return; 
+        }
+        
+        currentUser = session.user;
+        const lessonId = new URLSearchParams(window.location.search).get('id');
+        if (!lessonId) return;
+
+        // سحب ID الطالب للعلامة المائية
+        try {
+            const { data: uData } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
+            if (uData) {
+                myStudentId = uData.studentid || currentUser.id.substring(0,6).toUpperCase();
             }
+        } catch(e){}
 
-            if(!d.used) {
-                // حساب تاريخ الانتهاء بناءً على الأيام اللي المدرس حددها
-                const exp = now + validityDays * 24 * 60 * 60 * 1000;
-                await updateDoc(doc(db,"codes",code), { used:true, usedBy:auth.currentUser.email, lessonId, expiryAt:exp });
-                localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({expiry:exp}));
-                location.reload();
-            } else if(d.usedBy===auth.currentUser.email && d.lessonId===lessonId && d.expiryAt>now) {
-                localStorage.setItem(`access_${auth.currentUser.uid}_${lessonId}`, JSON.stringify({expiry:d.expiryAt}));
-                location.reload();
-            } else if(d.expiryAt && d.expiryAt<=now) { alert("هذا الكود انتهت صلاحيته!"); }
-            else { alert("هذا الكود مستخدم لحساب آخر!"); }
-        } else { alert("الكود غير صحيح!"); }
-    } catch(e) { alert("خطأ: "+e.message); }
-    
-    document.getElementById('verifyBtn').textContent = "تفعيل الحصة ←";
-};
-
-async function initLesson() {
-    document.getElementById('codeLockScreen').classList.add('hidden');
-    document.getElementById('lessonContent').classList.remove('hidden');
-    const id = new URLSearchParams(window.location.search).get('id');
-    const snap = await getDoc(doc(db,"lessons",id));
-    if(!snap.exists()) return;
-    lessonData = snap.data();
-    questions = lessonData.questions||[];
-
-    try {
-        const qR = query(collection(db,"results"), where("email","==",auth.currentUser.email), where("lesson","==",lessonData.name));
-        const rSnap = await getDocs(qR);
-        if(!rSnap.empty) {
-            const ed=rSnap.docs[0].data();
-            userAns=ed.userAns||{};
-            const msg=buildScoreMsg(ed.score, questions.length, true);
-            generateReview(); unlockFeatures(msg);
-        } else {
-            const saved=localStorage.getItem(`exam_data_${auth.currentUser.uid}_${id}`);
-            if(saved) {
-                const pd=JSON.parse(saved); userAns=pd.userAns;
-                const msg=buildScoreMsg(pd.score, questions.length, true);
-                generateReview(); unlockFeatures(msg);
+        const saved = localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
+        
+        try {
+            // البحث عن كود اشتراك ساري 
+            const { data: codesData } = await supabaseClient.from('codes').select('*').eq('usedby', currentUser.email);
+            
+            let hasAccess = false, validExpiry = null;
+            const now = Date.now();
+            
+            if (codesData) {
+                codesData.forEach(cd => {
+                    if (cd.lessonid === lessonId && cd.expiryat > now) { 
+                        hasAccess = true; 
+                        validExpiry = cd.expiryat; 
+                    }
+                });
+            }
+            
+            if (hasAccess) { 
+                initLesson(); 
+                startAccessTimer(validExpiry); 
+            }
+            else if (saved && Date.now() < JSON.parse(saved).expiry) { 
+                initLesson(); 
+                startAccessTimer(JSON.parse(saved).expiry); 
+            }
+            else { 
+                document.getElementById('codeLockScreen').classList.remove('hidden'); 
+            }
+        } catch(err) {
+            if (saved && Date.now() < JSON.parse(saved).expiry) { 
+                initLesson(); 
+                startAccessTimer(JSON.parse(saved).expiry); 
+            }
+            else { 
+                document.getElementById('codeLockScreen').classList.remove('hidden'); 
             }
         }
-    } catch(e){ console.log(e); }
-}
+    }
+    
+    initLessonPage(); // تشغيل عند فتح الصفحة
 
-function buildScoreMsg(score, total, wasPrev) {
-    const pct = total>0 ? Math.round(score/total*100) : 0;
-    return { score, total, pct, wasPrev };
-}
+    function startAccessTimer(expiryTime) {
+        document.getElementById('accessTimerBox').classList.remove('hidden');
+        const tick = () => {
+            const dist = expiryTime - Date.now();
+            if(dist <= 0) { 
+                clearInterval(iv); 
+                alert("انتهت صلاحية هذه الحصة."); 
+                location.reload(); 
+                return; 
+            }
+            const d = Math.floor(dist / 86400000), h = Math.floor((dist % 86400000) / 3600000);
+            const m = Math.floor((dist % 3600000) / 60000), s = Math.floor((dist % 60000) / 1000);
+            document.getElementById('accessCountdown').textContent = `${d}يوم ${h}س ${m}د ${s}ث`;
+        };
+        tick(); const iv = setInterval(tick, 1000);
+    }
 
-/* start exam */
-document.getElementById('startBtn').onclick = () => {
-    if(questions.length===0) return alert("لا توجد أسئلة في هذا الامتحان بعد.");
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('quizApp').classList.remove('hidden');
-    document.getElementById('timerBox').classList.remove('hidden');
-    renderQ(); startTimer();
-};
+    /* تفعيل الكود */
+    document.getElementById('verifyBtn').onclick = async () => {
+        const code = document.getElementById('accessCodeInput').value.trim();
+        const lessonId = new URLSearchParams(window.location.search).get('id');
+        
+        if(!code) return alert("من فضلك أدخل الكود");
+        document.getElementById('verifyBtn').textContent = "جاري التحقق...";
+        
+        try {
+            const { data: codeDataArr } = await supabaseClient.from('codes').select('*').eq('code', code);
+            
+            if(codeDataArr && codeDataArr.length > 0) {
+                const codeData = codeDataArr[0];
+                const now = Date.now();
+                
+                // سحب صلاحية الحصة
+                const { data: lDataArr } = await supabaseClient.from('lessons').select('*').eq('id', lessonId);
+                let validityDays = 7; // القيمة الافتراضية
+                if (lDataArr && lDataArr.length > 0 && lDataArr[0].validitydays) {
+                    validityDays = lDataArr[0].validitydays;
+                }
 
-function renderQ() {
-    const q = questions[curIdx];
-    const pct = Math.round((curIdx+1)/questions.length*100);
-    document.getElementById('qCount').textContent = `${curIdx+1} / ${questions.length}`;
-    document.getElementById('progFill').style.width = pct+'%';
-    document.getElementById('qDisplay').innerHTML = `
-        <div class="q-num">السؤال ${curIdx+1}</div>
-        ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
-        <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
-        <div class="options">
-            ${['a','b','c','d'].map(opt=>`
-                <label class="opt-label">
-                    <input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}>
-                    <span class="opt-key">${opt}</span>
-                    <span class="opt-text">${q[opt]||''}</span>
-                </label>
-            `).join('')}
-        </div>
-    `;
-    document.getElementById('prevBtn').classList.toggle('hidden', curIdx===0);
-    document.getElementById('nextBtn').classList.toggle('hidden', curIdx===questions.length-1);
-    document.getElementById('finishBtn').classList.toggle('hidden', curIdx!==questions.length-1);
-}
+                if(!codeData.used) {
+                    const exp = now + validityDays * 24 * 60 * 60 * 1000;
+                    
+                    // تحديث الكود ليصبح مستخدم
+                    const { error: updErr } = await supabaseClient.from('codes').update({ 
+                        used: true, 
+                        usedby: currentUser.email, 
+                        lessonid: lessonId, 
+                        expiryat: exp 
+                    }).eq('code', code);
+                    
+                    if (updErr) throw updErr;
 
-function saveAns(){ const s=document.querySelector('input[name="math"]:checked'); if(s) userAns[curIdx]=s.value; }
-document.getElementById('nextBtn').onclick=()=>{ saveAns(); curIdx++; renderQ(); };
-document.getElementById('prevBtn').onclick=()=>{ saveAns(); curIdx--; renderQ(); };
+                    localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry: exp}));
+                    location.reload();
+                } else if(codeData.usedby === currentUser.email && codeData.lessonid === lessonId && codeData.expiryat > now) {
+                    localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry: codeData.expiryat}));
+                    location.reload();
+                } else if(codeData.expiryat && codeData.expiryat <= now) { 
+                    alert("هذا الكود انتهت صلاحيته!"); 
+                } else { 
+                    alert("هذا الكود مستخدم لحساب آخر!"); 
+                }
+            } else { 
+                alert("الكود غير صحيح!"); 
+            }
+        } catch(e) { 
+            alert("خطأ: " + e.message); 
+        }
+        
+        document.getElementById('verifyBtn').textContent = "تفعيل الحصة ←";
+    };
 
-document.getElementById('finishBtn').onclick = async () => {
-    saveAns(); clearInterval(examTimer);
-    let score=0;
-    questions.forEach((q,i)=>{ if(userAns[i]===q.correct) score++; });
-    try {
-        await addDoc(collection(db,"results"),{
-            email:auth.currentUser.email, lesson:lessonData.name,
-            score, total:questions.length, date:new Date(), userAns
-        });
-    } catch(e){}
-    const id=new URLSearchParams(window.location.search).get('id');
-    localStorage.setItem(`exam_data_${auth.currentUser.uid}_${id}`, JSON.stringify({userAns, score}));
-    generateReview();
-    unlockFeatures(buildScoreMsg(score, questions.length, false));
-    window.scrollTo({top:0,behavior:'smooth'});
-};
+    /* إعداد الحصة والامتحان */
+    async function initLesson() {
+        document.getElementById('codeLockScreen').classList.add('hidden');
+        document.getElementById('lessonContent').classList.remove('hidden');
+        
+        const id = new URLSearchParams(window.location.search).get('id');
+        
+        const { data: snap } = await supabaseClient.from('lessons').select('*').eq('id', id).single();
+        if(!snap) return;
+        
+        lessonData = snap;
+        questions = lessonData.questions || [];
 
-function generateReview() {
-    const list = document.getElementById('reviewList');
-    list.innerHTML = '';
-    questions.forEach((q,i)=>{
-        const ok=userAns[i]===q.correct;
-        list.innerHTML+=`
-            <div class="review-item ${ok?'correct':'wrong'}">
-                <div class="review-meta">
-                    <span class="review-q-label">سؤال ${i+1}</span>
-                    <span class="${ok?'badge-correct':'badge-wrong'}">${ok?'صح ✓':'خطأ ✗'}</span>
-                </div>
-                ${q.image?`<img src="${q.image}" style="max-height:160px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border);">`:''}
-                <div class="review-q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
-                <div class="review-ans">إجابتك: <span>${q[userAns[i]]||'لم تجب'}</span></div>
-                ${!ok?`<div class="review-correct-ans">✓ الصحيحة: ${q[q.correct]}</div>`:''}
-            </div>`;
-    });
-}
+        try {
+            const { data: rSnap } = await supabaseClient.from('results')
+                .select('*')
+                .eq('email', currentUser.email)
+                .eq('lesson', lessonData.name);
+                
+            if (rSnap && rSnap.length > 0) {
+                const ed = rSnap[0];
+                userAns = ed.userans || {};
+                const msg = buildScoreMsg(ed.score, questions.length, true);
+                generateReview(); 
+                unlockFeatures(msg);
+            } else {
+                const saved = localStorage.getItem(`exam_data_${currentUser.id}_${id}`);
+                if (saved) {
+                    const pd = JSON.parse(saved); 
+                    userAns = pd.userAns; 
+                    const msg = buildScoreMsg(pd.score, questions.length, true);
+                    generateReview(); 
+                    unlockFeatures(msg);
+                }
+            }
+        } catch(e){ console.log(e); }
+    }
 
-function unlockFeatures(msgObj) {
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('quizApp').classList.add('hidden');
-    document.getElementById('timerBox').classList.add('hidden');
-    document.getElementById('reviewArea').classList.remove('hidden');
+    function buildScoreMsg(score, total, wasPrev) {
+        const pct = total > 0 ? Math.round(score / total * 100) : 0;
+        return { score, total, pct, wasPrev };
+    }
 
-    const pct = msgObj.pct;
-    const clr = pct>=70?'var(--g1)':pct>=50?'var(--gold)':'#f87171';
-    document.getElementById('scoreBanner').innerHTML = `
-        <div class="score-val" style="color:${clr}">${msgObj.score}</div>
-        <div class="score-of">من ${msgObj.total} سؤال · ${pct}%</div>
-        <div class="score-msg">${msgObj.wasPrev?'لقد أديت هذا الامتحان من قبل':'تم تسجيل درجتك بنجاح'}</div>
-        <div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>
-    `;
+    /* بدء الامتحان */
+    document.getElementById('startBtn').onclick = () => {
+        if(questions.length === 0) return alert("لا توجد أسئلة في هذا الامتحان بعد.");
+        document.getElementById('startScreen').classList.add('hidden');
+        document.getElementById('quizApp').classList.remove('hidden');
+        document.getElementById('timerBox').classList.remove('hidden');
+        renderQ(); 
+        startTimer();
+    };
 
-    document.getElementById('btn-video-tab').classList.add('unlocked');
-    document.getElementById('btn-video-tab').classList.remove('locked-dim');
-    document.getElementById('btn-pdf-tab').classList.add('unlocked');
-    document.getElementById('btn-pdf-tab').classList.remove('locked-dim');
+    function renderQ() {
+        const q = questions[curIdx];
+        const pct = Math.round((curIdx + 1) / questions.length * 100);
+        document.getElementById('qCount').textContent = `${curIdx + 1} / ${questions.length}`;
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('qDisplay').innerHTML = `
+            <div class="q-num">السؤال ${curIdx+1}</div>
+            ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
+            <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
+            <div class="options">
+                ${['a','b','c','d'].map(opt=>`
+                    <label class="opt-label">
+                        <input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}>
+                        <span class="opt-key">${opt}</span>
+                        <span class="opt-text">${q[opt]||''}</span>
+                    </label>
+                `).join('')}
+            </div>
+        `;
+        document.getElementById('prevBtn').classList.toggle('hidden', curIdx === 0);
+        document.getElementById('nextBtn').classList.toggle('hidden', curIdx === questions.length - 1);
+        document.getElementById('finishBtn').classList.toggle('hidden', curIdx !== questions.length - 1);
+    }
 
-    if(lessonData.video && !plyrPlayer) {
-        const vc = document.getElementById('tab-video');
-        const getYtId=(url)=>{ const m=url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/); return m?m[1]:null; };
-        const vId=getYtId(lessonData.video);
-        const wm=`<div class="watermark-container"><div class="watermark-text">ID: ${myStudentId}</div></div>`;
-        vc.innerHTML=`<div class="video-wrap" oncontextmenu="return false;">${wm}${
-            vId
-                ?`<div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div>`
-                :`<video id="player" playsinline controlsList="nodownload"><source src="${lessonData.video}" type="video/mp4"/></video>`
-        }</div>`;
-        plyrPlayer=new Plyr('#player',{
-            controls:['play-large','play','progress','current-time','mute','volume','fullscreen'],
-            youtube:{rel:0,showinfo:0,modestbranding:1,disablekb:1}
+    function saveAns(){ const s = document.querySelector('input[name="math"]:checked'); if(s) userAns[curIdx] = s.value; }
+    
+    document.getElementById('nextBtn').onclick = () => { saveAns(); curIdx++; renderQ(); };
+    document.getElementById('prevBtn').onclick = () => { saveAns(); curIdx--; renderQ(); };
+
+    /* إنهاء الامتحان وحفظ النتيجة */
+    document.getElementById('finishBtn').onclick = async () => {
+        saveAns(); 
+        clearInterval(examTimer);
+        
+        let score = 0;
+        questions.forEach((q, i) => { if(userAns[i] === q.correct) score++; });
+        
+        try {
+            await supabaseClient.from('results').insert([{
+                email: currentUser.email, 
+                lesson: lessonData.name,
+                score: score, 
+                total: questions.length, 
+                userans: userAns // 🔥 حروف صغيرة
+            }]);
+        } catch(e){}
+        
+        const id = new URLSearchParams(window.location.search).get('id');
+        localStorage.setItem(`exam_data_${currentUser.id}_${id}`, JSON.stringify({userAns, score}));
+        
+        generateReview();
+        unlockFeatures(buildScoreMsg(score, questions.length, false));
+        window.scrollTo({top:0, behavior:'smooth'});
+    };
+
+    function generateReview() {
+        const list = document.getElementById('reviewList');
+        list.innerHTML = '';
+        questions.forEach((q, i) => {
+            const ok = userAns[i] === q.correct;
+            list.innerHTML += `
+                <div class="review-item ${ok?'correct':'wrong'}">
+                    <div class="review-meta">
+                        <span class="review-q-label">سؤال ${i+1}</span>
+                        <span class="${ok?'badge-correct':'badge-wrong'}">${ok?'صح ✓':'خطأ ✗'}</span>
+                    </div>
+                    ${q.image?`<img src="${q.image}" style="max-height:160px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border);">`:''}
+                    <div class="review-q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
+                    <div class="review-ans">إجابتك: <span>${q[userAns[i]]||'لم تجب'}</span></div>
+                    ${!ok?`<div class="review-correct-ans">✓ الصحيحة: ${q[q.correct]}</div>`:''}
+                </div>`;
         });
     }
-    if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
-}
 
-function startTimer() {
-    examTimer = setInterval(()=>{
-        const m=Math.floor(timeLeft/60), s=timeLeft%60;
-        document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;
-        if(timeLeft<=120) document.getElementById('timerBox').classList.add('urgent');
-        if(timeLeft--<=0){ clearInterval(examTimer); alert("انتهى وقت الامتحان!"); document.getElementById('finishBtn').click(); }
-    },1000);
-}
+    function unlockFeatures(msgObj) {
+        document.getElementById('startScreen').classList.add('hidden');
+        document.getElementById('quizApp').classList.add('hidden');
+        document.getElementById('timerBox').classList.add('hidden');
+        document.getElementById('reviewArea').classList.remove('hidden');
+
+        const pct = msgObj.pct;
+        const clr = pct >= 70 ? 'var(--g1)' : pct >= 50 ? 'var(--gold)' : '#f87171';
+        
+        document.getElementById('scoreBanner').innerHTML = `
+            <div class="score-val" style="color:${clr}">${msgObj.score}</div>
+            <div class="score-of">من ${msgObj.total} سؤال · ${pct}%</div>
+            <div class="score-msg">${msgObj.wasPrev ? 'لقد أديت هذا الامتحان من قبل' : 'تم تسجيل درجتك بنجاح'}</div>
+            <div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>
+        `;
+
+        document.getElementById('btn-video-tab').classList.add('unlocked');
+        document.getElementById('btn-video-tab').classList.remove('locked-dim');
+        document.getElementById('btn-pdf-tab').classList.add('unlocked');
+        document.getElementById('btn-pdf-tab').classList.remove('locked-dim');
+
+        // تجهيز وتشغيل فيديو الشرح
+        if(lessonData.video && !plyrPlayer) {
+            const vc = document.getElementById('tab-video');
+            const getYtId = (url) => { const m=url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/); return m?m[1]:null; };
+            const vId = getYtId(lessonData.video);
+            const wm = `<div class="watermark-container"><div class="watermark-text">ID: ${myStudentId}</div></div>`;
+            
+            vc.innerHTML = `<div class="video-wrap" oncontextmenu="return false;">${wm}${
+                vId
+                    ? `<div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div>`
+                    : `<video id="player" playsinline controlsList="nodownload"><source src="${lessonData.video}" type="video/mp4"/></video>`
+            }</div>`;
+            
+            plyrPlayer = new Plyr('#player',{
+                controls:['play-large','play','progress','current-time','mute','volume','fullscreen'],
+                youtube:{rel:0,showinfo:0,modestbranding:1,disablekb:1}
+            });
+        }
+        
+        if(lessonData.pdf) {
+            document.getElementById('pdfLink').href = lessonData.pdf;
+        }
+    }
+
+    function startTimer() {
+        examTimer = setInterval(()=>{
+            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            document.getElementById('timerVal').textContent = `${m}:${s < 10 ? '0'+s : s}`;
+            if(timeLeft <= 120) document.getElementById('timerBox').classList.add('urgent');
+            if(timeLeft-- <= 0) { 
+                clearInterval(examTimer); 
+                alert("انتهى وقت الامتحان!"); 
+                document.getElementById('finishBtn').click(); 
+            }
+        }, 1000);
+    }
 </script>
 </body>
 </html>
