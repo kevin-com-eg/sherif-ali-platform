@@ -17,10 +17,10 @@ html { scroll-behavior: smooth; }
     --card:    #1e1e1e;
     --border:  rgba(255,255,255,0.07);
     --border2: rgba(255,255,255,0.12);
-    --accent:  #e8a020;
-    --accent2: #c98010;
-    --accent3: #f0b840;
-    --glow:    rgba(232,160,32,0.15);
+    --accent:  #00e5a0;
+    --accent2: #00b578;
+    --accent3: #00c98a;
+    --glow:    rgba(0,229,160,0.15);
     --muted:   #5a5a5a;
     --text:    #f0f0f0;
     --text2:   #999;
@@ -68,9 +68,9 @@ body {
     display: flex; align-items: center; justify-content: center;
     font-size: 1.6rem;
     font-weight: 900;
-    color: #111;
+    color: #021a10;
     font-family: var(--mono);
-    box-shadow: 0 8px 24px rgba(232,160,32,0.3);
+    box-shadow: 0 8px 24px rgba(0,229,160,0.3);
     letter-spacing: -2px;
 }
 .logo-name {
@@ -298,10 +298,10 @@ body {
 .grade-pill {
     display: flex; align-items: center; gap: 8px;
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-    color: #111;
+    color: #021a10;
     font-weight: 900; font-size: .8rem;
     padding: 8px 16px; border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(232,160,32,.25);
+    box-shadow: 0 4px 14px rgba(0,229,160,.25);
     white-space: nowrap;
 }
 
@@ -321,11 +321,11 @@ body {
 .stat-card:nth-child(1){ animation-delay: .15s; }
 .stat-card:nth-child(2){ animation-delay: .22s; }
 .stat-card:nth-child(3){ animation-delay: .29s; }
-.stat-card:hover { border-color: rgba(232,160,32,.25); transform: translateY(-2px); }
+.stat-card:hover { border-color: rgba(0,229,160,.25); transform: translateY(-2px); }
 .sc-icon-wrap {
     width: 44px; height: 44px; flex-shrink: 0;
-    background: rgba(232,160,32,.1);
-    border: 1px solid rgba(232,160,32,.15);
+    background: rgba(0,229,160,.1);
+    border: 1px solid rgba(0,229,160,.15);
     border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.2rem;
@@ -377,7 +377,7 @@ body {
     transition: all .2s;
 }
 .filter-btn:hover { border-color: rgba(232,160,32,.3); color: var(--accent); }
-.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #111; }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #021a10; }
 
 /* ── LESSON GRID ── */
 #lessonsGrid {
@@ -400,8 +400,8 @@ body {
 }
 .lesson-card:hover {
     transform: translateY(-5px);
-    border-color: rgba(232,160,32,.3);
-    box-shadow: 0 20px 50px rgba(0,0,0,.5), 0 0 30px rgba(232,160,32,.06);
+    border-color: rgba(0,229,160,.3);
+    box-shadow: 0 20px 50px rgba(0,0,0,.5), 0 0 30px rgba(0,229,160,.06);
 }
 /* image */
 .lc-img-wrap { position: relative; height: 170px; overflow: hidden; }
@@ -419,7 +419,7 @@ body {
 .price-tag {
     position: absolute; top: 12px; left: 12px;
     background: var(--accent);
-    color: #111;
+    color: #021a10;
     font-weight: 900; font-size: .72rem;
     padding: 5px 10px; border-radius: 8px;
     font-family: var(--mono);
@@ -493,18 +493,10 @@ body {
     text-decoration: none; border: none;
     white-space: nowrap;
 }
-.btn-access.owned {
-    background: var(--accent);
-    color: #111;
-    box-shadow: 0 4px 14px rgba(232,160,32,.2);
-}
-.btn-access.owned:hover { box-shadow: 0 8px 22px rgba(232,160,32,.35); transform: translateY(-1px); }
-.btn-access.buy {
-    background: transparent;
-    border: 1.5px solid var(--accent);
-    color: var(--accent);
-}
-.btn-access.buy:hover { background: rgba(232,160,32,.1); }
+.btn-access.owned { background: linear-gradient(135deg, #00e5a0 0%, #00b578 100%); color: #021a10; box-shadow: 0 4px 14px rgba(0,229,160,.2); }
+.btn-access.owned:hover { box-shadow: 0 8px 22px rgba(0,229,160,.35); transform: translateY(-1px); }
+.btn-access.buy { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
+.btn-access.buy:hover { background: rgba(0,229,160,.1); }
 
 /* empty state */
 .empty-state {
@@ -628,12 +620,12 @@ body {
 .save-btn {
     width: 100%; margin-top: 6px;
     background: var(--accent);
-    color: #111; border: none; padding: 12px;
+    color: #021a10; border: none; padding: 12px;
     border-radius: 10px; font-family: var(--sans); font-size: .95rem;
     font-weight: 900; cursor: pointer; transition: all .3s;
-    box-shadow: 0 6px 20px rgba(232,160,32,.2);
+    box-shadow: 0 6px 20px rgba(0,229,160,.2);
 }
-.save-btn:hover { box-shadow: 0 10px 28px rgba(232,160,32,.35); transform: translateY(-2px); }
+.save-btn:hover { box-shadow: 0 10px 28px rgba(0,229,160,.35); transform: translateY(-2px); }
 
 /* mobile sidebar toggle */
 .sidebar-toggle {
@@ -749,6 +741,7 @@ body {
     }
     .stats-row .stat-card:nth-child(3) {
         grid-column: 1 / -1;
+        width: 100%;
     }
     .stat-card { padding: 14px 16px; gap: 10px; border-radius: 12px; }
     .sc-icon-wrap { width: 38px; height: 38px; font-size: 1rem; border-radius: 10px; }
@@ -846,28 +839,7 @@ body {
             <div class="nav-icon">👤</div>
             الملف الشخصي
         </a>
-        <a class="nav-link" href="#" onclick="openReports();return false;">
-            <div class="nav-icon">📋</div>
-            دوراتي
-        </a>
-        <a class="nav-link" href="#">
-            <div class="nav-icon">▶️</div>
-            الدورات التعليمية
-        </a>
 
-        <div class="nav-section-label">الأسئلة والامتحانات</div>
-        <a class="nav-link" href="#">
-            <div class="nav-icon">📚</div>
-            المذكرات
-        </a>
-        <a class="nav-link" href="#">
-            <div class="nav-icon">❓</div>
-            أسئلتي
-        </a>
-        <a class="nav-link" href="#">
-            <div class="nav-icon">🗂️</div>
-            بنك الأسئلة
-        </a>
 
         <div class="nav-section-label">النتائج</div>
         <a class="nav-link" href="#" onclick="openReports();return false;">
@@ -911,7 +883,7 @@ body {
                 <span class="notif-dot"></span>
             </button>
             <div class="hdr-avatar" onclick="openProfile()">
-                <img src="https://ui-avatars.com/api/?name=S&background=e8a020&color=111&bold=true" id="avatarImg">
+                <img src="https://ui-avatars.com/api/?name=S&background=00b578&color=fff&bold=true" id="avatarImg">
             </div>
         </div>
     </header>
@@ -1115,7 +1087,7 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('editPhone').value = d.phone||"";
     document.getElementById('editParentPhone').value = d.parentPhone||"";
     document.getElementById('gradeBadge').textContent = gradeNames[grade]||"عام";
-    document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e8a020&color=111&bold=true`;
+    document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true`;
 
     await fetchReports(user.email);
 
