@@ -721,6 +721,35 @@ main {
 </div>
 <div class="noise"></div>
 
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" style="
+    position:fixed;inset:0;z-index:400;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+    background:var(--bg);
+">
+    <div style="
+        width:52px;height:52px;
+        border-radius:14px;
+        background:linear-gradient(135deg,#00e5a0,#00b578);
+        display:flex;align-items:center;justify-content:center;
+        font-size:1.5rem;font-weight:900;color:#021a10;
+        font-family:'DM Mono',monospace;
+        box-shadow:0 8px 28px rgba(0,229,160,.3);
+    ">MP</div>
+    <div style="display:flex;gap:7px;align-items:center;">
+        <div class="ld-dot" style="width:8px;height:8px;border-radius:50%;background:#00e5a0;animation:ldPulse 1.2s ease-in-out infinite;"></div>
+        <div class="ld-dot" style="width:8px;height:8px;border-radius:50%;background:#00e5a0;animation:ldPulse 1.2s ease-in-out .2s infinite;"></div>
+        <div class="ld-dot" style="width:8px;height:8px;border-radius:50%;background:#00e5a0;animation:ldPulse 1.2s ease-in-out .4s infinite;"></div>
+    </div>
+    <p style="font-family:'Tajawal',sans-serif;font-size:.85rem;color:#4b6280;margin:0;">جاري التحقق من الصلاحيات...</p>
+</div>
+<style>
+@keyframes ldPulse {
+    0%,100%{opacity:.2;transform:scale(.8)}
+    50%{opacity:1;transform:scale(1)}
+}
+</style>
+
 <!-- ══ LOCK SCREEN ══════════════════════════════════ -->
 <div id="codeLockScreen" class="hidden">
     <div class="lock-card">
@@ -853,6 +882,11 @@ main {
         document.getElementById(`btn-${tab}-tab`).classList.add('active');
     };
 
+    function hideLoader() {
+        const el = document.getElementById('loadingScreen');
+        if (el) { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }
+    }
+
     async function initLessonPage() {
         const lessonId = new URLSearchParams(window.location.search).get('id');
         if (!lessonId) return;
@@ -862,7 +896,7 @@ main {
         const savedAccess = localStorage.getItem(`access_${lessonId}_local`);
 
         const { data: { session } } = await sessionPromise;
-        if (!session) { window.location.href = "index.html"; return; }
+        if (!session) { hideLoader(); window.location.href = "index.html"; return; }
         currentUser = session.user;
 
         const savedLocal = localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
@@ -873,8 +907,8 @@ main {
             try {
                 const parsed = JSON.parse(savedLocal);
                 if (parsed.expiry > now) {
-                    // افتح الحصة فوراً
                     myStudentId = parsed.studentId || currentUser.id.substring(0,6).toUpperCase();
+                    hideLoader();
                     initLesson();
                     startAccessTimer(parsed.expiry);
                     // في الخلفية: تحقق من السيرفر بهدوء
@@ -906,16 +940,18 @@ main {
             }
 
             if (hasAccess) {
-                // حفظ في cache للمرة الجاية
                 localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({
                     expiry: validExpiry, studentId: myStudentId
                 }));
+                hideLoader();
                 initLesson();
                 startAccessTimer(validExpiry);
             } else {
+                hideLoader();
                 document.getElementById('codeLockScreen').classList.remove('hidden');
             }
         } catch(err) {
+            hideLoader();
             document.getElementById('codeLockScreen').classList.remove('hidden');
         }
     }
