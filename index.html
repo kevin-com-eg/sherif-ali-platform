@@ -384,33 +384,6 @@ footer {
         <p class="popup-sub">عشان نكمل حسابك ونعرضلك الكورسات المناسبة، محتاجين البيانات دي.</p>
         
         <div class="popup-input-wrap">
-            <span class="flbl">الرقم القومي (14 رقم)</span>
-            <input type="text" id="googleNationalID" maxlength="14" class="inp" placeholder="29901010000000" style="margin-bottom: 12px; font-family: var(--mono);">
-
-            <div class="f2col" style="margin-bottom: 12px;">
-                <div>
-                    <span class="flbl">المحافظة</span>
-                    <select id="googleProvince" class="inp" onchange="updateGoogleCities(); this.classList.add('filled')">
-                        <option value="" disabled selected>اختر المحافظة...</option>
-                        <option value="القاهرة">القاهرة</option><option value="الجيزة">الجيزة</option><option value="الإسكندرية">الإسكندرية</option>
-                        <option value="الدقهلية">الدقهلية</option><option value="البحيرة">البحيرة</option><option value="الشرقية">الشرقية</option>
-                        <option value="الغربية">الغربية</option><option value="المنوفية">المنوفية</option><option value="القليوبية">القليوبية</option>
-                        <option value="كفر الشيخ">كفر الشيخ</option><option value="دمياط">دمياط</option><option value="المنيا">المنيا</option>
-                        <option value="أسيوط">أسيوط</option><option value="سوهاج">سوهاج</option><option value="قنا">قنا</option>
-                        <option value="أسوان">أسوان</option><option value="الأقصر">الأقصر</option><option value="بورسعيد">بورسعيد</option>
-                        <option value="الإسماعيلية">الإسماعيلية</option><option value="السويس">السويس</option><option value="الفيوم">الفيوم</option>
-                        <option value="بني سويف">بني سويف</option><option value="البحر الأحمر">البحر الأحمر</option><option value="مطروح">مطروح</option>
-                        <option value="الوادي الجديد">الوادي الجديد</option><option value="شمال سيناء">شمال سيناء</option><option value="جنوب سيناء">جنوب سيناء</option>
-                    </select>
-                </div>
-                <div>
-                    <span class="flbl">المدينة</span>
-                    <select id="googleCity" class="inp" onchange="this.classList.add('filled')">
-                        <option value="" disabled selected>المدينة...</option>
-                    </select>
-                </div>
-            </div>
-
             <span class="flbl">الصف الدراسي</span>
             <select id="googleGrade" class="inp" style="margin-bottom: 12px;" onchange="this.classList.add('filled')">
                 <option value="" disabled selected>اختر الصف...</option>
@@ -485,35 +458,6 @@ footer {
                     <input id="userName" class="inp" placeholder="اكتب اسمك كاملاً...">
                 </div>
 
-                <div class="f2col">
-                    <div class="fw">
-                        <span class="flbl">المحافظة</span>
-                        <select id="userProvince" class="inp" onchange="updateMainCities(); this.classList.add('filled')">
-                            <option value="" disabled selected>اختر المحافظة...</option>
-                            <option value="القاهرة">القاهرة</option><option value="الجيزة">الجيزة</option><option value="الإسكندرية">الإسكندرية</option>
-                            <option value="الدقهلية">الدقهلية</option><option value="البحيرة">البحيرة</option><option value="الشرقية">الشرقية</option>
-                            <option value="الغربية">الغربية</option><option value="المنوفية">المنوفية</option><option value="القليوبية">القليوبية</option>
-                            <option value="كفر الشيخ">كفر الشيخ</option><option value="دمياط">دمياط</option><option value="المنيا">المنيا</option>
-                            <option value="أسيوط">أسيوط</option><option value="سوهاج">سوهاج</option><option value="قنا">قنا</option>
-                            <option value="أسوان">أسوان</option><option value="الأقصر">الأقصر</option><option value="بورسعيد">بورسعيد</option>
-                            <option value="الإسماعيلية">الإسماعيلية</option><option value="السويس">السويس</option><option value="الفيوم">الفيوم</option>
-                            <option value="بني سويف">بني سويف</option><option value="البحر الأحمر">البحر الأحمر</option><option value="مطروح">مطروح</option>
-                            <option value="الوادي الجديد">الوادي الجديد</option><option value="شمال سيناء">شمال سيناء</option><option value="جنوب سيناء">جنوب سيناء</option>
-                        </select>
-                    </div>
-                    <div class="fw">
-                        <span class="flbl">المدينة</span>
-                        <select id="userCity" class="inp" onchange="this.classList.add('filled')">
-                            <option value="" disabled selected>المدينة...</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="fw">
-                    <span class="flbl">الرقم القومي (14 رقم)</span>
-                    <input id="userNationalID" class="inp" type="text" maxlength="14" placeholder="29901010000000" style="font-family: var(--mono); letter-spacing: 2px;">
-                </div>
-
                 <div class="fw">
                     <span class="flbl">الصف الدراسي</span>
                     <select id="userGrade" class="inp" onchange="this.classList.add('filled')">
@@ -523,6 +467,7 @@ footer {
                         <option value="3">الصف الثالث الثانوي</option>
                     </select>
                 </div>
+                
                 <div class="f2col">
                     <div class="fw"><span class="flbl">رقم الطالب</span><input id="userPhone" class="inp" placeholder="01xxxxxxxxx"></div>
                     <div class="fw"><span class="flbl">رقم ولي الأمر</span><input id="parentPhone" class="inp" placeholder="01xxxxxxxxx"></div>
@@ -617,32 +562,6 @@ document.getElementById('eyeBtn').onclick=()=>{const p=document.getElementById('
 const card=document.getElementById('authCard');
 card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();card.style.background=`radial-gradient(380px circle at ${e.clientX-r.left}px ${e.clientY-r.top}px,rgba(0,229,160,.045),transparent 55%),rgba(12,18,32,.88)`;});
 card.addEventListener('mouseleave',()=>{card.style.background='rgba(12,18,32,.88)';});
-
-// 🔥 بيانات المدن لتحديث القوائم المنسدلة 🔥
-const cityData = {
-    "القاهرة": ["مدينة نصر", "مصر الجديدة", "المعادي", "حلوان", "شبرا", "التجمع الخامس", "وسط البلد"],
-    "الجيزة": ["الدقي", "المهندسين", "الهرم", "فيصل", "6 أكتوبر", "الشيخ زايد", "العجوزة"],
-    "الإسكندرية": ["سيدي بشر", "سموحة", "المنتزة", "العجمي", "الرمل", "محرم بك"],
-    "الدقهلية": ["المنصورة", "طلخا", "ميت غمر", "دكرنس", "السنبلاوين"],
-    "الغربية": ["طنطا", "المحلة الكبرى", "كفر الزيات", "زفتى", "بسيون"],
-    "الشرقية": ["الزقازيق", "العاشر من رمضان", "بلبيس", "منيا القمح", "فاقوس"]
-    // يمكن إضافة باقي المراكز لاحقاً
-};
-
-function populateCities(provId, cityId) {
-    const province = document.getElementById(provId).value;
-    const citySelect = document.getElementById(cityId);
-    citySelect.innerHTML = '<option value="" disabled selected>المدينة...</option>';
-    if (cityData[province]) {
-        cityData[province].forEach(city => {
-            citySelect.innerHTML += `<option value="${city}">${city}</option>`;
-        });
-    } else if(province) {
-        citySelect.innerHTML += `<option value="مركز رئيسي">مركز رئيسي</option>`;
-    }
-}
-function updateMainCities() { populateCities('userProvince', 'userCity'); }
-function updateGoogleCities() { populateCities('googleProvince', 'googleCity'); }
 </script>
 
 <script>
@@ -693,24 +612,16 @@ function updateGoogleCities() { populateCities('googleProvince', 'googleCity'); 
             }
 
             // لو مفيش بيانات تواصل، طلعله الـ Popup
-            if (!dbUser || !dbUser.phone || !dbUser.nationalid) {
+            if (!dbUser || !dbUser.phone || !dbUser.parentphone) {
                 document.getElementById('googleProfilePopup').classList.add('show');
                 
                 document.getElementById('saveGoogleProfileBtn').onclick = async () => {
-                    const nid = document.getElementById('googleNationalID').value;
-                    const prov = document.getElementById('googleProvince').value;
-                    const city = document.getElementById('googleCity').value;
                     const grade = document.getElementById('googleGrade').value;
                     const phone = document.getElementById('googlePhone').value;
                     const parentPhone = document.getElementById('googleParentPhone').value;
                     const btn = document.getElementById('saveGoogleProfileBtn');
                     
-                    if (!nid || !prov || !city || !grade || !phone || !parentPhone) return alert("من فضلك أكمل جميع البيانات!");
-                    if (nid.length !== 14 || isNaN(nid)) return alert("الرقم القومي يجب أن يتكون من 14 رقم بالضبط!");
-
-                    // فحص تكرار الرقم القومي
-                    const { data: checkNid } = await supabaseClient.from('users').select('id').eq('nationalid', nid);
-                    if (checkNid && checkNid.length > 0) return alert("عفواً، هذا الرقم القومي مسجل مسبقاً في حساب آخر!");
+                    if (!grade || !phone || !parentPhone) return alert("من فضلك أكمل جميع البيانات!");
 
                     btn.textContent = "جاري الحفظ...";
                     const name = user.user_metadata?.full_name || "طالب جديد";
@@ -719,9 +630,6 @@ function updateGoogleCities() { populateCities('googleProvince', 'googleCity'); 
                         id: user.id,
                         email: user.email,
                         name: name,
-                        nationalid: nid,
-                        province: prov,
-                        city: city,
                         grade: grade,
                         phone: phone,
                         parentphone: parentPhone,
@@ -806,21 +714,8 @@ function updateGoogleCities() { populateCities('googleProvince', 'googleCity'); 
                 const g = document.getElementById("userGrade").value;
                 const ph = document.getElementById("userPhone").value;
                 const pp = document.getElementById("parentPhone").value;
-                const nid = document.getElementById("userNationalID").value;
-                const prov = document.getElementById("userProvince").value;
-                const city = document.getElementById("userCity").value;
 
-                if(!n || !g || !ph || !pp || !e || !p || !nid || !prov || !city) return alert("من فضلك أكمل جميع البيانات أولاً");
-                if (nid.length !== 14 || isNaN(nid)) return alert("الرقم القومي يجب أن يتكون من 14 رقم بالضبط!");
-
-                btn.textContent = "جاري التحقق...";
-
-                // 🔥 فحص تكرار الرقم القومي قبل إنشاء الحساب 🔥
-                const { data: checkNid } = await supabaseClient.from('users').select('id').eq('nationalid', nid);
-                if (checkNid && checkNid.length > 0) {
-                    btn.textContent = "إنشاء حساب جديد ←";
-                    return alert("عفواً، هذا الرقم القومي مسجل مسبقاً في حساب آخر!");
-                }
+                if(!n || !g || !ph || !pp || !e || !p) return alert("من فضلك أكمل جميع البيانات أولاً");
 
                 btn.textContent = "جاري الإنشاء...";
                 const { data, error } = await supabaseClient.auth.signUp({ email: e, password: p });
@@ -835,9 +730,6 @@ function updateGoogleCities() { populateCities('googleProvince', 'googleCity'); 
                         grade: g,
                         phone: ph,
                         parentphone: pp,
-                        nationalid: nid,
-                        province: prov,
-                        city: city,
                         studentid: Math.floor(100000 + Math.random() * 900000).toString(),
                         role: "student",
                         devices: [deviceId] 
