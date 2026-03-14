@@ -726,33 +726,87 @@ main {
     };
 
     async function initLessonPage() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) { window.location.href = "index.html"; return; }
-        currentUser = session.user;
         const lessonId = new URLSearchParams(window.location.search).get('id');
         if (!lessonId) return;
+
+        // ── 1. فحص session + cache في نفس الوقت ──
+        const sessionPromise = supabaseClient.auth.getSession();
+        const savedAccess = localStorage.getItem(`access_${lessonId}_local`);
+
+        const { data: { session } } = await sessionPromise;
+        if (!session) { window.location.href = "index.html"; return; }
+        currentUser = session.user;
+
+        const savedLocal = localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
+        const now = Date.now();
+
+        // ── 2. لو في cache صالح → افتح الحصة فوراً بدون انتظار ──
+        if (savedLocal) {
+            try {
+                const parsed = JSON.parse(savedLocal);
+                if (parsed.expiry > now) {
+                    // افتح الحصة فوراً
+                    myStudentId = parsed.studentId || currentUser.id.substring(0,6).toUpperCase();
+                    initLesson();
+                    startAccessTimer(parsed.expiry);
+                    // في الخلفية: تحقق من السيرفر بهدوء
+                    verifyAccessInBackground(currentUser, lessonId);
+                    return;
+                }
+            } catch(e) {}
+        }
+
+        // ── 3. لا يوجد cache → اعمل requests بالتوازي ──
         try {
-            const { data: uData } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
+            const [
+                { data: uData },
+                { data: codesData }
+            ] = await Promise.all([
+                supabaseClient.from('users').select('studentid').eq('id', currentUser.id).single(),
+                supabaseClient.from('codes').select('*').eq('usedby', currentUser.email)
+            ]);
+
             if (uData) myStudentId = uData.studentid || currentUser.id.substring(0,6).toUpperCase();
-        } catch(e){}
-        const saved = localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
-        try {
-            const { data: codesData } = await supabaseClient.from('codes').select('*').eq('usedby', currentUser.email);
+
             let hasAccess = false, validExpiry = null;
-            const now = Date.now();
             if (codesData) {
                 codesData.forEach(cd => {
-                    if (cd.lessonid === lessonId && cd.expiryat > now) { hasAccess = true; validExpiry = cd.expiryat; }
+                    if (cd.lessonid === lessonId && cd.expiryat > now) {
+                        hasAccess = true; validExpiry = cd.expiryat;
+                    }
                 });
             }
-            if (hasAccess) { initLesson(); startAccessTimer(validExpiry); }
-            else if (saved && Date.now() < JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); }
-            else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
+
+            if (hasAccess) {
+                // حفظ في cache للمرة الجاية
+                localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({
+                    expiry: validExpiry, studentId: myStudentId
+                }));
+                initLesson();
+                startAccessTimer(validExpiry);
+            } else {
+                document.getElementById('codeLockScreen').classList.remove('hidden');
+            }
         } catch(err) {
-            if (saved && Date.now() < JSON.parse(saved).expiry) { initLesson(); startAccessTimer(JSON.parse(saved).expiry); }
-            else { document.getElementById('codeLockScreen').classList.remove('hidden'); }
+            document.getElementById('codeLockScreen').classList.remove('hidden');
         }
     }
+
+    // تحقق في الخلفية بعد فتح الحصة من cache
+    async function verifyAccessInBackground(user, lessonId) {
+        try {
+            const { data: codesData } = await supabaseClient.from('codes').select('expiryat,lessonid').eq('usedby', user.email);
+            if (!codesData) return;
+            const now = Date.now();
+            let stillValid = false;
+            codesData.forEach(cd => { if (cd.lessonid === lessonId && cd.expiryat > now) stillValid = true; });
+            if (!stillValid) {
+                // انتهى الصلاحية فعلاً → امسح cache وأعد تحميل
+                localStorage.removeItem(`access_${user.id}_${lessonId}`);
+            }
+        } catch(e) {}
+    }
+
     initLessonPage();
 
     function startAccessTimer(expiryTime) {
@@ -785,10 +839,10 @@ main {
                     const exp = now + validityDays * 24 * 60 * 60 * 1000;
                     const { error: updErr } = await supabaseClient.from('codes').update({ used: true, usedby: currentUser.email, lessonid: lessonId, expiryat: exp }).eq('code', code);
                     if (updErr) throw updErr;
-                    localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry: exp}));
+                    localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry: exp, studentId: myStudentId}));
                     location.reload();
                 } else if(codeData.usedby === currentUser.email && codeData.lessonid === lessonId && codeData.expiryat > now) {
-                    localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry: codeData.expiryat}));
+                    localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry: codeData.expiryat, studentId: myStudentId}));
                     location.reload();
                 } else if(codeData.expiryat && codeData.expiryat <= now) { alert("هذا الكود انتهت صلاحيته!"); }
                 else { alert("هذا الكود مستخدم لحساب آخر!"); }
@@ -801,23 +855,39 @@ main {
         document.getElementById('codeLockScreen').classList.add('hidden');
         document.getElementById('lessonContent').classList.remove('hidden');
         const id = new URLSearchParams(window.location.search).get('id');
-        const { data: snap } = await supabaseClient.from('lessons').select('*').eq('id', id).single();
+
+        // ── جلب بيانات الحصة والنتائج في نفس الوقت ──
+        const [
+            { data: snap },
+            { data: rSnap }
+        ] = await Promise.all([
+            supabaseClient.from('lessons').select('*').eq('id', id).single(),
+            supabaseClient.from('results').select('*').eq('email', currentUser?.email).order('date', { ascending: false })
+        ]);
+
         if(!snap) return;
         lessonData = snap;
         questions = lessonData.questions || [];
-        try {
-            const { data: rSnap } = await supabaseClient.from('results').select('*').eq('email', currentUser.email).eq('lesson', lessonData.name);
-            if (rSnap && rSnap.length > 0) {
-                const ed = rSnap[0]; userAns = ed.userans || {};
-                generateReview(); unlockFeatures(buildScoreMsg(ed.score, questions.length, true));
-            } else {
-                const saved = localStorage.getItem(`exam_data_${currentUser.id}_${id}`);
-                if (saved) {
-                    const pd = JSON.parse(saved); userAns = pd.userAns;
-                    generateReview(); unlockFeatures(buildScoreMsg(pd.score, questions.length, true));
-                }
-            }
-        } catch(e){ console.log(e); }
+
+        // فحص لو عمل امتحان قبل كده
+        const prevResult = rSnap?.find(r => r.lesson === lessonData.name);
+        if (prevResult) {
+            userAns = prevResult.userans || {};
+            generateReview();
+            unlockFeatures(buildScoreMsg(prevResult.score, questions.length, true));
+            return;
+        }
+
+        // فحص localStorage
+        const saved = localStorage.getItem(`exam_data_${currentUser.id}_${id}`);
+        if (saved) {
+            try {
+                const pd = JSON.parse(saved);
+                userAns = pd.userAns;
+                generateReview();
+                unlockFeatures(buildScoreMsg(pd.score, questions.length, true));
+            } catch(e) {}
+        }
     }
 
     function buildScoreMsg(score, total, wasPrev) {
