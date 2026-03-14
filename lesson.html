@@ -858,7 +858,6 @@ main {
     </main>
 </div>
 
-
 <script>
     const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
     const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
@@ -1167,7 +1166,7 @@ main {
         });
 
         if(lessonData.video && !plyrPlayer) {
-            plyrPlayer = true; // منع التكرار
+            plyrPlayer = true; 
             const vc = document.getElementById('tab-video');
             const getYtId = (url) => { const m=url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/); return m?m[1]:null; };
             const vId = getYtId(lessonData.video);
@@ -1175,12 +1174,98 @@ main {
             vc.innerHTML = `<div class="vid-section-title">فيديو الشرح</div>` +
                 (vId ? buildYTPlayer(vId) : buildMP4Player(lessonData.video));
 
-            if (!vId) initMP4Player();
+            if (!vId) {
+                initMP4Player();
+            } else {
+                loadYTApi(); 
+            }
         }
         if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
     }
 
-    /* ══ YOUTUBE PLAYER ══ */
+    /* ══ YOUTUBE CONTROLS (OFFICIAL API) ══ */
+    let ytPlayer = null;
+    let ytDur = 0;
+    let ytCur = 0;
+    let ytPlaying = false;
+    let ytTimer = null;
+
+    // Load API dynamically
+    function loadYTApi() {
+        if (window.YT && window.YT.Player) {
+            initYTPlayer();
+            return;
+        }
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = function() {
+        initYTPlayer();
+    };
+
+    function initYTPlayer() {
+        const fr = document.getElementById('ytFrame');
+        if (!fr) return;
+        
+        ytPlayer = new YT.Player('ytFrame', {
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        ytDur = ytPlayer.getDuration() || 0;
+        document.getElementById('vpDur').textContent = fmtTime(ytDur);
+        if (ytTimer) clearInterval(ytTimer);
+        ytTimer = setInterval(updateYTTime, 500);
+    }
+
+    function updateYTTime() {
+        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+        ytCur = ytPlayer.getCurrentTime() || 0;
+        ytDur = ytPlayer.getDuration() || 0;
+        
+        document.getElementById('vpDur').textContent = fmtTime(ytDur);
+        document.getElementById('vpCur').textContent = fmtTime(ytCur);
+        
+        const pct = ytDur ? (ytCur / ytDur * 100) : 0;
+        document.getElementById('vpFill').style.width = pct + '%';
+        document.getElementById('vpThumb').style.left = pct + '%';
+    }
+
+    function onPlayerStateChange(event) {
+        ytPlaying = (event.data === YT.PlayerState.PLAYING);
+        const playBtn = document.getElementById('vpPlay');
+        if (playBtn) {
+            playBtn.innerHTML = ytPlaying
+                ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`
+                : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+        }
+    }
+
+    window.toggleYtPlay = () => {
+        if (!ytPlayer || !ytPlayer.getPlayerState) return;
+        const state = ytPlayer.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+            ytPlayer.pauseVideo();
+        } else {
+            ytPlayer.playVideo();
+        }
+    };
+
+    window.ytSeek = (s) => {
+        if (!ytPlayer || !ytPlayer.seekTo) return;
+        ytCur += s;
+        if (ytCur < 0) ytCur = 0;
+        if (ytCur > ytDur) ytCur = ytDur;
+        ytPlayer.seekTo(ytCur, true);
+    };
+
     function buildYTPlayer(vId) {
         return `
         <div class="vp-wrap vp-yt-mode" id="vpWrap">
@@ -1290,15 +1375,6 @@ main {
         const wrap = document.getElementById('vpWrap');
         if (!vid) return;
 
-        const playBtn = document.getElementById('vpPlay');
-        const playIco = document.getElementById('vpPlayIco');
-        const pauseSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-        const playSvg  = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-
-        playBtn.onclick = () => vid.paused ? vid.play() : vid.pause();
-        vid.onplay  = () => { playBtn.innerHTML = pauseSvg; wrap.classList.add('show-controls'); };
-        vid.onpause = () => { playBtn.innerHTML = playSvg; };
-
         let hideTimer;
         wrap.addEventListener('mousemove', () => {
             wrap.classList.add('show-controls');
@@ -1321,12 +1397,8 @@ main {
             }
         };
 
-        const prog = document.getElementById('vpProg');
-        prog.addEventListener('click', e => {
-            const r = prog.getBoundingClientRect();
-            vid.currentTime = ((e.clientX - r.left) / r.width) * vid.duration;
-        });
         let dragging = false;
+        const prog = document.getElementById('vpProg');
         prog.addEventListener('mousedown', () => dragging = true);
         document.addEventListener('mousemove', e => {
             if (!dragging) return;
@@ -1345,11 +1417,6 @@ main {
         });
         document.addEventListener('touchend', () => dragging = false);
 
-        const volInput = document.getElementById('vpVol');
-        if (volInput) {
-            volInput.oninput = () => { vid.volume = volInput.value; vid.muted = volInput.value == 0; };
-        }
-
         let lastTap = 0;
         wrap.addEventListener('touchend', e => {
             const now = Date.now();
@@ -1364,90 +1431,85 @@ main {
 
     window.mp4Seek = (s) => { const v = document.getElementById('vpVid'); if(v) v.currentTime = Math.max(0, v.currentTime + s); };
 
-    /* ══ YOUTUBE CONTROLS (via postMessage) ══ */
-    let ytReady = false, ytDur = 0, ytCur = 0, ytPlaying = false, ytTimer;
-    
-    // تشغيل وإيقاف يوتيوب عبر الطبقة الشفافة
-    window.toggleYtPlay = () => {
-        ytPlaying ? ytCmd('pauseVideo') : ytCmd('playVideo');
-        ytPoll();
-    };
-
-    window.addEventListener('message', e => {
-        try {
-            const d = JSON.parse(e.data);
-            if (d.event === 'onReady') { ytReady = true; ytDur = 0; }
-            if (d.event === 'infoDelivery' && d.info) {
-                if (d.info.duration) { ytDur = d.info.duration; document.getElementById('vpDur').textContent = fmtTime(ytDur); }
-                if (d.info.currentTime !== undefined) {
-                    ytCur = d.info.currentTime;
-                    const pct = ytDur ? (ytCur/ytDur*100) : 0;
-                    document.getElementById('vpFill').style.width = pct + '%';
-                    document.getElementById('vpThumb').style.left = pct + '%';
-                    document.getElementById('vpCur').textContent = fmtTime(ytCur);
-                }
-                if (d.info.playerState !== undefined) {
-                    ytPlaying = d.info.playerState === 1;
-                    const playBtn = document.getElementById('vpPlay');
-                    if (playBtn) playBtn.innerHTML = ytPlaying
-                        ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`
-                        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-                }
-            }
-        } catch(err) {}
-    });
-
-    function ytCmd(func, args) {
-        const fr = document.getElementById('ytFrame');
-        if (!fr) return;
-        fr.contentWindow.postMessage(JSON.stringify({event:'command', func, args: args||[]}), '*');
-    }
-
-    function ytPoll() {
-        ytCmd('getPlayerState'); ytCmd('getCurrentTime'); ytCmd('getDuration');
-        ytCmd('addEventListener', ['onReady']);
-        if (!ytTimer) ytTimer = setInterval(() => { ytCmd('getCurrentTime'); ytCmd('getDuration'); ytCmd('getPlayerState'); }, 500);
-    }
-
+    /* ══ GLOBAL CLICK LISTENER FOR PLAY/SEEK ══ */
     document.addEventListener('click', e => {
-        const wrap = e.target.closest('.vp-iframe-wrap');
-        if (wrap) ytPoll();
-    });
-    setTimeout(ytPoll, 1000);
-
-    const vpPlayBtn = document.getElementById?.('vpPlay');
-
-    document.addEventListener('click', e => {
+        // Play button
         const btn = e.target.closest('#vpPlay');
-        if (!btn) return;
-        const vid = document.getElementById('vpVid');
-        if (vid) { vid.paused ? vid.play() : vid.pause(); return; }
-        ytPlaying ? ytCmd('pauseVideo') : ytCmd('playVideo');
-        ytPoll();
-    });
+        if (btn) {
+            const vid = document.getElementById('vpVid');
+            if (vid) {
+                if (vid.paused) {
+                    vid.play();
+                    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+                } else {
+                    vid.pause();
+                    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+                }
+                return;
+            }
+            toggleYtPlay();
+            return;
+        }
 
-    window.ytSeek = (s) => {
-        ytCmd('seekTo', [ytCur + s, true]);
-        ytCur += s;
-    };
+        // Seek Progress Click (For YT & MP4)
+        const prog = e.target.closest('#vpProg');
+        if (prog) {
+            const r = prog.getBoundingClientRect();
+            const pct = (e.clientX - r.left) / r.width;
+            
+            const vid = document.getElementById('vpVid');
+            if (vid) {
+                vid.currentTime = pct * vid.duration;
+            } else if (ytPlayer && ytPlayer.seekTo) {
+                ytPlayer.seekTo(ytDur * pct, true);
+            }
+        }
+    });
 
     /* ══ SHARED CONTROLS ══ */
     window.setSpeed = (s) => {
         document.querySelectorAll('.vpc-popup-item').forEach(i => i.classList.toggle('active', parseFloat(i.textContent) === s));
         document.getElementById('vpSpeedLbl').textContent = s + 'x';
         const vid = document.getElementById('vpVid');
-        if (vid) vid.playbackRate = s;
-        else ytCmd('setPlaybackRate', [s]);
+        if (vid) {
+            vid.playbackRate = s;
+        } else if (ytPlayer && ytPlayer.setPlaybackRate) {
+            ytPlayer.setPlaybackRate(s);
+        }
         closeAllPopups();
     };
 
     window.toggleMute = () => {
         const vid = document.getElementById('vpVid');
-        if (!vid) return;
-        vid.muted = !vid.muted;
         const v = document.getElementById('vpVol');
-        if (v) v.value = vid.muted ? 0 : vid.volume;
+        
+        if (vid) {
+            vid.muted = !vid.muted;
+            if (v) v.value = vid.muted ? 0 : vid.volume;
+        } else if (ytPlayer) {
+            if (ytPlayer.isMuted()) {
+                ytPlayer.unMute();
+                if(v) v.value = ytPlayer.getVolume() / 100 || 1;
+            } else {
+                ytPlayer.mute();
+                if(v) v.value = 0;
+            }
+        }
     };
+
+    document.addEventListener('input', e => {
+        if(e.target.id === 'vpVol') {
+            const val = parseFloat(e.target.value);
+            const vid = document.getElementById('vpVid');
+            if(vid) {
+                vid.volume = val;
+                vid.muted = val === 0;
+            } else if (ytPlayer && ytPlayer.setVolume) {
+                ytPlayer.setVolume(val * 100);
+                val === 0 ? ytPlayer.mute() : ytPlayer.unMute();
+            }
+        }
+    });
 
     window.togglePopup = (id) => {
         const pop = document.getElementById(id);
@@ -1478,15 +1540,6 @@ main {
         ico.innerHTML = document.fullscreenElement
             ? `<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>`
             : `<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>`;
-    });
-
-    // Seek progress click for YT
-    document.addEventListener('click', e => {
-        const prog = e.target.closest('#vpProg');
-        if (!prog || document.getElementById('vpVid')) return;
-        const r = prog.getBoundingClientRect();
-        const pct = (e.clientX - r.left) / r.width;
-        ytCmd('seekTo', [ytDur * pct, true]);
     });
 
     function fmtTime(s) {
