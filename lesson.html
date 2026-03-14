@@ -293,7 +293,7 @@ main {
     color: #021a10; border: none; padding: 17px 52px;
     border-radius: 16px; font-family: var(--sans); font-size: 1.1rem;
     font-weight: 900; cursor: pointer; transition: all .3s;
-    box-shadow: 0 8px 32px rgba(0,229,160,.25);
+    box-shadow: 0 8px 32px rgba(0,229,160,.3);
     min-height: 58px; position: relative; overflow: hidden;
 }
 .start-btn::after {
@@ -518,10 +518,15 @@ main {
 
 /* video element */
 .vp-video { width: 100%; display: block; background: #000; aspect-ratio: 16/9; }
-.vp-iframe-wrap { width: 100%; aspect-ratio: 16/9; position: relative; }
-.vp-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
-.vp-iframe-wrap .vp-yt-overlay {
-    position: absolute; inset: 0; z-index: 20; cursor: pointer;
+
+/* 🔥 إعدادات اليوتيوب 🔥 */
+.vp-iframe-wrap { width: 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; background: #000; }
+.vp-iframe-wrap iframe { 
+    width: 100%; height: 100%; border: none; display: block; 
+    pointer-events: none !important; /* يمنع لمس اليوتيوب نهائياً */
+}
+.vp-yt-overlay {
+    position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent;
 }
 
 /* controls */
@@ -633,7 +638,6 @@ main {
 
 /* YouTube iframe container - controls shown above */
 .vp-yt-mode .vp-controls { position: relative; background: rgba(10,12,20,.95); padding: 10px 16px 12px; opacity: 1 !important; }
-.vp-yt-mode .vp-watermark { display: none; }
 
 @media (max-width: 640px) {
     .vpc-btn { width: 32px; height: 32px; }
@@ -1180,9 +1184,12 @@ main {
     function buildYTPlayer(vId) {
         return `
         <div class="vp-wrap vp-yt-mode" id="vpWrap">
+            <div class="vp-watermark"><span>ID: ${myStudentId}</span></div>
+            
             <div class="vp-iframe-wrap">
+                <div class="vp-yt-overlay" onclick="toggleYtPlay()"></div>
                 <iframe id="ytFrame"
-                    src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&origin=${encodeURIComponent(location.origin)}"
+                    src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(location.origin)}"
                     allow="autoplay; fullscreen" allowfullscreen></iframe>
             </div>
             <div class="vp-controls" id="vpControls">
@@ -1283,7 +1290,6 @@ main {
         const wrap = document.getElementById('vpWrap');
         if (!vid) return;
 
-        // Play/Pause
         const playBtn = document.getElementById('vpPlay');
         const playIco = document.getElementById('vpPlayIco');
         const pauseSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
@@ -1293,7 +1299,6 @@ main {
         vid.onplay  = () => { playBtn.innerHTML = pauseSvg; wrap.classList.add('show-controls'); };
         vid.onpause = () => { playBtn.innerHTML = playSvg; };
 
-        // Auto hide controls
         let hideTimer;
         wrap.addEventListener('mousemove', () => {
             wrap.classList.add('show-controls');
@@ -1302,7 +1307,6 @@ main {
         });
         wrap.addEventListener('mouseleave', () => { if (!vid.paused) wrap.classList.remove('show-controls'); });
 
-        // Time update
         vid.ontimeupdate = () => {
             const pct = vid.duration ? (vid.currentTime / vid.duration * 100) : 0;
             document.getElementById('vpFill').style.width = pct + '%';
@@ -1317,7 +1321,6 @@ main {
             }
         };
 
-        // Seek
         const prog = document.getElementById('vpProg');
         prog.addEventListener('click', e => {
             const r = prog.getBoundingClientRect();
@@ -1333,7 +1336,6 @@ main {
         });
         document.addEventListener('mouseup', () => dragging = false);
 
-        // Touch seek
         prog.addEventListener('touchstart', e => { e.preventDefault(); dragging = true; }, {passive:false});
         document.addEventListener('touchmove', e => {
             if (!dragging) return;
@@ -1343,13 +1345,11 @@ main {
         });
         document.addEventListener('touchend', () => dragging = false);
 
-        // Volume
         const volInput = document.getElementById('vpVol');
         if (volInput) {
             volInput.oninput = () => { vid.volume = volInput.value; vid.muted = volInput.value == 0; };
         }
 
-        // Double-tap seek on mobile
         let lastTap = 0;
         wrap.addEventListener('touchend', e => {
             const now = Date.now();
@@ -1366,6 +1366,13 @@ main {
 
     /* ══ YOUTUBE CONTROLS (via postMessage) ══ */
     let ytReady = false, ytDur = 0, ytCur = 0, ytPlaying = false, ytTimer;
+    
+    // تشغيل وإيقاف يوتيوب عبر الطبقة الشفافة
+    window.toggleYtPlay = () => {
+        ytPlaying ? ytCmd('pauseVideo') : ytCmd('playVideo');
+        ytPoll();
+    };
+
     window.addEventListener('message', e => {
         try {
             const d = JSON.parse(e.data);
@@ -1395,6 +1402,7 @@ main {
         if (!fr) return;
         fr.contentWindow.postMessage(JSON.stringify({event:'command', func, args: args||[]}), '*');
     }
+
     function ytPoll() {
         ytCmd('getPlayerState'); ytCmd('getCurrentTime'); ytCmd('getDuration');
         ytCmd('addEventListener', ['onReady']);
@@ -1402,7 +1410,8 @@ main {
     }
 
     document.addEventListener('click', e => {
-        if (e.target.closest('#ytFrame') || e.target.closest('.vp-iframe-wrap')) ytPoll();
+        const wrap = e.target.closest('.vp-iframe-wrap');
+        if (wrap) ytPoll();
     });
     setTimeout(ytPoll, 1000);
 
