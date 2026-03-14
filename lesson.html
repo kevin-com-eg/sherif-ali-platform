@@ -71,6 +71,15 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--accent3); border-radius: 2px; }
 .hidden { display: none !important; }
 
+/* 🔥 DEV TOOLS BLOCKER 🔥 */
+#devToolsBlocker {
+    position: fixed; inset: 0; z-index: 999999;
+    background: rgba(5, 8, 15, 0.98); backdrop-filter: blur(20px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px;
+}
+#devToolsBlocker:not(.hidden) { display: flex !important; }
+
 /* ─────────────────────────────────────────────
    LOCK SCREEN
 ───────────────────────────────────────────── */
@@ -506,9 +515,10 @@ main {
 }
 .vp-watermark span {
     position: absolute;
-    font-family: var(--mono); font-size: 1rem; font-weight: 500;
-    color: rgba(255,255,255,.18); text-shadow: 1px 1px 4px rgba(0,0,0,.9);
-    animation: wmFloat 25s linear infinite alternate; white-space: nowrap;
+    font-family: var(--mono); font-size: 1.4rem; font-weight: 900;
+    color: rgba(255,255,255,.35);
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+    animation: wmFloat 20s linear infinite alternate; white-space: nowrap;
 }
 @keyframes wmFloat {
     0%  { top:10%; left:8%; }  25% { top:72%; left:12%; }
@@ -525,6 +535,19 @@ main {
     width: 100%; height: 100%; border: none; display: block; 
     pointer-events: none !important; /* يمنع لمس اليوتيوب نهائياً */
 }
+.yt-blocker {
+    position: absolute;
+    left: 0; right: 0;
+    background: #000;
+    z-index: 15;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.yt-blocker-top { top: 0; height: 75px; }
+.yt-blocker-bottom { bottom: 0; height: 65px; }
+
+.vp-wrap.playing .yt-blocker { opacity: 0; }
+
 .vp-yt-overlay {
     position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent;
 }
@@ -717,6 +740,12 @@ main {
 </head>
 <body oncontextmenu="return false;">
 
+<div id="devToolsBlocker" class="hidden">
+    <div style="font-size:5rem;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(239,68,68,0.5));">🛑</div>
+    <h2 style="font-size:2.2rem;font-weight:900;color:#ef4444;margin-bottom:15px;">تحذير أمني!</h2>
+    <p style="font-size:1.1rem;color:#7a9ab5;max-width:400px;line-height:1.6;">تم اكتشاف فتح أدوات المطور (Developer Tools).<br>لحماية محتوى المنصة، يرجى إغلاقها فوراً لتتمكن من المتابعة.</p>
+</div>
+
 <div class="bg-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -796,7 +825,6 @@ main {
     <main>
 
         <div id="tab-quiz">
-
             <div id="startScreen">
                 <span class="start-emoji">🚀</span>
                 <div class="start-title">جاهز تبدأ الامتحان؟</div>
@@ -838,7 +866,6 @@ main {
                 <div class="review-section-title">مراجعة الإجابات</div>
                 <div id="reviewList"></div>
             </div>
-
         </div>
 
         <div id="tab-video" class="hidden"></div>
@@ -884,7 +911,6 @@ main {
         const lessonId = new URLSearchParams(window.location.search).get('id');
         if (!lessonId) return;
 
-        // ── 1. فحص session + cache في نفس الوقت ──
         const sessionPromise = supabaseClient.auth.getSession();
         const savedAccess = localStorage.getItem(`access_${lessonId}_local`);
 
@@ -895,7 +921,6 @@ main {
         const savedLocal = localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
         const now = Date.now();
 
-        // ── 2. لو في cache صالح → افتح الحصة فوراً بدون انتظار ──
         if (savedLocal) {
             try {
                 const parsed = JSON.parse(savedLocal);
@@ -904,14 +929,12 @@ main {
                     hideLoader();
                     initLesson();
                     startAccessTimer(parsed.expiry);
-                    // في الخلفية: تحقق من السيرفر بهدوء
                     verifyAccessInBackground(currentUser, lessonId);
                     return;
                 }
             } catch(e) {}
         }
 
-        // ── 3. لا يوجد cache → اعمل requests بالتوازي ──
         try {
             const [
                 { data: uData },
@@ -949,7 +972,6 @@ main {
         }
     }
 
-    // تحقق في الخلفية بعد فتح الحصة من cache
     async function verifyAccessInBackground(user, lessonId) {
         try {
             const { data: codesData } = await supabaseClient.from('codes').select('expiryat,lessonid').eq('usedby', user.email);
@@ -958,7 +980,6 @@ main {
             let stillValid = false;
             codesData.forEach(cd => { if (cd.lessonid === lessonId && cd.expiryat > now) stillValid = true; });
             if (!stillValid) {
-                // انتهى الصلاحية فعلاً → امسح cache وأعد تحميل
                 localStorage.removeItem(`access_${user.id}_${lessonId}`);
             }
         } catch(e) {}
@@ -987,7 +1008,6 @@ main {
         btn.disabled = true;
 
         try {
-            // لو currentUser لسه null → اجلب الـ session دلوقتي
             if (!currentUser) {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (!session) { window.location.href = "index.html"; return; }
@@ -1025,7 +1045,6 @@ main {
         document.getElementById('lessonContent').classList.remove('hidden');
         const id = new URLSearchParams(window.location.search).get('id');
 
-        // ── جلب بيانات الحصة والنتائج في نفس الوقت ──
         const [
             { data: snap },
             { data: rSnap }
@@ -1038,7 +1057,6 @@ main {
         lessonData = snap;
         questions = lessonData.questions || [];
 
-        // فحص لو عمل امتحان قبل كده
         const prevResult = rSnap?.find(r => r.lesson === lessonData.name);
         if (prevResult) {
             userAns = prevResult.userans || {};
@@ -1047,7 +1065,6 @@ main {
             return;
         }
 
-        // فحص localStorage
         const saved = localStorage.getItem(`exam_data_${currentUser.id}_${id}`);
         if (saved) {
             try {
@@ -1190,7 +1207,6 @@ main {
     let ytPlaying = false;
     let ytTimer = null;
 
-    // Load API dynamically
     function loadYTApi() {
         if (window.YT && window.YT.Player) {
             initYTPlayer();
@@ -1240,6 +1256,13 @@ main {
 
     function onPlayerStateChange(event) {
         ytPlaying = (event.data === YT.PlayerState.PLAYING);
+        
+        const wrap = document.getElementById('vpWrap');
+        if (wrap) {
+            if (ytPlaying) wrap.classList.add('playing');
+            else wrap.classList.remove('playing');
+        }
+
         const playBtn = document.getElementById('vpPlay');
         if (playBtn) {
             playBtn.innerHTML = ytPlaying
@@ -1272,8 +1295,13 @@ main {
             <div class="vp-watermark"><span>ID: ${myStudentId}</span></div>
             
             <div class="vp-iframe-wrap">
+                <div class="yt-blocker yt-blocker-top"></div>
+                <div class="yt-blocker yt-blocker-bottom"></div>
+                
                 <div class="vp-yt-overlay" onclick="toggleYtPlay()"></div>
+                
                 <iframe id="ytFrame"
+                    sandbox="allow-scripts allow-same-origin allow-presentation"
                     src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(location.origin)}"
                     allow="autoplay; fullscreen" allowfullscreen></iframe>
             </div>
@@ -1316,7 +1344,6 @@ main {
         </div>`;
     }
 
-    /* ══ MP4 PLAYER ══ */
     function buildMP4Player(src) {
         return `
         <div class="vp-wrap" id="vpWrap" oncontextmenu="return false;">
@@ -1369,11 +1396,19 @@ main {
         </div>`;
     }
 
-    /* ══ MP4 PLAYER LOGIC ══ */
     function initMP4Player() {
         const vid = document.getElementById('vpVid');
         const wrap = document.getElementById('vpWrap');
         if (!vid) return;
+
+        const playBtn = document.getElementById('vpPlay');
+        const playIco = document.getElementById('vpPlayIco');
+        const pauseSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+        const playSvg  = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+
+        playBtn.onclick = () => vid.paused ? vid.play() : vid.pause();
+        vid.onplay  = () => { playBtn.innerHTML = pauseSvg; wrap.classList.add('show-controls'); };
+        vid.onpause = () => { playBtn.innerHTML = playSvg; };
 
         let hideTimer;
         wrap.addEventListener('mousemove', () => {
@@ -1397,8 +1432,12 @@ main {
             }
         };
 
-        let dragging = false;
         const prog = document.getElementById('vpProg');
+        prog.addEventListener('click', e => {
+            const r = prog.getBoundingClientRect();
+            vid.currentTime = ((e.clientX - r.left) / r.width) * vid.duration;
+        });
+        let dragging = false;
         prog.addEventListener('mousedown', () => dragging = true);
         document.addEventListener('mousemove', e => {
             if (!dragging) return;
@@ -1417,6 +1456,11 @@ main {
         });
         document.addEventListener('touchend', () => dragging = false);
 
+        const volInput = document.getElementById('vpVol');
+        if (volInput) {
+            volInput.oninput = () => { vid.volume = volInput.value; vid.muted = volInput.value == 0; };
+        }
+
         let lastTap = 0;
         wrap.addEventListener('touchend', e => {
             const now = Date.now();
@@ -1431,9 +1475,7 @@ main {
 
     window.mp4Seek = (s) => { const v = document.getElementById('vpVid'); if(v) v.currentTime = Math.max(0, v.currentTime + s); };
 
-    /* ══ GLOBAL CLICK LISTENER FOR PLAY/SEEK ══ */
     document.addEventListener('click', e => {
-        // Play button
         const btn = e.target.closest('#vpPlay');
         if (btn) {
             const vid = document.getElementById('vpVid');
@@ -1451,7 +1493,6 @@ main {
             return;
         }
 
-        // Seek Progress Click (For YT & MP4)
         const prog = e.target.closest('#vpProg');
         if (prog) {
             const r = prog.getBoundingClientRect();
@@ -1466,7 +1507,6 @@ main {
         }
     });
 
-    /* ══ SHARED CONTROLS ══ */
     window.setSpeed = (s) => {
         document.querySelectorAll('.vpc-popup-item').forEach(i => i.classList.toggle('active', parseFloat(i.textContent) === s));
         document.getElementById('vpSpeedLbl').textContent = s + 'x';
@@ -1556,6 +1596,28 @@ main {
             if(timeLeft-- <= 0) { clearInterval(examTimer); alert("انتهى وقت الامتحان!"); document.getElementById('finishBtn').click(); }
         }, 1000);
     }
+
+    /* 🔥 نظام الحماية ضد أدوات المطور (Developer Tools Blocker) 🔥 */
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+           (e.ctrlKey && e.key.toUpperCase() === 'U')) {
+            e.preventDefault();
+        }
+    });
+
+    setInterval(() => {
+        const start = performance.now();
+        debugger; // إذا فُتحت أدوات المطور، سيتم إيقاف الكود هنا مؤقتاً
+        const end = performance.now();
+        if (end - start > 100) {
+            // تم اكتشاف أدوات المطور
+            document.getElementById('devToolsBlocker').classList.remove('hidden');
+        } else {
+            // مغلقة
+            document.getElementById('devToolsBlocker').classList.add('hidden');
+        }
+    }, 1000);
 </script>
 </body>
 </html>
