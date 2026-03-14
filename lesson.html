@@ -722,7 +722,7 @@ main {
 <div class="noise"></div>
 
 <!-- ══ LOCK SCREEN ══════════════════════════════════ -->
-<div id="codeLockScreen">
+<div id="codeLockScreen" class="hidden">
     <div class="lock-card">
         <button class="lock-back" onclick="window.history.back()">↩ رجوع</button>
 
@@ -955,7 +955,16 @@ main {
         if(!code) return alert("من فضلك أدخل الكود");
         const btn = document.getElementById('verifyBtn');
         btn.textContent = "جاري التحقق...";
+        btn.disabled = true;
+
         try {
+            // لو currentUser لسه null → اجلب الـ session دلوقتي
+            if (!currentUser) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) { window.location.href = "index.html"; return; }
+                currentUser = session.user;
+            }
+
             const { data: codeDataArr } = await supabaseClient.from('codes').select('*').eq('code', code);
             if(codeDataArr && codeDataArr.length > 0) {
                 const codeData = codeDataArr[0];
@@ -976,7 +985,9 @@ main {
                 else { alert("هذا الكود مستخدم لحساب آخر!"); }
             } else { alert("الكود غير صحيح!"); }
         } catch(e) { alert("خطأ: " + e.message); }
+
         btn.textContent = "تفعيل الحصة ←";
+        btn.disabled = false;
     };
 
     async function initLesson() {
