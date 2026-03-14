@@ -798,65 +798,64 @@ function staggerCards() {
         }
         currentUser = session.user;
 
-        // جلب الإعلانات
-        const { data: annData } = await supabaseClient.from('announcements')
-            .select('*')
-            .eq('active', true)
-            .order('created_at', { ascending: false })
-            .limit(1);
+        const gradeNames = {"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
 
+        // ── 1. عرض cache فوري لو موجود ──
+        const cached = localStorage.getItem(`dashboard_cache_${currentUser.id}`);
+        if (cached) {
+            try {
+                const c = JSON.parse(cached);
+                applyUserUI(c.user, gradeNames);
+                if (c.activeLessons) myActiveLessons = c.activeLessons;
+                document.getElementById('statPurchases').textContent = c.validCount ?? '—';
+                document.getElementById('statExams').textContent = c.examsCount ?? '—';
+                if (c.lessons) renderLessons(c.lessons);
+            } catch(e) {}
+        }
+
+        // ── 2. كل الـ requests في نفس الوقت ──
+        const [
+            { data: d },
+            { data: annData },
+            { data: allLessons },
+            { data: cSnap },
+            { data: rSnap }
+        ] = await Promise.all([
+            supabaseClient.from('users').select('*').eq('id', currentUser.id).single(),
+            supabaseClient.from('announcements').select('*').eq('active', true).order('created_at', { ascending: false }).limit(1),
+            supabaseClient.from('lessons').select('*'),
+            supabaseClient.from('codes').select('*').eq('usedby', currentUser.email),
+            supabaseClient.from('results').select('*').eq('email', currentUser.email).order('date', { ascending: false })
+        ]);
+
+        if (!d) return;
+        const grade = d.grade || "1";
+
+        // ── 3. تحديث الـ UI ──
+        applyUserUI(d, gradeNames);
+
+        // إعلانات
         if (annData && annData.length > 0) {
             document.getElementById('announcementText').textContent = annData[0].message;
             document.getElementById('announcementBox').classList.remove('hidden');
         }
 
-        // بيانات الطالب
-        const { data: d } = await supabaseClient.from('users').select('*').eq('id', currentUser.id).single();
-        if (!d) return;
-
-        const name = d.name || "يا بطل";
-        const grade = d.grade || "1";
-        const gradeNames = {"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
-
-        document.getElementById('userNameDisplay').textContent = name;
-        document.getElementById('editName').value = d.name || "";
-        document.getElementById('editPhone').value = d.phone || "";
-        document.getElementById('editParentPhone').value = d.parentphone || ""; 
-        document.getElementById('gradeBadge').textContent = gradeNames[grade] || "عام";
-        document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true&size=128`;
-
-        await fetchReports(currentUser.email);
-
-        const { data: lessonsSnap } = await supabaseClient.from('lessons').select('*').eq('grade', grade).order('created_at', { ascending: false });
-        renderLessons(lessonsSnap);
-    }
-
-    async function fetchReports(email) {
-        const { data: lSnap } = await supabaseClient.from('lessons').select('*');
-        if (lSnap) {
-            lSnap.forEach(d => { lessonsMap[d.id] = d; });
-        }
-
-        const { data: cSnap } = await supabaseClient.from('codes').select('*').eq('usedby', email);
+        // معالجة الكورسات والكودات
+        if (allLessons) allLessons.forEach(l => { lessonsMap[l.id] = l; });
+        
+        myActiveLessons = [];
+        let validCount = 0, spent = 0, purchasesHtml = '';
         const now = Date.now();
-        let spent = 0, purchasesHtml = '', validCount = 0;
 
         if (cSnap) {
             cSnap.forEach(cd => {
                 const lesson = lessonsMap[cd.lessonid];
-                if(!lesson) return;
-                
-                if(cd.expiryat > now) { 
-                    myActiveLessons.push(cd.lessonid); 
-                    validCount++; 
-                }
-                
-                const price = Number(lesson.price) || 0; 
+                if (!lesson) return;
+                if (cd.expiryat > now) { myActiveLessons.push(cd.lessonid); validCount++; }
+                const price = Number(lesson.price) || 0;
                 spent += price;
-                
-                const usedDate = cd.expiryat ? new Date(cd.expiryat - (7 * 24 * 60 * 60 * 1000)).toLocaleDateString('ar-EG') : '—';
+                const usedDate = cd.expiryat ? new Date(cd.expiryat - 7*24*60*60*1000).toLocaleDateString('ar-EG') : '—';
                 const expired = cd.expiryat < now;
-                
                 purchasesHtml += `
                 <div class="rep-item">
                     <div>
@@ -871,9 +870,7 @@ function staggerCards() {
             });
         }
 
-        const { data: rSnap } = await supabaseClient.from('results').select('*').eq('email', email).order('date', { ascending: false });
         let examsHtml = '', examsCount = 0;
-        
         if (rSnap) {
             rSnap.forEach(rd => {
                 examsCount++;
@@ -899,6 +896,30 @@ function staggerCards() {
         document.getElementById('statExams').textContent = examsCount;
         document.getElementById('purchasesList').innerHTML = purchasesHtml || '<div class="empty-state" style="padding:40px 20px;"><div class="empty-txt">لم تقم بتفعيل أي كورس حتى الآن.</div></div>';
         document.getElementById('examsList').innerHTML = examsHtml || '<div class="empty-state" style="padding:40px 20px;"><div class="empty-txt">لم تقم بإجراء أي امتحانات حتى الآن.</div></div>';
+
+        // الكورسات حسب السنة
+        const gradeLessons = allLessons ? allLessons.filter(l => l.grade == grade).sort((a,b) => new Date(b.created_at) - new Date(a.created_at)) : [];
+        renderLessons(gradeLessons);
+
+        // ── 4. حفظ cache للمرة الجاية ──
+        try {
+            localStorage.setItem(`dashboard_cache_${currentUser.id}`, JSON.stringify({
+                user: d, activeLessons: myActiveLessons,
+                validCount, examsCount, lessons: gradeLessons,
+                cachedAt: Date.now()
+            }));
+        } catch(e) {}
+    }
+
+    function applyUserUI(d, gradeNames) {
+        const name = d.name || "يا بطل";
+        const grade = d.grade || "1";
+        document.getElementById('userNameDisplay').textContent = name;
+        document.getElementById('editName').value = d.name || "";
+        document.getElementById('editPhone').value = d.phone || "";
+        document.getElementById('editParentPhone').value = d.parentphone || "";
+        document.getElementById('gradeBadge').textContent = gradeNames[grade] || "عام";
+        document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true&size=128`;
     }
 
     function renderLessons(lessonsData) {
@@ -997,6 +1018,7 @@ function staggerCards() {
 
     document.getElementById('logoutBtn').onclick = async () => {
         if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج؟")) {
+            localStorage.removeItem(`dashboard_cache_${currentUser?.id}`);
             await supabaseClient.auth.signOut();
             window.location.href = "index.html";
         }
