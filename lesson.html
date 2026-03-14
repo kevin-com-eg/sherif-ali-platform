@@ -268,7 +268,7 @@ main {
 }
 @keyframes floatEmoji {
     0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
+    50%     { transform: translateY(-8px); }
 }
 .start-title {
     font-size: clamp(1.6rem, 4vw, 2rem); font-weight: 900;
@@ -293,7 +293,7 @@ main {
     color: #021a10; border: none; padding: 17px 52px;
     border-radius: 16px; font-family: var(--sans); font-size: 1.1rem;
     font-weight: 900; cursor: pointer; transition: all .3s;
-    box-shadow: 0 8px 32px rgba(0,229,160,.3);
+    box-shadow: 0 8px 32px rgba(0,229,160,.25);
     min-height: 58px; position: relative; overflow: hidden;
 }
 .start-btn::after {
@@ -676,7 +676,7 @@ main {
 .pdf-dl-btn {
     display: inline-flex; align-items: center; gap: 10px;
     background: linear-gradient(135deg, var(--gold), #d4820a);
-    color: #fff; border: none; padding: 16px 44px;
+    color: #fff; border: none; padding: 15px 44px;
     border-radius: 16px; font-family: var(--sans); font-size: 1rem; font-weight: 900;
     cursor: pointer; text-decoration: none; transition: all .3s;
     box-shadow: 0 8px 28px rgba(240,168,67,.25); min-height: 56px;
@@ -713,7 +713,6 @@ main {
 </head>
 <body oncontextmenu="return false;">
 
-<!-- BG EFFECTS -->
 <div class="bg-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -721,7 +720,6 @@ main {
 </div>
 <div class="noise"></div>
 
-<!-- LOADING SCREEN -->
 <div id="loadingScreen" style="
     position:fixed;inset:0;z-index:400;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
@@ -750,7 +748,6 @@ main {
 }
 </style>
 
-<!-- ══ LOCK SCREEN ══════════════════════════════════ -->
 <div id="codeLockScreen" class="hidden">
     <div class="lock-card">
         <button class="lock-back" onclick="window.history.back()">↩ رجوع</button>
@@ -764,7 +761,6 @@ main {
     </div>
 </div>
 
-<!-- ══ LESSON CONTENT ══════════════════════════════ -->
 <div id="lessonContent" class="hidden">
 
     <nav>
@@ -795,10 +791,8 @@ main {
 
     <main>
 
-        <!-- QUIZ TAB -->
         <div id="tab-quiz">
 
-            <!-- Start -->
             <div id="startScreen">
                 <span class="start-emoji">🚀</span>
                 <div class="start-title">جاهز تبدأ الامتحان؟</div>
@@ -813,7 +807,6 @@ main {
                 </button>
             </div>
 
-            <!-- Quiz -->
             <div id="quizApp" class="hidden quiz-wrap">
                 <div class="progress-row">
                     <span id="qCount" class="q-count">1 / 10</span>
@@ -836,7 +829,6 @@ main {
                 </div>
             </div>
 
-            <!-- Review -->
             <div id="reviewArea" class="hidden">
                 <div class="score-card" id="scoreBanner"></div>
                 <div class="review-section-title">مراجعة الإجابات</div>
@@ -845,10 +837,8 @@ main {
 
         </div>
 
-        <!-- VIDEO TAB -->
         <div id="tab-video" class="hidden"></div>
 
-        <!-- PDF TAB -->
         <div id="tab-pdf" class="hidden">
             <div class="pdf-card">
                 <div class="pdf-icon-wrap">📚</div>
@@ -1008,6 +998,7 @@ main {
                 const { data: lDataArr } = await supabaseClient.from('lessons').select('*').eq('id', lessonId);
                 let validityDays = 7;
                 if (lDataArr && lDataArr.length > 0 && lDataArr[0].validitydays) validityDays = lDataArr[0].validitydays;
+                
                 if(!codeData.used) {
                     const exp = now + validityDays * 24 * 60 * 60 * 1000;
                     const { error: updErr } = await supabaseClient.from('codes').update({ used: true, usedby: currentUser.email, lessonid: lessonId, expiryat: exp }).eq('code', code);
@@ -1493,7 +1484,6 @@ main {
         s = Math.floor(s || 0);
         const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
         return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-    }
     }
 
     function startTimer() {
