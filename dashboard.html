@@ -6,1092 +6,513 @@
     <title>MathPro | الصفحة الرئيسية</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+a,button,[onclick]{-webkit-tap-highlight-color:transparent;cursor:pointer;}
+input,textarea{touch-action:manipulation;}
+:root{
+  --bg:#f0f4f7;--white:#ffffff;--teal:#0d7a5f;--teal2:#0a6650;--teal3:#e8f5f1;--teal4:#c8e8e0;
+  --border:#e2e8ed;--border2:#d0dae2;--text:#1a2332;--text2:#5a6a7a;--text3:#8a9aaa;
+  --red:#e53935;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--r:14px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:10px;}
+.hidden{display:none!important;}
 
-/* ── TOUCH FIXES ── */
-a, button, [onclick], .nav-link, .btn-access, .lesson-card,
-.bn-item, .modal-close, .ann-close, .filter-btn, .hdr-icon-btn,
-.sidebar-toggle, .logout-btn-side, .save-btn, .hdr-avatar {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-}
-input, textarea { touch-action: manipulation; }
+/* NAVBAR */
+.navbar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-logo-icon{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:900;color:#fff;font-family:var(--mono);box-shadow:0 4px 12px rgba(13,122,95,.3);}
+.nav-logo-name{font-size:1.1rem;font-weight:900;color:var(--text);}
+.nav-logo-name span{color:var(--teal);}
+.nav-links{display:flex;align-items:center;gap:4px;}
+.nav-link{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:.88rem;font-weight:700;color:var(--text2);text-decoration:none;transition:all .2s;border:none;background:none;font-family:var(--sans);}
+.nav-link:hover,.nav-link.active{background:var(--teal3);color:var(--teal);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-avatar{width:38px;height:38px;border-radius:10px;border:2px solid var(--border);overflow:hidden;cursor:pointer;transition:all .2s;background:var(--bg);}
+.nav-avatar:hover{border-color:var(--teal);}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;}
+.nav-logout-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;background:#fee2e2;border:1px solid #fecaca;color:#dc2626;font-family:var(--sans);font-size:.83rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.nav-logout-btn:hover{background:#fecaca;border-color:#f87171;}
+.mobile-menu-btn{display:none;width:38px;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:10px;align-items:center;justify-content:center;cursor:pointer;color:var(--text);}
 
-:root {
-    /* Liquid Glass Palette */
-    --bg:      #05080f; /* Deep dark background */
-    --glass:   rgba(15, 20, 30, 0.45); /* Base glass color */
-    --glass-hover: rgba(20, 28, 40, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-edge: rgba(255, 255, 255, 0.15); /* Top border light reflection */
-    
-    --accent:  #00e5a0;
-    --accent2: #00b578;
-    --glow:    rgba(0,229,160,0.25);
-    --muted:   #6b809b;
-    --text:    #ffffff;
-    --text2:   #94a3b8;
-    --mono:    'DM Mono', monospace;
-    --sans:    'Tajawal', sans-serif;
-    --sidebar-w: 250px;
-}
+/* MOBILE DRAWER */
+.mob-nav{display:none;position:fixed;inset:0;z-index:200;}
+.mob-nav.open{display:block;}
+.mob-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);}
+.mob-panel{position:absolute;top:0;right:0;bottom:0;width:280px;background:var(--white);box-shadow:-8px 0 32px rgba(0,0,0,.15);display:flex;flex-direction:column;animation:slideIn .3s ease;}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.mob-head{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mob-close-btn{width:34px;height:34px;border-radius:8px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);}
+.mob-links{flex:1;padding:12px;overflow-y:auto;}
+.mob-link{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;font-size:.9rem;font-weight:700;color:var(--text2);text-decoration:none;transition:all .2s;margin-bottom:4px;border:none;background:none;width:100%;font-family:var(--sans);}
+.mob-link:hover,.mob-link.active{background:var(--teal3);color:var(--teal);}
+.mob-footer{padding:16px;border-top:1px solid var(--border);}
+.mob-logout{width:100%;display:flex;align-items:center;gap:8px;justify-content:center;padding:12px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;color:#dc2626;font-family:var(--sans);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.mob-logout:hover{background:#fecaca;}
 
-body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    overflow-x: hidden;
-    position: relative;
-}
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+/* PAGE */
+.page-wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px;}
 
-/* ── LIQUID ANIMATED BACKGROUND ── */
-.liquid-bg {
-    position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-}
-.liquid-blob {
-    position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.35;
-    animation: floatBlob 25s infinite alternate ease-in-out;
-}
-.blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #00e5a0; }
-.blob-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: #005a8c; animation-delay: -5s; }
-.blob-3 { top: 30%; left: 40%; width: 40vw; height: 40vw; background: #00b578; animation-delay: -12s; }
-.noise-overlay {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+/* ANNOUNCEMENT */
+.ann-bar{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;border-radius:var(--r);padding:14px 18px;margin-bottom:28px;animation:riseIn .4s both;}
+.ann-icon{font-size:1.3rem;flex-shrink:0;}
+.ann-tag{font-size:.65rem;font-weight:900;color:var(--teal);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);}
+.ann-msg{font-size:.9rem;font-weight:700;color:var(--text);margin-top:2px;}
+.ann-x{margin-right:auto;flex-shrink:0;width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,.05);border:none;color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;transition:all .2s;}
+.ann-x:hover{background:rgba(220,38,38,.1);color:var(--red);}
 
-@keyframes floatBlob {
-    0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
-    50%  { transform: translate(10vw, 5vh) scale(1.1) rotate(180deg); }
-    100% { transform: translate(-5vw, 15vh) scale(0.9) rotate(360deg); }
-}
+/* WELCOME */
+.welcome-strip{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;animation:riseIn .4s .05s both;}
+.welcome-greet{font-size:.72rem;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:6px;}
+.welcome-name{font-size:clamp(1.4rem,3vw,1.8rem);font-weight:900;color:var(--text);}
+.welcome-name span{color:var(--teal);}
+.grade-badge{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--border2);border-radius:10px;padding:9px 18px;font-size:.85rem;font-weight:800;color:var(--text);box-shadow:var(--shadow);}
 
-/* ── GLASSMORPHISM UTILITY ── */
-.glass-panel {
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid var(--glass-border);
-    border-top: 1px solid var(--glass-edge); /* Simulate light reflection */
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.05);
-}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:32px;animation:riseIn .4s .1s both;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);transition:all .3s;}
+.stat-card:hover{border-color:var(--teal4);box-shadow:var(--shadow2);transform:translateY(-2px);}
+.stat-icon{width:48px;height:48px;flex-shrink:0;background:var(--teal3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;border:1px solid var(--teal4);}
+.stat-num{font-family:var(--mono);font-size:1.7rem;font-weight:500;color:var(--teal);line-height:1;}
+.stat-lbl{font-size:.72rem;color:var(--text2);font-weight:700;margin-top:5px;}
 
-/* ── SIDEBAR ── */
-.sidebar {
-    width: var(--sidebar-w);
-    min-height: 100vh;
-    background: rgba(10, 15, 25, 0.5);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-left: 1px solid var(--glass-border);
-    display: flex; flex-direction: column;
-    position: fixed; right: 0; top: 0; bottom: 0;
-    z-index: 50; overflow-y: auto;
-    box-shadow: -10px 0 40px rgba(0,0,0,0.5);
-}
-.sidebar-logo {
-    padding: 32px 20px 24px;
-    border-bottom: 1px solid var(--glass-border);
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-}
-.logo-icon {
-    width: 60px; height: 60px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 18px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; font-weight: 900; color: #021a10;
-    font-family: var(--mono); letter-spacing: -2px;
-    box-shadow: 0 10px 24px var(--glow), inset 0 2px 4px rgba(255,255,255,0.5);
-}
-.logo-name { font-size: 1.1rem; font-weight: 900; color: var(--text); }
-.logo-name span { color: var(--accent); }
-.logo-sub { font-size: .65rem; color: var(--accent); font-family: var(--mono); letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
+/* SECTION */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;animation:riseIn .4s .15s both;}
+.sec-title{font-size:1rem;font-weight:900;color:var(--text);display:flex;align-items:center;gap:10px;}
+.sec-title::before{content:'';width:4px;height:18px;background:var(--teal);border-radius:3px;}
+.count-pill{background:var(--white);border:1px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:.7rem;font-weight:700;color:var(--text2);font-family:var(--mono);}
 
-.sidebar-nav { flex: 1; padding: 20px 12px; }
-.nav-section-label {
-    font-size: .65rem; color: var(--muted); font-weight: 700; letter-spacing: 1px;
-    text-transform: uppercase; padding: 16px 12px 6px; font-family: var(--mono);
-}
-.nav-link {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 16px; margin-bottom: 4px;
-    color: var(--text2); font-size: .9rem; font-weight: 600;
-    cursor: pointer; transition: all .3s ease;
-    border-radius: 14px; text-decoration: none;
-    position: relative; overflow: hidden;
-}
-.nav-link:hover { background: rgba(255,255,255,.05); color: var(--text); }
-.nav-link.active { background: rgba(0,229,160,.12); color: var(--accent); border: 1px solid rgba(0,229,160,.2); }
-.nav-link .nav-icon {
-    width: 34px; height: 34px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; flex-shrink: 0; transition: all .3s;
-}
-.nav-link.active .nav-icon { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #021a10; border-color: transparent; box-shadow: 0 4px 12px var(--glow); }
+/* FILTERS */
+.filter-row{display:flex;gap:8px;margin-bottom:22px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;animation:riseIn .4s .18s both;}
+.filter-row::-webkit-scrollbar{display:none;}
+.flt-btn{padding:8px 18px;border-radius:20px;flex-shrink:0;background:var(--white);border:1px solid var(--border2);color:var(--text2);font-family:var(--sans);font-size:.83rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.flt-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal3);}
+.flt-btn.active{background:var(--teal);border-color:var(--teal);color:#fff;}
 
-.sidebar-footer { padding: 16px; border-top: 1px solid var(--glass-border); }
-.logout-btn-side {
-    width: 100%; display: flex; align-items: center; gap: 10px; justify-content: center;
-    padding: 12px; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.2);
-    border-radius: 12px; color: #fca5a5; font-family: var(--sans); font-size: .85rem; font-weight: 700;
-    cursor: pointer; transition: all .3s;
+/* GRID */
+#lessonsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;}
+
+/* LESSON CARD */
+.lesson-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:all .3s;animation:riseIn .4s both;display:flex;flex-direction:column;}
+.lesson-card:hover{border-color:var(--teal4);box-shadow:var(--shadow2);transform:translateY(-3px);}
+.lc-img{position:relative;height:180px;overflow:hidden;}
+.lc-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+.lesson-card:hover .lc-img img{transform:scale(1.05);}
+.lc-img-fade{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.5));}
+.lc-status{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:.65rem;font-weight:900;font-family:var(--mono);}
+.lc-status.owned{background:rgba(13,122,95,.9);color:#fff;backdrop-filter:blur(8px);}
+.lc-status.locked{background:rgba(0,0,0,.65);color:#ccc;backdrop-filter:blur(8px);}
+.lc-price{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);color:#fff;font-size:.72rem;font-weight:700;font-family:var(--mono);padding:5px 10px;border-radius:8px;}
+.lc-price.free{background:rgba(13,122,95,.85);}
+.lc-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column;}
+.lc-tags{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.lc-tag{font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:6px;font-family:var(--mono);}
+.lc-tag.grade{background:var(--teal3);color:var(--teal);border:1px solid var(--teal4);}
+.lc-tag.teacher{background:var(--bg);color:var(--text2);border:1px solid var(--border2);}
+.lc-title{font-size:1rem;font-weight:900;color:var(--text);line-height:1.5;margin-bottom:16px;flex:1;}
+.lc-date{font-size:.68rem;color:var(--text3);font-family:var(--mono);margin-bottom:14px;display:flex;align-items:center;gap:5px;}
+.lc-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;font-family:var(--sans);font-weight:900;font-size:.9rem;text-decoration:none;border:none;cursor:pointer;transition:all .25s;}
+.lc-btn.owned{background:var(--teal);color:#fff;box-shadow:0 4px 14px rgba(13,122,95,.25);}
+.lc-btn.owned:hover{background:var(--teal2);box-shadow:0 6px 20px rgba(13,122,95,.35);}
+.lc-btn.buy{background:var(--bg);border:1.5px solid var(--border2);color:var(--text2);}
+.lc-btn.buy:hover{border-color:var(--teal);color:var(--teal);background:var(--teal3);}
+
+/* EMPTY */
+.empty-state{grid-column:1/-1;text-align:center;padding:64px 20px;background:var(--white);border:1.5px dashed var(--border2);border-radius:16px;}
+.empty-icon{font-size:3rem;margin-bottom:14px;opacity:.5;}
+.empty-txt{color:var(--text2);font-weight:700;}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:600px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.18);transform:translateY(24px) scale(.97);transition:all .35s cubic-bezier(.175,.885,.32,1.275);overflow:hidden;}
+.overlay.open .modal{transform:translateY(0) scale(1);}
+.modal-head{padding:22px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:1.1rem;font-weight:900;color:var(--text);}
+.modal-close{width:34px;height:34px;border-radius:8px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:.8rem;transition:all .2s;}
+.modal-close:hover{background:#fee2e2;color:var(--red);border-color:#fecaca;transform:rotate(90deg);}
+.modal-body{flex:1;overflow-y:auto;padding:22px 28px 28px;}
+.modal-body::-webkit-scrollbar{width:4px;}.modal-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.rep-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+.rep-stat{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px 10px;text-align:center;}
+.rep-stat-num{font-family:var(--mono);font-size:1.3rem;color:var(--teal);margin-bottom:4px;}
+.rep-stat-lbl{font-size:.62rem;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.rep-section{margin-bottom:24px;}
+.rep-section-title{font-size:.72rem;font-weight:900;color:var(--teal);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);font-family:var(--mono);}
+.rep-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;transition:background .2s;}
+.rep-item:hover{background:var(--teal3);border-color:var(--teal4);}
+.rep-item-name{font-size:.88rem;font-weight:700;color:var(--text);}
+.rep-item-date{font-size:.68rem;color:var(--text2);margin-top:3px;font-family:var(--mono);}
+.rep-price{font-family:var(--mono);font-size:.83rem;color:var(--teal);font-weight:700;}
+.badge-active{font-size:.6rem;font-weight:900;padding:3px 9px;border-radius:6px;background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;}
+.badge-expired{font-size:.6rem;font-weight:900;padding:3px 9px;border-radius:6px;background:#fee2e2;color:#9b1c1c;border:1px solid #fecaca;}
+.score-box{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:6px 12px;text-align:center;}
+.score-val{font-family:var(--mono);font-size:1rem;color:var(--teal);font-weight:700;}
+.score-total{font-family:var(--mono);font-size:.6rem;color:var(--text3);}
+.prof-field{margin-bottom:16px;}
+.prof-lbl{font-size:.68rem;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:block;font-family:var(--mono);}
+.prof-input{width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:12px 14px;border-radius:10px;font-family:var(--sans);font-size:.95rem;outline:none;transition:all .2s;}
+.prof-input:focus{border-color:var(--teal);background:var(--white);box-shadow:0 0 0 3px rgba(13,122,95,.1);}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.save-btn{width:100%;margin-top:8px;background:var(--teal);color:#fff;border:none;padding:13px;border-radius:11px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(13,122,95,.25);}
+.save-btn:hover{background:var(--teal2);box-shadow:0 6px 22px rgba(13,122,95,.35);transform:translateY(-1px);}
+
+/* FOOTER */
+.site-footer{background:#0f1e2a;color:#94a3b8;margin-top:48px;}
+.footer-inner{max-width:1200px;margin:0 auto;padding:48px 24px 32px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px;}
+.footer-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.footer-logo-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:900;color:#fff;font-family:var(--mono);}
+.footer-logo-name{font-size:1rem;font-weight:900;color:#fff;}
+.footer-logo-name span{color:var(--teal);}
+.footer-desc{font-size:.83rem;line-height:1.7;color:#6b7f8f;max-width:240px;margin-bottom:18px;}
+.footer-col-title{font-size:.72rem;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-family:var(--mono);}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:9px;}
+.footer-links a{text-decoration:none;color:#6b7f8f;font-size:.85rem;transition:color .2s;}
+.footer-links a:hover{color:#fff;}
+.footer-contact-item{display:flex;align-items:center;gap:8px;font-size:.83rem;color:#6b7f8f;margin-bottom:9px;}
+.footer-social{display:flex;gap:10px;}
+.footer-social-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;font-size:.8rem;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,.1);color:#94a3b8;transition:all .2s;}
+.footer-social-btn:hover{border-color:rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.05);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.07);padding:18px 24px;text-align:center;font-size:.75rem;color:#4b5e6e;font-family:var(--mono);}
+.footer-bottom span{color:var(--teal);}
+
+/* BOTTOM NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--white);border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(0,0,0,.08);padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
+.bn-inner{display:flex;align-items:center;justify-content:space-around;max-width:480px;margin:0 auto;}
+.bn-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 10px;border-radius:12px;min-width:58px;cursor:pointer;transition:all .2s;color:var(--text3);border:none;background:none;font-family:var(--sans);position:relative;}
+.bn-btn.active{color:var(--teal);}
+.bn-label{font-size:.58rem;font-weight:700;white-space:nowrap;}
+.bn-logout-btn{color:#e53935!important;}
+.bn-dot{position:absolute;top:4px;right:8px;width:7px;height:7px;background:var(--teal);border-radius:50%;border:2px solid var(--white);}
+
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:768px){
+  .nav-links,.nav-logout-btn,.nav-avatar{display:none;}
+  .mobile-menu-btn{display:flex;}
+  .page-wrap{padding:20px 14px 80px;}
+  .stats-row{gap:10px;}
+  .stat-card{padding:14px 16px;gap:12px;}
+  .stat-num{font-size:1.4rem;}
+  #lessonsGrid{grid-template-columns:1fr;gap:14px;}
+  .footer-inner{grid-template-columns:1fr;gap:28px;}
+  .bottom-nav{display:block;}
+  .overlay{align-items:flex-end;padding:0;}
+  .modal{max-width:100%!important;border-radius:20px 20px 0 0;max-height:90vh;}
+  .f2{grid-template-columns:1fr;gap:0;}
+  .footer-social{flex-wrap:wrap;}
 }
-.logout-btn-side:hover { background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.4); color: #fff; box-shadow: 0 8px 20px rgba(239,68,68,0.2); }
-
-/* ── MAIN AREA ── */
-.main-area { margin-right: var(--sidebar-w); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
-
-/* top header */
-.top-header {
-    height: 70px;
-    background: rgba(10, 15, 25, 0.4);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border-bottom: 1px solid var(--glass-border);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 32px; position: sticky; top: 0; z-index: 40;
-}
-.page-title-h { font-size: 1.15rem; font-weight: 900; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-.page-title-h::before { content: ''; width: 4px; height: 22px; background: var(--accent); border-radius: 4px; box-shadow: 0 0 10px var(--accent); }
-.header-right { display: flex; align-items: center; gap: 14px; }
-
-.hdr-search input {
-    background: rgba(255,255,255,.03); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px); color: var(--text); padding: 10px 16px 10px 40px;
-    border-radius: 12px; font-family: var(--sans); font-size: .85rem;
-    outline: none; width: 240px; transition: all .3s;
-}
-.hdr-search input:focus { border-color: var(--accent); background: rgba(0,229,160,.05); width: 280px; box-shadow: 0 0 0 3px rgba(0,229,160,0.1); }
-.hdr-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .9rem; }
-
-.hdr-icon-btn {
-    width: 40px; height: 40px; background: rgba(255,255,255,.03); border: 1px solid var(--glass-border);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all .3s; color: var(--text2); font-size: 1rem; position: relative;
-}
-.hdr-icon-btn:hover { background: rgba(255,255,255,.08); border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-.notif-dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); }
-
-.hdr-avatar {
-    width: 42px; height: 42px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
-    overflow: hidden; cursor: pointer; transition: all .3s; padding: 2px; background: rgba(0,0,0,0.2);
-}
-.hdr-avatar:hover { border-color: var(--accent); transform: scale(1.05); }
-.hdr-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
-
-/* ── CONTENT ── */
-.content { padding: 32px 32px 80px; flex: 1; }
-
-/* announcement (Glass) */
-#announcementBox { margin-bottom: 28px; animation: riseIn .5s .05s both; }
-.ann-inner {
-    display: flex; align-items: center; gap: 16px;
-    background: linear-gradient(90deg, rgba(0,229,160,0.1), rgba(0,229,160,0.02));
-    border: 1px solid rgba(0,229,160,0.2);
-    border-radius: 16px; padding: 18px 22px;
-    backdrop-filter: blur(20px);
-}
-.ann-icon { font-size: 1.6rem; flex-shrink: 0; filter: drop-shadow(0 0 8px var(--accent)); }
-.ann-label { font-family: var(--mono); font-size: .65rem; letter-spacing: 1.5px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
-.ann-text { font-size: .95rem; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.ann-close {
-    margin-right: auto; flex-shrink: 0;
-    background: rgba(255,255,255,.05); border: 1px solid var(--glass-border);
-    width: 32px; height: 32px; border-radius: 10px; color: var(--muted); cursor: pointer; transition: all .2s;
-}
-.ann-close:hover { background: rgba(239,68,68,0.2); color: #fff; border-color: rgba(239,68,68,0.5); }
-
-/* welcome */
-.welcome-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; animation: riseIn .5s .1s both; }
-.welcome-sub { font-size: .75rem; color: var(--accent); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; font-family: var(--mono); }
-.welcome-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-.welcome-title span { color: var(--accent); text-shadow: 0 0 20px rgba(0,229,160,0.4); }
-.grade-pill {
-    display: flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-    border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.2);
-    backdrop-filter: blur(12px); color: #fff; font-weight: 900; font-size: .85rem;
-    padding: 10px 20px; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-}
-
-/* stats (Glass) */
-.stats-row { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 36px; }
-.stat-card {
-    border-radius: 20px; padding: 22px 24px;
-    display: flex; align-items: center; gap: 18px;
-    animation: riseIn .5s both; transition: all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.stat-card:nth-child(1){ animation-delay: .15s; }
-.stat-card:nth-child(2){ animation-delay: .22s; }
-.stat-card:nth-child(3){ animation-delay: .29s; }
-.stat-card:hover { border-color: rgba(0,229,160,.4); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,229,160,0.1); }
-.sc-icon-wrap {
-    width: 54px; height: 54px; flex-shrink: 0;
-    background: linear-gradient(135deg, rgba(0,229,160,0.2), rgba(0,229,160,0.05));
-    border: 1px solid rgba(0,229,160,.2); border-radius: 16px;
-    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-    box-shadow: inset 0 2px 10px rgba(255,255,255,0.1);
-}
-.sc-num { font-family: var(--mono); font-size: 1.8rem; font-weight: 500; color: var(--text); line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-.sc-lbl { font-size: .75rem; color: var(--text2); font-weight: 700; margin-top: 6px; letter-spacing: 0.5px; }
-
-/* section head */
-.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; animation: riseIn .5s .35s both; }
-.section-title { font-size: 1.1rem; font-weight: 900; display: flex; align-items: center; gap: 10px; }
-.section-title::before { content: ''; width: 4px; height: 20px; background: var(--accent); border-radius: 2px; box-shadow: 0 0 8px var(--accent); }
-.lesson-count-badge {
-    font-family: var(--mono); font-size: .7rem; font-weight: 700;
-    color: #fff; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
-    padding: 4px 12px; border-radius: 20px; backdrop-filter: blur(8px);
-}
-
-/* filter row */
-.filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; animation: riseIn .5s .38s both; flex-wrap: wrap; }
-.filter-btn {
-    padding: 8px 20px; border-radius: 12px;
-    background: rgba(255,255,255,.03); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px); color: var(--text2); font-family: var(--sans); font-size: .85rem; font-weight: 700;
-    cursor: pointer; transition: all .3s;
-}
-.filter-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(255,255,255,0.08); }
-.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #021a10; box-shadow: 0 4px 16px rgba(0,229,160,0.3); }
-
-/* ── LESSON GRID (Glass) ── */
-#lessonsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-
-/* lesson card */
-.lesson-card {
-    border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer;
-    transition: all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: riseIn .5s both;
-}
-.lesson-card:hover { transform: translateY(-8px); border-color: rgba(0,229,160,.4); box-shadow: 0 30px 60px rgba(0,0,0,.6), 0 0 30px rgba(0,229,160,.1); }
-
-.lc-img-wrap { position: relative; height: 180px; overflow: hidden; padding: 10px; }
-.lc-img-inner { width: 100%; height: 100%; border-radius: 16px; overflow: hidden; position: relative; }
-.lc-img-inner img { width: 100%; height: 100%; object-fit: cover; opacity: .85; transition: all .5s; }
-.lesson-card:hover .lc-img-inner img { opacity: 1; transform: scale(1.08); filter: brightness(1.1); }
-.lc-img-fade { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 20%, rgba(10,15,25,.9) 100%); }
-
-.price-tag {
-    position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1); color: #fff; font-weight: 700; font-size: .75rem;
-    padding: 6px 12px; border-radius: 10px; font-family: var(--mono);
-}
-.price-tag.free { background: rgba(34,197,94,0.3); border-color: #22c55e; color: #4ade80; }
-
-.owned-badge {
-    position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 6px;
-    background: rgba(0,229,160,.2); border: 1px solid rgba(0,229,160,.4); backdrop-filter: blur(12px);
-    color: var(--accent); font-size: .65rem; font-weight: 900; padding: 5px 12px; border-radius: 20px; font-family: var(--mono);
-}
-.locked-badge {
-    position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.1);
-    backdrop-filter: blur(12px); color: #aaa; font-size: .65rem; font-weight: 700; padding: 5px 12px; border-radius: 20px; font-family: var(--mono);
-}
-
-.lc-body { padding: 0 20px 20px; flex: 1; display: flex; flex-direction: column; position: relative; z-index: 2; }
-.lc-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; margin-top: -10px; }
-.lc-grade-tag { font-size: .65rem; font-weight: 700; background: rgba(0,229,160,.1); border: 1px solid rgba(0,229,160,.2); color: var(--accent); padding: 4px 10px; border-radius: 8px; }
-.lc-teacher-tag { font-size: .65rem; font-weight: 700; color: var(--text2); background: rgba(255,255,255,.05); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 8px; }
-.lc-title { font-size: 1.05rem; font-weight: 900; line-height: 1.5; margin-bottom: auto; padding-bottom: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.lc-footer { border-top: 1px solid var(--glass-border); padding-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.lc-lectures { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: var(--text2); font-weight: 600; }
-.lc-lectures-icon { width: 24px; height: 24px; background: rgba(255,255,255,.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .7rem; }
-
-.btn-access {
-    display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 12px;
-    font-family: var(--sans); font-weight: 900; font-size: .85rem; cursor: pointer; transition: all .3s; text-decoration: none; border: none; white-space: nowrap;
-}
-.btn-access.owned { background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%); color: #021a10; box-shadow: 0 6px 20px rgba(0,229,160,.25); }
-.btn-access.owned:hover { box-shadow: 0 10px 28px rgba(0,229,160,.4); transform: translateY(-2px); }
-.btn-access.buy { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; backdrop-filter: blur(10px); }
-.btn-access.buy:hover { background: rgba(255,255,255,0.1); border-color: #fff; transform: translateY(-2px); }
-
-/* empty state */
-.empty-state { grid-column: 1/-1; text-align: center; padding: 80px 20px; background: rgba(255,255,255,0.02); border-radius: 24px; border: 1px dashed var(--glass-border); backdrop-filter: blur(10px); }
-.empty-icon { font-size: 3.5rem; margin-bottom: 16px; opacity: .5; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
-.empty-txt { color: var(--text2); font-weight: 700; font-size: 1rem; }
-
-/* ── MODALS (Glass) ── */
-.overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
-.overlay.open { opacity: 1; pointer-events: all; }
-.modal {
-    width: 100%; max-width: 600px; max-height: 88vh; display: flex; flex-direction: column;
-    border-radius: 28px; position: relative; overflow: hidden;
-    transform: translateY(30px) scale(.95); transition: all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.overlay.open .modal { transform: translateY(0) scale(1); }
-.modal::before { content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px; background: linear-gradient(to right, transparent, var(--accent), transparent); }
-.modal-head { padding: 28px 32px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.modal-title { font-size: 1.25rem; font-weight: 900; color: #fff; }
-.modal-title span { filter: drop-shadow(0 0 8px rgba(0,229,160,0.5)); }
-.modal-close {
-    width: 36px; height: 36px; background: rgba(255,255,255,.05); border: 1px solid var(--glass-border);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; color: var(--text2); font-size: .8rem;
-}
-.modal-close:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,.5); color: #fff; transform: rotate(90deg); }
-.modal-body { flex: 1; overflow-y: auto; padding: 24px 32px 32px; }
-.modal-body::-webkit-scrollbar { width: 4px; }
-.modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
-
-/* reports */
-.rep-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
-.rep-stat { background: rgba(255,255,255,.02); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px 12px; text-align: center; }
-.rep-stat-num { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); margin-bottom: 6px; font-weight: 500; text-shadow: 0 0 10px rgba(0,229,160,0.3); }
-.rep-stat-lbl { font-size: .65rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-.rep-section { margin-bottom: 28px; }
-.rep-section-title { font-size: .75rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: var(--mono); }
-.rep-item {
-    display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.02);
-    border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px 18px; margin-bottom: 10px; transition: background 0.3s;
-}
-.rep-item:hover { background: rgba(255,255,255,.05); }
-.rep-item-name { font-size: .9rem; font-weight: 700; color: #fff; }
-.rep-item-date { font-size: .7rem; color: var(--text2); margin-top: 4px; font-family: var(--mono); }
-.rep-price { font-family: var(--mono); font-size: .85rem; color: var(--accent); font-weight: 700; }
-.badge-active { font-size: .6rem; font-weight: 900; padding: 4px 10px; border-radius: 8px; background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
-.badge-expired { font-size: .6rem; font-weight: 900; padding: 4px 10px; border-radius: 8px; background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
-.score-box { background: rgba(0,0,0,.3); border: 1px solid var(--glass-border); border-radius: 10px; padding: 6px 12px; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
-.score-val { font-family: var(--mono); font-size: 1.1rem; color: var(--accent); font-weight: 500; }
-.score-total { font-family: var(--mono); font-size: .65rem; color: var(--muted); }
-
-/* profile modal */
-.prof-field { margin-bottom: 18px; text-align: right; }
-.prof-lbl { font-size: .7rem; font-weight: 700; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: block; font-family: var(--mono); }
-.prof-input {
-    width: 100%; background: rgba(0,0,0,.2); border: 1px solid var(--glass-border);
-    color: #fff; padding: 14px 16px; border-radius: 12px; font-family: var(--sans); font-size: .95rem;
-    outline: none; transition: all .3s; box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-}
-.prof-input:focus { border-color: var(--accent); background: rgba(0,229,160,.05); box-shadow: 0 0 0 3px rgba(0,229,160,0.1), inset 0 2px 5px rgba(0,0,0,0.2); }
-.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.save-btn {
-    width: 100%; margin-top: 10px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-    color: #021a10; border: none; padding: 14px; border-radius: 14px; font-family: var(--sans); font-size: 1rem;
-    font-weight: 900; cursor: pointer; transition: all .3s; box-shadow: 0 8px 24px rgba(0,229,160,.3);
-}
-.save-btn:hover { box-shadow: 0 12px 32px rgba(0,229,160,.4); transform: translateY(-2px); }
-
-/* mobile sidebar toggle */
-.sidebar-toggle {
-    display: none; width: 42px; height: 42px; background: rgba(255,255,255,.05); border: 1px solid var(--glass-border);
-    border-radius: 12px; align-items: center; justify-content: center; cursor: pointer; color: var(--text); font-size: 1.2rem; flex-shrink: 0; backdrop-filter: blur(10px);
-}
-
-/* sidebar backdrop overlay */
-.sidebar-backdrop {
-    display: block; position: fixed; inset: 0; z-index: 49; background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
-    opacity: 0; pointer-events: none; transition: opacity .4s ease;
-}
-.sidebar-backdrop.show { opacity: 1; pointer-events: all; }
-
-/* ── BOTTOM NAV (mobile only) ── */
-.bottom-nav {
-    display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
-    background: rgba(10, 15, 25, 0.6); border-top: 1px solid rgba(255,255,255,0.05);
-    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-}
-.bottom-nav-inner { display: flex; align-items: center; justify-content: space-around; max-width: 480px; margin: 0 auto; }
-.bn-item {
-    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 16px;
-    cursor: pointer; transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: var(--muted); border: none; background: none; font-family: var(--sans); min-width: 64px; position: relative;
-}
-.bn-item.active { color: var(--accent); transform: translateY(-4px); }
-.bn-item .bn-icon { font-size: 1.4rem; line-height: 1; transition: transform 0.3s; }
-.bn-item.active .bn-icon { transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(0,229,160,0.5)); }
-.bn-item .bn-label { font-size: .6rem; font-weight: 700; white-space: nowrap; }
-.bn-item.active .bn-icon-wrap { background: rgba(0,229,160,.15); border-radius: 14px; padding: 8px 16px; margin-bottom: 2px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.1); }
-.bn-dot { position: absolute; top: 6px; right: 10px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 8px var(--accent); border: 2px solid rgba(10,15,25,0.9); }
-.bn-logout { color: #fca5a5 !important; }
-.bn-logout .bn-icon svg { stroke: #fca5a5; }
-.bn-logout.active { color: #f87171 !important; }
-.bn-logout:hover { color: #fff !important; }
-
-@media(max-width: 768px) {
-    :root { --sidebar-w: 280px; }
-    .btn-access { min-height: 48px; }
-    .nav-link { min-height: 52px; }
-    .bn-item { min-height: 56px; min-width: 56px; }
-    .filter-btn { min-height: 42px; }
-    .modal-close { width: 42px; height: 42px; }
-
-    .lesson-card:hover { transform: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.05); }
-    .btn-access.owned:hover, .btn-access.buy:hover, .save-btn:hover, .stat-card:hover { transform: none; }
-
-    .sidebar { transform: translateX(110%); transition: transform .4s cubic-bezier(0.2, 0.8, 0.2, 1); border-left: none; border-right: 1px solid var(--glass-border); }
-    .sidebar.open { transform: translateX(0); }
-
-    .main-area { margin-right: 0; padding-bottom: 80px; }
-    .sidebar-toggle { display: flex; }
-    .top-header { padding: 0 16px; height: 64px; }
-    .hdr-search { display: none; }
-    .page-title-h { font-size: 1.05rem; }
-    .hdr-reports-btn { display: none; }
-
-    .content { padding: 24px 16px 90px; }
-
-    .welcome-row { margin-bottom: 24px; flex-direction: column; align-items: flex-start; gap: 14px; }
-    .welcome-title { font-size: 1.6rem; }
-    .grade-pill { font-size: .85rem; padding: 10px 18px; }
-
-    .stats-row { grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
-    .stat-card { padding: 16px 20px; gap: 14px; border-radius: 16px; }
-    .sc-icon-wrap { width: 46px; height: 46px; font-size: 1.2rem; border-radius: 14px; }
-    .sc-num { font-size: 1.5rem; }
-
-    .section-head { margin-bottom: 18px; }
-
-    .filter-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; gap: 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-bottom: 20px; }
-    .filter-row::-webkit-scrollbar { display: none; }
-    .filter-btn { flex-shrink: 0; padding: 10px 18px; font-size: .85rem; }
-
-    #lessonsGrid { grid-template-columns: 1fr; gap: 20px; }
-
-    .lc-img-wrap { height: 200px; padding: 12px; }
-    .lc-body { padding: 0 16px 16px; }
-    .lc-title { font-size: 1.1rem; padding-bottom: 12px; }
-    .lc-meta { margin-bottom: 10px; margin-top: -12px; }
-    .lc-footer { padding-top: 14px; }
-    .btn-access { padding: 12px 20px; font-size: .9rem; }
-
-    .overlay { align-items: flex-end; padding: 0; }
-    .modal { max-width: 100% !important; border-radius: 32px 32px 0 0; max-height: 90vh; transform: translateY(100%); border: 1px solid var(--glass-border); border-bottom: none; }
-    .overlay.open .modal { transform: translateY(0); }
-    .modal-head { padding: 24px 24px 16px; }
-    .modal-body { padding: 16px 24px 40px; }
-
-    .f2 { grid-template-columns: 1fr; gap: 0; }
-    .bottom-nav { display: block; }
-}
-
-/* ── FOOTER ── */
-.site-footer {
-    background: rgba(10, 15, 25, 0.6);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-top: 1px solid var(--glass-border);
-    padding: 28px 32px;
-    text-align: center;
-    margin-top: auto;
-}
-.footer-social {
-    display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px;
-}
-.footer-social-btn {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 24px; border-radius: 14px;
-    font-family: var(--sans); font-size: .9rem; font-weight: 700;
-    text-decoration: none; transition: all .3s;
-    border: 1px solid; cursor: pointer;
-}
-.footer-fb {
-    background: rgba(24, 119, 242, 0.12);
-    border-color: rgba(24, 119, 242, 0.3);
-    color: #4a9cf6;
-}
-.footer-fb:hover {
-    background: rgba(24, 119, 242, 0.25);
-    border-color: rgba(24, 119, 242, 0.6);
-    color: #fff;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(24, 119, 242, 0.25);
-}
-.footer-wa {
-    background: rgba(37, 211, 102, 0.12);
-    border-color: rgba(37, 211, 102, 0.3);
-    color: #25d366;
-}
-.footer-wa:hover {
-    background: rgba(37, 211, 102, 0.25);
-    border-color: rgba(37, 211, 102, 0.6);
-    color: #fff;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.25);
-}
-.footer-credit {
-    font-family: var(--mono);
-    font-size: .72rem;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-}
-.footer-credit span {
-    color: var(--accent);
-    font-weight: 700;
-}
-@media(max-width: 768px) {
-    .site-footer { padding: 24px 16px 100px; }
-    .footer-social { flex-direction: column; gap: 12px; }
-    .footer-social-btn { width: 100%; max-width: 320px; justify-content: center; }
-}
-/* animations */
-@keyframes riseIn { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-.hidden { display: none !important; }
+@media(max-width:480px){.welcome-strip{flex-direction:column;align-items:flex-start;}}
 </style>
 </head>
 <body>
 
-<div class="liquid-bg">
-    <div class="noise-overlay"></div>
-    <div class="liquid-blob blob-1"></div>
-    <div class="liquid-blob blob-2"></div>
-    <div class="liquid-blob blob-3"></div>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-icon">MP</div>
+      <div class="nav-logo-name">Math<span>Pro</span></div>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link active" href="#">الرئيسية</a>
+      <button class="nav-link" onclick="openReports()">مشترياتي</button>
+      <button class="nav-link" onclick="openProfile()">حسابي</button>
+    </div>
+    <div class="nav-right">
+      <div class="nav-avatar" onclick="openProfile()"><img src="" id="avatarImg" alt=""></div>
+      <button class="nav-logout-btn" id="logoutBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        خروج
+      </button>
+      <button class="mobile-menu-btn" onclick="document.getElementById('mobNav').classList.add('open')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mob-nav" id="mobNav">
+  <div class="mob-backdrop" onclick="document.getElementById('mobNav').classList.remove('open')"></div>
+  <div class="mob-panel">
+    <div class="mob-head">
+      <div class="nav-logo">
+        <div class="nav-logo-icon">MP</div>
+        <div class="nav-logo-name">Math<span>Pro</span></div>
+      </div>
+      <button class="mob-close-btn" onclick="document.getElementById('mobNav').classList.remove('open')">✕</button>
+    </div>
+    <div class="mob-links">
+      <a class="mob-link active" href="#">الرئيسية</a>
+      <button class="mob-link" onclick="openReports();document.getElementById('mobNav').classList.remove('open')">مشترياتي ونتائجي</button>
+      <button class="mob-link" onclick="openProfile();document.getElementById('mobNav').classList.remove('open')">حسابي وإعداداتي</button>
+    </div>
+    <div class="mob-footer">
+      <button class="mob-logout" id="logoutBtnMob">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        تسجيل الخروج
+      </button>
+    </div>
+  </div>
 </div>
 
-<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
-
-<aside class="sidebar glass-panel" id="sidebarEl">
-    <div class="sidebar-logo">
-        <div class="logo-icon">MP</div>
-        <div class="logo-name">Math<span>Pro</span></div>
-        <div class="logo-sub">Live Platform</div>
+<div class="page-wrap">
+  <div id="announcementBox" class="hidden">
+    <div class="ann-bar">
+      <span class="ann-icon">✨</span>
+      <div>
+        <div class="ann-tag">تحديث جديد</div>
+        <div class="ann-msg" id="announcementText"></div>
+      </div>
+      <button class="ann-x" onclick="this.closest('#announcementBox').classList.add('hidden')">✕</button>
     </div>
+  </div>
 
-    <nav class="sidebar-nav">
-        <div class="nav-section-label">القائمة الرئيسية</div>
-        <a class="nav-link active" href="#">
-            <div class="nav-icon">🏠</div>
-            الصفحة الرئيسية
-        </a>
-        <a class="nav-link" href="#" onclick="openProfile();return false;">
-            <div class="nav-icon">👤</div>
-            الملف الشخصي
-        </a>
-
-        <div class="nav-section-label">النتائج</div>
-        <a class="nav-link" href="#" onclick="openReports();return false;">
-            <div class="nav-icon">📊</div>
-            نتائج واجباتي
-        </a>
-        <a class="nav-link" href="#" onclick="openReports();return false;">
-            <div class="nav-icon">🔍</div>
-            نتائج امتحاناتي
-        </a>
-
-    </nav>
-
-    <div class="sidebar-footer">
-        <button class="logout-btn-side" id="logoutBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            تسجيل الخروج
-        </button>
+  <div class="welcome-strip">
+    <div>
+      <div class="welcome-greet">مرحباً بعودتك للتدريب</div>
+      <div class="welcome-name">أهلاً بك، <span id="userNameDisplay">جاري التحميل...</span> 👋</div>
     </div>
-</aside>
+    <div class="grade-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span id="gradeBadge">جاري التحميل...</span>
+    </div>
+  </div>
 
-<div class="main-area">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-icon">🚀</div><div><div class="stat-num" id="statPurchases">—</div><div class="stat-lbl">كورسات نشطة</div></div></div>
+    <div class="stat-card"><div class="stat-icon">🎯</div><div><div class="stat-num" id="statExams">—</div><div class="stat-lbl">امتحانات منجزة</div></div></div>
+  </div>
 
-    <header class="top-header">
-        <div style="display:flex;align-items:center;gap:16px;">
-            <button class="sidebar-toggle" onclick="toggleSidebar()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
-            <div class="page-title-h">الرئيسية</div>
-        </div>
-        <div class="header-right">
-            <div class="hdr-search">
-                <span class="hdr-search-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </span>
-                <input id="searchInput" placeholder="ابحث عن كورس أو درس..." oninput="filterLessons()">
-            </div>
-            <button class="hdr-icon-btn" onclick="openReports()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                <span class="notif-dot"></span>
-            </button>
-            <div class="hdr-avatar" onclick="openProfile()">
-                <img src="" id="avatarImg" alt="User">
-            </div>
-        </div>
-    </header>
+  <div class="sec-head">
+    <div class="sec-title">المحتوى التعليمي المتاح</div>
+    <div class="count-pill" id="lessonCountBadge">0 دورة</div>
+  </div>
 
-    <div class="content">
+  <div class="filter-row">
+    <button class="flt-btn active" onclick="setFilter(this,'all')">كل المحتوى</button>
+    <button class="flt-btn" onclick="setFilter(this,'owned')">مشترك بها</button>
+    <button class="flt-btn" onclick="setFilter(this,'free')">دروس مجانية</button>
+  </div>
 
-        <div id="announcementBox" class="hidden">
-            <div class="ann-inner">
-                <span class="ann-icon">✨</span>
-                <div>
-                    <div class="ann-label">تحديث جديد</div>
-                    <p id="announcementText" class="ann-text"></p>
-                </div>
-                <button class="ann-close" onclick="this.closest('#announcementBox').classList.add('hidden')">✕</button>
-            </div>
-        </div>
-
-        <div class="welcome-row">
-            <div>
-                <div class="welcome-sub">مرحباً بعودتك للتدريب</div>
-                <div class="welcome-title">أهلاً بك، <span id="userNameDisplay">جاري التحميل...</span> 👋</div>
-            </div>
-            <div class="grade-pill">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
-                <span id="gradeBadge">جاري التحميل...</span>
-            </div>
-        </div>
-
-        <div class="stats-row">
-            <div class="stat-card glass-panel">
-                <div class="sc-icon-wrap">🚀</div>
-                <div class="sc-info">
-                    <div class="sc-num" id="statPurchases">—</div>
-                    <div class="sc-lbl">كورسات نشطة</div>
-                </div>
-            </div>
-            <div class="stat-card glass-panel">
-                <div class="sc-icon-wrap">🎯</div>
-                <div class="sc-info">
-                    <div class="sc-num" id="statExams">—</div>
-                    <div class="sc-lbl">امتحانات منجزة</div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="section-head">
-            <div class="section-title">المحتوى التعليمي المتاح</div>
-            <div class="lesson-count-badge" id="lessonCountBadge">0 دورة</div>
-        </div>
-
-        <div class="filter-row">
-            <button class="filter-btn active" onclick="setFilter(this,'all')">كل المحتوى</button>
-            <button class="filter-btn" onclick="setFilter(this,'owned')">مشترك بها</button>
-            <button class="filter-btn" onclick="setFilter(this,'free')">دروس مجانية</button>
-        </div>
-
-        <div id="lessonsGrid">
-            <div class="empty-state">
-                <div class="empty-icon">⏳</div>
-                <div class="empty-txt">جاري تحميل الدورات من السيرفر السحابي...</div>
-            </div>
-        </div>
-
-    <!-- ── FOOTER ── -->
-    <footer class="site-footer">
-        <div class="footer-social">
-            <a href="https://www.facebook.com" target="_blank" class="footer-social-btn footer-fb">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                Facebook
-            </a>
-            <a href="https://wa.me" target="_blank" class="footer-social-btn footer-wa">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-                WhatsApp
-            </a>
-        </div>
-        <div class="footer-credit">Made by <span>Kevin</span> &nbsp;·&nbsp; MathPro © 2025</div>
-    </footer>
-
+  <div id="lessonsGrid">
+    <div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-txt">جاري تحميل الدورات...</div></div>
+  </div>
 </div>
 
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <div class="footer-logo-icon">MP</div>
+        <div class="footer-logo-name">Math<span>Pro</span></div>
+      </div>
+      <p class="footer-desc">منصة تعليمية متكاملة لطلاب المرحلة الثانوية — محتوى تفاعلي، امتحانات، وفيديوهات شرح</p>
+      <div class="footer-social">
+        <a href="https://www.facebook.com" target="_blank" class="footer-social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> Facebook
+        </a>
+        <a href="https://wa.me" target="_blank" class="footer-social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg> WhatsApp
+        </a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">روابط سريعة</div>
+      <ul class="footer-links">
+        <li><a href="#">الصفحة الرئيسية</a></li>
+        <li><a href="#" onclick="openReports();return false;">مشترياتي</a></li>
+        <li><a href="#" onclick="openProfile();return false;">حسابي</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">تواصل معنا</div>
+      <div class="footer-contact-item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        mathpro@example.com
+      </div>
+      <div class="footer-contact-item">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.62-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        واتساب: 01xxxxxxxxx
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">Made by <span>Kevin</span> &nbsp;·&nbsp; MathPro © 2025 &nbsp;·&nbsp; جميع الحقوق محفوظة</div>
+</footer>
+
+<nav class="bottom-nav">
+  <div class="bn-inner">
+    <button class="bn-btn active" onclick="bnSel(this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="bn-label">الرئيسية</span>
+    </button>
+    <button class="bn-btn" onclick="bnSel(this);openReports()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span class="bn-label">محتوايا</span>
+      <div class="bn-dot"></div>
+    </button>
+    <button class="bn-btn" onclick="bnSel(this);openProfile()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="bn-label">حسابي</span>
+    </button>
+    <button class="bn-btn bn-logout-btn" onclick="document.getElementById('logoutBtn').click()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span class="bn-label">خروج</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MODALS -->
 <div class="overlay" id="reportsOverlay">
-    <div class="modal glass-panel" style="max-width:640px;">
-        <div class="modal-head">
-            <div class="modal-title">سجل النشاط <span>📈</span></div>
-            <button class="modal-close" onclick="closeReports()">✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="rep-stats">
-                <div class="rep-stat"><div class="rep-stat-num" id="totalSpent">—</div><div class="rep-stat-lbl">المدفوع ج.م</div></div>
-                <div class="rep-stat"><div class="rep-stat-num" id="totalCourses">—</div><div class="rep-stat-lbl">الكورسات</div></div>
-                <div class="rep-stat"><div class="rep-stat-num" id="totalExams">—</div><div class="rep-stat-lbl">الامتحانات</div></div>
-            </div>
-            <div class="rep-section">
-                <div class="rep-section-title">مشترياتي الحالية</div>
-                <div id="purchasesList"><div style="color:var(--muted);text-align:center;padding:30px;font-size:.85rem;">جاري التحميل...</div></div>
-            </div>
-            <div class="rep-section">
-                <div class="rep-section-title">نتائج التقييمات</div>
-                <div id="examsList"><div style="color:var(--muted);text-align:center;padding:30px;font-size:.85rem;">جاري التحميل...</div></div>
-            </div>
-        </div>
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-head"><div class="modal-title">📈 سجل النشاط</div><button class="modal-close" onclick="closeReports()">✕</button></div>
+    <div class="modal-body">
+      <div class="rep-stats">
+        <div class="rep-stat"><div class="rep-stat-num" id="totalSpent">—</div><div class="rep-stat-lbl">المدفوع ج.م</div></div>
+        <div class="rep-stat"><div class="rep-stat-num" id="totalCourses">—</div><div class="rep-stat-lbl">الكورسات</div></div>
+        <div class="rep-stat"><div class="rep-stat-num" id="totalExams">—</div><div class="rep-stat-lbl">الامتحانات</div></div>
+      </div>
+      <div class="rep-section"><div class="rep-section-title">مشترياتي الحالية</div><div id="purchasesList"><div style="color:var(--text3);text-align:center;padding:30px;font-size:.85rem;">جاري التحميل...</div></div></div>
+      <div class="rep-section"><div class="rep-section-title">نتائج التقييمات</div><div id="examsList"><div style="color:var(--text3);text-align:center;padding:30px;font-size:.85rem;">جاري التحميل...</div></div></div>
     </div>
+  </div>
 </div>
 
 <div class="overlay" id="profileOverlay">
-    <div class="modal glass-panel" style="max-width:500px;">
-        <div class="modal-head">
-            <div class="modal-title">إعدادات الحساب <span>⚙️</span></div>
-            <button class="modal-close" onclick="closeProfile()">✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="prof-field">
-                <label class="prof-lbl">الاسم بالكامل</label>
-                <input id="editName" class="prof-input" placeholder="اسمك رباعي...">
-            </div>
-            <div class="f2">
-                <div class="prof-field">
-                    <label class="prof-lbl">رقم الهاتف</label>
-                    <input id="editPhone" class="prof-input" placeholder="01xxxxxxxxx">
-                </div>
-                <div class="prof-field">
-                    <label class="prof-lbl">رقم ولي الأمر</label>
-                    <input id="editParentPhone" class="prof-input" placeholder="01xxxxxxxxx">
-                </div>
-            </div>
-            <button class="save-btn" onclick="updateProfile()" id="saveBtn">تحديث البيانات</button>
-        </div>
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-head"><div class="modal-title">⚙️ إعدادات الحساب</div><button class="modal-close" onclick="closeProfile()">✕</button></div>
+    <div class="modal-body">
+      <div class="prof-field"><label class="prof-lbl">الاسم بالكامل</label><input id="editName" class="prof-input" placeholder="اسمك رباعي..."></div>
+      <div class="f2">
+        <div class="prof-field"><label class="prof-lbl">رقم الهاتف</label><input id="editPhone" class="prof-input" placeholder="01xxxxxxxxx"></div>
+        <div class="prof-field"><label class="prof-lbl">رقم ولي الأمر</label><input id="editParentPhone" class="prof-input" placeholder="01xxxxxxxxx"></div>
+      </div>
+      <button class="save-btn" onclick="updateProfile()" id="saveBtn">تحديث البيانات</button>
     </div>
+  </div>
 </div>
 
 <script>
-/* overlays */
-window.openReports  = () => { document.getElementById('reportsOverlay').classList.add('open'); }
-window.closeReports = () => { document.getElementById('reportsOverlay').classList.remove('open'); }
-window.openProfile  = () => { document.getElementById('profileOverlay').classList.add('open'); }
-window.closeProfile = () => { document.getElementById('profileOverlay').classList.remove('open'); }
-
-document.getElementById('reportsOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeReports(); });
-document.getElementById('profileOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeProfile(); });
-
-/* filter */
-let currentFilter = 'all';
-function setFilter(btn, f) {
-    currentFilter = f;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilter();
-}
-function applyFilter() {
-    const q = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-    document.querySelectorAll('.lesson-card').forEach(c => {
-        const name = c.dataset.name || '';
-        const owned = c.dataset.owned === 'true';
-        const free = c.dataset.free === 'true';
-        let show = (q === '' || name.includes(q));
-        if (show && currentFilter === 'owned') show = owned;
-        if (show && currentFilter === 'free') show = free;
-        c.style.display = show ? '' : 'none';
-    });
-}
-function filterLessons() { applyFilter(); }
-
-function staggerCards() {
-    document.querySelectorAll('.lesson-card').forEach((c, i) => {
-        c.style.animationDelay = (.1 + i * .06) + 's';
-    });
-}
+window.openReports=()=>document.getElementById('reportsOverlay').classList.add('open');
+window.closeReports=()=>document.getElementById('reportsOverlay').classList.remove('open');
+window.openProfile=()=>document.getElementById('profileOverlay').classList.add('open');
+window.closeProfile=()=>document.getElementById('profileOverlay').classList.remove('open');
+document.getElementById('reportsOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeReports();});
+document.getElementById('profileOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeProfile();});
+let currentFilter='all';
+function setFilter(btn,f){currentFilter=f;document.querySelectorAll('.flt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyFilter();}
+function applyFilter(){document.querySelectorAll('.lesson-card').forEach(c=>{const owned=c.dataset.owned==='true',free=c.dataset.free==='true';let show=true;if(currentFilter==='owned')show=owned;if(currentFilter==='free')show=free;c.style.display=show?'':'none';});}
+function bnSel(el){document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function staggerCards(){document.querySelectorAll('.lesson-card').forEach((c,i)=>{c.style.animationDelay=(.05+i*.06)+'s';});}
 </script>
 
 <script>
-    const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
-    const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let currentUser=null,myActiveLessons=[],lessonsMap={};
 
-    let currentUser = null;
-    let myActiveLessons = [];
-    let lessonsMap = {};
-
-    async function initDashboard() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (!session) {
-            window.location.href = "index.html";
-            return;
-        }
-        currentUser = session.user;
-
-        const gradeNames = {"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
-
-        // ── 1. عرض cache فوري لو موجود ──
-        const cached = localStorage.getItem(`dashboard_cache_${currentUser.id}`);
-        if (cached) {
-            try {
-                const c = JSON.parse(cached);
-                applyUserUI(c.user, gradeNames);
-                if (c.activeLessons) myActiveLessons = c.activeLessons;
-                document.getElementById('statPurchases').textContent = c.validCount ?? '—';
-                document.getElementById('statExams').textContent = c.examsCount ?? '—';
-                if (c.lessons) renderLessons(c.lessons);
-            } catch(e) {}
-        }
-
-        // ── 2. كل الـ requests في نفس الوقت ──
-        const [
-            { data: d },
-            { data: annData },
-            { data: allLessons },
-            { data: cSnap },
-            { data: rSnap }
-        ] = await Promise.all([
-            supabaseClient.from('users').select('*').eq('id', currentUser.id).single(),
-            supabaseClient.from('announcements').select('*').eq('active', true).order('created_at', { ascending: false }).limit(1),
-            supabaseClient.from('lessons').select('*'),
-            supabaseClient.from('codes').select('*').eq('usedby', currentUser.email),
-            supabaseClient.from('results').select('*').eq('email', currentUser.email).order('date', { ascending: false })
-        ]);
-
-        if (!d) return;
-        const grade = d.grade || "1";
-
-        // ── 3. تحديث الـ UI ──
-        applyUserUI(d, gradeNames);
-
-        // إعلانات
-        if (annData && annData.length > 0) {
-            document.getElementById('announcementText').textContent = annData[0].message;
-            document.getElementById('announcementBox').classList.remove('hidden');
-        }
-
-        // معالجة الكورسات والكودات
-        if (allLessons) allLessons.forEach(l => { lessonsMap[l.id] = l; });
-        
-        myActiveLessons = [];
-        let validCount = 0, spent = 0, purchasesHtml = '';
-        const now = Date.now();
-
-        if (cSnap) {
-            cSnap.forEach(cd => {
-                const lesson = lessonsMap[cd.lessonid];
-                if (!lesson) return;
-                if (cd.expiryat > now) { myActiveLessons.push(cd.lessonid); validCount++; }
-                const price = Number(lesson.price) || 0;
-                spent += price;
-                const usedDate = cd.expiryat ? new Date(cd.expiryat - 7*24*60*60*1000).toLocaleDateString('ar-EG') : '—';
-                const expired = cd.expiryat < now;
-                purchasesHtml += `
-                <div class="rep-item">
-                    <div>
-                        <div class="rep-item-name">${lesson.name}</div>
-                        <div class="rep-item-date">تاريخ التفعيل: ${usedDate}</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <span class="${expired?'badge-expired':'badge-active'}">${expired?'منتهية الصلاحية':'فعالة'}</span>
-                        <span class="rep-price">${price>0 ? price+' ج' : 'مجاناً'}</span>
-                    </div>
-                </div>`;
-            });
-        }
-
-        let examsHtml = '', examsCount = 0;
-        if (rSnap) {
-            rSnap.forEach(rd => {
-                examsCount++;
-                const dt = rd.date ? new Date(rd.date).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric' }) : '—';
-                examsHtml += `
-                <div class="rep-item">
-                    <div>
-                        <div class="rep-item-name">${rd.lesson}</div>
-                        <div class="rep-item-date">${dt}</div>
-                    </div>
-                    <div class="score-box">
-                        <div class="score-val">${rd.score}</div>
-                        <div class="score-total">من ${rd.total}</div>
-                    </div>
-                </div>`;
-            });
-        }
-
-        document.getElementById('totalSpent').textContent = spent;
-        document.getElementById('totalCourses').textContent = validCount;
-        document.getElementById('totalExams').textContent = examsCount;
-        document.getElementById('statPurchases').textContent = validCount;
-        document.getElementById('statExams').textContent = examsCount;
-        document.getElementById('purchasesList').innerHTML = purchasesHtml || '<div class="empty-state" style="padding:40px 20px;"><div class="empty-txt">لم تقم بتفعيل أي كورس حتى الآن.</div></div>';
-        document.getElementById('examsList').innerHTML = examsHtml || '<div class="empty-state" style="padding:40px 20px;"><div class="empty-txt">لم تقم بإجراء أي امتحانات حتى الآن.</div></div>';
-
-        // الكورسات حسب السنة
-        const gradeLessons = allLessons ? allLessons.filter(l => l.grade == grade).sort((a,b) => new Date(b.created_at) - new Date(a.created_at)) : [];
-        renderLessons(gradeLessons);
-
-        // ── 4. حفظ cache للمرة الجاية ──
-        try {
-            localStorage.setItem(`dashboard_cache_${currentUser.id}`, JSON.stringify({
-                user: d, activeLessons: myActiveLessons,
-                validCount, examsCount, lessons: gradeLessons,
-                cachedAt: Date.now()
-            }));
-        } catch(e) {}
-    }
-
-    function applyUserUI(d, gradeNames) {
-        const name = d.name || "يا بطل";
-        const grade = d.grade || "1";
-        document.getElementById('userNameDisplay').textContent = name;
-        document.getElementById('editName').value = d.name || "";
-        document.getElementById('editPhone').value = d.phone || "";
-        document.getElementById('editParentPhone').value = d.parentphone || "";
-        document.getElementById('gradeBadge').textContent = gradeNames[grade] || "عام";
-        document.getElementById('avatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b578&color=fff&bold=true&size=128`;
-    }
-
-    function renderLessons(lessonsData) {
-        const grid = document.getElementById("lessonsGrid");
-        if(!lessonsData || lessonsData.length === 0) {
-            grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔭</div><div class="empty-txt">لا توجد كورسات متاحة لمرحلتك الدراسية حالياً</div></div>`;
-            return;
-        }
-        
-        grid.innerHTML = '';
-        let count = 0;
-        
-        lessonsData.forEach(data => {
-            count++;
-            const id = data.id;
-            const owned = myActiveLessons.includes(id);
-            const isFree = !data.price || Number(data.price) === 0;
-            const price = isFree ? `مجاناً` : `${data.price} ج.م`;
-            const img = data.image || 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
-            const gradeLabels = {"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
-            const gradeText = gradeLabels[data.grade] || "";
-
-            const badge = owned
-                ? `<span class="owned-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> تم التفعيل</span>`
-                : `<span class="locked-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> مغلق</span>`;
-            
-            const priceTag = `<span class="price-tag ${isFree?'free':''}">${price}</span>`;
-            
-            const btn = owned
-                ? `<a href="lesson.html?id=${id}" class="btn-access owned">متابعة التعلم <span>→</span></a>`
-                : `<a href="lesson.html?id=${id}" class="btn-access buy">تفعيل بالكود <span>🔑</span></a>`;
-
-            const card = document.createElement('div');
-            card.className = 'lesson-card glass-panel'; // Applied Glass style
-            card.dataset.name = data.name?.toLowerCase() || '';
-            card.dataset.owned = owned ? 'true' : 'false';
-            card.dataset.free = isFree ? 'true' : 'false';
-            card.innerHTML = `
-                <div class="lc-img-wrap">
-                    <div class="lc-img-inner">
-                        <img src="${img}" alt="${data.name}" loading="lazy">
-                        <div class="lc-img-fade"></div>
-                    </div>
-                    ${badge}
-                    ${priceTag}
-                </div>
-                <div class="lc-body">
-                    <div class="lc-meta">
-                        <span class="lc-grade-tag">${gradeText}</span>
-                        <span class="lc-teacher-tag">أ. شريف علي</span>
-                    </div>
-                    <div class="lc-title">${data.name}</div>
-                    <div class="lc-footer">
-                        <div class="lc-lectures">
-                            <div class="lc-lectures-icon">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            </div>
-                            محتوى متكامل
-                        </div>
-                        ${btn}
-                    </div>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-        document.getElementById('lessonCountBadge').textContent = count + ' دورة متاحة';
-        staggerCards();
-    }
-
-    window.updateProfile = async () => {
-        const name = document.getElementById('editName').value;
-        const phone = document.getElementById('editPhone').value;
-        const pPhone = document.getElementById('editParentPhone').value;
-        const btn = document.getElementById('saveBtn');
-        
-        if(!name || !phone || !pPhone) return alert("الرجاء إكمال جميع البيانات.");
-        btn.textContent = "جاري التحديث...";
-        
-        try {
-            const { error } = await supabaseClient.from('users').update({
-                name: name,
-                phone: phone,
-                parentphone: pPhone 
-            }).eq('id', currentUser.id);
-            
-            if (error) throw error;
-
-            document.getElementById('userNameDisplay').textContent = name;
-            alert("تم تحديث بياناتك بنجاح ✅");
-            closeProfile();
-        } catch(e){ 
-            alert("حدث خطأ: " + e.message); 
-        }
-        btn.textContent = "تحديث البيانات";
-    };
-
-    document.getElementById('logoutBtn').onclick = async () => {
-        if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج؟")) {
-            localStorage.removeItem(`dashboard_cache_${currentUser?.id}`);
-            await supabaseClient.auth.signOut();
-            window.location.href = "index.html";
-        }
-    };
-
-    initDashboard();
-
-</script>
-
-<nav class="bottom-nav">
-    <div class="bottom-nav-inner">
-        <button class="bn-item active" onclick="bnSelect(this)">
-            <div class="bn-icon-wrap">
-                <div class="bn-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                </div>
-            </div>
-            <span class="bn-label">الرئيسية</span>
-        </button>
-        <button class="bn-item" onclick="bnSelect(this); openReports();">
-            <div class="bn-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-            </div>
-            <span class="bn-label">محتوايا</span>
-            <div class="bn-dot"></div>
-        </button>
-        <button class="bn-item" onclick="bnSelect(this); openReports();">
-            <div class="bn-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            </div>
-            <span class="bn-label">تقييماتي</span>
-        </button>
-        <button class="bn-item" onclick="bnSelect(this); openProfile();">
-            <div class="bn-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
-            <span class="bn-label">حسابي</span>
-        </button>
-        <button class="bn-item bn-logout" onclick="document.getElementById('logoutBtn').click();">
-            <div class="bn-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            </div>
-            <span class="bn-label">خروج</span>
-        </button>
-    </div>
-</nav>
-
-<script>
-function toggleSidebar() {
-    const s = document.getElementById('sidebarEl');
-    const b = document.getElementById('sidebarBackdrop');
-    const isOpen = s.classList.contains('open');
-    if (isOpen) {
-        s.classList.remove('open');
-        b.classList.remove('show');
-    } else {
-        s.classList.add('open');
-        b.classList.add('show');
-    }
+async function initDashboard(){
+  const{data:{session}}=await supabaseClient.auth.getSession();
+  if(!session){window.location.href="index.html";return;}
+  currentUser=session.user;
+  const gradeNames={"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
+  const cached=localStorage.getItem(`dashboard_cache_${currentUser.id}`);
+  if(cached){try{const c=JSON.parse(cached);applyUserUI(c.user,gradeNames);if(c.activeLessons)myActiveLessons=c.activeLessons;document.getElementById('statPurchases').textContent=c.validCount??'—';document.getElementById('statExams').textContent=c.examsCount??'—';if(c.lessons)renderLessons(c.lessons);}catch(e){}}
+  const[{data:d},{data:annData},{data:allLessons},{data:cSnap},{data:rSnap}]=await Promise.all([
+    supabaseClient.from('users').select('*').eq('id',currentUser.id).single(),
+    supabaseClient.from('announcements').select('*').eq('active',true).order('created_at',{ascending:false}).limit(1),
+    supabaseClient.from('lessons').select('*'),
+    supabaseClient.from('codes').select('*').eq('usedby',currentUser.email),
+    supabaseClient.from('results').select('*').eq('email',currentUser.email).order('date',{ascending:false})
+  ]);
+  if(!d)return;
+  const grade=d.grade||"1";
+  applyUserUI(d,gradeNames);
+  if(annData?.length>0){document.getElementById('announcementText').textContent=annData[0].message;document.getElementById('announcementBox').classList.remove('hidden');}
+  if(allLessons)allLessons.forEach(l=>{lessonsMap[l.id]=l;});
+  myActiveLessons=[];let validCount=0,spent=0,purchasesHtml='';const now=Date.now();
+  if(cSnap){cSnap.forEach(cd=>{const lesson=lessonsMap[cd.lessonid];if(!lesson)return;if(cd.expiryat>now){myActiveLessons.push(cd.lessonid);validCount++;}const price=Number(lesson.price)||0;spent+=price;const usedDate=cd.expiryat?new Date(cd.expiryat-7*24*60*60*1000).toLocaleDateString('ar-EG'):'—';const expired=cd.expiryat<now;purchasesHtml+=`<div class="rep-item"><div><div class="rep-item-name">${lesson.name}</div><div class="rep-item-date">تاريخ التفعيل: ${usedDate}</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="${expired?'badge-expired':'badge-active'}">${expired?'منتهية':'فعالة'}</span><span class="rep-price">${price>0?price+' ج':'مجاناً'}</span></div></div>`;});}
+  let examsHtml='',examsCount=0;
+  if(rSnap){rSnap.forEach(rd=>{examsCount++;const dt=rd.date?new Date(rd.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';examsHtml+=`<div class="rep-item"><div><div class="rep-item-name">${rd.lesson}</div><div class="rep-item-date">${dt}</div></div><div class="score-box"><div class="score-val">${rd.score}</div><div class="score-total">من ${rd.total}</div></div></div>`;});}
+  document.getElementById('totalSpent').textContent=spent;
+  document.getElementById('totalCourses').textContent=validCount;
+  document.getElementById('totalExams').textContent=examsCount;
+  document.getElementById('statPurchases').textContent=validCount;
+  document.getElementById('statExams').textContent=examsCount;
+  document.getElementById('purchasesList').innerHTML=purchasesHtml||'<div style="color:var(--text3);text-align:center;padding:30px;font-size:.85rem;">لم تقم بتفعيل أي كورس حتى الآن.</div>';
+  document.getElementById('examsList').innerHTML=examsHtml||'<div style="color:var(--text3);text-align:center;padding:30px;font-size:.85rem;">لم تقم بإجراء أي امتحانات حتى الآن.</div>';
+  const gradeLessons=allLessons?allLessons.filter(l=>l.grade==grade).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)):[];
+  renderLessons(gradeLessons);
+  try{localStorage.setItem(`dashboard_cache_${currentUser.id}`,JSON.stringify({user:d,activeLessons:myActiveLessons,validCount,examsCount,lessons:gradeLessons,cachedAt:Date.now()}));}catch(e){}
 }
-function closeSidebar() {
-    document.getElementById('sidebarEl').classList.remove('open');
-    document.getElementById('sidebarBackdrop').classList.remove('show');
+
+function applyUserUI(d,gradeNames){
+  const name=d.name||"يا بطل",grade=d.grade||"1";
+  document.getElementById('userNameDisplay').textContent=name;
+  document.getElementById('editName').value=d.name||"";
+  document.getElementById('editPhone').value=d.phone||"";
+  document.getElementById('editParentPhone').value=d.parentphone||"";
+  document.getElementById('gradeBadge').textContent=gradeNames[grade]||"عام";
+  document.getElementById('avatarImg').src=`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0d7a5f&color=fff&bold=true&size=128`;
 }
-document.querySelectorAll('.nav-link').forEach(l => {
-    l.addEventListener('click', () => {
-        if (window.innerWidth <= 768) closeSidebar();
-    });
-});
-function bnSelect(el) {
-    document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
+
+function renderLessons(lessonsData){
+  const grid=document.getElementById("lessonsGrid");
+  if(!lessonsData||lessonsData.length===0){grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔭</div><div class="empty-txt">لا توجد كورسات متاحة لمرحلتك الدراسية حالياً</div></div>`;return;}
+  grid.innerHTML='';let count=0;
+  const gradeLabels={"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
+  lessonsData.forEach(data=>{
+    count++;
+    const id=data.id,owned=myActiveLessons.includes(id),isFree=!data.price||Number(data.price)===0;
+    const price=isFree?'مجاناً':`${data.price} ج.م`;
+    const img=data.image||'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop';
+    const gradeText=gradeLabels[data.grade]||"";
+    const dateStr=data.created_at?new Date(data.created_at).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'';
+    const card=document.createElement('div');
+    card.className='lesson-card';
+    card.dataset.owned=owned?'true':'false';
+    card.dataset.free=isFree?'true':'false';
+    card.innerHTML=`
+      <div class="lc-img">
+        <img src="${img}" alt="${data.name}" loading="lazy">
+        <div class="lc-img-fade"></div>
+        <div class="lc-status ${owned?'owned':'locked'}">${owned?'✓ مفتوح':'🔒 مغلق'}</div>
+        <div class="lc-price ${isFree?'free':''}">${price}</div>
+      </div>
+      <div class="lc-body">
+        <div class="lc-tags">
+          <span class="lc-tag grade">${gradeText}</span>
+          <span class="lc-tag teacher">أ. شريف علي</span>
+        </div>
+        <div class="lc-title">${data.name}</div>
+        ${dateStr?`<div class="lc-date">📅 تاريخ النشر: ${dateStr}</div>`:''}
+        <a href="lesson.html?id=${id}" class="lc-btn ${owned?'owned':'buy'}">
+          ${owned?'شاهد الحصة ▶':'تفعيل بالكود 🔑'}
+        </a>
+      </div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('lessonCountBadge').textContent=count+' دورة متاحة';
+  staggerCards();
 }
+
+window.updateProfile=async()=>{
+  const name=document.getElementById('editName').value,phone=document.getElementById('editPhone').value,pPhone=document.getElementById('editParentPhone').value,btn=document.getElementById('saveBtn');
+  if(!name||!phone||!pPhone)return alert("الرجاء إكمال جميع البيانات.");
+  btn.textContent="جاري التحديث...";
+  try{const{error}=await supabaseClient.from('users').update({name,phone,parentphone:pPhone}).eq('id',currentUser.id);if(error)throw error;document.getElementById('userNameDisplay').textContent=name;alert("تم تحديث بياناتك بنجاح ✅");closeProfile();}catch(e){alert("حدث خطأ: "+e.message);}
+  btn.textContent="تحديث البيانات";
+};
+
+const handleLogout=async()=>{if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج؟")){localStorage.removeItem(`dashboard_cache_${currentUser?.id}`);await supabaseClient.auth.signOut();window.location.href="index.html";}};
+document.getElementById('logoutBtn').onclick=handleLogout;
+document.getElementById('logoutBtnMob').onclick=handleLogout;
+initDashboard();
 </script>
 </body>
 </html>
