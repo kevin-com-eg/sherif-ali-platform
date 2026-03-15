@@ -21,7 +21,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .hidden{display:none!important;}
 
 /* ── LOADING ── */
-#loadingScreen{position:fixed;inset:0;z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--white); transition: opacity 0.3s;}
+#loadingScreen{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--white); transition: opacity 0.3s;}
 .ld-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;font-family:var(--mono);box-shadow:0 8px 24px rgba(13,122,95,.3);}
 .ld-dots{display:flex;gap:7px;}
 .ld-dot{width:8px;height:8px;border-radius:50%;background:var(--teal4);animation:ldp 1.2s ease-in-out infinite;}
@@ -160,10 +160,10 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .vp-iframe-wrap{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#000;}
 .vp-video{width:100%;display:block;background:#000;aspect-ratio:16/9;}
 
-/* YT CUSTOM OVERLAY & BUTTON */
-.yt-blocker{position:absolute;left:0;right:0;background:transparent;z-index:15;pointer-events:none;}
-.yt-blocker-top{top:0;height:100px;}
-.yt-blocker-bottom{bottom:0;height:100px;}
+/* YT CUSTOM OVERLAY & BUTTON (الحماية وإخفاء الشعارات) */
+.yt-blocker { position: absolute; background: transparent; z-index: 30; pointer-events: auto; }
+.yt-blocker-top { top: 0; left: 0; right: 0; height: 60px; }
+.yt-blocker-bottom-right { bottom: 40px; right: 0; width: 150px; height: 70px; }
 .vp-yt-overlay{position:absolute;inset:0;z-index:20;cursor:pointer;background:transparent;}
 
 /* Thumbnail Cover */
@@ -381,6 +381,28 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 </div>
 
 <script>
+/* ── حماية ومنع Developer Tools ── */
+(function() {
+    const detectDevTools = () => {
+        const widthThreshold = window.outerWidth - window.innerWidth > 160;
+        const heightThreshold = window.outerHeight - window.innerHeight > 160;
+        if (widthThreshold || heightThreshold) {
+            alert("⚠️ غير مسموح بفتح أدوات المطور (Developer Tools).\nيرجى إغلاقها فوراً للمتابعة.");
+            window.location.reload();
+        }
+    };
+    setInterval(detectDevTools, 1000);
+    window.addEventListener('keydown', (e) => {
+        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault(); alert("⚠️ هذا الإجراء غير مسموح به."); return false;
+        }
+    });
+    // Debugger Trap
+    setInterval(function() {
+        (function(a) { return (function(a) { return (Function('Function(arguments[0].constructor(\'debugger\')())')(a)); })(a); })(window);
+    }, 100);
+})();
+
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
@@ -1014,7 +1036,7 @@ function buildYTPlayer(vId){
       <div class="vp-watermark"><span>ID: ${myStudentId}</span></div>
       <div class="vp-iframe-wrap">
           <div class="yt-blocker yt-blocker-top"></div>
-          <div class="yt-blocker yt-blocker-bottom"></div>
+          <div class="yt-blocker yt-blocker-bottom-right"></div>
           
           <div id="ytCover" class="yt-thumbnail-cover" style="background-image: url('${coverImg}');" onclick="toggleYtPlay()">
              <div class="yt-play-btn">
@@ -1024,7 +1046,7 @@ function buildYTPlayer(vId){
           
           <div class="vp-yt-overlay" onclick="toggleYtPlay()"></div>
           
-          <iframe id="ytFrame" sandbox="allow-scripts allow-same-origin allow-presentation" src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(location.origin)}" allow="autoplay;fullscreen" allowfullscreen></iframe>
+          <iframe id="ytFrame" sandbox="allow-scripts allow-same-origin allow-presentation" src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&widget_referrer=${encodeURIComponent(location.origin)}" allow="autoplay;fullscreen" allowfullscreen></iframe>
       </div>
       
       <div class="vp-controls" id="vpControls" dir="ltr">
@@ -1127,7 +1149,6 @@ function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((
 
 /* ── SECURITY ── */
 document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){e.preventDefault();return false;}});
 </script>
 </body>
 </html>
