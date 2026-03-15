@@ -16,7 +16,7 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
   --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--nav-h:62px;
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter 0.2s, opacity 0.2s;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:2px;}
 .hidden{display:none!important;}
 
@@ -149,57 +149,80 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-done-title{font-size:1.5rem;font-weight:900;color:var(--teal);margin-bottom:8px;}
 .hw-done-sub{font-size:.88rem;color:var(--teal2);line-height:1.7;}
 
-/* ── VIDEO PLAYER (100% CUSTOM, NO PLYR) ── */
+/* ── THE PRO CUSTOM PLAYER (LIKE THE SCREENSHOT) ── */
 .vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
 .vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
-.vp-wrap{border-radius:16px;overflow:hidden;border:1px solid var(--border2);background:#000;box-shadow:var(--shadow2);position:relative;user-select:none; width: 100%;}
-.vp-wrap:fullscreen, .vp-wrap:-webkit-full-screen{border-radius:0; border:none; background:#000; display:flex; flex-direction:column; justify-content:center;}
 
-.vp-iframe-wrap{width:100%; aspect-ratio:16/9; position:relative; overflow:hidden; background:#000;}
+.pro-player-wrap {
+    position: relative; width: 100%; border-radius: 16px;
+    overflow: hidden; background: #000; box-shadow: var(--shadow2);
+    display: flex; flex-direction: column; justify-content: center;
+    aspect-ratio: 16/9;
+}
+.pro-player-wrap:fullscreen, .pro-player-wrap:-webkit-full-screen { border-radius: 0; }
 
-/* الشلل التام لليوتيوب */
+/* إخفاء يوتيوب كلياً */
+.vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; }
 .vp-iframe-wrap iframe {
     width: 100%; height: 100%; border: none; display: block;
-    pointer-events: none !important; /* دي بتمنع الماوس نهائياً إنه يلمس اليوتيوب */
+    pointer-events: none !important; /* منع الضغط */
 }
+.pro-video { width: 100%; height: 100%; display: block; object-fit: contain; }
 
-/* العلامة المائية فوق الفيديو */
-.vp-watermark{position:absolute;inset:0;pointer-events:none;z-index:50;overflow:hidden;}
-.vp-watermark span{position:absolute;font-family:var(--mono);font-size:1.3rem;font-weight:900;color:rgba(255,255,255,.35);text-shadow:2px 2px 8px rgba(0,0,0,.9);animation:wmF 20s linear infinite alternate;white-space:nowrap;}
-@keyframes wmF{0%{top:10%;left:8%}25%{top:72%;left:12%}50%{top:42%;left:62%}75%{top:18%;left:44%}100%{top:62%;left:72%}}
+/* العلامة المائية */
+.pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
+.pro-watermark span {
+    position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
+    color: rgba(255,255,255,0.3); text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    animation: wmMove 25s linear infinite alternate; white-space: nowrap;
+}
+@keyframes wmMove { 0% { top: 10%; left: 10%; } 25% { top: 70%; left: 20%; } 50% { top: 40%; left: 70%; } 75% { top: 20%; left: 50%; } 100% { top: 60%; left: 80%; } }
 
-/* شريط التحكم المخصص */
-.vp-controls{position:absolute;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.7) 50%,transparent 100%);padding:24px 20px 14px;opacity:0;transition:opacity .3s;display:flex;flex-direction:column;gap:10px;direction:ltr;}
-.vp-wrap:hover .vp-controls, .vp-wrap.show-controls .vp-controls{opacity:1;}
-.vp-wrap:fullscreen .vp-controls { z-index: 9999; position:absolute; bottom:0;}
-.vp-wrap:fullscreen .vp-iframe-wrap { width: 100%; height: 100vh; }
+/* شريط التحكم السفلي الاحترافي */
+.pro-controls {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    padding: 10px 20px 15px; display: flex; flex-direction: column; gap: 8px;
+    opacity: 0; transition: opacity 0.3s; direction: ltr;
+}
+.pro-player-wrap:hover .pro-controls, .pro-player-wrap.active-controls .pro-controls { opacity: 1; }
 
-.vp-progress-wrap{width:100%;height:16px;display:flex;align-items:center;cursor:pointer;padding:4px 0;position:relative;}
-.vp-progress-bg{width:100%;height:5px;background:rgba(255,255,255,.2);border-radius:3px;position:relative;transition:height .15s;}
-.vp-progress-wrap:hover .vp-progress-bg{height:8px;}
-.vp-progress-fill{position:absolute;top:0;left:0;height:100%;background:var(--teal);border-radius:3px;transition:width .1s linear;}
-.vp-progress-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;background:var(--teal);border-radius:50%;box-shadow:0 0 8px rgba(13,122,95,.8);opacity:0;transition:opacity .2s;pointer-events:none;}
-.vp-progress-wrap:hover .vp-progress-thumb{opacity:1;}
+.pro-timeline-container { width: 100%; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+.pro-timeline-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; position: relative; transition: height 0.1s; }
+.pro-timeline-container:hover .pro-timeline-bg { height: 8px; }
+.pro-timeline-progress { position: absolute; top: 0; left: 0; height: 100%; background: var(--teal); border-radius: 3px; pointer-events: none; transition: width 0.1s linear; }
+.pro-timeline-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--teal); border-radius: 50%; opacity: 0; pointer-events: none; transition: opacity 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+.pro-timeline-container:hover .pro-timeline-thumb { opacity: 1; }
 
-.vp-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:2px;}
-.vp-left,.vp-right{display:flex;align-items:center;gap:16px;}
-.vpc-btn{background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--mono);font-size:.9rem;font-weight:700;opacity:.85;padding:4px;}
-.vpc-btn:hover{opacity:1;color:var(--teal);transform:scale(1.15);}
-.vp-time{font-family:var(--mono);font-size:.85rem;color:#eee;font-weight:700;text-shadow:0 1px 3px #000;letter-spacing:1px;}
-.vp-time-sep{color:rgba(255,255,255,.4);margin:0 4px;}
+.pro-controls-bottom { display: flex; align-items: center; justify-content: space-between; }
+.pro-ctrl-group { display: flex; align-items: center; gap: 15px; }
 
+.pro-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.85; transition: all 0.2s; padding: 0; }
+.pro-btn:hover { opacity: 1; transform: scale(1.1); color: var(--teal); }
+.pro-btn svg { width: 22px; height: 22px; fill: currentColor; }
+
+.pro-time { color: #fff; font-family: var(--mono); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; }
+.pro-speed-btn { font-family: var(--sans); font-size: 0.9rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 5px; opacity: 0.85; cursor: pointer; border: none; background: none; }
+.pro-speed-btn:hover { opacity: 1; color: var(--teal); }
+
+/* زرار الـ Play في نص الشاشة وقت الـ Pause */
+.pro-center-play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 70px; height: 70px; background: rgba(0,0,0,0.6);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 15; transition: all 0.2s; border: 2px solid rgba(255,255,255,0.2);
+}
+.pro-center-play:hover { background: var(--teal); transform: translate(-50%, -50%) scale(1.1); border-color: transparent; }
+.pro-center-play svg { width: 35px; height: 35px; fill: #fff; margin-left: 5px; }
+.pro-center-play.hidden { display: none; }
+
+/* Popup القوائم */
 .vpc-popup-wrap{position:relative;}
 .vpc-popup{position:absolute;bottom:calc(100% + 15px);left:50%;transform:translateX(-50%);background:rgba(15,20,32,.98);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:6px;min-width:90px;display:none;box-shadow:0 8px 32px rgba(0,0,0,.8);}
 .vpc-popup.open{display:block;animation:riseIn .2s ease-out;}
 .vpc-popup-item{display:block;width:100%;padding:8px 12px;font-family:var(--mono);font-size:.8rem;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;text-align:center;border-radius:8px;transition:all .15s;margin-bottom:2px;font-weight:700;}
 .vpc-popup-item:hover{background:rgba(255,255,255,.1);color:#fff;}
 .vpc-popup-item.active{color:#fff;background:var(--teal);}
-
-/* شاشة الضغط للتشغيل */
-.vp-play-overlay{position:absolute;inset:0;z-index:40;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.vp-play-overlay .yt-play-btn {width:75px;height:55px;background:rgba(13,122,95,0.9);border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:all 0.2s;}
-.vp-play-overlay:hover .yt-play-btn{transform:scale(1.1);background:var(--teal);}
-.vp-play-overlay.hidden{display:none;}
 
 /* ── PDF ── */
 .pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
@@ -236,9 +259,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .access-pill .lbl{display:none;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
-  .vp-controls{padding:12px 14px 10px;}
-  .vp-left,.vp-right{gap:10px;}
-  .vp-time{font-size:.75rem;}
 }
 </style>
 </head>
@@ -325,9 +345,18 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
         </div>
         <div class="q-card" id="qDisplay"></div>
         <div class="quiz-nav">
-          <button id="prevBtn" class="q-btn ghost hidden">السابق</button>
-          <button id="nextBtn" class="q-btn primary">التالي</button>
-          <button id="finishBtn" class="q-btn finish hidden">إنهاء وتصحيح</button>
+          <button id="prevBtn" class="q-btn ghost hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            السابق
+          </button>
+          <button id="nextBtn" class="q-btn primary">
+            التالي
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button id="finishBtn" class="q-btn finish hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            إنهاء وتصحيح
+          </button>
         </div>
       </div>
 
@@ -356,31 +385,37 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
    SECURITY & DEV TOOLS PROTECTION
 ════════════════════════════════════ */
 (function() {
-    // 1. منع كليك يمين
     document.addEventListener('contextmenu', e => e.preventDefault());
 
-    // 2. منع اختصارات المطورين
     window.addEventListener('keydown', (e) => {
         if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
             e.preventDefault(); alert("⚠️ غير مسموح بفتح أدوات المطور للحفاظ على خصوصية المحتوى."); return false;
         }
+        if (e.key === 'PrintScreen' || e.keyCode === 44) {
+            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.'); alert("⚠️ غير مسموح بأخذ لقطات شاشة لحماية المحتوى.");
+        }
     });
 
-    // 3. كشف الـ Developer Tools بالأبعاد
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen' || e.keyCode === 44) { navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.'); }
+    });
+
     const detectDevTools = () => {
         const widthThreshold = window.outerWidth - window.innerWidth > 160;
         const heightThreshold = window.outerHeight - window.innerHeight > 160;
         if (widthThreshold || heightThreshold) {
-            alert("⚠️ غير مسموح بفتح أدوات المطور (Developer Tools).\nيرجى إغلاقها فوراً للمتابعة.");
+            alert("⚠️ غير مسموح بفتح أدوات المطور.\nيرجى إغلاقها فوراً للمتابعة.");
             window.location.reload(); 
         }
     };
     setInterval(detectDevTools, 1000);
 
-    // 4. فخ Debugger
     setInterval(function() {
         (function(a) { return (function(a) { return (Function('Function(arguments[0].constructor(\'debugger\')())')(a)); })(a); })(window);
     }, 100);
+
+    window.addEventListener('blur', () => { document.body.style.filter = 'blur(15px)'; document.body.style.opacity = '0.4'; });
+    window.addEventListener('focus', () => { document.body.style.filter = 'none'; document.body.style.opacity = '1'; });
 })();
 
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
@@ -389,7 +424,7 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY
 const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
 
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
-let examTimer,myStudentId="000000",plyrPlayer=false;
+let examTimer,myStudentId="000000",vidPlayerInited=false;
 let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
 
 function showLoader(text = "جاري التحميل...") {
@@ -543,12 +578,12 @@ document.getElementById('verifyBtn').onclick=async()=>{
   hideLoader();
 };
 
-/* ── CUSTOM VIDEO PLAYER (NO YT LOGOS/CLICKS) ── */
+/* ── CUSTOM VIDEO PLAYER (MP4 / YT) ── */
 let ytPlayer=null, ytDur=0, ytCur=0, ytPlaying=false, ytTimer=null;
 
 function initVideoPlayer() {
-  if(lessonData.video && !plyrPlayer){
-    plyrPlayer = true;
+  if(lessonData.video && !vidPlayerInited){
+    vidPlayerInited = true;
     const vc = document.getElementById('tab-video');
     const url = lessonData.video;
     let html = `<div class="vid-section-title">فيديو الشرح</div>`;
@@ -558,14 +593,118 @@ function initVideoPlayer() {
       const vId = m ? m[1] : null;
       html += buildYTPlayer(vId);
       vc.innerHTML = html; loadYTApi();
-    } else if(url.includes('mediadelivery.net') || url.includes('bunny')){
-      html += buildBunnyPlayer(url); vc.innerHTML = html;
     } else {
       html += buildMP4Player(url); vc.innerHTML = html; initMP4Player();
     }
   }
 }
 
+// ── بناء واجهة المشغل المخصص ──
+function buildMP4Player(src){
+  return `
+  <div class="pro-player-wrap" id="vpWrap" oncontextmenu="return false;">
+      <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
+      
+      <video class="pro-video" id="vpVid" playsinline disablePictureInPicture>
+          <source src="${src}" type="video/mp4">
+      </video>
+
+      <div id="centerPlayBtn" class="pro-center-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+
+      <div class="pro-controls" id="vpControls">
+          <div class="pro-timeline-container" id="vpProg">
+              <div class="pro-timeline-bg">
+                  <div class="pro-timeline-progress" id="vpFill" style="width:0%"></div>
+                  <div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div>
+              </div>
+          </div>
+          <div class="pro-controls-bottom">
+              <div class="pro-ctrl-group">
+                  <button class="pro-btn" id="bottomPlayBtn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                  <button class="pro-btn" onclick="mp4Seek(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
+                  <button class="pro-btn" onclick="mp4Seek(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
+                  <button class="pro-btn" id="muteBtn"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button>
+                  <div class="pro-time"><span id="vpCur">0:00</span> / <span id="vpDur">0:00</span></div>
+              </div>
+              <div class="pro-ctrl-group">
+                  <div class="vpc-popup-wrap">
+                      <button class="pro-speed-btn" onclick="togglePopup('speedPop')">
+                          <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor;"><path d="M10 8v8l6-4-6-4zm9.35-2.73l-1.42-1.42C16.14 2.06 14.17 1 12 1 5.92 1 1 5.92 1 12s4.92 11 11 11c5.23 0 9.61-3.66 10.74-8.58l-1.95-.45C19.86 18.06 16.24 21 12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9c1.84 0 3.54.56 4.95 1.51L16 6h5.21c-.04-.54-.08-1.06-.08-1.6V1l-1.78 1.77z"/></svg>
+                          <span id="vpSpeedLbl">1x</span>
+                      </button>
+                      <div class="vpc-popup" id="speedPop">
+                          ${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}
+                      </div>
+                  </div>
+                  <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+              </div>
+          </div>
+      </div>
+  </div>`;
+}
+
+function initMP4Player(){
+  const vid = document.getElementById('vpVid');
+  const wrap = document.getElementById('vpWrap');
+  const bPlay = document.getElementById('bottomPlayBtn');
+  const cPlay = document.getElementById('centerPlayBtn');
+  const muteBtn = document.getElementById('muteBtn');
+  if(!vid) return;
+
+  const playIcon = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+  const pauseIcon = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+  const volIcon = `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`;
+  const muteIcon = `<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
+
+  const togglePlay = () => { vid.paused ? vid.play() : vid.pause(); };
+  bPlay.onclick = togglePlay; cPlay.onclick = togglePlay; vid.onclick = togglePlay;
+
+  muteBtn.onclick = () => { vid.muted = !vid.muted; muteBtn.innerHTML = vid.muted ? muteIcon : volIcon; };
+
+  vid.onplay = () => { bPlay.innerHTML = pauseIcon; cPlay.classList.add('hidden'); wrap.classList.add('active-controls'); };
+  vid.onpause = () => { bPlay.innerHTML = playIcon; cPlay.classList.remove('hidden'); wrap.classList.add('active-controls'); };
+
+  let ht;
+  wrap.addEventListener('mousemove', () => { wrap.classList.add('active-controls'); clearTimeout(ht); ht = setTimeout(() => { if(!vid.paused) wrap.classList.remove('active-controls'); }, 2500); });
+  wrap.addEventListener('mouseleave', () => { if(!vid.paused) wrap.classList.remove('active-controls'); });
+
+  vid.ontimeupdate = () => {
+      const p = vid.duration ? (vid.currentTime / vid.duration * 100) : 0;
+      document.getElementById('vpFill').style.width = p + '%';
+      document.getElementById('vpThumb').style.left = p + '%';
+      document.getElementById('vpCur').textContent = fmtTime(vid.currentTime);
+  };
+  vid.onloadedmetadata = () => { document.getElementById('vpDur').textContent = fmtTime(vid.duration); };
+
+  const prog = document.getElementById('vpProg');
+  let isDragging = false;
+  const updateProgress = (e) => { const r = prog.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); vid.currentTime = pct * vid.duration; };
+  prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
+  document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
+  document.addEventListener('mouseup', () => { isDragging = false; });
+  prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
+  document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
+  document.addEventListener('touchend', () => { isDragging = false; });
+}
+
+window.mp4Seek=(s)=>{const v=document.getElementById('vpVid');if(v)v.currentTime=Math.max(0,v.currentTime+s);};
+window.setSpeed=(s)=>{document.querySelectorAll('.vpc-popup-item').forEach(i=>i.classList.toggle('active',parseFloat(i.textContent)===s));document.getElementById('vpSpeedLbl').textContent=s+'x';const v=document.getElementById('vpVid');if(v)v.playbackRate=s;else if(ytPlayer?.setPlaybackRate)ytPlayer.setPlaybackRate(s);closeAllPopups();};
+window.togglePopup=(id)=>{const p=document.getElementById(id);const was=p.classList.contains('open');closeAllPopups();if(!was)p.classList.add('open');};
+function closeAllPopups(){document.querySelectorAll('.vpc-popup').forEach(p=>p.classList.remove('open'));}
+document.addEventListener('click',e=>{if(!e.target.closest('.vpc-popup-wrap'))closeAllPopups();});
+
+window.toggleFullscreen=()=>{
+  const w=document.getElementById('vpWrap');
+  if(!w)return;
+  if(!document.fullscreenElement) w.requestFullscreen();
+  else document.exitFullscreen();
+};
+
+function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
+
+/* ── YOUTUBE FALLBACK (IF YT LINK IS USED) ── */
 function loadYTApi(){
   if(window.YT&&window.YT.Player){initYTPlayer();return;}
   const tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";
@@ -573,129 +712,75 @@ function loadYTApi(){
 }
 window.onYouTubeIframeAPIReady=()=>initYTPlayer();
 
-function initYTPlayer(){
-  const fr=document.getElementById('ytFrame'); if(!fr) return;
-  ytPlayer=new YT.Player('ytFrame',{events:{
-    onReady:e=>{
-        ytDur=ytPlayer.getDuration()||0;
-        document.getElementById('vpDur').textContent=fmtTime(ytDur);
-        if(ytTimer)clearInterval(ytTimer);
-        ytTimer=setInterval(updateYTTime,500);
-    },
-    onStateChange:e=>{
-        ytPlaying=(e.data===YT.PlayerState.PLAYING);
-        const w=document.getElementById('vpWrap');
-        if(w){ytPlaying?w.classList.add('playing'):w.classList.remove('playing');}
-        const pb=document.getElementById('vpPlay');
-        if(pb)pb.innerHTML=ytPlaying?`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`:`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`;
-        
-        const overlay = document.getElementById('playOverlay');
-        if(ytPlaying) {
-             if(overlay) overlay.classList.add('hidden');
-        } else {
-             if(overlay) overlay.classList.remove('hidden');
-        }
-    }
-  }});
-}
-
-function updateYTTime(){
-    if(!ytPlayer||!ytPlayer.getCurrentTime)return;
-    ytCur=ytPlayer.getCurrentTime()||0;
-    ytDur=ytPlayer.getDuration()||0;
-    document.getElementById('vpDur').textContent=fmtTime(ytDur);
-    document.getElementById('vpCur').textContent=fmtTime(ytCur);
-    const pct=ytDur?(ytCur/ytDur*100):0;
-    document.getElementById('vpFill').style.width=pct+'%';
-    document.getElementById('vpThumb').style.left=pct+'%';
-}
-
-window.toggleYtPlay=()=>{
-  const overlay = document.getElementById('playOverlay');
-  if(overlay) overlay.classList.add('hidden');
-
-  if(ytPlayer && ytPlayer.getPlayerState){
-      if (ytPlayer.getPlayerState()===YT.PlayerState.PLAYING) ytPlayer.pauseVideo();
-      else ytPlayer.playVideo();
-  }
-};
-window.ytSeek=(s)=>{if(!ytPlayer||!ytPlayer.seekTo)return;ytCur=Math.max(0,Math.min(ytDur,ytCur+s));ytPlayer.seekTo(ytCur,true);};
-
 function buildYTPlayer(vId){
   return`
-  <div class="vp-wrap vp-yt-mode" id="vpWrap">
-      <div class="vp-watermark"><span>ID: ${myStudentId}</span></div>
+  <div class="pro-player-wrap" id="vpWrap">
+      <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
       <div class="vp-iframe-wrap">
           <iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1" allow="autoplay;fullscreen" allowfullscreen></iframe>
-          
-          <div id="playOverlay" class="vp-play-overlay" onclick="toggleYtPlay()">
-             <div class="yt-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-          </div>
+          <div class="vp-yt-overlay" onclick="toggleYtPlay()"></div>
+          <div id="centerPlayBtn" class="pro-center-play" onclick="toggleYtPlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
-      
-      <div class="vp-controls" id="vpControls" dir="ltr">
-          <div class="vp-progress-wrap" id="vpProg">
-              <div class="vp-progress-bg">
-                  <div class="vp-progress-buf" id="vpBuf" style="width:0%"></div>
-                  <div class="vp-progress-fill" id="vpFill" style="width:0%"></div>
-                  <div class="vp-progress-thumb" id="vpThumb" style="left:0%"></div>
+      <div class="pro-controls" id="vpControls">
+          <div class="pro-timeline-container" id="vpProg"><div class="pro-timeline-bg"><div class="pro-timeline-progress" id="vpFill" style="width:0%"></div><div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div></div></div>
+          <div class="pro-controls-bottom">
+              <div class="pro-ctrl-group">
+                  <button class="pro-btn" id="bottomPlayBtn" onclick="toggleYtPlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                  <button class="pro-btn" onclick="ytSeek(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
+                  <button class="pro-btn" onclick="ytSeek(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
+                  <div class="pro-time"><span id="vpCur">0:00</span> / <span id="vpDur">0:00</span></div>
               </div>
-          </div>
-          <div class="vp-bottom">
-              <div class="vp-left">
-                  <button class="vpc-btn" onclick="toggleFullscreen()">
-                      <svg width="18" height="18" id="vpFsIco" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                  </button>
+              <div class="pro-ctrl-group">
                   <div class="vpc-popup-wrap">
-                      <button class="vpc-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button>
-                      <div class="vpc-popup" id="speedPop">
-                          ${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}
-                      </div>
+                      <button class="pro-speed-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button>
+                      <div class="vpc-popup" id="speedPop">${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}</div>
                   </div>
-              </div>
-              <div class="vp-right">
-                  <span class="vp-time"><span id="vpCur">0:00</span><span class="vp-time-sep">/</span><span id="vpDur">0:00</span></span>
-                  <button class="vpc-btn" onclick="ytSeek(-10)">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 1 3 5 7 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg>
-                  </button>
-                  <button class="vpc-btn" onclick="ytSeek(10)">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11V9a4 4 0 0 0-4-4H3"/><polyline points="17 1 21 5 17 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg>
-                  </button>
-                  <button class="vpc-btn" id="vpPlay">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                  </button>
+                  <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
               </div>
           </div>
       </div>
   </div>`;
 }
 
-/* ── استكمال التهيئة والمراجعة ── */
+function initYTPlayer(){
+  const fr=document.getElementById('ytFrame'); if(!fr) return;
+  ytPlayer=new YT.Player('ytFrame',{events:{
+    onReady:e=>{ ytDur=ytPlayer.getDuration()||0; document.getElementById('vpDur').textContent=fmtTime(ytDur); ytTimer=setInterval(updateYTTime,500); },
+    onStateChange:e=>{
+        ytPlaying=(e.data===YT.PlayerState.PLAYING);
+        const w=document.getElementById('vpWrap'), pb=document.getElementById('bottomPlayBtn'), cp=document.getElementById('centerPlayBtn');
+        if(w){ytPlaying?w.classList.add('active-controls'):w.classList.remove('active-controls');}
+        if(pb)pb.innerHTML=ytPlaying?`<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`:`<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+        if(cp)ytPlaying?cp.classList.add('hidden'):cp.classList.remove('hidden');
+    }
+  }});
+  const prog=document.getElementById('vpProg');
+  prog.addEventListener('click',e=>{const r=prog.getBoundingClientRect(); ytPlayer.seekTo(ytDur*((e.clientX-r.left)/r.width),true);});
+}
+function updateYTTime(){
+    if(!ytPlayer||!ytPlayer.getCurrentTime)return;
+    ytCur=ytPlayer.getCurrentTime()||0; ytDur=ytPlayer.getDuration()||0;
+    document.getElementById('vpDur').textContent=fmtTime(ytDur); document.getElementById('vpCur').textContent=fmtTime(ytCur);
+    const pct=ytDur?(ytCur/ytDur*100):0;
+    document.getElementById('vpFill').style.width=pct+'%'; document.getElementById('vpThumb').style.left=pct+'%';
+}
+window.toggleYtPlay=()=>{ if(ytPlayer && ytPlayer.getPlayerState){ ytPlayer.getPlayerState()===1 ? ytPlayer.pauseVideo() : ytPlayer.playVideo(); } };
+window.ytSeek=(s)=>{if(!ytPlayer||!ytPlayer.seekTo)return;ytCur=Math.max(0,Math.min(ytDur,ytCur+s));ytPlayer.seekTo(ytCur,true);};
+
+/* ── CORE LESSON & EXAM LOGIC ── */
 async function initLesson(){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
   const id=new URLSearchParams(window.location.search).get('id');
-  const[{data:snap},{data:rSnap}]=await Promise.all([
-    supabaseClient.from('lessons').select('*').eq('id',id).single(),
-    supabaseClient.from('results').select('*').eq('email',currentUser?.email).order('date',{ascending:false})
-  ]);
+  const[{data:snap},{data:rSnap}]=await Promise.all([ supabaseClient.from('lessons').select('*').eq('id',id).single(), supabaseClient.from('results').select('*').eq('email',currentUser?.email).order('date',{ascending:false}) ]);
   if(!snap) return;
   lessonData=snap; questions=lessonData.questions||[];
 
   await loadHomeworkForLesson(id);
 
   if (questions.length === 0) {
-    document.getElementById('tab-quiz').innerHTML = `
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;box-shadow:var(--shadow);margin-top:20px;">
-        <div style="font-size:3rem;margin-bottom:14px;">🎓</div>
-        <div style="font-size:1.2rem;font-weight:900;color:var(--text);">لا يوجد امتحان لهذه الحصة</div>
-        <div style="font-size:.88rem;color:var(--text2);margin-top:8px;">تم فتح فيديو الشرح والملزمة مباشرة لك</div>
-      </div>`;
-    ['video','pdf'].forEach(t=>{
-      document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
-      document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
-    });
-    
+    document.getElementById('tab-quiz').innerHTML = `<div style="background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;box-shadow:var(--shadow);margin-top:20px;"><div style="font-size:3rem;margin-bottom:14px;">🎓</div><div style="font-size:1.2rem;font-weight:900;color:var(--text);">لا يوجد امتحان لهذه الحصة</div><div style="font-size:.88rem;color:var(--text2);margin-top:8px;">تم فتح فيديو الشرح والملزمة مباشرة لك</div></div>`;
+    ['video','pdf'].forEach(t=>{ document.getElementById(`btn-${t}-tab`).classList.add('unlocked'); document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim'); });
     initVideoPlayer();
     if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
     if(urlTab === 'homework') { setTimeout(()=>switchTab('homework'), 100); } else { setTimeout(()=>switchTab('video'), 100); }
@@ -713,7 +798,6 @@ async function initLesson(){
   if(urlTab==='homework') setTimeout(()=>switchTab('homework'),300);
 }
 
-/* ── HOMEWORK ── */
 async function loadHomeworkForLesson(lessonId){
   try{
     const{data:hwList}=await supabaseClient.from('homework').select('*').eq('lessonid',lessonId).limit(1);
@@ -731,60 +815,32 @@ async function loadHomeworkForLesson(lessonId){
 }
 
 function renderNoHomework(){
-  document.getElementById('tab-homework').innerHTML=`
-    <div style="background:var(--white);border:1px solid var(--border);border-radius:20px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);">
-      <div style="font-size:3rem;margin-bottom:14px;">📋</div>
-      <div style="font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:8px;">لا يوجد واجب لهذه الحصة</div>
-    </div>`;
+  document.getElementById('tab-homework').innerHTML=`<div style="background:var(--white);border:1px solid var(--border);border-radius:20px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);"><div style="font-size:3rem;margin-bottom:14px;">📋</div><div style="font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:8px;">لا يوجد واجب لهذه الحصة</div></div>`;
   document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
 }
 
 function renderHomeworkLocked(){
-  document.getElementById('tab-homework').innerHTML=`
-    <div style="background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);"></div>
-      <div class="hw-locked-icon">📋</div>
-      <div class="hw-locked-title">واجب: ${hwData.title||'الواجب'}</div>
-      <div class="hw-locked-sub">أجب على ${hwQuestions.length} سؤال من الواجب — لازم تخلص الواجب عشان تفتح الحصة الجاية</div>
-      <button class="hw-start-btn" onclick="startHomework()">ابدأ الواجب الآن</button>
-    </div>`;
+  document.getElementById('tab-homework').innerHTML=`<div style="background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);"></div><div class="hw-locked-icon">📋</div><div class="hw-locked-title">واجب: ${hwData.title||'الواجب'}</div><div class="hw-locked-sub">أجب على ${hwQuestions.length} سؤال من الواجب — لازم تخلص الواجب عشان تفتح الحصة الجاية</div><button class="hw-start-btn" onclick="startHomework()">ابدأ الواجب الآن</button></div>`;
 }
 
 function renderHomeworkDone(result){
   const pct=result.total>0?Math.round(result.score/result.total*100):0;
   const clr=pct>=70?'var(--teal)':pct>=50?'var(--gold)':'var(--red)';
   let reviewHtml = '<div style="margin-top:24px;text-align:right;"><div class="review-section-title">مراجعة إجابات الواجب:</div>';
-  
   hwQuestions.forEach((q,i) => {
     const ok = hwUserAns[i] === q.correct;
     const ansL = hwUserAns[i] ? hwUserAns[i].toUpperCase() : null;
     const ansStr = ansL ? (q[hwUserAns[i]] ? `${ansL} - ${q[hwUserAns[i]]}` : ansL) : 'لم تجب';
     const corrL = q.correct ? q.correct.toUpperCase() : '';
     const corrStr = q[q.correct] ? `${corrL} - ${q[q.correct]}` : corrL;
-
-    reviewHtml += `
-      <div class="review-item ${ok?'correct':'wrong'}" style="text-align:right; margin-bottom:10px; padding:15px; border-radius:12px; background:var(--white); border:1px solid ${ok?'var(--teal4)':'#fecaca'};">
-        <div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>
-        ${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}
-        <div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div>
-        <div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>
-        ${!ok ? `<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>` : ''}
-      </div>`;
+    reviewHtml += `<div class="review-item ${ok?'correct':'wrong'}" style="text-align:right; margin-bottom:10px; padding:15px; border-radius:12px; background:var(--white); border:1px solid ${ok?'var(--teal4)':'#fecaca'};"><div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}<div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>${!ok ? `<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>` : ''}</div>`;
   });
-  reviewHtml += '</div>';
-
-  document.getElementById('tab-homework').innerHTML=`
-    <div style="background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:36px 20px;text-align:center;">
-      <div class="hw-done-icon" style="font-size:3rem; margin-bottom:10px;">✅</div>
-      <div class="hw-done-title" style="font-size:1.4rem;font-weight:900;color:var(--teal);">تم تسليم الواجب بنجاح!</div>
-      <div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:${clr};margin:16px 0 8px;">${result.score}<span style="font-size:1.2rem;color:var(--text2);">/${result.total}</span></div>
-    </div>${reviewHtml}`;
+  document.getElementById('tab-homework').innerHTML=`<div style="background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:36px 20px;text-align:center;"><div class="hw-done-icon" style="font-size:3rem; margin-bottom:10px;">✅</div><div class="hw-done-title" style="font-size:1.4rem;font-weight:900;color:var(--teal);">تم تسليم الواجب بنجاح!</div><div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:${clr};margin:16px 0 8px;">${result.score}<span style="font-size:1.2rem;color:var(--text2);">/${result.total}</span></div></div>${reviewHtml}</div>`;
 }
 
 window.startHomework=function(){
   if(!hwQuestions||hwQuestions.length===0) return alert("لا توجد أسئلة في الواجب بعد.");
-  showLoader("جاري تجهيز الواجب...");
-  setTimeout(() => { hwStarted=true; hwCurIdx=0; hwUserAns={}; renderHwQ(); hideLoader(); }, 400);
+  showLoader("جاري تجهيز الواجب..."); setTimeout(() => { hwStarted=true; hwCurIdx=0; hwUserAns={}; renderHwQ(); hideLoader(); }, 400);
 };
 
 function renderHwQ(){
@@ -792,32 +848,15 @@ function renderHwQ(){
   const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);
   const optCount = q.optionsCount || 4;
   const letters = OPT_LETTERS.slice(0, optCount);
-
   document.getElementById('tab-homework').innerHTML=`
     <div class="quiz-wrap">
-      <div class="progress-row">
-        <span class="q-count" style="color:var(--gold);">${hwCurIdx+1} / ${hwQuestions.length}</span>
-        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:linear-gradient(to right,var(--gold),#b45309);"></div></div>
-      </div>
-      <div class="q-card" style="border-color:#fed7aa;">
-        <div class="q-label" style="color:var(--gold);">سؤال ${hwCurIdx+1} · الواجب</div>
-        ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
-        <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
-        <div class="options">
-          ${letters.map(opt=>`
-            <label class="opt-label" style="${hwUserAns[hwCurIdx]===opt?'border-color:var(--gold);background:#fff7ed;':''}">
-              <input type="radio" name="hw" value="${opt}" ${hwUserAns[hwCurIdx]===opt?'checked':''} onchange="hwUserAns[hwCurIdx]=this.value">
-              <span class="opt-key" style="${hwUserAns[hwCurIdx]===opt?'background:var(--gold);border-color:var(--gold);color:#fff;':''}">${opt.toUpperCase()}</span>
-              <span class="opt-text">${q[opt]||''}</span>
-            </label>`).join('')}
-        </div>
-      </div>
+      <div class="progress-row"><span class="q-count" style="color:var(--gold);">${hwCurIdx+1} / ${hwQuestions.length}</span><div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:linear-gradient(to right,var(--gold),#b45309);"></div></div></div>
+      <div class="q-card" style="border-color:#fed7aa;"><div class="q-label" style="color:var(--gold);">سؤال ${hwCurIdx+1} · الواجب</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="options">
+          ${letters.map(opt=>`<label class="opt-label" style="${hwUserAns[hwCurIdx]===opt?'border-color:var(--gold);background:#fff7ed;':''}"><input type="radio" name="hw" value="${opt}" ${hwUserAns[hwCurIdx]===opt?'checked':''} onchange="hwUserAns[hwCurIdx]=this.value"><span class="opt-key" style="${hwUserAns[hwCurIdx]===opt?'background:var(--gold);border-color:var(--gold);color:#fff;':''}">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}
+        </div></div>
       <div class="quiz-nav">
         <button class="q-btn ghost ${hwCurIdx===0?'hidden':''}" onclick="saveHwAns();hwCurIdx--;renderHwQ()">السابق</button>
-        ${hwCurIdx<hwQuestions.length-1
-          ?`<button class="q-btn primary" style="background:var(--gold);" onclick="saveHwAns();hwCurIdx++;renderHwQ()">التالي</button>`
-          :`<button class="q-btn finish" onclick="saveHwAns();submitHomework()">تسليم الواجب</button>`
-        }
+        ${hwCurIdx<hwQuestions.length-1 ?`<button class="q-btn primary" style="background:var(--gold);" onclick="saveHwAns();hwCurIdx++;renderHwQ()">التالي</button>` :`<button class="q-btn finish" onclick="saveHwAns();submitHomework()">تسليم الواجب</button>` }
       </div>
     </div>`;
 }
@@ -831,18 +870,12 @@ function submitHomework(){
   setTimeout(() => { hwDone=true; renderHomeworkDone({score,total:hwQuestions.length}); hideLoader(); }, 500);
 }
 
-/* ── EXAM ── */
 function buildScoreMsg(score,total,wasPrev){ const pct=total>0?Math.round(score/total*100):0; return{score,total,pct,wasPrev}; }
 
 document.getElementById('startBtn').onclick=()=>{
   if(questions.length===0) return alert("لا توجد أسئلة في هذا الامتحان بعد.");
   showLoader("جاري تجهيز الامتحان...");
-  setTimeout(() => {
-      document.getElementById('startScreen').classList.add('hidden');
-      document.getElementById('quizApp').classList.remove('hidden');
-      document.getElementById('timerBox').classList.remove('hidden');
-      renderQ(); startTimer(); hideLoader();
-  }, 400);
+  setTimeout(() => { document.getElementById('startScreen').classList.add('hidden'); document.getElementById('quizApp').classList.remove('hidden'); document.getElementById('timerBox').classList.remove('hidden'); renderQ(); startTimer(); hideLoader(); }, 400);
 };
 
 function renderQ(){
@@ -850,21 +883,9 @@ function renderQ(){
   const pct=Math.round((curIdx+1)/questions.length*100);
   const optCount = q.optionsCount || 4;
   const letters = OPT_LETTERS.slice(0, optCount);
-
   document.getElementById('qCount').textContent=`${curIdx+1} / ${questions.length}`;
   document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('qDisplay').innerHTML=`
-    <div class="q-label">السؤال ${curIdx+1}</div>
-    ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
-    <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
-    <div class="options">
-      ${letters.map(opt=>`
-        <label class="opt-label">
-          <input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}>
-          <span class="opt-key">${opt.toUpperCase()}</span>
-          <span class="opt-text">${q[opt]||''}</span>
-        </label>`).join('')}
-    </div>`;
+  document.getElementById('qDisplay').innerHTML=`<div class="q-label">السؤال ${curIdx+1}</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="options">${letters.map(opt=>`<label class="opt-label"><input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}><span class="opt-key">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}</div>`;
   document.getElementById('prevBtn').classList.toggle('hidden',curIdx===0);
   document.getElementById('nextBtn').classList.toggle('hidden',curIdx===questions.length-1);
   document.getElementById('finishBtn').classList.toggle('hidden',curIdx!==questions.length-1);
@@ -894,36 +915,15 @@ function generateReview(){
     const ansStr = ansL ? (q[userAns[i]] ? `${ansL} - ${q[userAns[i]]}` : ansL) : 'لم تجب';
     const corrL = q.correct ? q.correct.toUpperCase() : '';
     const corrStr = q[q.correct] ? `${corrL} - ${q[q.correct]}` : corrL;
-    list.innerHTML+=`
-      <div class="review-item ${ok?'correct':'wrong'}" style="animation-delay:${i*.05}s">
-        <div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>
-        ${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}
-        <div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div>
-        <div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>
-        ${!ok?`<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>`:''}
-      </div>`;
+    list.innerHTML+=`<div class="review-item ${ok?'correct':'wrong'}"><div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}<div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>${!ok?`<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>`:''}</div>`;
   });
 }
 
 function unlockFeatures(msgObj){
-  document.getElementById('startScreen').classList.add('hidden');
-  document.getElementById('quizApp').classList.add('hidden');
-  document.getElementById('timerBox').classList.add('hidden');
-  document.getElementById('reviewArea').classList.remove('hidden');
+  document.getElementById('startScreen').classList.add('hidden'); document.getElementById('quizApp').classList.add('hidden'); document.getElementById('timerBox').classList.add('hidden'); document.getElementById('reviewArea').classList.remove('hidden');
   const pct=msgObj.pct; const clr=pct>=70?'var(--teal)':pct>=50?'var(--gold)':'var(--red)';
   const radius=42,circ=2*Math.PI*radius,offset=circ-(pct/100)*circ;
-  document.getElementById('scoreBanner').innerHTML=`
-    <div class="score-ring">
-      <svg width="110" height="110" viewBox="0 0 110 110">
-        <circle cx="55" cy="55" r="${radius}" fill="none" stroke="var(--border2)" stroke-width="6"/>
-        <circle cx="55" cy="55" r="${radius}" fill="none" stroke="${clr}" stroke-width="6" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 4px ${clr})"/>
-      </svg>
-      <div class="score-ring-num" style="color:${clr}">${msgObj.score}</div>
-      <div class="score-ring-pct">${pct}%</div>
-    </div>
-    <div class="score-of">من ${msgObj.total} سؤال</div>
-    <div class="score-msg">${msgObj.wasPrev?'✦ لقد أديت هذا الامتحان من قبل':'✦ تم تسجيل درجتك بنجاح'}</div>
-    <div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>`;
+  document.getElementById('scoreBanner').innerHTML=`<div class="score-ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${radius}" fill="none" stroke="var(--border2)" stroke-width="6"/><circle cx="55" cy="55" r="${radius}" fill="none" stroke="${clr}" stroke-width="6" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 4px ${clr})"/></svg><div class="score-ring-num" style="color:${clr}">${msgObj.score}</div><div class="score-ring-pct">${pct}%</div></div><div class="score-of">من ${msgObj.total} سؤال</div><div class="score-msg">${msgObj.wasPrev?'✦ لقد أديت هذا الامتحان من قبل':'✦ تم تسجيل درجتك بنجاح'}</div><div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>`;
   ['video','pdf'].forEach(t=>{ document.getElementById(`btn-${t}-tab`).classList.add('unlocked'); document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim'); });
   initVideoPlayer();
   if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
@@ -931,77 +931,11 @@ function unlockFeatures(msgObj){
 
 function startTimer(){
   examTimer=setInterval(()=>{
-    const m=Math.floor(timeLeft/60),s=timeLeft%60;
-    document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;
+    const m=Math.floor(timeLeft/60),s=timeLeft%60; document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;
     if(timeLeft<=120) document.getElementById('timerBox').classList.add('urgent');
     if(timeLeft--<=0){clearInterval(examTimer);alert("انتهى وقت الامتحان!");document.getElementById('finishBtn').click();}
   },1000);
 }
-
-function buildBunnyPlayer(url){
-  return`<div class="vp-wrap" style="padding-bottom:56.25%;height:0;"><div class="vp-watermark"><span>ID: ${myStudentId}</span></div><iframe src="${url}?autoplay=false&loop=false&muted=false&preload=true&responsive=true" loading="lazy" style="border:0;position:absolute;top:0;height:100%;width:100%;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe></div>`;
-}
-
-function initMP4Player(){
-  const vid=document.getElementById('vpVid'),wrap=document.getElementById('vpWrap');if(!vid)return;
-  const pb=document.getElementById('vpPlay');
-  const pSvg=`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`;
-  const pauseSvg=`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
-  pb.onclick=()=>vid.paused?vid.play():vid.pause();
-  vid.onplay=()=>{pb.innerHTML=pauseSvg;wrap.classList.add('show-controls');};
-  vid.onpause=()=>{pb.innerHTML=pSvg;};
-  let ht;
-  wrap.addEventListener('mousemove',()=>{wrap.classList.add('show-controls');clearTimeout(ht);ht=setTimeout(()=>{if(!vid.paused)wrap.classList.remove('show-controls');},3000);});
-  wrap.addEventListener('mouseleave',()=>{if(!vid.paused)wrap.classList.remove('show-controls');});
-  vid.ontimeupdate=()=>{const p=vid.duration?(vid.currentTime/vid.duration*100):0;document.getElementById('vpFill').style.width=p+'%';document.getElementById('vpThumb').style.left=p+'%';document.getElementById('vpCur').textContent=fmtTime(vid.currentTime);};
-  vid.onloadedmetadata=()=>{document.getElementById('vpDur').textContent=fmtTime(vid.duration);};
-  vid.onprogress=()=>{if(vid.buffered.length){document.getElementById('vpBuf').style.width=(vid.buffered.end(vid.buffered.length-1)/vid.duration*100)+'%';}};
-  const prog=document.getElementById('vpProg');
-  prog.addEventListener('click',e=>{const r=prog.getBoundingClientRect();vid.currentTime=((e.clientX-r.left)/r.width)*vid.duration;});
-  let dr=false;
-  prog.addEventListener('mousedown',()=>dr=true);
-  document.addEventListener('mousemove',e=>{if(!dr)return;const r=prog.getBoundingClientRect();vid.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*vid.duration;});
-  document.addEventListener('mouseup',()=>dr=false);
-  prog.addEventListener('touchstart',e=>{e.preventDefault();dr=true;},{passive:false});
-  document.addEventListener('touchmove',e=>{if(!dr)return;const r=prog.getBoundingClientRect();vid.currentTime=Math.max(0,Math.min(1,(e.touches[0].clientX-r.left)/r.width))*vid.duration;});
-  document.addEventListener('touchend',()=>dr=false);
-}
-
-window.mp4Seek=(s)=>{const v=document.getElementById('vpVid');if(v)v.currentTime=Math.max(0,v.currentTime+s);};
-
-document.addEventListener('click',e=>{
-  const btn=e.target.closest('#vpPlay');
-  if(btn){const v=document.getElementById('vpVid');if(v){v.paused?v.play():v.pause();return;}toggleYtPlay();return;}
-  const prog=e.target.closest('#vpProg');
-  if(prog){const r=prog.getBoundingClientRect();const pct=(e.clientX-r.left)/r.width;const v=document.getElementById('vpVid');if(v){v.currentTime=pct*v.duration;}else if(ytPlayer?.seekTo){ytPlayer.seekTo(ytDur*pct,true);}}
-});
-
-window.setSpeed=(s)=>{document.querySelectorAll('.vpc-popup-item').forEach(i=>i.classList.toggle('active',parseFloat(i.textContent)===s));document.getElementById('vpSpeedLbl').textContent=s+'x';const v=document.getElementById('vpVid');if(v)v.playbackRate=s;else if(ytPlayer?.setPlaybackRate)ytPlayer.setPlaybackRate(s);closeAllPopups();};
-window.togglePopup=(id)=>{const p=document.getElementById(id);const was=p.classList.contains('open');closeAllPopups();if(!was)p.classList.add('open');};
-function closeAllPopups(){document.querySelectorAll('.vpc-popup').forEach(p=>p.classList.remove('open'));}
-document.addEventListener('click',e=>{if(!e.target.closest('.vpc-popup-wrap'))closeAllPopups();});
-
-window.toggleFullscreen=()=>{
-  const w=document.getElementById('vpWrap');
-  if(!w)return;
-  if(!document.fullscreenElement){
-      (w.requestFullscreen||w.webkitRequestFullscreen||w.mozRequestFullScreen).call(w);
-  }else{
-      (document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen).call(document);
-  }
-};
-
-document.addEventListener('fullscreenchange',()=>{
-  const ic=document.getElementById('vpFsIco');
-  if(!ic)return;
-  if(document.fullscreenElement){
-      ic.innerHTML=`<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>`;
-  }else{
-      ic.innerHTML=`<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>`;
-  }
-});
-
-function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
 </script>
 </body>
 </html>
