@@ -6,879 +6,788 @@
     <title>MathPro | لوحة المعلم</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-:root {
-    --bg:    #050810;
-    --bg2:   #080d1a;
-    --card:  #0e1828;
-    --panel: #0c1322;
-    --border:rgba(255,255,255,0.07);
-    --b2:    rgba(255,255,255,0.11);
-    --g1:    #00e5a0;
-    --g2:    #00b578;
-    --g3:    #007a52;
-    --gold:  #c9933a;
-    --red:   #ef4444;
-    --blue:  #3b82f6;
-    --glow:  rgba(0,229,160,0.14);
-    --muted: #4b5e7a;
-    --text:  #e8f4f0;
-    --text2: #8ba8b8;
-    --mono:  'DM Mono', monospace;
-    --sans:  'Tajawal', sans-serif;
-    --r:     16px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --bg:#f0f4f7;--white:#fff;--teal:#0d7a5f;--teal2:#0a6650;--teal3:#e8f5f1;--teal4:#c8e8e0;
+  --border:#e2e8ed;--border2:#d0dae2;--text:#1a2332;--text2:#5a6a7a;--text3:#8a9aaa;
+  --red:#dc2626;--gold:#d97706;--blue:#2563eb;--purple:#7c3aed;
+  --sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);
+  --sidebar-w:250px;
 }
-body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-body::before {
-    content:''; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.02;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size:180px;
-}
-body::after {
-    content:''; position:fixed;
-    width:700px; height:700px;
-    background:radial-gradient(circle,rgba(0,229,160,.05) 0%,transparent 70%);
-    top:-150px; left:-150px; border-radius:50%;
-    filter:blur(60px); pointer-events:none; z-index:0;
-}
-::-webkit-scrollbar { width:4px; }
-::-webkit-scrollbar-track { background:var(--bg); }
-::-webkit-scrollbar-thumb { background:var(--g3); border-radius:2px; }
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:10px;}
+.hidden{display:none!important;}
 
-/* ── SECURE LAYER ───────────────────── */
-#secureLayer {
-    position:fixed; inset:0; z-index:200;
-    background:var(--bg);
-    display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:20px;
-}
-.spin-ring {
-    width:52px; height:52px;
-    border:2px solid rgba(0,229,160,.15);
-    border-top-color:var(--g1);
-    border-radius:50%;
-    animation:spin .8s linear infinite;
-}
-@keyframes spin { to { transform:rotate(360deg); } }
-.secure-txt { font-family:var(--mono); font-size:.75rem; color:var(--text2); letter-spacing:1px; }
+/* ── SECURE LAYER ── */
+#secureLayer{position:fixed;inset:0;z-index:500;background:var(--white);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.spin-ring{width:44px;height:44px;border:3px solid var(--teal4);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.secure-txt{font-family:var(--mono);font-size:.75rem;color:var(--text2);}
 
-/* ── PAGE ────────────────────────────── */
-.page { position:relative; z-index:1; }
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);min-height:100vh;
+  background:var(--white);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;right:0;top:0;bottom:0;z-index:50;
+  box-shadow:2px 0 20px rgba(0,0,0,.06);
+  overflow-y:auto;
+}
+.sb-logo{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sb-logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;color:#fff;font-family:var(--mono);flex-shrink:0;}
+.sb-logo-name{font-size:1rem;font-weight:900;color:var(--text);}
+.sb-logo-name span{color:var(--teal);}
+.sb-badge{font-size:.55rem;font-weight:900;background:rgba(217,119,6,.15);color:var(--gold);border:1px solid rgba(217,119,6,.3);border-radius:6px;padding:2px 7px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-top:2px;display:inline-block;}
 
-/* ── NAV ─────────────────────────────── */
-nav {
-    position:sticky; top:0; z-index:100;
-    border-bottom:1px solid var(--border);
-    backdrop-filter:blur(24px) saturate(1.8);
-    background:rgba(5,8,16,.85);
+.sb-section-lbl{font-size:.6rem;font-weight:900;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;padding:16px 20px 6px;font-family:var(--mono);}
+.sb-nav{flex:1;padding:8px 10px;}
+.sb-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  font-size:.875rem;font-weight:700;color:var(--text2);
+  cursor:pointer;transition:all .2s;margin-bottom:3px;
+  border:none;background:none;font-family:var(--sans);width:100%;text-align:right;
 }
-.nav-w {
-    max-width:1300px; margin:0 auto;
-    padding:0 32px; height:64px;
-    display:flex; align-items:center; justify-content:space-between; gap:16px;
-}
-.logo-wm { font-family:var(--mono); font-size:1.4rem; font-weight:500; color:#fff; letter-spacing:-1px; }
-.logo-wm b { color:var(--g1); }
-.logo-chip {
-    font-family:var(--mono); font-size:.58rem; letter-spacing:1.5px;
-    color:var(--gold); background:rgba(201,147,58,.1);
-    border:1px solid rgba(201,147,58,.25);
-    padding:2px 8px; border-radius:20px; text-transform:uppercase; margin-right:10px;
-}
-.nav-teacher {
-    display:flex; align-items:center; gap:8px;
-    font-size:.82rem; font-weight:700; color:var(--text2);
-}
-.nav-teacher-dot { width:7px; height:7px; background:var(--g1); border-radius:50%; box-shadow:0 0 8px var(--g1); animation:blink 2s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-.logout-btn {
-    display:flex; align-items:center; gap:6px;
-    background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2);
-    color:#f87171; font-family:var(--sans); font-size:.8rem; font-weight:700;
-    padding:8px 16px; border-radius:10px; cursor:pointer; transition:all .25s;
-}
-.logout-btn:hover { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.4); }
+.sb-link:hover{background:var(--teal3);color:var(--teal);}
+.sb-link.active{background:var(--teal3);color:var(--teal);border:1px solid var(--teal4);}
+.sb-link .sb-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;background:var(--bg);border:1px solid var(--border);transition:all .2s;}
+.sb-link.active .sb-icon{background:var(--teal);border-color:var(--teal);}
+.sb-link.active .sb-icon svg{stroke:#fff;}
+.sb-link svg{stroke:var(--text2);transition:stroke .2s;}
+.sb-link.active svg,.sb-link:hover svg{stroke:var(--teal);}
+.sb-link.active .sb-icon svg{stroke:#fff!important;}
 
-/* ── LAYOUT ──────────────────────────── */
-main { max-width:1300px; margin:0 auto; padding:36px 32px 80px; display:flex; flex-direction:column; gap:24px; }
-@media(max-width:700px){ main{ padding:20px 16px 60px; } }
+.sb-footer{padding:14px;border-top:1px solid var(--border);}
+.sb-logout{width:100%;display:flex;align-items:center;gap:8px;justify-content:center;padding:10px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;color:var(--red);font-family:var(--sans);font-size:.83rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.sb-logout:hover{background:#fecaca;}
 
-/* ── SECTION CARD ────────────────────── */
-.s-card {
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:24px;
-    overflow:hidden;
-    opacity:0; animation:riseIn .6s forwards;
-}
-.s-card:nth-child(1){ animation-delay:.05s; }
-.s-card:nth-child(2){ animation-delay:.12s; }
-.s-card:nth-child(3){ animation-delay:.19s; }
-.s-card:nth-child(4){ animation-delay:.26s; }
-.s-card:nth-child(5){ animation-delay:.33s; }
-.s-head {
-    padding:24px 28px 20px;
-    border-bottom:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between; gap:14px;
-    flex-wrap:wrap;
-}
-.s-title {
-    display:flex; align-items:center; gap:12px;
-    font-size:1.05rem; font-weight:900;
-}
-.s-title::before {
-    content:''; width:3px; height:18px;
-    background:linear-gradient(to bottom,var(--g1),var(--g2));
-    border-radius:2px; flex-shrink:0;
-}
-.s-title.gold::before { background:linear-gradient(to bottom,var(--gold),#a07020); }
-.s-title.blue::before { background:linear-gradient(to bottom,var(--blue),#1d4ed8); }
-.s-title.purple::before { background:linear-gradient(to bottom,#a855f7,#7e22ce); }
-.s-body { padding:24px 28px 28px; }
+/* ── MAIN ── */
+.main-area{margin-right:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
 
-/* ── HEADER CARD ─────────────────────── */
-.header-card {
-    background:var(--card); border-radius:24px;
-    border:1px solid var(--border);
-    padding:28px 32px;
-    display:flex; align-items:center; justify-content:space-between; gap:16px;
-    position:relative; overflow:hidden;
-    opacity:0; animation:riseIn .6s forwards;
-}
-.header-card::before {
-    content:''; position:absolute; top:0; left:8%; right:8%; height:1px;
-    background:linear-gradient(to right,transparent,var(--g1),transparent);
-}
-.header-role {
-    font-family:var(--mono); font-size:.62rem; letter-spacing:1.5px;
-    text-transform:uppercase; color:var(--g1); margin-bottom:6px;
-}
-.header-name { font-size:1.5rem; font-weight:900; }
-.header-sub { font-size:.82rem; color:var(--text2); margin-top:4px; }
+/* ── TOP BAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 1px 8px rgba(0,0,0,.05);}
+.topbar-title{font-size:1rem;font-weight:900;display:flex;align-items:center;gap:10px;color:var(--text);}
+.topbar-title::before{content:'';width:4px;height:20px;background:var(--teal);border-radius:3px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.teacher-pill{display:flex;align-items:center;gap:7px;background:var(--teal3);border:1px solid var(--teal4);border-radius:20px;padding:6px 14px;font-size:.8rem;font-weight:700;color:var(--teal);}
+.teacher-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── FORM FIELDS ─────────────────────── */
-.field-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.field-grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
-@media(max-width:800px){ .field-grid-3,.field-grid-2{ grid-template-columns:1fr; } }
+/* ── CONTENT ── */
+.content{padding:28px 32px 60px;flex:1;}
 
-.fw { display:flex; flex-direction:column; gap:6px; }
-.flbl { font-size:.68rem; font-weight:700; color:var(--text2); letter-spacing:.8px; text-transform:uppercase; font-family:var(--mono); }
-.finp {
-    width:100%;
-    background:rgba(255,255,255,.04)!important;
-    border:1px solid rgba(255,255,255,.08)!important;
-    color:var(--text)!important;
-    padding:11px 14px; border-radius:10px;
-    font-family:var(--sans); font-size:.9rem;
-    outline:none!important; transition:all .25s;
-    -webkit-appearance:none;
-}
-.finp:focus { border-color:var(--g1)!important; background:rgba(0,229,160,.04)!important; box-shadow:0 0 0 3px rgba(0,229,160,.1); }
-.finp::placeholder { color:#344558; }
-select.finp { color:var(--text2)!important; }
-select.finp.filled { color:var(--text)!important; }
-select.finp option { background:#0c1322; color:var(--text); }
-textarea.finp { resize:vertical; min-height:90px; line-height:1.6; }
+/* ── SECTION ── */
+.section-page{display:none;}
+.section-page.active{display:block;}
 
-/* ── BUTTONS ─────────────────────────── */
-.btn {
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    padding:11px 24px; border-radius:12px; border:none;
-    font-family:var(--sans); font-weight:900; font-size:.875rem;
-    cursor:pointer; transition:all .3s; white-space:nowrap;
-    position:relative; overflow:hidden;
-}
-.btn::before {
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
-    transform:translateX(-100%); transition:transform .5s;
-}
-.btn:hover::before { transform:translateX(100%); }
-.btn-primary {
-    background:linear-gradient(135deg,var(--g1) 0%,var(--g2) 100%);
-    color:#021a10; box-shadow:0 6px 20px rgba(0,229,160,.22);
-}
-.btn-primary:hover { box-shadow:0 10px 30px rgba(0,229,160,.38); transform:translateY(-1px); }
-.btn-ghost {
-    background:rgba(255,255,255,.04); border:1px solid var(--border);
-    color:var(--text2);
-}
-.btn-ghost:hover { border-color:var(--g1); color:var(--g1); }
-.btn-danger {
-    background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3);
-    color:#f87171;
-}
-.btn-danger:hover { background:rgba(239,68,68,.2); color:#fca5a5; }
-.btn-gold {
-    background:linear-gradient(135deg,var(--gold) 0%,#a07020 100%);
-    color:#fff; box-shadow:0 6px 20px rgba(201,147,58,.2);
-}
-.btn-gold:hover { box-shadow:0 10px 28px rgba(201,147,58,.38); transform:translateY(-1px); }
-.btn-dark {
-    background:#111927; border:1px solid var(--b2);
-    color:var(--text2);
-}
-.btn-dark:hover { border-color:var(--g1); color:var(--g1); }
-.btn-full { width:100%; }
-.btn-lg { padding:14px 32px; font-size:1rem; border-radius:14px; }
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.stat-c{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px 22px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);transition:all .3s;}
+.stat-c:hover{border-color:var(--teal4);box-shadow:var(--shadow2);transform:translateY(-2px);}
+.stat-icon{width:46px;height:46px;border-radius:12px;background:var(--teal3);border:1px solid var(--teal4);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.stat-val{font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--teal);line-height:1;}
+.stat-lbl{font-size:.7rem;color:var(--text2);font-weight:700;margin-top:4px;}
 
-/* ── SEARCH ──────────────────────────── */
-.search-wrap { position:relative; max-width:340px; }
-.search-wrap input {
-    width:100%;
-    background:rgba(255,255,255,.04); border:1px solid var(--border);
-    color:var(--text); padding:10px 16px 10px 38px;
-    border-radius:10px; font-family:var(--sans); font-size:.85rem;
-    outline:none; transition:all .25s;
-}
-.search-wrap input:focus { border-color:var(--g1); background:rgba(0,229,160,.04); }
-.search-wrap input::placeholder { color:var(--muted); }
-.search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem; }
+/* ── CARD ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px;}
+.card-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.card-title{font-size:.95rem;font-weight:900;color:var(--text);display:flex;align-items:center;gap:8px;}
+.card-body{padding:22px 24px;}
 
-/* ── TABLE ───────────────────────────── */
-.table-wrap { overflow-x:auto; max-height:460px; overflow-y:auto; border-radius:14px; border:1px solid var(--border); }
-.table-wrap::-webkit-scrollbar { width:3px; height:3px; }
-.table-wrap::-webkit-scrollbar-thumb { background:var(--g3); border-radius:2px; }
-table { width:100%; border-collapse:collapse; text-align:right; }
-thead { position:sticky; top:0; z-index:10; background:var(--panel); }
-thead th {
-    padding:14px 16px; font-size:.7rem; font-weight:700;
-    color:var(--muted); text-transform:uppercase; letter-spacing:.8px;
-    font-family:var(--mono); border-bottom:1px solid var(--border);
-    white-space:nowrap;
-}
-tbody tr { border-bottom:1px solid rgba(255,255,255,.04); transition:background .2s; }
-tbody tr:hover { background:rgba(255,255,255,.03); }
-tbody tr:last-child { border-bottom:none; }
-tbody td { padding:14px 16px; font-size:.875rem; vertical-align:middle; }
-.td-name { font-weight:700; }
-.td-email { font-family:var(--mono); font-size:.72rem; color:var(--text2); }
-.td-lesson { color:var(--g1); font-weight:700; }
-.td-score {
-    display:inline-flex; align-items:center; gap:4px;
-    background:rgba(0,229,160,.1); border:1px solid rgba(0,229,160,.2);
-    color:var(--g1); padding:4px 12px; border-radius:8px;
-    font-family:var(--mono); font-size:.78rem; font-weight:500;
-}
-.td-date { font-family:var(--mono); font-size:.68rem; color:var(--muted); white-space:nowrap; }
-.td-empty { padding:48px; text-align:center; color:var(--muted); font-size:.875rem; }
+/* ── FORM ── */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.fw{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.fw:last-child{margin-bottom:0;}
+.flbl{font-size:.65rem;font-weight:700;color:var(--text2);letter-spacing:.8px;text-transform:uppercase;font-family:var(--mono);}
+.finp{width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:10px 13px;border-radius:9px;font-family:var(--sans);font-size:.88rem;outline:none;transition:all .2s;}
+.finp:focus{border-color:var(--teal);background:var(--white);box-shadow:0 0 0 3px rgba(13,122,95,.1);}
+.finp::placeholder{color:var(--text3);}
+select.finp{color:var(--text2);}
+select.finp option{background:var(--white);color:var(--text);}
+textarea.finp{resize:vertical;min-height:90px;line-height:1.6;}
 
-/* ── QUESTION BLOCKS ─────────────────── */
-.q-block {
-    background:rgba(255,255,255,.03); border:1px solid var(--border);
-    border-radius:16px; padding:22px; margin-bottom:12px;
-    transition:border-color .2s;
-}
-.q-block:hover { border-color:rgba(0,229,160,.2); }
-.q-block-head {
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:16px;
-}
-.q-num-badge {
-    font-family:var(--mono); font-size:.65rem; letter-spacing:1px;
-    color:var(--g1); background:rgba(0,229,160,.1);
-    border:1px solid rgba(0,229,160,.2);
-    padding:3px 10px; border-radius:20px; text-transform:uppercase;
-}
-.q-delete {
-    width:28px; height:28px;
-    background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2);
-    border-radius:8px; cursor:pointer; transition:all .2s;
-    display:flex; align-items:center; justify-content:center;
-    color:#f87171; font-size:.7rem;
-}
-.q-delete:hover { background:rgba(239,68,68,.18); border-color:rgba(239,68,68,.5); }
-.q-grid-top { display:grid; grid-template-columns:1fr auto; gap:12px; margin-bottom:12px; align-items:end; }
-.q-options-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-@media(max-width:600px){ .q-options-grid{ grid-template-columns:1fr 1fr; } }
-.opt-letter {
-    font-family:var(--mono); font-size:.6rem; color:var(--muted);
-    background:rgba(255,255,255,.05); border:1px solid var(--border);
-    padding:2px 6px; border-radius:5px; margin-bottom:4px; display:inline-block;
-}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border-radius:10px;border:none;font-family:var(--sans);font-weight:900;font-size:.85rem;cursor:pointer;transition:all .25s;white-space:nowrap;}
+.btn-primary{background:var(--teal);color:#fff;box-shadow:0 4px 14px rgba(13,122,95,.2);}
+.btn-primary:hover{background:var(--teal2);box-shadow:0 6px 20px rgba(13,122,95,.3);transform:translateY(-1px);}
+.btn-ghost{background:var(--bg);border:1.5px solid var(--border2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+.btn-danger{background:#fee2e2;border:1px solid #fecaca;color:var(--red);}
+.btn-danger:hover{background:#fecaca;}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 14px rgba(217,119,6,.2);}
+.btn-gold:hover{box-shadow:0 6px 20px rgba(217,119,6,.3);transform:translateY(-1px);}
+.btn-full{width:100%;}
+.btn-lg{padding:13px 28px;font-size:.95rem;}
 
-/* ── CODES ───────────────────────────── */
-.codes-result {
-    background:rgba(255,255,255,.02); border:1px solid var(--border);
-    border-radius:16px; padding:20px; margin-top:16px;
-}
-.codes-grid {
-    display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
-    gap:8px; margin-top:16px; max-height:300px; overflow-y:auto;
-}
-.code-pill {
-    font-family:var(--mono); font-size:.68rem; font-weight:500;
-    background:rgba(255,255,255,.04); border:1px solid var(--border);
-    color:var(--text2); padding:8px 10px; border-radius:8px;
-    text-align:center; transition:all .2s;
-}
-.code-pill:hover { border-color:var(--g1); color:var(--g1); }
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;text-align:right;}
+thead{background:var(--bg);position:sticky;top:0;}
+thead th{padding:12px 16px;font-size:.65rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;font-family:var(--mono);border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr{border-bottom:1px solid rgba(0,0,0,.04);transition:background .15s;}
+tbody tr:hover{background:var(--teal3);}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
+.td-name{font-weight:700;}
+.td-email{font-family:var(--mono);font-size:.7rem;color:var(--text2);}
+.td-lesson{color:var(--teal);font-weight:700;}
+.td-score{display:inline-flex;align-items:center;background:var(--teal3);border:1px solid var(--teal4);color:var(--teal);padding:3px 10px;border-radius:7px;font-family:var(--mono);font-size:.75rem;font-weight:700;}
+.td-date{font-family:var(--mono);font-size:.65rem;color:var(--text3);white-space:nowrap;}
+.td-empty{padding:48px;text-align:center;color:var(--text3);font-size:.875rem;}
 
-/* ── STAT CHIPS (header) ─────────────── */
-.stat-chips { display:flex; gap:10px; flex-wrap:wrap; }
-.stat-chip {
-    display:flex; align-items:center; gap:8px;
-    background:rgba(255,255,255,.04); border:1px solid var(--border);
-    border-radius:10px; padding:8px 16px;
+/* ── SEARCH ── */
+.search-wrap{position:relative;max-width:280px;}
+.search-wrap input{width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:9px 14px 9px 36px;border-radius:9px;font-family:var(--sans);font-size:.83rem;outline:none;transition:all .2s;}
+.search-wrap input:focus{border-color:var(--teal);background:var(--white);}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);}
+
+/* ── Q BLOCK ── */
+.q-block{background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:18px;margin-bottom:10px;transition:border-color .2s;}
+.q-block:hover{border-color:var(--teal4);}
+.q-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.q-num-badge{font-family:var(--mono);font-size:.62rem;color:var(--teal);background:var(--teal3);border:1px solid var(--teal4);padding:3px 10px;border-radius:20px;}
+.q-del{width:26px;height:26px;background:#fee2e2;border:1px solid #fecaca;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:.7rem;transition:all .2s;}
+.q-del:hover{background:#fecaca;}
+.q-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.opt-lbl{font-size:.58rem;font-weight:700;color:var(--text3);font-family:var(--mono);margin-bottom:3px;}
+
+/* ── CODES ── */
+.codes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:14px;max-height:300px;overflow-y:auto;}
+.code-pill{font-family:var(--mono);font-size:.7rem;background:var(--bg);border:1px solid var(--border2);color:var(--text2);padding:8px 10px;border-radius:8px;text-align:center;transition:all .2s;}
+.code-pill:hover{border-color:var(--teal);color:var(--teal);}
+
+/* ── BADGE ── */
+.badge{font-size:.6rem;font-weight:900;padding:3px 9px;border-radius:6px;}
+.badge-active{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;}
+.badge-expired{background:#fee2e2;color:#9b1c1c;border:1px solid #fecaca;}
+.badge-teal{background:var(--teal3);color:var(--teal);border:1px solid var(--teal4);}
+
+.divider{height:1px;background:var(--border);margin:18px 0;}
+
+/* ── MOBILE ── */
+.mob-toggle{display:none;position:fixed;bottom:16px;right:16px;z-index:200;width:48px;height:48px;background:var(--teal);border-radius:50%;border:none;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(13,122,95,.4);align-items:center;justify-content:center;}
+.sb-backdrop{display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);}
+.sb-backdrop.show{display:block;}
+
+@media(max-width:900px){
+  .main-area{margin-right:0;}
+  .sidebar{transform:translateX(110%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  .mob-toggle{display:flex;}
+  .content{padding:20px 16px 60px;}
+  .topbar{padding:0 16px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .fg2,.fg3{grid-template-columns:1fr;}
+  .q-opts{grid-template-columns:1fr 1fr;}
 }
-.sc-icon { font-size:1rem; }
-.sc-val { font-family:var(--mono); font-size:1rem; font-weight:500; color:var(--g1); }
-.sc-lbl { font-size:.65rem; color:var(--muted); margin-top:1px; }
-
-/* ── DIVIDER ─────────────────────────── */
-.divider { height:1px; background:var(--border); margin:22px 0; }
-
-/* ── ANIM ────────────────────────────── */
-@keyframes riseIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-.hidden { display:none !important; }
 </style>
 </head>
 <body>
 
+<!-- SECURE -->
 <div id="secureLayer">
-    <div class="spin-ring"></div>
-    <div class="secure-txt">جاري التحقق من صلاحيات المعلم...</div>
+  <div class="spin-ring"></div>
+  <div class="secure-txt">جاري التحقق من صلاحيات المعلم...</div>
 </div>
 
-<div class="page">
-<nav>
-    <div class="nav-w">
-        <div style="display:flex;align-items:center;">
-            <span class="logo-wm">Math<b>Pro</b></span>
-            <span class="logo-chip">ADMIN</span>
-        </div>
-        <div class="nav-teacher">
-            <div class="nav-teacher-dot"></div>
-            مستر شريف علي
-        </div>
-        <button class="logout-btn" onclick="signOut()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-            خروج
-        </button>
-    </div>
-</nav>
-
-<main>
-
-<div class="header-card">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebarEl">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">MP</div>
     <div>
-        <div class="header-role">Teacher Dashboard · MathPro</div>
-        <div class="header-name">لوحة تحكم المعلم 🎓</div>
-        <div class="header-sub">مستر شريف علي — إدارة المنصة</div>
+      <div class="sb-logo-name">Math<span>Pro</span></div>
+      <div class="sb-badge">ADMIN</div>
     </div>
-    <div class="stat-chips" id="headerStats">
-        <div class="stat-chip"><span class="sc-icon">👥</span><div><div class="sc-val" id="statStudents">—</div><div class="sc-lbl">طالب</div></div></div>
-        <div class="stat-chip"><span class="sc-icon">📝</span><div><div class="sc-val" id="statResults">—</div><div class="sc-lbl">نتيجة</div></div></div>
-        <div class="stat-chip"><span class="sc-icon">📚</span><div><div class="sc-val" id="statLessons">—</div><div class="sc-lbl">حصة</div></div></div>
-    </div>
-</div>
+  </div>
 
-<div class="s-card">
-    <div class="s-head">
-        <div class="s-title">إرسال تنبيه عام 📢</div>
+  <nav class="sb-nav">
+    <div class="sb-section-lbl">الرئيسية</div>
+    <button class="sb-link active" onclick="showSection('overview',this)">
+      <div class="sb-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+      نظرة عامة
+    </button>
+
+    <div class="sb-section-lbl">المحتوى</div>
+    <button class="sb-link" onclick="showSection('lessons',this)">
+      <div class="sb-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+      الحصص
+    </button>
+    <button class="sb-link" onclick="showSection('homework',this)">
+      <div class="sb-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+      الواجبات
+    </button>
+
+    <div class="sb-section-lbl">الطلاب</div>
+    <button class="sb-link" onclick="showSection('results',this)">
+      <div class="sb-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      درجات الطلاب
+    </button>
+
+    <div class="sb-section-lbl">الإدارة</div>
+    <button class="sb-link" onclick="showSection('codes',this)">
+      <div class="sb-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div>
+      أكواد الاشتراك
+    </button>
+    <button class="sb-link" onclick="showSection('notif',this)">
+      <div class="sb-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      التنبيهات
+    </button>
+  </nav>
+
+  <div class="sb-footer">
+    <button class="sb-logout" onclick="signOut()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      تسجيل الخروج
+    </button>
+  </div>
+</aside>
+
+<div class="sb-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
+<button class="mob-toggle" onclick="toggleSidebar()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- MAIN -->
+<div class="main-area">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">نظرة عامة</div>
+    <div class="topbar-right">
+      <div class="teacher-pill">
+        <div class="teacher-dot"></div>
+        مستر شريف علي
+      </div>
     </div>
-    <div class="s-body">
-        <div class="fw" style="margin-bottom:16px;">
+  </div>
+
+  <div class="content">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="section-page active" id="sec-overview">
+      <div class="stats-row">
+        <div class="stat-c"><div class="stat-icon">👥</div><div><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">طالب مسجل</div></div></div>
+        <div class="stat-c"><div class="stat-icon">📝</div><div><div class="stat-val" id="statResults">—</div><div class="stat-lbl">نتيجة مسجلة</div></div></div>
+        <div class="stat-c"><div class="stat-icon">📚</div><div><div class="stat-val" id="statLessons">—</div><div class="stat-lbl">حصة منشورة</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">📊 آخر الدرجات</div></div>
+        <div style="padding:4px 4px 4px;">
+          <div class="table-wrap" style="max-height:320px;overflow-y:auto;">
+            <table><thead><tr><th>الطالب</th><th>الحصة</th><th>الدرجة</th><th>التاريخ</th></tr></thead>
+            <tbody id="overviewResultsBody"><tr><td colspan="4" class="td-empty">جاري التحميل...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LESSONS ══ -->
+    <div class="section-page" id="sec-lessons">
+      <!-- إدارة الحصص -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📚 الحصص المضافة</div>
+          <button class="btn btn-primary" onclick="resetLessonForm()">+ حصة جديدة</button>
+        </div>
+        <div style="padding:4px;">
+          <div class="table-wrap">
+            <table><thead><tr><th>اسم الحصة</th><th>المرحلة</th><th>السعر</th><th>الصلاحية</th><th style="text-align:center;">إجراءات</th></tr></thead>
+            <tbody id="lessonsListBody"><tr><td colspan="5" class="td-empty">جاري التحميل...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+      <!-- فورم إضافة/تعديل -->
+      <div class="card" id="lessonFormCard">
+        <div class="card-head"><div class="card-title" id="lessonFormTitle">➕ إضافة حصة جديدة</div></div>
+        <div class="card-body">
+          <div class="fg2">
+            <div class="fw"><label class="flbl">اسم الحصة</label><input id="lessonName" class="finp" placeholder="مثال: الباب الأول - الدرس الثاني"></div>
+            <div class="fw"><label class="flbl">المرحلة الدراسية</label>
+              <select id="lessonGrade" class="finp"><option value="1">أولى ثانوي</option><option value="2">تانية ثانوي</option><option value="3">تالتة ثانوي</option></select>
+            </div>
+          </div>
+          <div class="fg2">
+            <div class="fw"><label class="flbl">سعر الحصة (ج.م)</label><input id="lessonPrice" type="number" class="finp" placeholder="مثال: 50"></div>
+            <div class="fw"><label class="flbl">مدة الصلاحية (أيام)</label><input id="lessonValidity" type="number" class="finp" placeholder="7" value="7"></div>
+          </div>
+          <div class="fg3">
+            <div class="fw"><label class="flbl">رابط صورة الغلاف</label><input id="lessonImage" class="finp" placeholder="رابط صورة"></div>
+            <div class="fw"><label class="flbl">رابط فيديو الشرح</label><input id="videoUrl" class="finp" placeholder="رابط يوتيوب"></div>
+            <div class="fw"><label class="flbl">رابط الملزمة PDF</label><input id="attachmentUrl" class="finp" placeholder="رابط PDF"></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:.9rem;font-weight:900;">أسئلة الامتحان</div>
+            <button class="btn btn-ghost" style="font-size:.78rem;padding:7px 14px;" onclick="addQuestion('questionsContainer')">+ إضافة سؤال</button>
+          </div>
+          <div id="questionsContainer"></div>
+          <div class="divider"></div>
+          <div style="display:flex;gap:10px;">
+            <button id="saveLessonBtn" class="btn btn-primary btn-full btn-lg" onclick="saveLesson()">نشر الحصة 🚀</button>
+            <button id="cancelLessonBtn" class="btn btn-danger btn-lg hidden" onclick="resetLessonForm()" style="white-space:nowrap;">إلغاء ✖</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HOMEWORK ══ -->
+    <div class="section-page" id="sec-homework">
+      <!-- إدارة الواجبات -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📋 الواجبات المضافة</div>
+          <button class="btn btn-primary" onclick="resetHomeworkForm()">+ واجب جديد</button>
+        </div>
+        <div style="padding:4px;">
+          <div class="table-wrap">
+            <table><thead><tr><th>عنوان الواجب</th><th>المرحلة</th><th>عدد الأسئلة</th><th style="text-align:center;">إجراءات</th></tr></thead>
+            <tbody id="homeworkListBody"><tr><td colspan="4" class="td-empty">جاري التحميل...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+      <!-- فورم الواجب -->
+      <div class="card" id="homeworkFormCard">
+        <div class="card-head"><div class="card-title" id="hwFormTitle">➕ إضافة واجب جديد</div></div>
+        <div class="card-body">
+          <div class="fg2">
+            <div class="fw"><label class="flbl">عنوان الواجب</label><input id="hwTitle" class="finp" placeholder="مثال: واجب الباب الأول"></div>
+            <div class="fw"><label class="flbl">المرحلة الدراسية</label>
+              <select id="hwGrade" class="finp"><option value="1">أولى ثانوي</option><option value="2">تانية ثانوي</option><option value="3">تالتة ثانوي</option></select>
+            </div>
+          </div>
+          <div class="fg2">
+            <div class="fw"><label class="flbl">الحصة المرتبطة (اختياري)</label><input id="hwLesson" class="finp" placeholder="اسم الحصة"></div>
+            <div class="fw"><label class="flbl">تاريخ التسليم (اختياري)</label><input id="hwDeadline" type="date" class="finp"></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-size:.9rem;font-weight:900;">أسئلة الواجب</div>
+            <button class="btn btn-ghost" style="font-size:.78rem;padding:7px 14px;" onclick="addQuestion('hwQuestionsContainer')">+ إضافة سؤال</button>
+          </div>
+          <div id="hwQuestionsContainer"></div>
+          <div class="divider"></div>
+          <div style="display:flex;gap:10px;">
+            <button id="saveHwBtn" class="btn btn-primary btn-full btn-lg" onclick="saveHomework()">نشر الواجب 📤</button>
+            <button id="cancelHwBtn" class="btn btn-danger btn-lg hidden" onclick="resetHomeworkForm()" style="white-space:nowrap;">إلغاء ✖</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RESULTS ══ -->
+    <div class="section-page" id="sec-results">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📊 درجات الطلاب</div>
+          <div class="search-wrap">
+            <span class="search-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+            <input id="searchInput" placeholder="بحث..." onkeyup="searchTable()">
+          </div>
+        </div>
+        <div style="padding:4px;">
+          <div class="table-wrap" style="max-height:520px;overflow-y:auto;">
+            <table><thead><tr><th>اسم الطالب</th><th>البريد الإلكتروني</th><th>الحصة</th><th>الدرجة</th><th>التاريخ</th></tr></thead>
+            <tbody id="resultsTable"><tr><td colspan="5" class="td-empty">جاري التحميل... ⏳</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CODES ══ -->
+    <div class="section-page" id="sec-codes">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🎫 توليد أكواد الاشتراك</div>
+          <button class="btn btn-gold" id="genCodesBtn" onclick="generateCodes()">توليد 50 كود جديد</button>
+        </div>
+        <div class="card-body">
+          <div id="codesPlaceholder" style="text-align:center;padding:32px;color:var(--text3);font-size:.875rem;">
+            اضغط الزر لتوليد 50 كود اشتراك جديد وتوزيعهم على الطلاب 🎯
+          </div>
+          <div id="codesResultArea" class="hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px;">
+              <span style="font-size:.8rem;color:var(--text2);font-weight:700;">تم توليد الأكواد — انسخها ووزعها على الطلاب</span>
+              <button class="btn btn-ghost" style="font-size:.75rem;padding:7px 12px;" onclick="copyCodes()">نسخ الكل 📋</button>
+            </div>
+            <div class="codes-grid" id="codesGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NOTIF ══ -->
+    <div class="section-page" id="sec-notif">
+      <div class="card">
+        <div class="card-head"><div class="card-title">📢 إرسال تنبيه عام</div></div>
+        <div class="card-body">
+          <div class="fw">
             <label class="flbl">نص الرسالة</label>
             <textarea id="notifMessage" class="finp" placeholder="اكتب رسالتك للطلاب هنا..."></textarea>
+          </div>
+          <button id="sendNotifBtn" class="btn btn-primary btn-lg" onclick="sendNotif()">إرسال لجميع الطلاب فوراً 🚀</button>
         </div>
-        <button id="sendNotifBtn" class="btn btn-primary">إرسال لجميع الطلاب فوراً 🚀</button>
+      </div>
     </div>
-</div>
 
-<div class="s-card">
-    <div class="s-head">
-        <div class="s-title">سجل درجات الطلاب 📊</div>
-        <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input id="searchInput" placeholder="بحث باسم، إيميل، أو حصة..." onkeyup="searchTable()">
-        </div>
-    </div>
-    <div style="padding:0 4px 4px;">
-        <div class="table-wrap">
-            <table id="resultsMainTable">
-                <thead>
-                    <tr>
-                        <th>اسم الطالب</th>
-                        <th>البريد الإلكتروني</th>
-                        <th>الحصة</th>
-                        <th>الدرجة</th>
-                        <th>التاريخ</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsTable">
-                    <tr><td colspan="5" class="td-empty">جاري سحب الدرجات... ⏳</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="s-card" id="addLessonSection">
-    <div class="s-head">
-        <div class="s-title gold" id="formTitle">نشر حصة جديدة ➕</div>
-    </div>
-    <div class="s-body">
-        
-        <div class="field-grid-2" style="margin-bottom:16px;">
-            <div class="fw">
-                <label class="flbl">اسم الحصة / الدرس</label>
-                <input id="lessonName" class="finp" placeholder="مثال: الباب الأول - الدرس الثاني">
-            </div>
-            <div class="fw">
-                <label class="flbl">المرحلة الدراسية</label>
-                <select id="lessonGrade" class="finp filled">
-                    <option value="1">أولى ثانوي</option>
-                    <option value="2">تانية ثانوي</option>
-                    <option value="3">تالتة ثانوي</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="field-grid-2" style="margin-bottom:16px;">
-            <div class="fw">
-                <label class="flbl">سعر الحصة (ج.م)</label>
-                <input id="lessonPrice" type="number" class="finp" placeholder="مثال: 50">
-            </div>
-            <div class="fw">
-                <label class="flbl">مدة الصلاحية (بالأيام)</label>
-                <input id="lessonValidity" type="number" class="finp" placeholder="مثال: 7" value="7">
-            </div>
-        </div>
-
-        <div class="field-grid-3" style="margin-bottom:24px;">
-            <div class="fw">
-                <label class="flbl">رابط صورة الغلاف</label>
-                <input id="lessonImage" class="finp" placeholder="رابط صورة خارجية">
-            </div>
-            <div class="fw">
-                <label class="flbl">رابط فيديو الشرح</label>
-                <input id="videoUrl" class="finp" placeholder="رابط يوتيوب">
-            </div>
-            <div class="fw">
-                <label class="flbl">رابط الملزمة PDF</label>
-                <input id="attachmentUrl" class="finp" placeholder="جوجل درايف PDF">
-            </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-            <div style="font-size:.9rem;font-weight:900;">أسئلة الامتحان</div>
-            <button id="addNewQBtn" class="btn btn-ghost" style="font-size:.8rem;padding:8px 16px;">+ إضافة سؤال</button>
-        </div>
-        <div id="questionsContainer"></div>
-
-        <div class="divider"></div>
-        <div style="display:flex; gap:12px;">
-            <button id="saveBtn" class="btn btn-primary btn-full btn-lg">نشر الحصة الآن 🚀</button>
-            <button id="cancelEditBtn" class="btn btn-danger btn-lg hidden" style="white-space:nowrap;">إلغاء التعديل ✖</button>
-        </div>
-    </div>
-</div>
-
-<div class="s-card">
-    <div class="s-head">
-        <div class="s-title purple">إدارة الحصص المضافة 📚</div>
-    </div>
-    <div style="padding:0 4px 4px;">
-        <div class="table-wrap">
-            <table id="manageLessonsTable">
-                <thead>
-                    <tr>
-                        <th>اسم الحصة</th>
-                        <th>المرحلة</th>
-                        <th>السعر</th>
-                        <th style="text-align:center;">إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="lessonsListBody">
-                    <tr><td colspan="4" class="td-empty">جاري سحب الحصص... ⏳</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="s-card">
-    <div class="s-head">
-        <div class="s-title blue">توليد أكواد الاشتراك 🎫</div>
-        <button id="genCodesBtn" class="btn btn-dark">توليد 50 كود جديد</button>
-    </div>
-    <div class="s-body">
-        <div id="codesResultArea" class="hidden">
-            <div class="codes-result">
-                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;">
-                    <span style="font-size:.78rem;color:var(--text2);font-weight:700;">تم توليد الأكواد — يمكنك نسخها وتوزيعها</span>
-                    <button id="copyCodesBtn" class="btn btn-ghost" style="font-size:.75rem;padding:7px 14px;">نسخ الكل 📋</button>
-                </div>
-                <div class="codes-grid" id="codesGrid"></div>
-            </div>
-        </div>
-        <div id="codesPlaceholder" style="text-align:center;padding:32px;color:var(--muted);font-size:.875rem;">
-            اضغط الزر لتوليد 50 كود اشتراك جديد وتوزيعهم على الطلاب
-        </div>
-    </div>
-</div>
-
-</main>
+  </div>
 </div>
 
 <script>
-    const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co"; 
-    const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const ADMIN = "kevin.hany.08@proton.me";
+const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const ADMIN="kevin.hany.08@proton.me";
 
-    let editingLessonId = null; 
-    let allLessonsData = {}; 
+let editingLessonId=null, editingHwId=null, allLessonsData={}, allHwData={};
 
-    // التحقق من صلاحيات المعلم عند فتح الصفحة
-    async function checkAdminAuth() {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        if (session && session.user.email === ADMIN) {
-            document.getElementById("secureLayer").classList.add("hidden");
-            loadResults();
-            loadStats();
-            loadLessonsManageList(); 
-        } else {
-            window.location.href = "index.html"; 
-        }
+/* ── AUTH ── */
+async function checkAdminAuth(){
+  const{data:{session}}=await supabaseClient.auth.getSession();
+  if(session&&session.user.email===ADMIN){
+    document.getElementById("secureLayer").classList.add("hidden");
+    loadAll();
+  } else { window.location.href="index.html"; }
+}
+checkAdminAuth();
+
+async function loadAll(){
+  await Promise.all([loadStats(),loadResults(),loadLessons(),loadHomework()]);
+}
+
+/* ── SIDEBAR NAV ── */
+const sectionTitles={overview:'نظرة عامة',lessons:'الحصص',homework:'الواجبات',results:'درجات الطلاب',codes:'أكواد الاشتراك',notif:'التنبيهات'};
+function showSection(name,btn){
+  document.querySelectorAll('.section-page').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent=sectionTitles[name]||name;
+  closeSidebar();
+}
+function toggleSidebar(){
+  const s=document.getElementById('sidebarEl'),b=document.getElementById('sbBackdrop');
+  s.classList.toggle('open'); b.classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebarEl').classList.remove('open');
+  document.getElementById('sbBackdrop').classList.remove('show');
+}
+
+/* ── STATS ── */
+async function loadStats(){
+  try{
+    const[{count:u},{count:r},{count:l}]=await Promise.all([
+      supabaseClient.from('users').select('*',{count:'exact',head:true}),
+      supabaseClient.from('results').select('*',{count:'exact',head:true}),
+      supabaseClient.from('lessons').select('*',{count:'exact',head:true})
+    ]);
+    document.getElementById('statStudents').textContent=u||0;
+    document.getElementById('statResults').textContent=r||0;
+    document.getElementById('statLessons').textContent=l||0;
+  }catch(e){}
+}
+
+/* ── RESULTS ── */
+async function loadResults(){
+  const tbody=document.getElementById("resultsTable");
+  const ovBody=document.getElementById("overviewResultsBody");
+  try{
+    const[{data:usersData},{data:resultsData}]=await Promise.all([
+      supabaseClient.from('users').select('email,name'),
+      supabaseClient.from('results').select('*').order('date',{ascending:false})
+    ]);
+    const usersMap={};
+    if(usersData) usersData.forEach(u=>{if(u.email)usersMap[u.email]=u.name;});
+    if(!resultsData||resultsData.length===0){
+      tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد نتائج بعد 📭</td></tr>`;
+      ovBody.innerHTML=`<tr><td colspan="4" class="td-empty">لا توجد نتائج بعد 📭</td></tr>`;
+      return;
     }
-    checkAdminAuth();
+    let rows='',ovRows='';
+    resultsData.forEach((r,i)=>{
+      const name=usersMap[r.email]||'—';
+      const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
+      rows+=`<tr class="student-row"><td class="td-name">${name}</td><td class="td-email">${r.email||'—'}</td><td class="td-lesson">${r.lesson||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date" dir="ltr">${dt}</td></tr>`;
+      if(i<8) ovRows+=`<tr><td class="td-name">${name}</td><td class="td-lesson">${r.lesson||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
+    });
+    tbody.innerHTML=rows;
+    ovBody.innerHTML=ovRows;
+  }catch(e){tbody.innerHTML=`<tr><td colspan="5" class="td-empty" style="color:var(--red);">خطأ في التحميل</td></tr>`;}
+}
 
-    // تحميل الإحصائيات العلوية
-    async function loadStats() {
-        try {
-            const { count: uCount } = await supabaseClient.from('users').select('*', { count: 'exact', head: true });
-            const { count: rCount } = await supabaseClient.from('results').select('*', { count: 'exact', head: true });
-            const { count: lCount } = await supabaseClient.from('lessons').select('*', { count: 'exact', head: true });
-            
-            document.getElementById('statStudents').textContent = uCount || 0;
-            document.getElementById('statResults').textContent = rCount || 0;
-            document.getElementById('statLessons').textContent = lCount || 0;
-        } catch(e) { console.error(e); }
+window.searchTable=()=>{
+  const v=document.getElementById("searchInput").value.toLowerCase();
+  document.querySelectorAll(".student-row").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
+};
+
+/* ── LESSONS ── */
+async function loadLessons(){
+  const tbody=document.getElementById("lessonsListBody");
+  try{
+    const{data,error}=await supabaseClient.from('lessons').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    allLessonsData={};
+    if(!data||data.length===0){tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد حصص مضافة بعد</td></tr>`;return;}
+    const gradeMap={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
+    let rows='';
+    data.forEach(d=>{
+      allLessonsData[d.id]=d;
+      rows+=`<tr>
+        <td class="td-name">${d.name}</td>
+        <td style="color:var(--text2);font-size:.8rem;">${gradeMap[d.grade]||'—'}</td>
+        <td style="color:var(--teal);font-weight:700;">${d.price?d.price+' ج':'مجاني'}</td>
+        <td style="color:var(--text2);font-size:.8rem;">${d.validitydays||7} يوم</td>
+        <td style="text-align:center;">
+          <div style="display:flex;gap:6px;justify-content:center;">
+            <button class="btn btn-ghost" style="padding:5px 10px;font-size:.75rem;" onclick='startEditLesson("${d.id}")'>تعديل ✏️</button>
+            <button class="btn btn-danger" style="padding:5px 10px;font-size:.75rem;" onclick='deleteLesson("${d.id}")'>حذف 🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    tbody.innerHTML=rows;
+  }catch(e){tbody.innerHTML=`<tr><td colspan="5" class="td-empty" style="color:var(--red);">خطأ</td></tr>`;}
+}
+
+function resetLessonForm(){
+  editingLessonId=null;
+  ['lessonName','lessonPrice','lessonImage','videoUrl','attachmentUrl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lessonGrade').value='1';
+  document.getElementById('lessonValidity').value='7';
+  document.getElementById('questionsContainer').innerHTML='';
+  document.getElementById('lessonFormTitle').textContent='➕ إضافة حصة جديدة';
+  document.getElementById('saveLessonBtn').textContent='نشر الحصة 🚀';
+  document.getElementById('cancelLessonBtn').classList.add('hidden');
+}
+
+window.startEditLesson=(id)=>{
+  const d=allLessonsData[id]; if(!d) return;
+  editingLessonId=id;
+  document.getElementById('lessonName').value=d.name||'';
+  document.getElementById('lessonGrade').value=d.grade||'1';
+  document.getElementById('lessonPrice').value=d.price||'';
+  document.getElementById('lessonValidity').value=d.validitydays||7;
+  document.getElementById('lessonImage').value=d.image||'';
+  document.getElementById('videoUrl').value=d.video||'';
+  document.getElementById('attachmentUrl').value=d.pdf||'';
+  document.getElementById('questionsContainer').innerHTML='';
+  if(d.questions) d.questions.forEach(q=>{ addQuestion('questionsContainer',q); });
+  document.getElementById('lessonFormTitle').textContent='✏️ تعديل بيانات الحصة';
+  document.getElementById('saveLessonBtn').textContent='تحديث الحصة 🔄';
+  document.getElementById('cancelLessonBtn').classList.remove('hidden');
+  document.getElementById('lessonFormCard').scrollIntoView({behavior:'smooth'});
+};
+
+window.deleteLesson=async(id)=>{
+  if(!confirm("هل أنت متأكد من حذف هذه الحصة نهائياً؟")) return;
+  try{
+    const{error}=await supabaseClient.from('lessons').delete().eq('id',id);
+    if(error) throw error;
+    alert("تم حذف الحصة بنجاح!");
+    loadLessons(); loadStats();
+  }catch(e){alert("خطأ: "+e.message);}
+};
+
+async function saveLesson(){
+  const name=document.getElementById('lessonName').value;
+  const grade=document.getElementById('lessonGrade').value;
+  const price=document.getElementById('lessonPrice').value;
+  const validity=document.getElementById('lessonValidity').value;
+  const image=document.getElementById('lessonImage').value;
+  const video=document.getElementById('videoUrl').value;
+  const pdf=document.getElementById('attachmentUrl').value;
+  if(!name||!video) return alert("ادخل اسم الحصة ورابط الفيديو!");
+  const questions=getQuestionsFrom('questionsContainer');
+  const btn=document.getElementById('saveLessonBtn');
+  btn.textContent="جاري الحفظ..."; btn.disabled=true;
+  try{
+    const payload={name,grade,video,pdf,price,validitydays:Number(validity)||7,image,questions};
+    if(editingLessonId){
+      const{error}=await supabaseClient.from('lessons').update(payload).eq('id',editingLessonId);
+      if(error) throw error; alert("تم تحديث الحصة بنجاح! ✅");
+    } else {
+      const{error}=await supabaseClient.from('lessons').insert([payload]);
+      if(error) throw error; alert("تم نشر الحصة بنجاح! ✅");
     }
+    resetLessonForm(); loadLessons(); loadStats();
+  }catch(e){alert("خطأ: "+e.message);}
+  btn.textContent=editingLessonId?"تحديث الحصة 🔄":"نشر الحصة 🚀"; btn.disabled=false;
+}
 
-    /* إرسال إشعار عام */
-    document.getElementById('sendNotifBtn').onclick = async () => {
-        const msg = document.getElementById('notifMessage').value;
-        const btn = document.getElementById('sendNotifBtn');
-        if(!msg) return alert("اكتب رسالة التنبيه أولاً!");
-        btn.textContent = "جاري الإرسال..."; btn.disabled = true;
-        
-        try {
-            const { error } = await supabaseClient.from('announcements').insert([{ message: msg, active: true }]);
-            if (error) throw error;
-            
-            alert("تم إرسال التنبيه بنجاح! ✅");
-            document.getElementById('notifMessage').value = "";
-        } catch(e) { alert("خطأ: " + e.message); }
-        
-        btn.textContent = "إرسال لجميع الطلاب فوراً 🚀"; btn.disabled = false;
-    };
+/* ── HOMEWORK ── */
+async function loadHomework(){
+  const tbody=document.getElementById("homeworkListBody");
+  try{
+    const{data,error}=await supabaseClient.from('homework').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    allHwData={};
+    if(!data||data.length===0){tbody.innerHTML=`<tr><td colspan="4" class="td-empty">لا توجد واجبات مضافة بعد</td></tr>`;return;}
+    const gradeMap={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
+    let rows='';
+    data.forEach(d=>{
+      allHwData[d.id]=d;
+      const qCount=(d.questions||[]).length;
+      rows+=`<tr>
+        <td class="td-name">${d.title||d.name||'—'}</td>
+        <td style="color:var(--text2);font-size:.8rem;">${gradeMap[d.grade]||'—'}</td>
+        <td><span class="badge badge-teal">${qCount} سؤال</span></td>
+        <td style="text-align:center;">
+          <div style="display:flex;gap:6px;justify-content:center;">
+            <button class="btn btn-ghost" style="padding:5px 10px;font-size:.75rem;" onclick='startEditHw("${d.id}")'>تعديل ✏️</button>
+            <button class="btn btn-danger" style="padding:5px 10px;font-size:.75rem;" onclick='deleteHw("${d.id}")'>حذف 🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    tbody.innerHTML=rows;
+  }catch(e){tbody.innerHTML=`<tr><td colspan="4" class="td-empty">جدول homework غير موجود في Supabase — أنشئه أولاً</td></tr>`;}
+}
 
-    /* تحميل درجات الطلاب */
-    async function loadResults() {
-        const tbody = document.getElementById("resultsTable");
-        try {
-            // سحب المستخدمين لربط الإيميل بالاسم
-            const { data: usersData } = await supabaseClient.from('users').select('email, name');
-            const usersMap = {};
-            if (usersData) {
-                usersData.forEach(u => { if(u.email) usersMap[u.email] = u.name; });
-            }
+function resetHomeworkForm(){
+  editingHwId=null;
+  ['hwTitle','hwLesson','hwDeadline'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hwGrade').value='1';
+  document.getElementById('hwQuestionsContainer').innerHTML='';
+  document.getElementById('hwFormTitle').textContent='➕ إضافة واجب جديد';
+  document.getElementById('saveHwBtn').textContent='نشر الواجب 📤';
+  document.getElementById('cancelHwBtn').classList.add('hidden');
+}
 
-            // سحب النتائج
-            const { data: resultsData, error } = await supabaseClient.from('results').select('*').order('date', { ascending: false });
-            if (error) throw error;
+window.startEditHw=(id)=>{
+  const d=allHwData[id]; if(!d) return;
+  editingHwId=id;
+  document.getElementById('hwTitle').value=d.title||d.name||'';
+  document.getElementById('hwGrade').value=d.grade||'1';
+  document.getElementById('hwLesson').value=d.lesson||'';
+  document.getElementById('hwDeadline').value=d.deadline||'';
+  document.getElementById('hwQuestionsContainer').innerHTML='';
+  if(d.questions) d.questions.forEach(q=>addQuestion('hwQuestionsContainer',q));
+  document.getElementById('hwFormTitle').textContent='✏️ تعديل الواجب';
+  document.getElementById('saveHwBtn').textContent='تحديث الواجب 🔄';
+  document.getElementById('cancelHwBtn').classList.remove('hidden');
+  document.getElementById('homeworkFormCard').scrollIntoView({behavior:'smooth'});
+};
 
-            if(!resultsData || resultsData.length === 0) { 
-                tbody.innerHTML = `<tr><td colspan="5" class="td-empty">لا توجد نتائج بعد 📭</td></tr>`; 
-                return; 
-            }
-            
-            tbody.innerHTML = '';
-            resultsData.forEach(r => {
-                const name = usersMap[r.email] || "—";
-                // تنسيق التاريخ الخاص بـ PostgreSQL
-                const dt = r.date ? new Date(r.date).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : "—";
-                const tr = document.createElement("tr");
-                tr.className = "student-row";
-                tr.innerHTML = `
-                    <td class="td-name">${name}</td>
-                    <td class="td-email">${r.email || "—"}</td>
-                    <td class="td-lesson">${r.lesson || "—"}</td>
-                    <td><span class="td-score">${r.score} / ${r.total}</span></td>
-                    <td class="td-date" dir="ltr">${dt}</td>`;
-                tbody.appendChild(tr);
-            });
-        } catch(e) { 
-            tbody.innerHTML=`<tr><td colspan="5" class="td-empty" style="color:#f87171;">خطأ في التحميل 😢</td></tr>`; 
-            console.error(e);
-        }
+window.deleteHw=async(id)=>{
+  if(!confirm("هل أنت متأكد من حذف هذا الواجب؟")) return;
+  try{
+    const{error}=await supabaseClient.from('homework').delete().eq('id',id);
+    if(error) throw error; alert("تم الحذف!"); loadHomework();
+  }catch(e){alert("خطأ: "+e.message);}
+};
+
+async function saveHomework(){
+  const title=document.getElementById('hwTitle').value;
+  const grade=document.getElementById('hwGrade').value;
+  const lesson=document.getElementById('hwLesson').value;
+  const deadline=document.getElementById('hwDeadline').value;
+  if(!title) return alert("ادخل عنوان الواجب!");
+  const questions=getQuestionsFrom('hwQuestionsContainer');
+  const btn=document.getElementById('saveHwBtn');
+  btn.textContent="جاري الحفظ..."; btn.disabled=true;
+  try{
+    const payload={title,grade,lesson,deadline:deadline||null,questions};
+    if(editingHwId){
+      const{error}=await supabaseClient.from('homework').update(payload).eq('id',editingHwId);
+      if(error) throw error; alert("تم تحديث الواجب! ✅");
+    } else {
+      const{error}=await supabaseClient.from('homework').insert([payload]);
+      if(error) throw error; alert("تم نشر الواجب! ✅");
     }
+    resetHomeworkForm(); loadHomework();
+  }catch(e){alert("خطأ: "+e.message);}
+  btn.textContent=editingHwId?"تحديث الواجب 🔄":"نشر الواجب 📤"; btn.disabled=false;
+}
 
-    /* بحث في جدول الدرجات */
-    window.searchTable = () => {
-        const v = document.getElementById("searchInput").value.toLowerCase();
-        document.querySelectorAll(".student-row").forEach(r => {
-            r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none";
-        });
-    };
+/* ── SHARED QUESTION HELPER ── */
+window.addQuestion=function(containerId, data=null){
+  const n=document.querySelectorAll('#'+containerId+' .question-block').length+1;
+  const div=document.createElement('div');
+  div.className='q-block question-block';
+  div.innerHTML=`
+    <div class="q-block-head">
+      <span class="q-num-badge">سؤال ${n}</span>
+      <button class="q-del" onclick="this.closest('.q-block').remove()">✕</button>
+    </div>
+    <div class="fw"><label class="flbl">نص السؤال (اختياري)</label><input class="q-text finp" placeholder="اكتب السؤال هنا..." value="${data?.text||''}"></div>
+    <div class="fg2" style="margin-bottom:10px;">
+      <div class="fw"><label class="flbl">رابط صورة السؤال</label><input class="q-image finp" placeholder="رابط صورة (اختياري)" value="${data?.image||''}"></div>
+      <div class="fw"><label class="flbl">الإجابة الصحيحة</label>
+        <select class="q-correct finp">
+          <option value="a" ${data?.correct==='a'?'selected':''}>A</option>
+          <option value="b" ${data?.correct==='b'?'selected':''}>B</option>
+          <option value="c" ${data?.correct==='c'?'selected':''}>C</option>
+          <option value="d" ${data?.correct==='d'?'selected':''}>D</option>
+        </select>
+      </div>
+    </div>
+    <div class="q-opts">
+      <div><div class="opt-lbl">A</div><input class="q-a finp" placeholder="خيار أ" value="${data?.a||''}"></div>
+      <div><div class="opt-lbl">B</div><input class="q-b finp" placeholder="خيار ب" value="${data?.b||''}"></div>
+      <div><div class="opt-lbl">C</div><input class="q-c finp" placeholder="خيار ج" value="${data?.c||''}"></div>
+      <div><div class="opt-lbl">D</div><input class="q-d finp" placeholder="خيار د" value="${data?.d||''}"></div>
+    </div>`;
+  document.getElementById(containerId).appendChild(div);
+};
 
-    /* إدارة الحصص المضافة */
-    async function loadLessonsManageList() {
-        const tbody = document.getElementById("lessonsListBody");
-        try {
-            const { data: lessonsData, error } = await supabaseClient.from('lessons').select('*').order('created_at', { ascending: false });
-            if (error) throw error;
+function getQuestionsFrom(containerId){
+  const qs=[];
+  document.querySelectorAll('#'+containerId+' .question-block').forEach(b=>{
+    qs.push({text:b.querySelector('.q-text').value||'',image:b.querySelector('.q-image').value,a:b.querySelector('.q-a').value||'A',b:b.querySelector('.q-b').value||'B',c:b.querySelector('.q-c').value||'C',d:b.querySelector('.q-d').value||'D',correct:b.querySelector('.q-correct').value});
+  });
+  return qs;
+}
 
-            allLessonsData = {};
-            tbody.innerHTML = '';
-            
-            if(!lessonsData || lessonsData.length === 0) { 
-                tbody.innerHTML = `<tr><td colspan="4" class="td-empty">لا توجد حصص مضافة بعد</td></tr>`; 
-                return; 
-            }
-            
-            lessonsData.forEach(d => {
-                allLessonsData[d.id] = d; 
-                
-                const gradeText = d.grade === "1" ? "أولى ثانوي" : d.grade === "2" ? "تانية ثانوي" : d.grade === "3" ? "تالتة ثانوي" : "عام";
-                const priceText = d.price ? `${d.price} ج` : "مجاني";
+/* ── CODES ── */
+async function generateCodes(){
+  if(!confirm("توليد 50 كود اشتراك جديد؟")) return;
+  const grid=document.getElementById('codesGrid');
+  document.getElementById('codesResultArea').classList.remove('hidden');
+  document.getElementById('codesPlaceholder').classList.add('hidden');
+  grid.innerHTML='';
+  const btn=document.getElementById('genCodesBtn');
+  btn.textContent="جاري التوليد..."; btn.disabled=true;
+  const newCodes=[];
+  for(let i=0;i<50;i++){
+    const codeVal="SA-"+Math.floor(Math.random()*1e12);
+    newCodes.push({code:codeVal,used:false});
+    const el=document.createElement('div');
+    el.className='code-pill'; el.textContent=codeVal;
+    grid.appendChild(el);
+  }
+  try{
+    const{error}=await supabaseClient.from('codes').insert(newCodes);
+    if(error) throw error;
+  }catch(e){alert("خطأ أثناء الحفظ: "+e.message);}
+  btn.textContent="توليد 50 كود جديد"; btn.disabled=false;
+}
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="td-name">${d.name}</td>
-                    <td style="color:var(--text2); font-size:0.8rem;">${gradeText}</td>
-                    <td style="color:var(--g1); font-weight:700;">${priceText}</td>
-                    <td style="text-align:center; display:flex; gap:8px; justify-content:center;">
-                        <button class="btn-ghost" style="padding:6px 12px; font-size:0.75rem; border-radius:8px;" onclick='startEditLesson("${d.id}")'>تعديل ✏️</button>
-                        <button class="btn-danger" style="padding:6px 12px; font-size:0.75rem; border-radius:8px;" onclick='deleteLesson("${d.id}")'>حذف 🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } catch(e) { 
-            tbody.innerHTML = `<tr><td colspan="4" class="td-empty" style="color:#f87171;">خطأ في تحميل الحصص</td></tr>`; 
-            console.error(e);
-        }
-    }
+function copyCodes(){
+  const codes=Array.from(document.getElementById('codesGrid').children).map(d=>d.textContent).join('\n');
+  navigator.clipboard.writeText(codes).then(()=>alert("تم النسخ! ✅"));
+}
 
-    /* حذف الحصة */
-    window.deleteLesson = async (id) => {
-        if(confirm("هل أنت متأكد من حذف هذه الحصة نهائياً؟ ⚠️ (سيتم مسحها من حسابات الطلاب أيضاً)")) {
-            try {
-                const { error } = await supabaseClient.from('lessons').delete().eq('id', id);
-                if (error) throw error;
-                
-                alert("تم حذف الحصة بنجاح!");
-                loadLessonsManageList();
-                loadStats();
-            } catch(e) { alert("حدث خطأ أثناء الحذف: " + e.message); }
-        }
-    };
+/* ── NOTIF ── */
+async function sendNotif(){
+  const msg=document.getElementById('notifMessage').value;
+  const btn=document.getElementById('sendNotifBtn');
+  if(!msg) return alert("اكتب رسالة التنبيه أولاً!");
+  btn.textContent="جاري الإرسال..."; btn.disabled=true;
+  try{
+    const{error}=await supabaseClient.from('announcements').insert([{message:msg,active:true}]);
+    if(error) throw error;
+    alert("تم إرسال التنبيه بنجاح! ✅");
+    document.getElementById('notifMessage').value='';
+  }catch(e){alert("خطأ: "+e.message);}
+  btn.textContent="إرسال لجميع الطلاب فوراً 🚀"; btn.disabled=false;
+}
 
-    /* بدء تعديل الحصة */
-    window.startEditLesson = (id) => {
-        const d = allLessonsData[id];
-        if(!d) return;
-        
-        editingLessonId = id; 
-        
-        document.getElementById("lessonName").value = d.name || "";
-        document.getElementById("lessonGrade").value = d.grade || "1";
-        document.getElementById("lessonPrice").value = d.price || "";
-        document.getElementById("lessonValidity").value = d.validitydays || 7; // 🔥 لاحظ: validitydays بالحروف الصغيرة
-        document.getElementById("lessonImage").value = d.image || "";
-        document.getElementById("videoUrl").value = d.video || "";
-        document.getElementById("attachmentUrl").value = d.pdf || "";
-
-        const qContainer = document.getElementById("questionsContainer");
-        qContainer.innerHTML = ""; 
-        if(d.questions && d.questions.length > 0) {
-            d.questions.forEach(q => {
-                document.getElementById("addNewQBtn").click(); 
-                const blocks = document.querySelectorAll('.question-block');
-                const lastBlock = blocks[blocks.length - 1]; 
-                
-                if(q.text) lastBlock.querySelector('.q-text').value = q.text;
-                if(q.image) lastBlock.querySelector('.q-image').value = q.image;
-                lastBlock.querySelector('.q-correct').value = q.correct || "a";
-                lastBlock.querySelector('.q-a').value = q.a || "";
-                lastBlock.querySelector('.q-b').value = q.b || "";
-                lastBlock.querySelector('.q-c').value = q.c || "";
-                lastBlock.querySelector('.q-d').value = q.d || "";
-            });
-        }
-
-        document.getElementById("formTitle").textContent = "تعديل بيانات الحصة ✏️";
-        document.getElementById("saveBtn").textContent = "تحديث بيانات الحصة 🔄";
-        document.getElementById("cancelEditBtn").classList.remove("hidden"); 
-
-        document.getElementById("addLessonSection").scrollIntoView({ behavior: 'smooth' });
-    };
-
-    /* إلغاء التعديل */
-    document.getElementById("cancelEditBtn").onclick = () => {
-        location.reload(); 
-    };
-
-    /* إضافة سؤال جديد في الفورم */
-    document.getElementById("addNewQBtn").onclick = () => {
-        const n = document.querySelectorAll('.question-block').length + 1;
-        const div = document.createElement('div');
-        div.className = 'q-block question-block';
-        div.innerHTML = `
-            <div class="q-block-head">
-                <span class="q-num-badge">سؤال ${n}</span>
-                <button class="q-delete" onclick="this.closest('.q-block').remove()">✕</button>
-            </div>
-            <div class="fw" style="margin-bottom:12px;">
-                <label class="flbl">نص السؤال (اختياري)</label>
-                <input class="q-text finp" placeholder="اكتب السؤال هنا أو اترك الصورة تتكلم...">
-            </div>
-            <div class="q-grid-top" style="margin-bottom:12px;">
-                <div class="fw">
-                    <label class="flbl">رابط صورة السؤال</label>
-                    <input class="q-image finp" placeholder="رابط الصورة (اختياري)">
-                </div>
-                <div class="fw">
-                    <label class="flbl">الإجابة الصحيحة</label>
-                    <select class="q-correct finp filled">
-                        <option value="a">A</option>
-                        <option value="b">B</option>
-                        <option value="c">C</option>
-                        <option value="d">D</option>
-                    </select>
-                </div>
-            </div>
-            <div class="q-options-grid">
-                <div><div class="opt-letter">A</div><input class="q-a finp" placeholder="خيار أ"></div>
-                <div><div class="opt-letter">B</div><input class="q-b finp" placeholder="خيار ب"></div>
-                <div><div class="opt-letter">C</div><input class="q-c finp" placeholder="خيار ج"></div>
-                <div><div class="opt-letter">D</div><input class="q-d finp" placeholder="خيار د"></div>
-            </div>
-        `;
-        document.getElementById("questionsContainer").appendChild(div);
-    };
-
-    /* حفظ أو تحديث الحصة */
-    document.getElementById("saveBtn").onclick = async () => {
-        const name = document.getElementById("lessonName").value;
-        const grade = document.getElementById("lessonGrade").value;
-        const price = document.getElementById("lessonPrice").value;
-        const validity = document.getElementById("lessonValidity").value; 
-        const image = document.getElementById("lessonImage").value;
-        const video = document.getElementById("videoUrl").value;
-        const pdf = document.getElementById("attachmentUrl").value;
-        
-        if(!name || !video) return alert("ادخل اسم الحصة ورابط الفيديو!");
-
-        const questionsData = [];
-        document.querySelectorAll('.question-block').forEach(b => {
-            questionsData.push({
-                text: b.querySelector('.q-text')?.value||'',
-                image: b.querySelector('.q-image').value,
-                a: b.querySelector('.q-a').value||'A',
-                b: b.querySelector('.q-b').value||'B',
-                c: b.querySelector('.q-c').value||'C',
-                d: b.querySelector('.q-d').value||'D',
-                correct: b.querySelector('.q-correct').value
-            });
-        });
-
-        const btn = document.getElementById('saveBtn');
-        btn.textContent = "جاري الحفظ..."; btn.disabled = true;
-        
-        try {
-            if(editingLessonId) {
-                // تحديث 🔄
-                const { error } = await supabaseClient.from('lessons').update({ 
-                    name, grade, video, pdf, price, 
-                    validitydays: Number(validity) || 7, // 🔥 حروف صغيرة
-                    image, questions: questionsData 
-                }).eq('id', editingLessonId);
-                
-                if (error) throw error;
-                alert("تم تحديث الحصة بنجاح! 🔄✅"); 
-            } else {
-                // إضافة 🚀
-                const { error } = await supabaseClient.from('lessons').insert([{ 
-                    name, grade, video, pdf, price, 
-                    validitydays: Number(validity) || 7, // 🔥 حروف صغيرة
-                    image, questions: questionsData
-                }]);
-                
-                if (error) throw error;
-                alert("تم نشر الحصة الجديدة بنجاح! ✅"); 
-            }
-            location.reload();
-        } catch(e) { 
-            alert("خطأ: " + e.message); 
-            btn.textContent = editingLessonId ? "تحديث بيانات الحصة 🔄" : "نشر الحصة الآن 🚀"; 
-            btn.disabled = false; 
-        }
-    };
-
-    /* توليد الأكواد (Bulk Insert في Supabase) */
-    document.getElementById('genCodesBtn').onclick = async () => {
-        if(!confirm("توليد 50 كود اشتراك جديد؟")) return;
-        const grid = document.getElementById('codesGrid');
-        const area = document.getElementById('codesResultArea');
-        const ph = document.getElementById('codesPlaceholder');
-        grid.innerHTML = '';
-        area.classList.remove('hidden');
-        ph.classList.add('hidden');
-        
-        const btn = document.getElementById('genCodesBtn');
-        btn.textContent = "جاري التوليد..."; btn.disabled = true;
-        
-        const newCodes = [];
-        for(let i=0; i<50; i++) {
-            const codeVal = "SA-" + Math.floor(Math.random() * 1e12);
-            newCodes.push({ code: codeVal, used: false });
-            
-            const el = document.createElement('div');
-            el.className = 'code-pill'; 
-            el.textContent = codeVal;
-            grid.appendChild(el);
-        }
-        
-        try {
-            // إضافة كل الأكواد في طلب واحد (أسرع بكثير من فايربيز) 🔥
-            const { error } = await supabaseClient.from('codes').insert(newCodes);
-            if (error) throw error;
-        } catch(e) {
-            alert("خطأ أثناء الحفظ: " + e.message);
-        }
-        
-        btn.textContent = "توليد 50 كود جديد"; btn.disabled = false;
-    };
-
-    document.getElementById('copyCodesBtn').onclick = () => {
-        const codes = Array.from(document.getElementById('codesGrid').children).map(d => d.textContent).join('\n');
-        navigator.clipboard.writeText(codes).then(() => alert("تم النسخ! ✅"));
-    };
-
-    /* تسجيل الخروج */
-    window.signOut = async () => {
-        await supabaseClient.auth.signOut();
-        window.location.href = "index.html";
-    };
+/* ── LOGOUT ── */
+window.signOut=async()=>{await supabaseClient.auth.signOut();window.location.href="index.html";};
 </script>
 </body>
 </html>
