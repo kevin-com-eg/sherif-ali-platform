@@ -18,10 +18,9 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --border:#e2e8ed;--border2:#d0dae2;--text:#1a2332;--text2:#5a6a7a;--text3:#8a9aaa;
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
   --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--nav-h:62px;
-  /* تخصيص لون المشغل ليتناسب مع المنصة */
-  --plyr-color-main: var(--teal);
+  --plyr-color-main: var(--teal); /* لون المشغل */
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter 0.2s, opacity 0.2s;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:2px;}
 .hidden{display:none!important;}
 
@@ -46,6 +45,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .lock-sub{font-size:.87rem;color:var(--text2);line-height:1.65;margin-bottom:28px;}
 .lock-input{width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:14px 18px;border-radius:12px;font-family:var(--mono);font-size:1.05rem;letter-spacing:4px;text-align:center;outline:none;margin-bottom:14px;transition:all .25s;}
 .lock-input:focus{border-color:var(--teal);background:var(--white);box-shadow:0 0 0 3px rgba(13,122,95,.1);}
+.lock-input::placeholder{color:var(--text3);letter-spacing:1px;font-size:.85rem;}
 .lock-btn{width:100%;background:var(--teal);color:#fff;border:none;padding:14px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(13,122,95,.25);min-height:50px;}
 .lock-btn:hover{background:var(--teal2);box-shadow:0 10px 28px rgba(13,122,95,.35);transform:translateY(-1px);}
 
@@ -55,6 +55,7 @@ nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white
 .nav-left{display:flex;align-items:center;gap:10px;min-width:0;}
 .back-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:8px 13px;flex-shrink:0;font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;}
 .back-btn:hover{border-color:var(--teal);color:var(--teal);}
+.back-btn span{display:inline;}
 .tabs{display:flex;gap:3px;background:var(--bg);border:1px solid var(--border2);border-radius:11px;padding:3px;overflow-x:auto;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab-btn{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;border:none;background:none;font-family:var(--sans);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--text3);transition:all .22s;opacity:.45;pointer-events:none;white-space:nowrap;}
@@ -64,12 +65,93 @@ nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white
 .tab-btn.locked-dim::after{content:' 🔒';font-size:.62rem;}
 .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .access-pill{display:flex;align-items:center;gap:5px;background:var(--teal3);border:1px solid var(--teal4);border-radius:9px;padding:6px 11px;font-family:var(--mono);font-size:.67rem;color:var(--teal);white-space:nowrap;}
+.access-pill .lbl{color:var(--text2);font-size:.63rem;}
 #timerBox{display:flex;align-items:center;gap:5px;background:#fee2e2;border:1px solid #fecaca;color:var(--red);border-radius:9px;padding:6px 13px;font-family:var(--mono);font-size:.83rem;}
 #timerBox.urgent{animation:pRed 1s infinite;}
 @keyframes pRed{0%,100%{border-color:#fecaca}50%{border-color:#f87171}}
 
 /* ── MAIN ── */
 main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px 70px;}
+
+/* ── START SCREEN ── */
+#startScreen{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;position:relative;overflow:hidden;animation:riseIn .5s both;box-shadow:var(--shadow);}
+#startScreen::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--teal),transparent);}
+.start-emoji{font-size:3.2rem;display:block;margin-bottom:22px;animation:floatE 3s ease-in-out infinite;}
+@keyframes floatE{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.start-title{font-size:clamp(1.5rem,4vw,1.9rem);font-weight:900;color:var(--text);margin-bottom:10px;}
+.start-title span{color:var(--teal);}
+.start-sub{color:var(--text2);font-size:.9rem;line-height:1.75;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto;}
+.start-warn{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fed7aa;color:var(--gold);font-size:.78rem;font-weight:700;padding:9px 18px;border-radius:10px;margin-bottom:32px;font-family:var(--mono);}
+.start-btn{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;border:none;padding:15px 48px;border-radius:14px;font-family:var(--sans);font-size:1.05rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 24px rgba(13,122,95,.28);min-height:54px;}
+.start-btn:hover{background:var(--teal2);box-shadow:0 10px 32px rgba(13,122,95,.38);transform:translateY(-2px);}
+
+/* ── QUIZ ── */
+.quiz-wrap{display:flex;flex-direction:column;gap:18px;}
+.progress-row{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.75rem;color:var(--text2);}
+.prog-track{flex:1;height:5px;background:var(--border2);border-radius:5px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(to right,var(--teal),var(--teal2));border-radius:5px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+.q-count{color:var(--teal);font-weight:700;white-space:nowrap;}
+.q-card{background:var(--white);border:1px solid var(--border2);border-radius:20px;padding:26px;animation:riseIn .3s both;box-shadow:var(--shadow);}
+.q-label{font-family:var(--mono);font-size:.65rem;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.q-label::before{content:'';width:14px;height:2px;background:var(--teal);border-radius:2px;}
+.q-img{width:100%;max-height:240px;object-fit:contain;border-radius:12px;margin-bottom:18px;border:1px solid var(--border);background:var(--bg);}
+.q-text{font-size:clamp(.95rem,2.5vw,1.1rem);font-weight:800;line-height:1.7;margin-bottom:20px;color:var(--text);}
+.options{display:flex;flex-direction:column;gap:8px;}
+.opt-label{display:flex;align-items:center;gap:12px;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .2s;min-height:50px;}
+.opt-label:hover{border-color:var(--teal);background:var(--teal3);}
+.opt-label:has(input:checked){border-color:var(--teal);background:var(--teal3);}
+.opt-label input[type=radio]{width:17px;height:17px;accent-color:var(--teal);flex-shrink:0;}
+.opt-key{font-family:var(--mono);font-size:.6rem;font-weight:700;color:var(--text3);background:var(--white);border:1px solid var(--border2);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-transform:uppercase;transition:all .2s;}
+.opt-label:has(input:checked) .opt-key{background:var(--teal);border-color:var(--teal);color:#fff;}
+.opt-text{font-size:.9rem;font-weight:700;flex:1;color:var(--text);}
+.quiz-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.q-btn{display:flex;align-items:center;gap:6px;padding:11px 20px;border-radius:11px;border:none;font-family:var(--sans);font-weight:900;font-size:.87rem;cursor:pointer;transition:all .25s;white-space:nowrap;min-height:46px;}
+.q-btn.ghost{background:var(--white);border:1.5px solid var(--border2);color:var(--text2);}
+.q-btn.ghost:hover{border-color:var(--teal);color:var(--teal);}
+.q-btn.primary{background:var(--teal);color:#fff;box-shadow:0 4px 14px rgba(13,122,95,.22);}
+.q-btn.primary:hover{background:var(--teal2);box-shadow:0 6px 20px rgba(13,122,95,.32);}
+.q-btn.finish{background:#eff6ff;border:1.5px solid #bfdbfe;color:#2563eb;}
+.q-btn.finish:hover{background:#dbeafe;}
+
+/* ── SCORE ── */
+.score-card{background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;position:relative;overflow:hidden;margin-bottom:18px;animation:riseIn .5s both;box-shadow:var(--shadow);}
+.score-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--teal),transparent);}
+.score-ring{width:110px;height:110px;margin:0 auto 18px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.score-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.score-ring-num{font-family:var(--mono);font-size:2.1rem;font-weight:700;line-height:1;}
+.score-ring-pct{font-size:.63rem;color:var(--text3);font-family:var(--mono);}
+.score-of{font-family:var(--mono);font-size:.83rem;color:var(--text2);margin-top:4px;}
+.score-msg{color:var(--text2);font-size:.87rem;margin-top:7px;}
+.score-unlock{display:inline-flex;align-items:center;gap:7px;background:var(--teal3);border:1px solid var(--teal4);color:var(--teal);font-size:.77rem;font-weight:700;padding:8px 18px;border-radius:18px;margin-top:14px;font-family:var(--mono);}
+
+/* ── REVIEW ── */
+.review-section-title{font-size:.72rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono);margin-bottom:12px;}
+.review-item{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:10px;animation:riseIn .35s both;box-shadow:var(--shadow);}
+.review-item.correct{border-color:var(--teal4);}
+.review-item.wrong{border-color:#fecaca;}
+.review-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;}
+.review-q-label{font-family:var(--mono);font-size:.63rem;color:var(--teal);text-transform:uppercase;letter-spacing:1px;}
+.rbadge{font-family:var(--mono);font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:7px;}
+.rbadge.correct{background:var(--teal3);color:var(--teal);border:1px solid var(--teal4);}
+.rbadge.wrong{background:#fee2e2;color:var(--red);border:1px solid #fecaca;}
+.review-q-text{font-size:.93rem;font-weight:800;margin-bottom:8px;line-height:1.6;color:var(--text);}
+.review-ans{font-size:.82rem;color:var(--text2);margin-bottom:2px;}
+.review-ans span{color:var(--text);font-weight:700;}
+.review-correct-ans{font-size:.82rem;color:var(--teal);font-weight:700;margin-top:5px;}
+
+/* ── HOMEWORK TAB ── */
+#tab-homework .hw-locked-screen{background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;box-shadow:var(--shadow);}
+#tab-homework .hw-locked-screen::before{content:'';display:block;font-size:3rem;margin-bottom:16px;}
+.hw-locked-icon{font-size:3.5rem;margin-bottom:18px;}
+.hw-locked-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
+.hw-locked-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:380px;margin:0 auto 28px;}
+.hw-locked-badge{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fed7aa;color:var(--gold);font-size:.75rem;font-weight:700;padding:8px 16px;border-radius:10px;margin-bottom:28px;font-family:var(--mono);}
+.hw-start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
+.hw-start-btn:hover{box-shadow:0 10px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
+.hw-done-screen{background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;}
+.hw-done-icon{font-size:3.5rem;margin-bottom:16px;}
+.hw-done-title{font-size:1.5rem;font-weight:900;color:var(--teal);margin-bottom:8px;}
+.hw-done-sub{font-size:.88rem;color:var(--teal2);line-height:1.7;}
 
 /* ── NEW VIDEO PLAYER (PLYR) ── */
 .vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
@@ -81,15 +163,15 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     overflow: hidden;
     box-shadow: var(--shadow2);
     background: #000;
-    direction: ltr; /* مهم عشان المشغل يكون من الشمال لليمين */
+    direction: ltr; /* المشغل يكون من الشمال لليمين */
 }
 
-/* العلامة المائية فوق المشغل */
+/* العلامة المائية */
 .watermark {
     position: absolute;
     inset: 0;
-    pointer-events: none; /* عشان الطالب يقدر يدوس على الفيديو من تحتها */
-    z-index: 50;
+    pointer-events: none; 
+    z-index: 55;
     overflow: hidden;
 }
 .watermark span {
@@ -110,77 +192,78 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     100% { top: 60%; left: 80%; }
 }
 
-/* طبقة حماية إضافية لمنع الضغط على الجزء العلوي من اليوتيوب */
-.plyr__video-wrapper::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 70px;
-    background: transparent;
-    z-index: 10;
+/* منع لمس اليوتيوب عشان اللينكات متظهرش */
+.plyr__video-wrapper iframe {
+    pointer-events: none !important;
 }
 
-/* ── QUIZ & HOMEWORK (From previous design) ── */
-#startScreen{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow);}
-.start-emoji{font-size:3.2rem;display:block;margin-bottom:22px;animation:floatE 3s ease-in-out infinite;}
-@keyframes floatE{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.start-title{font-size:clamp(1.5rem,4vw,1.9rem);font-weight:900;color:var(--text);margin-bottom:10px;}
-.start-sub{color:var(--text2);font-size:.9rem;line-height:1.75;margin-bottom:24px;}
-.start-btn{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;border:none;padding:15px 48px;border-radius:14px;font-family:var(--sans);font-size:1.05rem;font-weight:900;cursor:pointer;}
+/* رفع مستوى الـ Controls عشان تكون فوق كل حاجة */
+.plyr__controls {
+    z-index: 60 !important;
+}
 
-.quiz-wrap{display:flex;flex-direction:column;gap:18px;}
-.progress-row{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.75rem;color:var(--text2);}
-.prog-track{flex:1;height:5px;background:var(--border2);border-radius:5px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(to right,var(--teal),var(--teal2));border-radius:5px;transition:width .4s cubic-bezier(.4,0,.2,1);}
-.q-count{color:var(--teal);font-weight:700;white-space:nowrap;}
-.q-card{background:var(--white);border:1px solid var(--border2);border-radius:20px;padding:26px;box-shadow:var(--shadow);}
-.q-label{font-family:var(--mono);font-size:.65rem;color:var(--teal);text-transform:uppercase;margin-bottom:14px;}
-.q-img{width:100%;max-height:240px;object-fit:contain;border-radius:12px;margin-bottom:18px;}
-.q-text{font-size:clamp(.95rem,2.5vw,1.1rem);font-weight:800;line-height:1.7;margin-bottom:20px;color:var(--text);}
-.options{display:flex;flex-direction:column;gap:8px;}
-.opt-label{display:flex;align-items:center;gap:12px;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .2s;}
-.opt-label:hover{border-color:var(--teal);background:var(--teal3);}
-.opt-label:has(input:checked){border-color:var(--teal);background:var(--teal3);}
-.opt-label input[type=radio]{width:17px;height:17px;accent-color:var(--teal);flex-shrink:0;}
-.opt-key{font-family:var(--mono);font-size:.6rem;font-weight:700;color:var(--text3);background:var(--white);border:1px solid var(--border2);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
-.opt-label:has(input:checked) .opt-key{background:var(--teal);border-color:var(--teal);color:#fff;}
-.opt-text{font-size:.9rem;font-weight:700;flex:1;color:var(--text);}
-.quiz-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.q-btn{display:flex;align-items:center;gap:6px;padding:11px 20px;border-radius:11px;border:none;font-family:var(--sans);font-weight:900;font-size:.87rem;cursor:pointer;}
-.q-btn.ghost{background:var(--white);border:1.5px solid var(--border2);color:var(--text2);}
-.q-btn.primary{background:var(--teal);color:#fff;}
-.q-btn.finish{background:#eff6ff;border:1.5px solid #bfdbfe;color:#2563eb;}
-
-/* ── SCORE & REVIEW ── */
-.score-card{background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;}
-.score-ring{width:110px;height:110px;margin:0 auto 18px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
-.score-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
-.score-ring-num{font-family:var(--mono);font-size:2.1rem;font-weight:700;line-height:1;}
-.score-ring-pct{font-size:.63rem;color:var(--text3);font-family:var(--mono);}
-.score-msg{color:var(--text2);font-size:.87rem;margin-top:7px;}
-.review-item{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:10px;}
-.review-item.correct{border-color:var(--teal4);}
-.review-item.wrong{border-color:#fecaca;}
-.review-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.rbadge{font-family:var(--mono);font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:7px;}
-.rbadge.correct{background:var(--teal3);color:var(--teal);}
-.rbadge.wrong{background:#fee2e2;color:var(--red);}
-.review-ans{font-size:.82rem;color:var(--text2);margin-bottom:2px;}
-.review-ans span{color:var(--text);font-weight:700;}
+/* الغطاء المخصص اللي بيظهر وقت الـ Pause يغطي بلاوي اليوتيوب */
+.custom-pause-cover {
+    position: absolute; 
+    inset: 0; 
+    z-index: 45;
+    background-color: #000; 
+    background-size: cover; 
+    background-position: center;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    cursor: pointer; 
+    transition: opacity 0.2s ease;
+}
+.custom-pause-cover.hidden-cover {
+    opacity: 0;
+    pointer-events: none;
+}
+.yt-play-btn {
+    width: 68px; height: 48px; background-color: rgba(13, 122, 95, 0.9);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: transform 0.2s;
+}
+.yt-play-btn:hover { transform: scale(1.1); }
+.yt-play-btn svg { width: 28px; height: 28px; fill: #fff; margin-left: 4px; }
 
 /* ── PDF ── */
-.pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;}
+.pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
+.pdf-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
 .pdf-icon{width:72px;height:72px;margin:0 auto 20px;background:#fff7ed;border:1px solid #fed7aa;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;}
 .pdf-title{font-size:1.5rem;font-weight:900;margin-bottom:8px;color:var(--text);}
-.pdf-dl-btn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 40px;border-radius:13px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;text-decoration:none;}
+.pdf-sub{color:var(--text2);font-size:.87rem;margin-bottom:30px;line-height:1.7;}
+.pdf-dl-btn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 40px;border-radius:13px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;text-decoration:none;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
+.pdf-dl-btn:hover{box-shadow:0 12px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
 
 /* ── HW GATE WALL ── */
 .hw-gate-wall{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;}
-.hw-gate-card{background:var(--white);border-radius:24px;padding:44px 32px;text-align:center;max-width:440px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.2);}
-.hw-gate-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:13px 36px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;}
+.hw-gate-card{background:var(--white);border-radius:24px;padding:44px 32px;text-align:center;max-width:440px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.2);animation:riseIn .4s both;position:relative;}
+.hw-gate-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.hw-gate-icon{font-size:3.5rem;margin-bottom:16px;}
+.hw-gate-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
+.hw-gate-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:340px;margin:0 auto 28px;}
+.hw-gate-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:13px 36px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 5px 16px rgba(217,119,6,.25);}
+.hw-gate-btn:hover{box-shadow:0 8px 24px rgba(217,119,6,.38);transform:translateY(-1px);}
+.hw-gate-dismiss{display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;transition:color .2s;}
+.hw-gate-dismiss:hover{color:var(--text2);}
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:640px){ :root{--nav-h:56px;} main{padding:18px 14px 70px;} .back-btn span{display:none;} }
+
+@media(max-width:640px){
+  :root{--nav-h:56px;}
+  main{padding:18px 14px 70px;}
+  .back-btn span{display:none;}
+  .tab-btn{padding:6px 10px;font-size:.78rem;}
+  .q-card{padding:20px 16px;}
+  #startScreen{padding:44px 20px;}
+  .score-card{padding:28px 20px;}
+  .review-item{padding:16px 14px;}
+  .access-pill .lbl{display:none;}
+  .quiz-nav{flex-wrap:wrap;}
+  .q-btn.finish{width:100%;justify-content:center;}
+}
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -193,11 +276,14 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
 <div id="hwGateWall" class="hw-gate-wall hidden">
   <div class="hw-gate-card">
-    <div style="font-size:3.5rem;margin-bottom:16px;">📋</div>
-    <div style="font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;">لازم تعمل الواجب الأول!</div>
-    <div id="hwGateMsg" style="font-size:.88rem;color:var(--text2);margin-bottom:28px;">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب</div>
-    <button class="hw-gate-btn" onclick="goToHomework()">اذهب للواجب</button>
-    <span style="display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
+    <div class="hw-gate-icon">📋</div>
+    <div class="hw-gate-title">لازم تعمل الواجب الأول!</div>
+    <div class="hw-gate-sub" id="hwGateMsg">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب — اعمل الواجب الأول وهتفتح الحصة تلقائياً</div>
+    <button class="hw-gate-btn" onclick="goToHomework()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      اذهب للواجب
+    </button>
+    <span class="hw-gate-dismiss" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
   </div>
 </div>
 
@@ -206,7 +292,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     <button class="lock-back" onclick="window.history.back()">↩ رجوع</button>
     <div class="lock-icon">🎫</div>
     <div class="lock-title">تفعيل الحصة</div>
-    <div style="font-size:.87rem;color:var(--text2);margin-bottom:28px;">أدخل الكود الذي حصلت عليه من الأستاذ لفتح هذه الحصة</div>
+    <div class="lock-sub">أدخل الكود الذي حصلت عليه من الأستاذ لفتح هذه الحصة والبدء في التدريب</div>
     <input id="accessCodeInput" class="lock-input" placeholder="أدخل الكود هنا" autocomplete="off" spellcheck="false" inputmode="text">
     <button id="verifyBtn" class="lock-btn">تفعيل الحصة ←</button>
   </div>
@@ -246,6 +332,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
         <span class="start-emoji">🚀</span>
         <div class="start-title">جاهز تبدأ <span>الامتحان؟</span></div>
         <p class="start-sub">بعد إنهاء الامتحان هتفتح فيديو الشرح والملزمة تلقائياً</p>
+        <div class="start-warn">مدة الامتحان: 40 دقيقة فقط</div>
         <button id="startBtn" class="start-btn">ابدأ الامتحان</button>
       </div>
 
@@ -276,7 +363,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
       <div class="pdf-card">
         <div class="pdf-icon">📚</div>
         <div class="pdf-title">ملزمة الحصة</div>
-        <p style="color:var(--text2);font-size:.87rem;margin-bottom:30px;">حمّل الملزمة بصيغة PDF واطبعها للمذاكرة</p>
+        <p class="pdf-sub">حمّل الملزمة بصيغة PDF واطبعها للمذاكرة</p>
         <a id="pdfLink" href="#" target="_blank" class="pdf-dl-btn">تحميل الملزمة</a>
       </div>
     </div>
@@ -295,11 +382,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
     // 2. منع اختصارات المطورين وزرار Print Screen
     window.addEventListener('keydown', (e) => {
-        if (
-            e.keyCode === 123 || 
-            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-            (e.ctrlKey && e.keyCode === 85)
-        ) {
+        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
             e.preventDefault(); 
             alert("⚠️ غير مسموح بفتح أدوات المطور للحفاظ على خصوصية المحتوى."); 
             return false;
@@ -311,9 +394,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     });
 
     window.addEventListener('keyup', (e) => {
-        if (e.key === 'PrintScreen' || e.keyCode === 44) {
-            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
-        }
+        if (e.key === 'PrintScreen' || e.keyCode === 44) { navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.'); }
     });
 
     // 3. كشف الـ Developer Tools بالأبعاد
@@ -331,16 +412,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     setInterval(function() {
         (function(a) { return (function(a) { return (Function('Function(arguments[0].constructor(\'debugger\')())')(a)); })(a); })(window);
     }, 100);
-
-    // 5. التغبيش عند فقدان التركيز
-    window.addEventListener('blur', () => {
-        document.body.style.filter = 'blur(15px)';
-        document.body.style.opacity = '0.4';
-    });
-    window.addEventListener('focus', () => {
-        document.body.style.filter = 'none';
-        document.body.style.opacity = '1';
-    });
 })();
 
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
@@ -354,10 +425,7 @@ let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
 
 function showLoader(text = "جاري التحميل...") {
   const el = document.getElementById('loadingScreen');
-  if(el){
-    document.getElementById('ldText').textContent = text;
-    el.style.display = 'flex'; void el.offsetWidth; el.style.opacity = '1';
-  }
+  if(el){ document.getElementById('ldText').textContent = text; el.style.display = 'flex'; void el.offsetWidth; el.style.opacity = '1'; }
 }
 function hideLoader(){
   const el = document.getElementById('loadingScreen');
@@ -375,6 +443,7 @@ window.switchTab = (tab) => {
   }, 400); 
 };
 
+/* ── AUTH & DATA ── */
 async function initLessonPage(){
   const lessonId=new URLSearchParams(window.location.search).get('id');
   if(!lessonId){hideLoader();return;}
@@ -444,8 +513,7 @@ function showHomeworkGate(hw){
 
 window.goToHomework=()=>{
   const hwLessonId=sessionStorage.getItem('requiredHwLessonId');
-  if(hwLessonId){ window.location.href=`lesson.html?id=${hwLessonId}&tab=homework`;
-  } else { document.getElementById('hwGateWall').classList.add('hidden'); }
+  if(hwLessonId){ window.location.href=`lesson.html?id=${hwLessonId}&tab=homework`; } else { document.getElementById('hwGateWall').classList.add('hidden'); }
 };
 
 async function verifyAccessInBackground(user,lessonId){
@@ -505,8 +573,8 @@ document.getElementById('verifyBtn').onclick=async()=>{
   hideLoader();
 };
 
-/* ── مشغل الفيديو الجديد (Plyr.io) ── */
-let player; // متغير يحفظ إعدادات المشغل
+/* ── PLYR VIDEO INTEGRATION ── */
+let player;
 function initVideoPlayer() {
   if(lessonData.video && !plyrPlayer){
     plyrPlayer = true;
@@ -517,58 +585,50 @@ function initVideoPlayer() {
     if(url.includes('youtube.com') || url.includes('youtu.be')){
       const m = url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
       const vId = m ? m[1] : null;
+      const coverImg = lessonData.image || `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
       
-      // كود المشغل مع العلامة المائية
       html += `
-        <div class="video-container">
+        <div class="video-container" id="vpContainer">
            <div class="watermark"><span>ID: ${myStudentId}</span></div>
+           
+           <div id="customPauseCover" class="custom-pause-cover" style="background-image: url('${coverImg}');">
+              <div class="yt-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+           </div>
+           
            <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="${vId}"></div>
         </div>`;
       vc.innerHTML = html;
       initPlyr();
-      
     } else {
-      // للملفات المباشرة MP4
-      html += `
-        <div class="video-container">
-           <div class="watermark"><span>ID: ${myStudentId}</span></div>
-           <video id="player" playsinline controls>
-              <source src="${url}" type="video/mp4" />
-           </video>
-        </div>`;
+      html += `<div class="video-container" id="vpContainer"><div class="watermark"><span>ID: ${myStudentId}</span></div><video id="player" playsinline controls><source src="${url}" type="video/mp4" /></video></div>`;
       vc.innerHTML = html;
       initPlyr();
     }
   }
 }
 
-// تشغيل وتخصيص إعدادات مكتبة Plyr
 function initPlyr() {
     player = new Plyr('#player', {
-        controls: [
-            'play-large', // الزر الكبير في النص
-            'play',       // الزر الصغير تحت
-            'progress',   // شريط التقدم
-            'current-time', // الوقت الحالي
-            'duration',   // الوقت الكلي
-            'mute',       // كتم الصوت
-            'volume',     // شريط الصوت
-            'settings',   // الإعدادات (السرعة)
-            'pip',        // صورة داخل صورة
-            'fullscreen'  // ملء الشاشة
-        ],
-        settings: ['speed'], // إظهار التحكم في السرعة فقط
-        speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-        youtube: { 
-            noCookie: true, 
-            rel: 0, 
-            showinfo: 0, 
-            iv_load_policy: 3, 
-            modestbranding: 1 
-        }
+        controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'],
+        settings: ['speed'], speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+        youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
     });
+
+    const cover = document.getElementById('customPauseCover');
+    if(cover) {
+        // تشغيل الفيديو عند الضغط على الكافر
+        cover.addEventListener('click', () => { player.play(); });
+        
+        // إخفاء الكافر عند التشغيل
+        player.on('play', () => { cover.classList.add('hidden-cover'); });
+        
+        // إظهار الكافر فوراً عند الإيقاف المؤقت ليداري واجهة اليوتيوب
+        player.on('pause', () => { cover.classList.remove('hidden-cover'); });
+        player.on('ended', () => { cover.classList.remove('hidden-cover'); });
+    }
 }
 
+/* ── استكمال التهيئة ── */
 async function initLesson(){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
@@ -588,8 +648,7 @@ async function initLesson(){
         <div style="font-size:3rem;margin-bottom:14px;">🎓</div>
         <div style="font-size:1.2rem;font-weight:900;color:var(--text);">لا يوجد امتحان لهذه الحصة</div>
         <div style="font-size:.88rem;color:var(--text2);margin-top:8px;">تم فتح فيديو الشرح والملزمة مباشرة لك</div>
-      </div>
-    `;
+      </div>`;
     ['video','pdf'].forEach(t=>{
       document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
       document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
@@ -611,28 +670,23 @@ async function initLesson(){
     const saved=localStorage.getItem(`exam_data_${currentUser.id}_${id}`);
     if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockFeatures(buildScoreMsg(pd.score,questions.length,true));}catch(e){}}
   }
-
   if(urlTab==='homework') setTimeout(()=>switchTab('homework'),300);
 }
 
+/* ── HOMEWORK ── */
 async function loadHomeworkForLesson(lessonId){
   try{
     const{data:hwList}=await supabaseClient.from('homework').select('*').eq('lessonid',lessonId).limit(1);
     if(!hwList||hwList.length===0){ renderNoHomework(); return; }
     hwData=hwList[0]; hwQuestions=hwData.questions||[];
-
-    const{data:hwRes}=await supabaseClient.from('hw_results').select('*')
-      .eq('email',currentUser.email).eq('hw_id',hwData.id).single();
-
+    const{data:hwRes}=await supabaseClient.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',hwData.id).single();
     if(hwRes){
       hwDone=true; hwUserAns=hwRes.userans||{}; 
       renderHomeworkDone(hwRes);
-      document.getElementById('btn-homework-tab').classList.add('unlocked');
-      document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+      document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
     } else {
       hwDone=false; renderHomeworkLocked();
-      document.getElementById('btn-homework-tab').classList.add('unlocked');
-      document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+      document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
     }
   }catch(e){renderNoHomework();}
 }
@@ -642,10 +696,8 @@ function renderNoHomework(){
     <div style="background:var(--white);border:1px solid var(--border);border-radius:20px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);">
       <div style="font-size:3rem;margin-bottom:14px;">📋</div>
       <div style="font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:8px;">لا يوجد واجب لهذه الحصة</div>
-      <div style="font-size:.88rem;color:var(--text2);">لم يتم إضافة واجب لهذه الحصة بعد من قِبل الأستاذ</div>
     </div>`;
-  document.getElementById('btn-homework-tab').classList.add('unlocked');
-  document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+  document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
 }
 
 function renderHomeworkLocked(){
@@ -740,9 +792,7 @@ function submitHomework(){
   setTimeout(() => { hwDone=true; renderHomeworkDone({score,total:hwQuestions.length}); hideLoader(); }, 500);
 }
 
-/* ════════════════════════════════════
-   EXAM SYSTEM
-════════════════════════════════════ */
+/* ── EXAM ── */
 function buildScoreMsg(score,total,wasPrev){ const pct=total>0?Math.round(score/total*100):0; return{score,total,pct,wasPrev}; }
 
 document.getElementById('startBtn').onclick=()=>{
