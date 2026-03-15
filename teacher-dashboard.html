@@ -170,6 +170,32 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 
 .divider{height:1px;background:var(--border);margin:18px 0;}
 
+/* ── IMAGE DROP ZONE ── */
+.img-drop-zone{
+  width:100%;min-height:96px;
+  border:2px dashed var(--border2);border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;transition:all .25s;background:var(--bg);
+  position:relative;overflow:hidden;
+}
+.img-drop-zone:hover,.img-drop-zone.drag-over{border-color:var(--teal);background:var(--teal3);}
+.img-drop-zone .drop-icon{font-size:1.5rem;line-height:1;}
+.img-drop-zone .drop-txt{font-size:.75rem;font-weight:700;color:var(--text2);text-align:center;}
+.img-drop-zone .drop-sub{font-size:.65rem;color:var(--text3);}
+.img-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-drop-preview{width:100%;position:relative;}
+.img-drop-preview img{width:100%;max-height:160px;object-fit:contain;border-radius:8px;display:block;border:1px solid var(--border);}
+.img-drop-clear{
+  position:absolute;top:6px;left:6px;
+  width:24px;height:24px;border-radius:6px;
+  background:rgba(220,38,38,.85);border:none;color:#fff;
+  font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.img-drop-clear:hover{background:var(--red);}
+.img-uploading{display:flex;align-items:center;gap:8px;padding:10px;font-size:.78rem;color:var(--text2);}
+.img-uploading .mini-spin{width:16px;height:16px;border:2px solid var(--teal4);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0;}
+
 /* ── MOBILE ── */
 .mob-toggle{display:none;position:fixed;bottom:16px;right:16px;z-index:200;width:48px;height:48px;background:var(--teal);border-radius:50%;border:none;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(13,122,95,.4);align-items:center;justify-content:center;}
 .sb-backdrop{display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);}
@@ -713,9 +739,18 @@ window.addQuestion=function(containerId, data=null){
       <span class="q-num-badge">سؤال ${n}</span>
       <button class="q-del" onclick="this.closest('.q-block').remove()">✕</button>
     </div>
-    <div class="fw"><label class="flbl">نص السؤال (اختياري)</label><input class="q-text finp" placeholder="اكتب السؤال هنا..." value="${data?.text||''}"></div>
+    <div class="fw"><label class="flbl">نص السؤال (اختياري)</label><input class="q-text finp" placeholder="اكتب السؤال هنا..." value="${(data?.text||'').replace(/"/g,'&quot;')}"></div>
     <div class="fg2" style="margin-bottom:10px;">
-      <div class="fw"><label class="flbl">رابط صورة السؤال</label><input class="q-image finp" placeholder="رابط صورة (اختياري)" value="${data?.image||''}"></div>
+      <div class="fw">
+        <label class="flbl">صورة السؤال (اختياري)</label>
+        <div class="img-drop-zone q-img-zone" ondragover="handleDragOver(event,this)" ondragleave="handleDragLeave(event,this)" ondrop="handleDrop(event,this)">
+          <input type="file" accept="image/*" onchange="handleFileSelect(event,this.closest('.q-img-zone'))">
+          <span class="drop-icon">🖼️</span>
+          <span class="drop-txt">اسحب الصورة هنا أو اضغط للاختيار</span>
+          <span class="drop-sub">PNG, JPG, WEBP — الحد الأقصى 2MB</span>
+        </div>
+        <input type="hidden" class="q-image" value="${data?.image||''}">
+      </div>
       <div class="fw"><label class="flbl">الإجابة الصحيحة</label>
         <select class="q-correct finp">
           <option value="a" ${data?.correct==='a'?'selected':''}>A</option>
@@ -726,18 +761,94 @@ window.addQuestion=function(containerId, data=null){
       </div>
     </div>
     <div class="q-opts">
-      <div><div class="opt-lbl">A</div><input class="q-a finp" placeholder="خيار أ" value="${data?.a||''}"></div>
-      <div><div class="opt-lbl">B</div><input class="q-b finp" placeholder="خيار ب" value="${data?.b||''}"></div>
-      <div><div class="opt-lbl">C</div><input class="q-c finp" placeholder="خيار ج" value="${data?.c||''}"></div>
-      <div><div class="opt-lbl">D</div><input class="q-d finp" placeholder="خيار د" value="${data?.d||''}"></div>
+      <div><div class="opt-lbl">A</div><input class="q-a finp" placeholder="خيار أ" value="${(data?.a||'').replace(/"/g,'&quot;')}"></div>
+      <div><div class="opt-lbl">B</div><input class="q-b finp" placeholder="خيار ب" value="${(data?.b||'').replace(/"/g,'&quot;')}"></div>
+      <div><div class="opt-lbl">C</div><input class="q-c finp" placeholder="خيار ج" value="${(data?.c||'').replace(/"/g,'&quot;')}"></div>
+      <div><div class="opt-lbl">D</div><input class="q-d finp" placeholder="خيار د" value="${(data?.d||'').replace(/"/g,'&quot;')}"></div>
     </div>`;
   document.getElementById(containerId).appendChild(div);
+
+  // لو في صورة موجودة (تعديل) → اعرضها
+  if(data?.image){
+    const zone=div.querySelector('.q-img-zone');
+    showImagePreview(zone, data.image);
+  }
+};
+
+/* ── DRAG & DROP HANDLERS ── */
+function handleDragOver(e, zone){
+  e.preventDefault(); zone.classList.add('drag-over');
+}
+function handleDragLeave(e, zone){
+  zone.classList.remove('drag-over');
+}
+function handleDrop(e, zone){
+  e.preventDefault(); zone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) processImageFile(file, zone);
+}
+function handleFileSelect(e, zone){
+  const file = e.target.files[0];
+  if(file) processImageFile(file, zone);
+}
+
+function processImageFile(file, zone){
+  if(!file.type.startsWith('image/')){alert('الملف ليس صورة!'); return;}
+  if(file.size > 2*1024*1024){alert('حجم الصورة أكبر من 2MB — اختار صورة أصغر'); return;}
+
+  // إظهار spinner
+  zone.innerHTML=`<div class="img-uploading"><div class="mini-spin"></div><span>جاري معالجة الصورة...</span></div>`;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const base64 = ev.target.result;
+    // حفظ الـ base64 في hidden input
+    const hiddenInput = zone.closest('.fw').querySelector('.q-image');
+    if(hiddenInput) hiddenInput.value = base64;
+    showImagePreview(zone, base64);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showImagePreview(zone, src){
+  zone.classList.remove('img-drop-zone');
+  zone.classList.add('img-drop-preview');
+  zone.ondragover=null; zone.ondragleave=null; zone.ondrop=null;
+  zone.innerHTML=`
+    <img src="${src}" alt="صورة السؤال">
+    <button class="img-drop-clear" onclick="clearImagePreview(this)" title="حذف الصورة">✕</button>`;
+}
+
+window.clearImagePreview=function(btn){
+  const preview = btn.closest('.img-drop-preview');
+  const hiddenInput = preview.closest('.fw').querySelector('.q-image');
+  if(hiddenInput) hiddenInput.value='';
+  // إعادة zone
+  preview.classList.remove('img-drop-preview');
+  preview.classList.add('img-drop-zone');
+  preview.setAttribute('ondragover',"handleDragOver(event,this)");
+  preview.setAttribute('ondragleave',"handleDragLeave(event,this)");
+  preview.setAttribute('ondrop',"handleDrop(event,this)");
+  preview.innerHTML=`
+    <input type="file" accept="image/*" onchange="handleFileSelect(event,this.closest('.q-img-zone'))">
+    <span class="drop-icon">🖼️</span>
+    <span class="drop-txt">اسحب الصورة هنا أو اضغط للاختيار</span>
+    <span class="drop-sub">PNG, JPG, WEBP — الحد الأقصى 2MB</span>`;
+  preview.classList.add('q-img-zone');
 };
 
 function getQuestionsFrom(containerId){
   const qs=[];
   document.querySelectorAll('#'+containerId+' .question-block').forEach(b=>{
-    qs.push({text:b.querySelector('.q-text').value||'',image:b.querySelector('.q-image').value,a:b.querySelector('.q-a').value||'A',b:b.querySelector('.q-b').value||'B',c:b.querySelector('.q-c').value||'C',d:b.querySelector('.q-d').value||'D',correct:b.querySelector('.q-correct').value});
+    qs.push({
+      text:b.querySelector('.q-text').value||'',
+      image:b.querySelector('.q-image').value||'',
+      a:b.querySelector('.q-a').value||'A',
+      b:b.querySelector('.q-b').value||'B',
+      c:b.querySelector('.q-c').value||'C',
+      d:b.querySelector('.q-d').value||'D',
+      correct:b.querySelector('.q-correct').value
+    });
   });
   return qs;
 }
