@@ -21,7 +21,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .hidden{display:none!important;}
 
 /* ── LOADING ── */
-#loadingScreen{position:fixed;inset:0;z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--white);}
+#loadingScreen{position:fixed;inset:0;z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--white); transition: opacity 0.3s;}
 .ld-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;font-family:var(--mono);box-shadow:0 8px 24px rgba(13,122,95,.3);}
 .ld-dots{display:flex;gap:7px;}
 .ld-dot{width:8px;height:8px;border-radius:50%;background:var(--teal4);animation:ldp 1.2s ease-in-out infinite;}
@@ -234,7 +234,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 <div id="loadingScreen">
   <div class="ld-logo">MP</div>
   <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
-  <div class="ld-txt">جاري التحقق من الصلاحيات...</div>
+  <div class="ld-txt" id="ldText">جاري التحقق من الصلاحيات...</div>
 </div>
 
 <div id="hwGateWall" class="hw-gate-wall hidden">
@@ -364,18 +364,37 @@ let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=4
 let examTimer,myStudentId="000000",plyrPlayer=false;
 let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
 
-/* ── TABS ── */
-window.switchTab=(tab)=>{
-  document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.remove('hidden');
-  document.getElementById(`btn-${tab}-tab`).classList.add('active');
-};
+/* ── إدارة شاشة التحميل ── */
+function showLoader(text = "جاري التحميل...") {
+  const el = document.getElementById('loadingScreen');
+  if(el){
+    const txtEl = document.getElementById('ldText');
+    if(txtEl) txtEl.textContent = text;
+    el.style.display = 'flex';
+    void el.offsetWidth; // Force reflow
+    el.style.opacity = '1';
+  }
+}
 
 function hideLoader(){
-  const el=document.getElementById('loadingScreen');
-  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);}
+  const el = document.getElementById('loadingScreen');
+  if(el){
+    el.style.opacity = '0';
+    setTimeout(() => { el.style.display = 'none'; }, 300);
+  }
 }
+
+/* ── TABS ── */
+window.switchTab = (tab) => {
+  showLoader("جاري التحميل...");
+  setTimeout(() => {
+    document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    document.getElementById(`btn-${tab}-tab`).classList.add('active');
+    hideLoader();
+  }, 400); // تأخير بسيط لعمل إحساس بالتحميل
+};
 
 /* ── AUTH & ACCESS ── */
 async function initLessonPage(){
@@ -392,9 +411,10 @@ async function initLessonPage(){
       const p=JSON.parse(savedLocal);
       if(p.expiry>now){
         myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
-        hideLoader(); initLesson(); startAccessTimer(p.expiry);
+        await initLesson(); startAccessTimer(p.expiry);
         verifyAccessInBackground(currentUser,lessonId);
         checkHomeworkGateBackground(lessonId);
+        hideLoader();
         return;
       }
     }catch(e){}
@@ -410,8 +430,9 @@ async function initLessonPage(){
     if(codesData) codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now){hasAccess=true;validExpiry=cd.expiryat;}});
     if(hasAccess){
       localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:validExpiry,studentId:myStudentId}));
-      hideLoader(); initLesson(); startAccessTimer(validExpiry);
+      await initLesson(); startAccessTimer(validExpiry);
       checkHomeworkGateBackground(lessonId);
+      hideLoader();
     } else {
       hideLoader(); document.getElementById('codeLockScreen').classList.remove('hidden');
     }
@@ -484,8 +505,7 @@ document.getElementById('verifyBtn').onclick=async()=>{
   const code=document.getElementById('accessCodeInput').value.trim();
   const lessonId=new URLSearchParams(window.location.search).get('id');
   if(!code) return alert("من فضلك أدخل الكود");
-  const btn=document.getElementById('verifyBtn');
-  btn.textContent="جاري التحقق..."; btn.disabled=true;
+  showLoader("جاري التحقق من الكود...");
   try{
     if(!currentUser){
       const{data:{session}}=await supabaseClient.auth.getSession();
@@ -510,10 +530,9 @@ document.getElementById('verifyBtn').onclick=async()=>{
       else{alert("هذا الكود مستخدم لحساب آخر!");}
     } else{alert("الكود غير صحيح!");}
   }catch(e){alert("خطأ: "+e.message);}
-  btn.textContent="تفعيل الحصة ←"; btn.disabled=false;
+  hideLoader();
 };
 
-/* ── دالة منفصلة لتشغيل الفيديو عشان نستخدمها بسهولة ── */
 function initVideoPlayer() {
   if(lessonData.video && !plyrPlayer){
     plyrPlayer = true;
@@ -546,7 +565,6 @@ async function initLesson(){
 
   await loadHomeworkForLesson(id);
 
-  /* ── فحص هل يوجد امتحان أم لا ── */
   if (questions.length === 0) {
     document.getElementById('tab-quiz').innerHTML = `
       <div style="background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;box-shadow:var(--shadow);margin-top:20px;">
@@ -686,8 +704,13 @@ function renderHomeworkDone(result){
 let hwStarted=false;
 window.startHomework=function(){
   if(!hwQuestions||hwQuestions.length===0) return alert("لا توجد أسئلة في الواجب بعد.");
-  hwStarted=true; hwCurIdx=0; hwUserAns={};
-  renderHwQ();
+  
+  showLoader("جاري تجهيز الواجب...");
+  setTimeout(() => {
+      hwStarted=true; hwCurIdx=0; hwUserAns={};
+      renderHwQ();
+      hideLoader();
+  }, 400);
 };
 
 function renderHwQ(){
@@ -738,6 +761,7 @@ function saveHwAns(){
 
 async function submitHomework(){
   saveHwAns();
+  showLoader("جاري تسليم الواجب...");
   let score=0;
   hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
   try{
@@ -751,6 +775,7 @@ async function submitHomework(){
   }catch(e){console.log(e);}
   hwDone=true;
   renderHomeworkDone({score,total:hwQuestions.length});
+  hideLoader();
 }
 
 /* ════════════════════════════════════
@@ -763,10 +788,15 @@ function buildScoreMsg(score,total,wasPrev){
 
 document.getElementById('startBtn').onclick=()=>{
   if(questions.length===0) return alert("لا توجد أسئلة في هذا الامتحان بعد.");
-  document.getElementById('startScreen').classList.add('hidden');
-  document.getElementById('quizApp').classList.remove('hidden');
-  document.getElementById('timerBox').classList.remove('hidden');
-  renderQ(); startTimer();
+  
+  showLoader("جاري تجهيز الامتحان...");
+  setTimeout(() => {
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizApp').classList.remove('hidden');
+      document.getElementById('timerBox').classList.remove('hidden');
+      renderQ(); startTimer();
+      hideLoader();
+  }, 400);
 };
 
 function renderQ(){
@@ -800,12 +830,14 @@ document.getElementById('prevBtn').onclick=()=>{saveAns();curIdx--;renderQ();};
 
 document.getElementById('finishBtn').onclick=async()=>{
   saveAns(); clearInterval(examTimer);
+  showLoader("جاري تصحيح الامتحان...");
   let score=0; questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
   try{await supabaseClient.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns}]);}catch(e){}
   const id=new URLSearchParams(window.location.search).get('id');
   localStorage.setItem(`exam_data_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));
   generateReview(); unlockFeatures(buildScoreMsg(score,questions.length,false));
   window.scrollTo({top:0,behavior:'smooth'});
+  hideLoader();
 };
 
 function generateReview(){
