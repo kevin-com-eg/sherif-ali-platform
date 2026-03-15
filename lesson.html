@@ -152,19 +152,39 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 /* ── VIDEO ── */
 .vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
 .vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
-.vp-wrap{border-radius:16px;overflow:hidden;border:1px solid var(--border2);background:#000;box-shadow:var(--shadow2);position:relative;user-select:none;}
-.vp-wrap:fullscreen,.vp-wrap:-webkit-full-screen{border-radius:0;border:none;}
+.vp-wrap{border-radius:16px;overflow:hidden;border:1px solid var(--border2);background:#000;box-shadow:var(--shadow2);position:relative;user-select:none; display: flex; flex-direction: column; justify-content: center;}
+.vp-wrap:fullscreen,.vp-wrap:-webkit-full-screen{border-radius:0;border:none; background: #000;}
 .vp-watermark{position:absolute;inset:0;pointer-events:none;z-index:50;overflow:hidden;}
 .vp-watermark span{position:absolute;font-family:var(--mono);font-size:1.3rem;font-weight:900;color:rgba(255,255,255,.3);text-shadow:2px 2px 8px rgba(0,0,0,.9);animation:wmF 20s linear infinite alternate;white-space:nowrap;}
 @keyframes wmF{0%{top:10%;left:8%}25%{top:72%;left:12%}50%{top:42%;left:62%}75%{top:18%;left:44%}100%{top:62%;left:72%}}
 .vp-iframe-wrap{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#000;}
 .vp-video{width:100%;display:block;background:#000;aspect-ratio:16/9;}
-.yt-blocker{position:absolute;left:0;right:0;background:#000;z-index:15;pointer-events:none;}
-.yt-blocker-top{top:0;height:70px;}
-.yt-blocker-bottom{bottom:0;height:60px;}
-.vp-wrap.playing .yt-blocker{opacity:0;transition:opacity .3s;}
-.vp-iframe-wrap iframe{width:100%;height:100%;border:none;display:block;pointer-events:none!important;}
+
+/* YT CUSTOM OVERLAY & BUTTON */
+.yt-blocker{position:absolute;left:0;right:0;background:transparent;z-index:15;pointer-events:none;}
+.yt-blocker-top{top:0;height:100px;}
+.yt-blocker-bottom{bottom:0;height:100px;}
 .vp-yt-overlay{position:absolute;inset:0;z-index:20;cursor:pointer;background:transparent;}
+
+/* Thumbnail Cover */
+.yt-thumbnail-cover {
+    position: absolute; inset: 0; z-index: 25; 
+    background-size: cover; background-position: center; background-color: #000;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+.yt-play-btn {
+    width: 68px; height: 48px; background-color: rgba(0,0,0,0.7); 
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease; backdrop-filter: blur(4px); border: 1.5px solid rgba(255,255,255,0.2);
+}
+.yt-thumbnail-cover:hover .yt-play-btn {
+    background-color: var(--teal); transform: scale(1.05); border-color: var(--teal4);
+}
+.yt-play-btn svg { width: 28px; height: 28px; fill: #fff; margin-left: 4px; }
+
+/* CONTROLS */
+.vp-iframe-wrap iframe{width:100%;height:100%;border:none;display:block;pointer-events:none!important;}
 .vp-controls{position:absolute;bottom:0;left:0;right:0;z-index:40;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.7) 60%,transparent 100%);padding:14px 20px;opacity:0;transition:opacity .3s;display:flex;flex-direction:column;gap:7px;direction:ltr;}
 .vp-wrap:hover .vp-controls,.vp-wrap.show-controls .vp-controls{opacity:1;}
 .vp-yt-mode .vp-controls{opacity:1!important;position:relative;background:rgba(10,12,18,1);padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);}
@@ -187,6 +207,11 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .vpc-popup-item{display:block;width:100%;padding:7px 12px;font-family:var(--mono);font-size:.78rem;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;text-align:center;border-radius:7px;transition:all .15s;margin-bottom:1px;}
 .vpc-popup-item:hover{background:rgba(255,255,255,.08);color:#fff;}
 .vpc-popup-item.active{color:#fff;background:var(--teal);font-weight:900;}
+
+/* Fullscreen adjustments */
+.vp-wrap:fullscreen .vp-controls { position: absolute; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); border: none;}
+.vp-wrap:fullscreen .vp-iframe-wrap { height: 100%; display: flex; align-items: center; justify-content: center; }
+.vp-wrap:fullscreen .vp-iframe-wrap iframe { height: 100vh; }
 
 /* ── PDF ── */
 .pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
@@ -364,14 +389,13 @@ let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=4
 let examTimer,myStudentId="000000",plyrPlayer=false;
 let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
 
-/* ── إدارة شاشة التحميل ── */
 function showLoader(text = "جاري التحميل...") {
   const el = document.getElementById('loadingScreen');
   if(el){
     const txtEl = document.getElementById('ldText');
     if(txtEl) txtEl.textContent = text;
     el.style.display = 'flex';
-    void el.offsetWidth; // Force reflow
+    void el.offsetWidth;
     el.style.opacity = '1';
   }
 }
@@ -384,7 +408,6 @@ function hideLoader(){
   }
 }
 
-/* ── TABS ── */
 window.switchTab = (tab) => {
   showLoader("جاري التحميل...");
   setTimeout(() => {
@@ -393,10 +416,9 @@ window.switchTab = (tab) => {
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
     hideLoader();
-  }, 400); // تأخير بسيط لعمل إحساس بالتحميل
+  }, 400); 
 };
 
-/* ── AUTH & ACCESS ── */
 async function initLessonPage(){
   const lessonId=new URLSearchParams(window.location.search).get('id');
   if(!lessonId){hideLoader();return;}
@@ -446,7 +468,6 @@ async function checkHomeworkGateBackground(lessonId){
   }catch(e){}
 }
 
-/* ── HOMEWORK GATE ── */
 async function checkHomeworkGate(lessonId){
   try{
     const{data:hwList}=await supabaseClient.from('homework').select('*').order('created_at',{ascending:true});
@@ -533,25 +554,6 @@ document.getElementById('verifyBtn').onclick=async()=>{
   hideLoader();
 };
 
-function initVideoPlayer() {
-  if(lessonData.video && !plyrPlayer){
-    plyrPlayer = true;
-    const vc = document.getElementById('tab-video');
-    const url = lessonData.video;
-    let html = `<div class="vid-section-title">فيديو الشرح</div>`;
-    if(url.includes('youtube.com') || url.includes('youtu.be')){
-      const m = url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-      const vId = m ? m[1] : null;
-      html += buildYTPlayer(vId);
-      vc.innerHTML = html; loadYTApi();
-    } else if(url.includes('mediadelivery.net') || url.includes('bunny')){
-      html += buildBunnyPlayer(url); vc.innerHTML = html;
-    } else {
-      html += buildMP4Player(url); vc.innerHTML = html; initMP4Player();
-    }
-  }
-}
-
 async function initLesson(){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
@@ -601,9 +603,6 @@ async function initLesson(){
   if(urlTab==='homework') setTimeout(()=>switchTab('homework'),300);
 }
 
-/* ════════════════════════════════════
-   HOMEWORK SYSTEM
-════════════════════════════════════ */
 async function loadHomeworkForLesson(lessonId){
   try{
     const{data:hwList}=await supabaseClient.from('homework').select('*').eq('lessonid',lessonId).limit(1);
@@ -778,9 +777,6 @@ async function submitHomework(){
   hideLoader();
 }
 
-/* ════════════════════════════════════
-   EXAM SYSTEM
-════════════════════════════════════ */
 function buildScoreMsg(score,total,wasPrev){
   const pct=total>0?Math.round(score/total*100):0;
   return{score,total,pct,wasPrev};
@@ -908,7 +904,7 @@ function startTimer(){
 }
 
 /* ════════════════════════════════════
-   VIDEO PLAYERS
+   VIDEO PLAYERS (CUSTOM YT LOGIC)
 ════════════════════════════════════ */
 function buildBunnyPlayer(url){
   return`<div class="vp-wrap" style="padding-bottom:56.25%;height:0;"><div class="vp-watermark" style="z-index:50;pointer-events:none;"><span>ID: ${myStudentId}</span></div><iframe src="${url}?autoplay=false&loop=false&muted=false&preload=true&responsive=true" loading="lazy" style="border:0;position:absolute;top:0;height:100%;width:100%;" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe></div>`;
@@ -921,16 +917,112 @@ function loadYTApi(){
   document.getElementsByTagName('script')[0].parentNode.insertBefore(tag,document.getElementsByTagName('script')[0]);
 }
 window.onYouTubeIframeAPIReady=()=>initYTPlayer();
+
 function initYTPlayer(){
   const fr=document.getElementById('ytFrame'); if(!fr) return;
-  ytPlayer=new YT.Player('ytFrame',{events:{onReady:e=>{ytDur=ytPlayer.getDuration()||0;document.getElementById('vpDur').textContent=fmtTime(ytDur);if(ytTimer)clearInterval(ytTimer);ytTimer=setInterval(updateYTTime,500);},onStateChange:e=>{ytPlaying=(e.data===YT.PlayerState.PLAYING);const w=document.getElementById('vpWrap');if(w){ytPlaying?w.classList.add('playing'):w.classList.remove('playing');}const pb=document.getElementById('vpPlay');if(pb)pb.innerHTML=ytPlaying?`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`:`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`;}}});
+  ytPlayer=new YT.Player('ytFrame',{events:{
+    onReady:e=>{
+        ytDur=ytPlayer.getDuration()||0;
+        document.getElementById('vpDur').textContent=fmtTime(ytDur);
+        if(ytTimer)clearInterval(ytTimer);
+        ytTimer=setInterval(updateYTTime,500);
+    },
+    onStateChange:e=>{
+        ytPlaying=(e.data===YT.PlayerState.PLAYING);
+        const w=document.getElementById('vpWrap');
+        if(w){ytPlaying?w.classList.add('playing'):w.classList.remove('playing');}
+        const pb=document.getElementById('vpPlay');
+        if(pb)pb.innerHTML=ytPlaying?`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`:`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`;
+        
+        // Hide the custom cover permanently when video actually starts playing
+        if(ytPlaying) {
+             const cover = document.getElementById('ytCover');
+             if(cover) cover.style.display = 'none';
+        }
+    }
+  }});
 }
-function updateYTTime(){if(!ytPlayer||!ytPlayer.getCurrentTime)return;ytCur=ytPlayer.getCurrentTime()||0;ytDur=ytPlayer.getDuration()||0;document.getElementById('vpDur').textContent=fmtTime(ytDur);document.getElementById('vpCur').textContent=fmtTime(ytCur);const pct=ytDur?(ytCur/ytDur*100):0;document.getElementById('vpFill').style.width=pct+'%';document.getElementById('vpThumb').style.left=pct+'%';}
-window.toggleYtPlay=()=>{if(!ytPlayer||!ytPlayer.getPlayerState)return;ytPlayer.getPlayerState()===YT.PlayerState.PLAYING?ytPlayer.pauseVideo():ytPlayer.playVideo();};
+
+function updateYTTime(){
+    if(!ytPlayer||!ytPlayer.getCurrentTime)return;
+    ytCur=ytPlayer.getCurrentTime()||0;
+    ytDur=ytPlayer.getDuration()||0;
+    document.getElementById('vpDur').textContent=fmtTime(ytDur);
+    document.getElementById('vpCur').textContent=fmtTime(ytCur);
+    const pct=ytDur?(ytCur/ytDur*100):0;
+    document.getElementById('vpFill').style.width=pct+'%';
+    document.getElementById('vpThumb').style.left=pct+'%';
+}
+
+window.toggleYtPlay=()=>{
+    if(!ytPlayer||!ytPlayer.getPlayerState)return;
+    if (ytPlayer.getPlayerState()===YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+    } else {
+        ytPlayer.playVideo();
+        const cover = document.getElementById('ytCover');
+        if(cover) cover.style.display = 'none';
+    }
+};
+
 window.ytSeek=(s)=>{if(!ytPlayer||!ytPlayer.seekTo)return;ytCur=Math.max(0,Math.min(ytDur,ytCur+s));ytPlayer.seekTo(ytCur,true);};
 
 function buildYTPlayer(vId){
-  return`<div class="vp-wrap vp-yt-mode" id="vpWrap"><div class="vp-watermark"><span>ID: ${myStudentId}</span></div><div class="vp-iframe-wrap"><div class="yt-blocker yt-blocker-top"></div><div class="yt-blocker yt-blocker-bottom"></div><div class="vp-yt-overlay" onclick="toggleYtPlay()"></div><iframe id="ytFrame" sandbox="allow-scripts allow-same-origin allow-presentation" src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(location.origin)}" allow="autoplay;fullscreen" allowfullscreen></iframe></div><div class="vp-controls" id="vpControls" dir="ltr"><div class="vp-progress-wrap" id="vpProg"><div class="vp-progress-bg"><div class="vp-progress-buf" id="vpBuf" style="width:0%"></div><div class="vp-progress-fill" id="vpFill" style="width:0%"></div><div class="vp-progress-thumb" id="vpThumb" style="left:0%"></div></div></div><div class="vp-bottom"><div class="vp-left"><button class="vpc-btn" onclick="toggleFullscreen()"><svg width="18" height="18" id="vpFsIco" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button><div class="vpc-popup-wrap"><button class="vpc-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button><div class="vpc-popup" id="speedPop">${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}</div></div></div><div class="vp-right"><span class="vp-time"><span id="vpCur">0:00</span><span class="vp-time-sep">/</span><span id="vpDur">0:00</span></span><button class="vpc-btn" onclick="ytSeek(-10)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 1 3 5 7 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg></button><button class="vpc-btn" onclick="ytSeek(10)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11V9a4 4 0 0 0-4-4H3"/><polyline points="17 1 21 5 17 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg></button><button class="vpc-btn" id="vpPlay"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></button></div></div></div></div>`;
+  const coverImg = lessonData.image || `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
+  
+  return`
+  <div class="vp-wrap vp-yt-mode" id="vpWrap">
+      <div class="vp-watermark"><span>ID: ${myStudentId}</span></div>
+      <div class="vp-iframe-wrap">
+          <div class="yt-blocker yt-blocker-top"></div>
+          <div class="yt-blocker yt-blocker-bottom"></div>
+          
+          <div id="ytCover" class="yt-thumbnail-cover" style="background-image: url('${coverImg}');" onclick="toggleYtPlay()">
+             <div class="yt-play-btn">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+             </div>
+          </div>
+          
+          <div class="vp-yt-overlay" onclick="toggleYtPlay()"></div>
+          
+          <iframe id="ytFrame" sandbox="allow-scripts allow-same-origin allow-presentation" src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(location.origin)}" allow="autoplay;fullscreen" allowfullscreen></iframe>
+      </div>
+      
+      <div class="vp-controls" id="vpControls" dir="ltr">
+          <div class="vp-progress-wrap" id="vpProg">
+              <div class="vp-progress-bg">
+                  <div class="vp-progress-buf" id="vpBuf" style="width:0%"></div>
+                  <div class="vp-progress-fill" id="vpFill" style="width:0%"></div>
+                  <div class="vp-progress-thumb" id="vpThumb" style="left:0%"></div>
+              </div>
+          </div>
+          <div class="vp-bottom">
+              <div class="vp-left">
+                  <button class="vpc-btn" onclick="toggleFullscreen()">
+                      <svg width="18" height="18" id="vpFsIco" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                  </button>
+                  <div class="vpc-popup-wrap">
+                      <button class="vpc-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button>
+                      <div class="vpc-popup" id="speedPop">
+                          ${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}
+                      </div>
+                  </div>
+              </div>
+              <div class="vp-right">
+                  <span class="vp-time"><span id="vpCur">0:00</span><span class="vp-time-sep">/</span><span id="vpDur">0:00</span></span>
+                  <button class="vpc-btn" onclick="ytSeek(-10)">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 1 3 5 7 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg>
+                  </button>
+                  <button class="vpc-btn" onclick="ytSeek(10)">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11V9a4 4 0 0 0-4-4H3"/><polyline points="17 1 21 5 17 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg>
+                  </button>
+                  <button class="vpc-btn" id="vpPlay">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>`;
 }
 
 function initMP4Player(){
@@ -971,8 +1063,27 @@ window.setSpeed=(s)=>{document.querySelectorAll('.vpc-popup-item').forEach(i=>i.
 window.togglePopup=(id)=>{const p=document.getElementById(id);const was=p.classList.contains('open');closeAllPopups();if(!was)p.classList.add('open');};
 function closeAllPopups(){document.querySelectorAll('.vpc-popup').forEach(p=>p.classList.remove('open'));}
 document.addEventListener('click',e=>{if(!e.target.closest('.vpc-popup-wrap'))closeAllPopups();});
-window.toggleFullscreen=()=>{const w=document.getElementById('vpWrap');if(!w)return;if(!document.fullscreenElement)(w.requestFullscreen||w.webkitRequestFullscreen||w.mozRequestFullScreen).call(w);else(document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen).call(document);};
-document.addEventListener('fullscreenchange',()=>{const ic=document.getElementById('vpFsIco');if(!ic)return;ic.innerHTML=document.fullscreenElement?`<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>`:`<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>`;});
+
+/* ── تعديل الـ FULLSCREEN عشان الحاوية كلها تكبر ── */
+window.toggleFullscreen=()=>{
+  const w=document.getElementById('vpWrap');
+  if(!w)return;
+  if(!document.fullscreenElement){
+      (w.requestFullscreen||w.webkitRequestFullscreen||w.mozRequestFullScreen).call(w);
+  }else{
+      (document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen).call(document);
+  }
+};
+
+document.addEventListener('fullscreenchange',()=>{
+  const ic=document.getElementById('vpFsIco');
+  if(!ic)return;
+  if(document.fullscreenElement){
+      ic.innerHTML=`<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>`;
+  }else{
+      ic.innerHTML=`<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>`;
+  }
+});
 
 function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
 
