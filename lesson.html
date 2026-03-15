@@ -371,9 +371,10 @@ window.switchTab=(tab)=>{
   document.getElementById(`btn-${tab}-tab`).classList.add('active');
 };
 
-/* ── التعديل الأول: منع اختفاء شاشة التحميل ── */
+/* ── إرجاع الدالة لشكلها الطبيعي عشان الشاشة تختفي ── */
 function hideLoader(){
-  return; 
+  const el=document.getElementById('loadingScreen');
+  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);}
 }
 
 /* ── AUTH & ACCESS ── */
@@ -834,7 +835,7 @@ function loadYTApi(){
 }
 window.onYouTubeIframeAPIReady=()=>initYTPlayer();
 
-/* ── التعديل الثاني: إضافة القوس المعقوف } في دالة تشغيل اليوتيوب ── */
+/* ── مشكلة القوس تم تصليحها هنا ── */
 function initYTPlayer(){
   const fr=document.getElementById('ytFrame'); if(!fr) return;
   ytPlayer=new YT.Player('ytFrame',{events:{onReady:e=>{ytDur=ytPlayer.getDuration()||0;document.getElementById('vpDur').textContent=fmtTime(ytDur);if(ytTimer)clearInterval(ytTimer);ytTimer=setInterval(updateYTTime,500);},onStateChange:e=>{ytPlaying=(e.data===YT.PlayerState.PLAYING);const w=document.getElementById('vpWrap');if(w){ytPlaying?w.classList.add('playing'):w.classList.remove('playing');}const pb=document.getElementById('vpPlay');if(pb)pb.innerHTML=ytPlaying?`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`:`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`;}}});
