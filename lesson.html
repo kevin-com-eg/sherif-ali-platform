@@ -387,20 +387,12 @@ function hideLoader(){
 /* ── AUTH & ACCESS ── */
 async function initLessonPage(){
   const lessonId=new URLSearchParams(window.location.search).get('id');
-  if(!lessonId) return;
+  if(!lessonId){hideLoader();return;}
   const{data:{session}}=await supabaseClient.auth.getSession();
   if(!session){hideLoader();window.location.href="index.html";return;}
   currentUser=session.user;
   const savedLocal=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
   const now=Date.now();
-
-  // ── فحص إذا كان في واجب مطلوب قبل هذه الحصة ──
-  const hwBlocked = await checkHomeworkGate(lessonId);
-  if(hwBlocked){
-    hideLoader();
-    showHomeworkGate(hwBlocked);
-    return;
-  }
 
   if(savedLocal){
     try{
@@ -408,10 +400,14 @@ async function initLessonPage(){
       if(p.expiry>now){
         myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
         hideLoader(); initLesson(); startAccessTimer(p.expiry);
-        verifyAccessInBackground(currentUser,lessonId); return;
+        verifyAccessInBackground(currentUser,lessonId);
+        // فحص الـ gate في الخلفية بعد تحميل الحصة
+        checkHomeworkGateBackground(lessonId);
+        return;
       }
     }catch(e){}
   }
+
   try{
     const[{data:uData},{data:codesData}]=await Promise.all([
       supabaseClient.from('users').select('studentid').eq('id',currentUser.id).single(),
@@ -423,10 +419,19 @@ async function initLessonPage(){
     if(hasAccess){
       localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:validExpiry,studentId:myStudentId}));
       hideLoader(); initLesson(); startAccessTimer(validExpiry);
+      checkHomeworkGateBackground(lessonId);
     } else {
       hideLoader(); document.getElementById('codeLockScreen').classList.remove('hidden');
     }
   }catch(err){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
+}
+
+// فحص الـ gate بعد تحميل الصفحة (مش بيعطل اللود)
+async function checkHomeworkGateBackground(lessonId){
+  try{
+    const blocked=await checkHomeworkGate(lessonId);
+    if(blocked) showHomeworkGate(blocked);
+  }catch(e){/* لو الجداول مش موجودة → تجاهل */}
 }
 
 /* ── HOMEWORK GATE ── */
