@@ -22,6 +22,16 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:10px;}
 .hidden{display:none!important;}
 
+/* ── LOADING ── */
+#loadingScreen{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--white);transition:opacity 0.3s;}
+.ld-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;font-family:var(--mono);box-shadow:0 8px 24px rgba(13,122,95,.3);}
+.ld-dots{display:flex;gap:7px;}
+.ld-dot{width:8px;height:8px;border-radius:50%;background:var(--teal4);animation:ldp 1.2s ease-in-out infinite;}
+.ld-dot:nth-child(2){animation-delay:.2s;}
+.ld-dot:nth-child(3){animation-delay:.4s;}
+@keyframes ldp{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1);background:var(--teal);}}
+.ld-txt{font-size:.8rem;color:var(--text3);font-family:var(--mono);}
+
 /* NAVBAR */
 .navbar{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
@@ -212,6 +222,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 </head>
 <body>
 
+<div id="loadingScreen">
+  <div class="ld-logo">MP</div>
+  <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
+  <div class="ld-txt" id="ldText">جاري تحميل البيانات...</div>
+</div>
+
 <nav class="navbar">
   <div class="nav-inner">
     <a class="nav-logo" href="#">
@@ -366,7 +382,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
   </div>
 </nav>
 
-<!-- MODALS -->
 <div class="overlay" id="reportsOverlay">
   <div class="modal" style="max-width:640px;">
     <div class="modal-head"><div class="modal-title">📈 سجل النشاط</div><button class="modal-close" onclick="closeReports()">✕</button></div>
@@ -397,15 +412,56 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 </div>
 
 <script>
+/* ── إدارة شاشة التحميل ── */
+function showLoader(text = "جاري التحميل...") {
+  const el = document.getElementById('loadingScreen');
+  if(el){
+    const txtEl = document.getElementById('ldText');
+    if(txtEl) txtEl.textContent = text;
+    el.style.display = 'flex';
+    void el.offsetWidth; // Force reflow
+    el.style.opacity = '1';
+  }
+}
+
+function hideLoader(){
+  const el = document.getElementById('loadingScreen');
+  if(el){
+    el.style.opacity = '0';
+    setTimeout(() => { el.style.display = 'none'; }, 300);
+  }
+}
+
 window.openReports=()=>document.getElementById('reportsOverlay').classList.add('open');
 window.closeReports=()=>document.getElementById('reportsOverlay').classList.remove('open');
 window.openProfile=()=>document.getElementById('profileOverlay').classList.add('open');
 window.closeProfile=()=>document.getElementById('profileOverlay').classList.remove('open');
 document.getElementById('reportsOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeReports();});
 document.getElementById('profileOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeProfile();});
+
 let currentFilter='all';
-function setFilter(btn,f){currentFilter=f;document.querySelectorAll('.flt-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyFilter();}
-function applyFilter(){document.querySelectorAll('.lesson-card').forEach(c=>{const owned=c.dataset.owned==='true',free=c.dataset.free==='true';let show=true;if(currentFilter==='owned')show=owned;if(currentFilter==='free')show=free;c.style.display=show?'':'none';});}
+
+function setFilter(btn,f){
+  showLoader("جاري الفلترة...");
+  setTimeout(() => {
+    currentFilter=f;
+    document.querySelectorAll('.flt-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter();
+    hideLoader();
+  }, 300); // تأخير بسيط لعمل إحساس بالتحميل
+}
+
+function applyFilter(){
+  document.querySelectorAll('.lesson-card').forEach(c=>{
+    const owned=c.dataset.owned==='true',free=c.dataset.free==='true';
+    let show=true;
+    if(currentFilter==='owned')show=owned;
+    if(currentFilter==='free')show=free;
+    c.style.display=show?'':'none';
+  });
+}
+
 function bnSel(el){document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 function staggerCards(){document.querySelectorAll('.lesson-card').forEach((c,i)=>{c.style.animationDelay=(.05+i*.06)+'s';});}
 </script>
@@ -417,12 +473,24 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY
 let currentUser=null,myActiveLessons=[],lessonsMap={};
 
 async function initDashboard(){
+  showLoader("جاري استدعاء الكورسات...");
   const{data:{session}}=await supabaseClient.auth.getSession();
   if(!session){window.location.href="index.html";return;}
   currentUser=session.user;
   const gradeNames={"1":"الصف الأول الثانوي","2":"الصف الثاني الثانوي","3":"الصف الثالث الثانوي"};
+  
   const cached=localStorage.getItem(`dashboard_cache_${currentUser.id}`);
-  if(cached){try{const c=JSON.parse(cached);applyUserUI(c.user,gradeNames);if(c.activeLessons)myActiveLessons=c.activeLessons;document.getElementById('statPurchases').textContent=c.validCount??'—';document.getElementById('statExams').textContent=c.examsCount??'—';if(c.lessons)renderLessons(c.lessons);}catch(e){}}
+  if(cached){
+      try{
+          const c=JSON.parse(cached);
+          applyUserUI(c.user,gradeNames);
+          if(c.activeLessons)myActiveLessons=c.activeLessons;
+          document.getElementById('statPurchases').textContent=c.validCount??'—';
+          document.getElementById('statExams').textContent=c.examsCount??'—';
+          if(c.lessons)renderLessons(c.lessons);
+      }catch(e){}
+  }
+  
   const[{data:d},{data:annData},{data:allLessons},{data:cSnap},{data:rSnap}]=await Promise.all([
     supabaseClient.from('users').select('*').eq('id',currentUser.id).single(),
     supabaseClient.from('announcements').select('*').eq('active',true).order('created_at',{ascending:false}).limit(1),
@@ -430,15 +498,21 @@ async function initDashboard(){
     supabaseClient.from('codes').select('*').eq('usedby',currentUser.email),
     supabaseClient.from('results').select('*').eq('email',currentUser.email).order('date',{ascending:false})
   ]);
-  if(!d)return;
+  
+  if(!d){ hideLoader(); return; }
+  
   const grade=d.grade||"1";
   applyUserUI(d,gradeNames);
+  
   if(annData?.length>0){document.getElementById('announcementText').textContent=annData[0].message;document.getElementById('announcementBox').classList.remove('hidden');}
   if(allLessons)allLessons.forEach(l=>{lessonsMap[l.id]=l;});
+  
   myActiveLessons=[];let validCount=0,spent=0,purchasesHtml='';const now=Date.now();
   if(cSnap){cSnap.forEach(cd=>{const lesson=lessonsMap[cd.lessonid];if(!lesson)return;if(cd.expiryat>now){myActiveLessons.push(cd.lessonid);validCount++;}const price=Number(lesson.price)||0;spent+=price;const usedDate=cd.expiryat?new Date(cd.expiryat-7*24*60*60*1000).toLocaleDateString('ar-EG'):'—';const expired=cd.expiryat<now;purchasesHtml+=`<div class="rep-item"><div><div class="rep-item-name">${lesson.name}</div><div class="rep-item-date">تاريخ التفعيل: ${usedDate}</div></div><div style="display:flex;align-items:center;gap:10px;"><span class="${expired?'badge-expired':'badge-active'}">${expired?'منتهية':'فعالة'}</span><span class="rep-price">${price>0?price+' ج':'مجاناً'}</span></div></div>`;});}
+  
   let examsHtml='',examsCount=0;
   if(rSnap){rSnap.forEach(rd=>{examsCount++;const dt=rd.date?new Date(rd.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';examsHtml+=`<div class="rep-item"><div><div class="rep-item-name">${rd.lesson}</div><div class="rep-item-date">${dt}</div></div><div class="score-box"><div class="score-val">${rd.score}</div><div class="score-total">من ${rd.total}</div></div></div>`;});}
+  
   document.getElementById('totalSpent').textContent=spent;
   document.getElementById('totalCourses').textContent=validCount;
   document.getElementById('totalExams').textContent=examsCount;
@@ -446,9 +520,13 @@ async function initDashboard(){
   document.getElementById('statExams').textContent=examsCount;
   document.getElementById('purchasesList').innerHTML=purchasesHtml||'<div style="color:var(--text3);text-align:center;padding:30px;font-size:.85rem;">لم تقم بتفعيل أي كورس حتى الآن.</div>';
   document.getElementById('examsList').innerHTML=examsHtml||'<div style="color:var(--text3);text-align:center;padding:30px;font-size:.85rem;">لم تقم بإجراء أي امتحانات حتى الآن.</div>';
+  
   const gradeLessons=allLessons?allLessons.filter(l=>l.grade==grade).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)):[];
   renderLessons(gradeLessons);
+  
   try{localStorage.setItem(`dashboard_cache_${currentUser.id}`,JSON.stringify({user:d,activeLessons:myActiveLessons,validCount,examsCount,lessons:gradeLessons,cachedAt:Date.now()}));}catch(e){}
+  
+  hideLoader();
 }
 
 function applyUserUI(d,gradeNames){
@@ -460,6 +538,15 @@ function applyUserUI(d,gradeNames){
   document.getElementById('gradeBadge').textContent=gradeNames[grade]||"عام";
   document.getElementById('avatarImg').src=`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0d7a5f&color=fff&bold=true&size=128`;
 }
+
+// دالة جديدة لتوجيه الطالب للحصة مع شاشة التحميل
+window.openLesson = function(e, id) {
+    e.preventDefault(); // منع الانتقال الفوري
+    showLoader("جاري تجهيز الحصة...");
+    setTimeout(() => {
+        window.location.href = `lesson.html?id=${id}`;
+    }, 400);
+};
 
 function renderLessons(lessonsData){
   const grid=document.getElementById("lessonsGrid");
@@ -491,7 +578,7 @@ function renderLessons(lessonsData){
         </div>
         <div class="lc-title">${data.name}</div>
         ${dateStr?`<div class="lc-date">📅 تاريخ النشر: ${dateStr}</div>`:''}
-        <a href="lesson.html?id=${id}" class="lc-btn ${owned?'owned':'buy'}">
+        <a href="lesson.html?id=${id}" onclick="openLesson(event, '${id}')" class="lc-btn ${owned?'owned':'buy'}">
           ${owned?'شاهد الحصة ▶':'تفعيل بالكود 🔑'}
         </a>
       </div>`;
