@@ -651,6 +651,13 @@ function renderHomeworkDone(result){
   
   hwQuestions.forEach((q,i) => {
     const ok = hwUserAns[i] === q.correct;
+    
+    const ansL = hwUserAns[i] ? hwUserAns[i].toUpperCase() : null;
+    const ansStr = ansL ? (q[hwUserAns[i]] ? `${ansL} - ${q[hwUserAns[i]]}` : ansL) : 'لم تجب';
+    
+    const corrL = q.correct ? q.correct.toUpperCase() : '';
+    const corrStr = q[q.correct] ? `${corrL} - ${q[q.correct]}` : corrL;
+
     reviewHtml += `
       <div class="review-item ${ok?'correct':'wrong'}" style="text-align:right; margin-bottom:10px; padding:15px; border-radius:12px; background:var(--white); border:1px solid ${ok?'var(--teal4)':'#fecaca'};">
         <div class="review-meta">
@@ -658,9 +665,9 @@ function renderHomeworkDone(result){
           <span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span>
         </div>
         ${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}
-        <div class="review-q-text" style="font-size:.9rem;font-weight:700;">${q.text||'اختر الإجابة الصحيحة:'}</div>
-        <div class="review-ans" style="font-size:.8rem;color:var(--text2);">إجابتك: <span style="font-weight:700;color:var(--text);">${q[hwUserAns[i]]||'لم تجب'}</span></div>
-        ${!ok ? `<div class="review-correct-ans" style="font-size:.8rem;color:var(--teal);font-weight:700;margin-top:5px;">✓ الإجابة الصحيحة: ${q[q.correct]}</div>` : ''}
+        <div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div>
+        <div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>
+        ${!ok ? `<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>` : ''}
       </div>`;
   });
   reviewHtml += '</div>';
@@ -806,6 +813,13 @@ function generateReview(){
   list.innerHTML='';
   questions.forEach((q,i)=>{
     const ok=userAns[i]===q.correct;
+    
+    const ansL = userAns[i] ? userAns[i].toUpperCase() : null;
+    const ansStr = ansL ? (q[userAns[i]] ? `${ansL} - ${q[userAns[i]]}` : ansL) : 'لم تجب';
+    
+    const corrL = q.correct ? q.correct.toUpperCase() : '';
+    const corrStr = q[q.correct] ? `${corrL} - ${q[q.correct]}` : corrL;
+
     list.innerHTML+=`
       <div class="review-item ${ok?'correct':'wrong'}" style="animation-delay:${i*.05}s">
         <div class="review-meta">
@@ -813,9 +827,9 @@ function generateReview(){
           <span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span>
         </div>
         ${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}
-        <div class="review-q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
-        <div class="review-ans">إجابتك: <span>${q[userAns[i]]||'لم تجب'}</span></div>
-        ${!ok?`<div class="review-correct-ans">✓ الصحيحة: ${q[q.correct]}</div>`:''}
+        <div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div>
+        <div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>
+        ${!ok?`<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>`:''}
       </div>`;
   });
 }
@@ -885,10 +899,6 @@ window.ytSeek=(s)=>{if(!ytPlayer||!ytPlayer.seekTo)return;ytCur=Math.max(0,Math.
 
 function buildYTPlayer(vId){
   return`<div class="vp-wrap vp-yt-mode" id="vpWrap"><div class="vp-watermark"><span>ID: ${myStudentId}</span></div><div class="vp-iframe-wrap"><div class="yt-blocker yt-blocker-top"></div><div class="yt-blocker yt-blocker-bottom"></div><div class="vp-yt-overlay" onclick="toggleYtPlay()"></div><iframe id="ytFrame" sandbox="allow-scripts allow-same-origin allow-presentation" src="https://www.youtube-nocookie.com/embed/${vId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(location.origin)}" allow="autoplay;fullscreen" allowfullscreen></iframe></div><div class="vp-controls" id="vpControls" dir="ltr"><div class="vp-progress-wrap" id="vpProg"><div class="vp-progress-bg"><div class="vp-progress-buf" id="vpBuf" style="width:0%"></div><div class="vp-progress-fill" id="vpFill" style="width:0%"></div><div class="vp-progress-thumb" id="vpThumb" style="left:0%"></div></div></div><div class="vp-bottom"><div class="vp-left"><button class="vpc-btn" onclick="toggleFullscreen()"><svg width="18" height="18" id="vpFsIco" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button><div class="vpc-popup-wrap"><button class="vpc-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button><div class="vpc-popup" id="speedPop">${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}</div></div></div><div class="vp-right"><span class="vp-time"><span id="vpCur">0:00</span><span class="vp-time-sep">/</span><span id="vpDur">0:00</span></span><button class="vpc-btn" onclick="ytSeek(-10)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 1 3 5 7 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg></button><button class="vpc-btn" onclick="ytSeek(10)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11V9a4 4 0 0 0-4-4H3"/><polyline points="17 1 21 5 17 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg></button><button class="vpc-btn" id="vpPlay"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></button></div></div></div></div>`;
-}
-
-function buildMP4Player(src){
-  return`<div class="vp-wrap" id="vpWrap" oncontextmenu="return false;"><div class="vp-watermark"><span>ID: ${myStudentId}</span></div><video class="vp-video" id="vpVid" playsinline controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture><source src="${src}" type="video/mp4"></video><div class="vp-controls show-always" id="vpControls" dir="ltr"><div class="vp-progress-wrap" id="vpProg"><div class="vp-progress-bg"><div class="vp-progress-buf" id="vpBuf" style="width:0%"></div><div class="vp-progress-fill" id="vpFill" style="width:0%"></div><div class="vp-progress-thumb" id="vpThumb" style="left:0%"></div></div></div><div class="vp-bottom"><div class="vp-left"><button class="vpc-btn" onclick="toggleFullscreen()"><svg width="18" height="18" id="vpFsIco" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button><div class="vpc-popup-wrap"><button class="vpc-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button><div class="vpc-popup" id="speedPop">${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}</div></div></div><div class="vp-right"><span class="vp-time"><span id="vpCur">0:00</span><span class="vp-time-sep">/</span><span id="vpDur">0:00</span></span><button class="vpc-btn" onclick="mp4Seek(-10)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 1 3 5 7 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg></button><button class="vpc-btn" onclick="mp4Seek(10)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11V9a4 4 0 0 0-4-4H3"/><polyline points="17 1 21 5 17 9"/><text x="11" y="16" font-size="7" fill="white" stroke="none" font-weight="bold">10</text></svg></button><button class="vpc-btn" id="vpPlay"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></button></div></div></div></div>`;
 }
 
 function initMP4Player(){
