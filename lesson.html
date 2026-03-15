@@ -16,7 +16,8 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
   --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--nav-h:62px;
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+/* تأثير التغبيش لمنع السكرين شوت */
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter 0.2s, opacity 0.2s;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:2px;}
 .hidden{display:none!important;}
 
@@ -158,15 +159,16 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .vp-watermark span{position:absolute;font-family:var(--mono);font-size:1.3rem;font-weight:900;color:rgba(255,255,255,.3);text-shadow:2px 2px 8px rgba(0,0,0,.9);animation:wmF 20s linear infinite alternate;white-space:nowrap;}
 @keyframes wmF{0%{top:10%;left:8%}25%{top:72%;left:12%}50%{top:42%;left:62%}75%{top:18%;left:44%}100%{top:62%;left:72%}}
 .vp-iframe-wrap{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#000;}
-.vp-video{width:100%;display:block;background:#000;aspect-ratio:16/9;}
 
-/* YT CUSTOM OVERLAY & BUTTON (الحماية وإخفاء الشعارات) */
-.yt-blocker { position: absolute; background: transparent; z-index: 30; pointer-events: auto; }
-.yt-blocker-top { top: 0; left: 0; right: 0; height: 60px; }
-.yt-blocker-bottom-right { bottom: 40px; right: 0; width: 150px; height: 70px; }
-.vp-yt-overlay{position:absolute;inset:0;z-index:20;cursor:pointer;background:transparent;}
+/* ── THE ZOOM & COVER TRICKS FOR YOUTUBE ── */
+/* 1. Zoom trick: كبرنا الفيديو بنسبة 18% عشان اللوجو واللينك اللي فوق يخرجوا بره الشاشة المسموح بيها */
+.vp-iframe-wrap iframe {
+    width: 100%; height: 100%; border: none; display: block;
+    pointer-events: none !important; /* منع الضغط تماماً */
+    transform: scale(1.18); /* السحر هنا: زووم يطرد الشعارات بره الإطار */
+}
 
-/* Thumbnail Cover */
+/* Thumbnail Cover (الغطاء الذكي) */
 .yt-thumbnail-cover {
     position: absolute; inset: 0; z-index: 25; 
     background-size: cover; background-position: center; background-color: #000;
@@ -184,8 +186,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .yt-play-btn svg { width: 28px; height: 28px; fill: #fff; margin-left: 4px; }
 
 /* CONTROLS */
-.vp-iframe-wrap iframe{width:100%;height:100%;border:none;display:block;pointer-events:none!important;}
-.vp-controls{position:absolute;bottom:0;left:0;right:0;z-index:40;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.7) 60%,transparent 100%);padding:14px 20px;opacity:0;transition:opacity .3s;display:flex;flex-direction:column;gap:7px;direction:ltr;}
+.vp-controls{position:absolute;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.7) 60%,transparent 100%);padding:14px 20px;opacity:0;transition:opacity .3s;display:flex;flex-direction:column;gap:7px;direction:ltr;}
 .vp-wrap:hover .vp-controls,.vp-wrap.show-controls .vp-controls{opacity:1;}
 .vp-yt-mode .vp-controls{opacity:1!important;position:relative;background:rgba(10,12,18,1);padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);}
 .vp-progress-wrap{width:100%;height:14px;display:flex;align-items:center;cursor:pointer;padding:4px 0;}
@@ -213,6 +214,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .vp-wrap:fullscreen .vp-iframe-wrap { width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }
 .vp-wrap:fullscreen .vp-iframe-wrap iframe { width: 100%; height: 100%; }
 .vp-wrap:fullscreen .vp-watermark { z-index: 9998; }
+.vp-wrap:fullscreen .yt-thumbnail-cover { z-index: 9997; }
 
 /* ── PDF ── */
 .pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
@@ -381,26 +383,61 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 </div>
 
 <script>
-/* ── حماية ومنع Developer Tools ── */
+/* ════════════════════════════════════
+   SECURITY & DEV TOOLS PROTECTION
+════════════════════════════════════ */
 (function() {
+    // 1. منع كليك يمين
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 2. منع اختصارات المطورين وزرار Print Screen
+    window.addEventListener('keydown', (e) => {
+        if (
+            e.keyCode === 123 || 
+            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+            (e.ctrlKey && e.keyCode === 85)
+        ) {
+            e.preventDefault(); 
+            alert("⚠️ غير مسموح بفتح أدوات المطور للحفاظ على خصوصية المحتوى."); 
+            return false;
+        }
+        if (e.key === 'PrintScreen' || e.keyCode === 44) {
+            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
+            alert("⚠️ غير مسموح بأخذ لقطات شاشة لحماية المحتوى.");
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen' || e.keyCode === 44) {
+            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
+        }
+    });
+
+    // 3. كشف الـ Developer Tools بالأبعاد
     const detectDevTools = () => {
         const widthThreshold = window.outerWidth - window.innerWidth > 160;
         const heightThreshold = window.outerHeight - window.innerHeight > 160;
         if (widthThreshold || heightThreshold) {
             alert("⚠️ غير مسموح بفتح أدوات المطور (Developer Tools).\nيرجى إغلاقها فوراً للمتابعة.");
-            window.location.reload();
+            window.location.reload(); 
         }
     };
     setInterval(detectDevTools, 1000);
-    window.addEventListener('keydown', (e) => {
-        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
-            e.preventDefault(); alert("⚠️ هذا الإجراء غير مسموح به."); return false;
-        }
-    });
-    // Debugger Trap
+
+    // 4. فخ Debugger
     setInterval(function() {
         (function(a) { return (function(a) { return (Function('Function(arguments[0].constructor(\'debugger\')())')(a)); })(a); })(window);
     }, 100);
+
+    // 5. التغبيش عند فقدان التركيز لمنع السكرين شوت بالموبايل
+    window.addEventListener('blur', () => {
+        document.body.style.filter = 'blur(15px)';
+        document.body.style.opacity = '0.4';
+    });
+    window.addEventListener('focus', () => {
+        document.body.style.filter = 'none';
+        document.body.style.opacity = '1';
+    });
 })();
 
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
@@ -885,7 +922,7 @@ document.getElementById('finishBtn').onclick=()=>{
   }]).then(()=>{}).catch(e=>{console.log(e);});
 
   setTimeout(() => {
-      const id=new URLSearchParams(window.location.search).get('id');
+      const id=newSearchParams(window.location.search).get('id');
       localStorage.setItem(`exam_data_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));
       generateReview(); 
       unlockFeatures(buildScoreMsg(score,questions.length,false));
@@ -992,6 +1029,9 @@ function initYTPlayer(){
         if(ytPlaying) {
              const cover = document.getElementById('ytCover');
              if(cover) cover.style.display = 'none';
+        } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.UNSTARTED || e.data === YT.PlayerState.ENDED) {
+             const cover = document.getElementById('ytCover');
+             if(cover) cover.style.display = 'flex';
         }
     }
   }});
@@ -1011,11 +1051,6 @@ function updateYTTime(){
 window.toggleYtPlay=()=>{
   const cover = document.getElementById('ytCover');
   if(cover) cover.style.display = 'none';
-
-  const fr = document.getElementById('ytFrame');
-  if(fr && fr.contentWindow) {
-     fr.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-  }
 
   if(ytPlayer && ytPlayer.getPlayerState){
       if (ytPlayer.getPlayerState()===YT.PlayerState.PLAYING) {
@@ -1146,9 +1181,6 @@ document.addEventListener('fullscreenchange',()=>{
 });
 
 function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
-
-/* ── SECURITY ── */
-document.addEventListener('contextmenu',e=>e.preventDefault());
 </script>
 </body>
 </html>
