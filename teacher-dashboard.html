@@ -154,7 +154,7 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 .q-num-badge{font-family:var(--mono);font-size:.62rem;color:var(--teal);background:var(--teal3);border:1px solid var(--teal4);padding:3px 10px;border-radius:20px;}
 .q-del{width:26px;height:26px;background:#fee2e2;border:1px solid #fecaca;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:.7rem;transition:all .2s;}
 .q-del:hover{background:#fecaca;}
-.q-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.dynamic-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px;}
 .opt-lbl{font-size:.58rem;font-weight:700;color:var(--text3);font-family:var(--mono);margin-bottom:3px;}
 
 /* ── CODES ── */
@@ -163,10 +163,10 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 .code-pill:hover{border-color:var(--teal);color:var(--teal);}
 
 /* ── BADGE ── */
-.badge{font-size:.6rem;font-weight:900;padding:3px 9px;border-radius:6px;}
+.badge{font-size:.6rem;font-weight:900;padding:5px 12px;border-radius:8px; cursor: pointer; border: none; font-family: var(--sans); transition: all .2s;}
 .badge-active{background:#d1fae5;color:#065f46;border:1px solid #a7f3d0;}
 .badge-expired{background:#fee2e2;color:#9b1c1c;border:1px solid #fecaca;}
-.badge-teal{background:var(--teal3);color:var(--teal);border:1px solid var(--teal4);}
+.badge-teal{background:var(--teal);color:var(--white);border:1px solid var(--teal);}
 
 .divider{height:1px;background:var(--border);margin:18px 0;}
 
@@ -210,7 +210,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
   .topbar{padding:0 16px;}
   .stats-row{grid-template-columns:1fr 1fr;}
   .fg2,.fg3{grid-template-columns:1fr;}
-  .q-opts{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
@@ -300,7 +299,7 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
         <div class="card-head"><div class="card-title">📊 آخر الدرجات</div></div>
         <div style="padding:4px 4px 4px;">
           <div class="table-wrap" style="max-height:320px;overflow-y:auto;">
-            <table><thead><tr><th>الطالب</th><th>الحصة</th><th>الدرجة</th><th>التاريخ</th></tr></thead>
+            <table><thead><tr><th>الطالب</th><th>الحصة / الواجب</th><th>الدرجة</th><th>التاريخ</th></tr></thead>
             <tbody id="overviewResultsBody"><tr><td colspan="4" class="td-empty">جاري التحميل...</td></tr></tbody></table>
           </div>
         </div>
@@ -400,7 +399,13 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
     <div class="section-page" id="sec-results">
       <div class="card">
         <div class="card-head">
-          <div class="card-title">📊 درجات الطلاب</div>
+          <div class="card-title">
+            📊 درجات الطلاب
+            <div style="display:flex;gap:5px;margin-right:15px;">
+                <button class="badge badge-teal" id="tab-exam-res" onclick="switchResTab('exam')">الامتحانات</button>
+                <button class="badge" id="tab-hw-res" onclick="switchResTab('hw')" style="background:var(--bg);border:1px solid var(--border);color:var(--text2);">الواجبات</button>
+            </div>
+          </div>
           <div class="search-wrap">
             <span class="search-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <input id="searchInput" placeholder="بحث..." onkeyup="searchTable()">
@@ -408,7 +413,7 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
         </div>
         <div style="padding:4px;">
           <div class="table-wrap" style="max-height:520px;overflow-y:auto;">
-            <table><thead><tr><th>اسم الطالب</th><th>البريد الإلكتروني</th><th>الحصة</th><th>الدرجة</th><th>التاريخ</th></tr></thead>
+            <table><thead><tr><th>اسم الطالب</th><th>البريد الإلكتروني</th><th>المادة</th><th>الدرجة</th><th>التاريخ</th></tr></thead>
             <tbody id="resultsTable"><tr><td colspan="5" class="td-empty">جاري التحميل... ⏳</td></tr></tbody></table>
           </div>
         </div>
@@ -459,6 +464,7 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY
 const ADMIN="kevin.hany.08@proton.me";
 
 let editingLessonId=null, editingHwId=null, allLessonsData={}, allHwData={};
+let examResultsData = [], hwResultsData = [], currentResTab = 'exam';
 
 /* ── AUTH ── */
 async function checkAdminAuth(){
@@ -472,9 +478,9 @@ checkAdminAuth();
 
 async function loadAll(){
   await loadStats();
-  await loadResults();
-  await loadLessons(); // بيحمل الحصص الأول عشان نربط بيها الواجبات
+  await loadLessons(); 
   await loadHomework(); 
+  await loadResults(); 
 }
 
 /* ── SIDEBAR NAV ── */
@@ -510,32 +516,69 @@ async function loadStats(){
   }catch(e){}
 }
 
-/* ── RESULTS ── */
+/* ── RESULTS (EXAMS & HW) ── */
 async function loadResults(){
-  const tbody=document.getElementById("resultsTable");
   const ovBody=document.getElementById("overviewResultsBody");
   try{
-    const[{data:usersData},{data:resultsData}]=await Promise.all([
+    const[{data:usersData}, {data:resData}, {data:hwData}]=await Promise.all([
       supabaseClient.from('users').select('email,name'),
-      supabaseClient.from('results').select('*').order('date',{ascending:false})
+      supabaseClient.from('results').select('*').order('date',{ascending:false}),
+      supabaseClient.from('hw_results').select('*').order('created_at',{ascending:false})
     ]);
     const usersMap={};
     if(usersData) usersData.forEach(u=>{if(u.email)usersMap[u.email]=u.name;});
-    if(!resultsData||resultsData.length===0){
-      tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد نتائج بعد 📭</td></tr>`;
+    
+    examResultsData = (resData || []).map(r => ({...r, type: 'exam', sName: usersMap[r.email]||'—', lessonName: r.lesson}));
+    
+    hwResultsData = (hwData || []).map(r => {
+        let title = 'واجب محذوف';
+        if(r.hw_id && allHwData[r.hw_id]) title = allHwData[r.hw_id].title;
+        return {...r, type: 'hw', sName: usersMap[r.email]||'—', date: r.created_at, lessonName: title};
+    });
+
+    renderResultsTable();
+
+    let allRes = [...examResultsData, ...hwResultsData].sort((a,b) => new Date(b.date||b.created_at) - new Date(a.date||a.created_at));
+    if(allRes.length===0){
       ovBody.innerHTML=`<tr><td colspan="4" class="td-empty">لا توجد نتائج بعد 📭</td></tr>`;
+    } else {
+      let ovRows='';
+      allRes.slice(0,8).forEach(r => {
+        const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
+        const typeLbl = r.type==='exam' ? '📝 امتحان' : '📋 واجب';
+        ovRows+=`<tr><td class="td-name">${r.sName}</td><td class="td-lesson">${r.lessonName||'—'} <br><span style="font-size:0.6rem;color:var(--text3);">${typeLbl}</span></td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
+      });
+      ovBody.innerHTML=ovRows;
+    }
+  }catch(e){console.log(e); ovBody.innerHTML=`<tr><td colspan="4" class="td-empty" style="color:var(--red);">خطأ في التحميل</td></tr>`;}
+}
+
+window.switchResTab = (tab) => {
+    currentResTab = tab;
+    document.getElementById('tab-exam-res').className = tab==='exam' ? 'badge badge-teal' : 'badge';
+    document.getElementById('tab-exam-res').style.background = tab==='exam' ? '' : 'var(--bg)';
+    document.getElementById('tab-exam-res').style.color = tab==='exam' ? '' : 'var(--text2)';
+
+    document.getElementById('tab-hw-res').className = tab==='hw' ? 'badge badge-teal' : 'badge';
+    document.getElementById('tab-hw-res').style.background = tab==='hw' ? '' : 'var(--bg)';
+    document.getElementById('tab-hw-res').style.color = tab==='hw' ? '' : 'var(--text2)';
+    renderResultsTable();
+};
+
+function renderResultsTable() {
+    const tbody=document.getElementById("resultsTable");
+    const data = currentResTab === 'exam' ? examResultsData : hwResultsData;
+    if(!data || data.length===0){
+      tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد نتائج هنا 📭</td></tr>`;
       return;
     }
-    let rows='',ovRows='';
-    resultsData.forEach((r,i)=>{
-      const name=usersMap[r.email]||'—';
+    let rows='';
+    data.forEach((r)=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
-      rows+=`<tr class="student-row"><td class="td-name">${name}</td><td class="td-email">${r.email||'—'}</td><td class="td-lesson">${r.lesson||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date" dir="ltr">${dt}</td></tr>`;
-      if(i<8) ovRows+=`<tr><td class="td-name">${name}</td><td class="td-lesson">${r.lesson||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
+      rows+=`<tr class="student-row"><td class="td-name">${r.sName}</td><td class="td-email">${r.email||'—'}</td><td class="td-lesson">${r.lessonName||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date" dir="ltr">${dt}</td></tr>`;
     });
     tbody.innerHTML=rows;
-    ovBody.innerHTML=ovRows;
-  }catch(e){tbody.innerHTML=`<tr><td colspan="5" class="td-empty" style="color:var(--red);">خطأ في التحميل</td></tr>`;}
+    searchTable(); 
 }
 
 window.searchTable=()=>{
@@ -551,7 +594,7 @@ async function loadLessons(){
     if(error) throw error;
     
     allLessonsData={};
-    let options = '<option value="">-- غير مرتبط (بدون ارتباط) --</option>'; // عشان قائمة الواجبات
+    let options = '<option value="">-- غير مرتبط (بدون ارتباط) --</option>'; 
     
     if(!data||data.length===0){
       tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد حصص مضافة بعد</td></tr>`;
@@ -577,7 +620,6 @@ async function loadLessons(){
       tbody.innerHTML=rows;
     }
     
-    // ربط قائمة الحصص بفورم الواجبات
     const hwL=document.getElementById('hwLessonId'), hwNL=document.getElementById('hwNextLessonId');
     if(hwL) hwL.innerHTML=options;
     if(hwNL) hwNL.innerHTML=options;
@@ -761,10 +803,57 @@ async function saveHomework(){
 }
 
 /* ── SHARED QUESTION HELPER ── */
+const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
+
+window.updateOptionsUI = function(selectEl) {
+  const count = parseInt(selectEl.value);
+  const block = selectEl.closest('.q-block');
+  const optsContainer = block.querySelector('.dynamic-opts');
+  const correctSelect = block.querySelector('.q-correct');
+  const currentCorrect = correctSelect.value;
+
+  const currentVals = {};
+  optsContainer.querySelectorAll('input').forEach(inp => {
+    currentVals[inp.dataset.opt] = inp.value;
+  });
+
+  let inputsHtml = '';
+  let correctHtml = '';
+  for(let i=0; i<count; i++) {
+    const letter = OPT_LETTERS[i];
+    const val = currentVals[letter] || '';
+    const upper = letter.toUpperCase();
+    inputsHtml += `<div><div class="opt-lbl">${upper}</div><input class="q-${letter} finp" data-opt="${letter}" placeholder="خيار ${upper}" value="${val.replace(/"/g,'&quot;')}"></div>`;
+    correctHtml += `<option value="${letter}" ${currentCorrect===letter?'selected':''}>${upper}</option>`;
+  }
+  
+  optsContainer.innerHTML = inputsHtml;
+  correctSelect.innerHTML = correctHtml;
+  
+  if(!OPT_LETTERS.slice(0,count).includes(correctSelect.value)){
+     correctSelect.value = 'a';
+  }
+};
+
 window.addQuestion=function(containerId, data=null){
   const n=document.querySelectorAll('#'+containerId+' .question-block').length+1;
   const div=document.createElement('div');
   div.className='q-block question-block';
+  
+  const optCount = data?.optionsCount || 4;
+  let countOpts = '';
+  for(let i=2; i<=10; i++) countOpts += `<option value="${i}" ${optCount==i?'selected':''}>${i} اختيارات</option>`;
+  
+  let inputsHtml = '';
+  let correctHtml = '';
+  for(let i=0; i<optCount; i++) {
+    const letter = OPT_LETTERS[i];
+    const val = data ? (data[letter]||'') : '';
+    const upper = letter.toUpperCase();
+    inputsHtml += `<div><div class="opt-lbl">${upper}</div><input class="q-${letter} finp" data-opt="${letter}" placeholder="خيار ${upper}" value="${val.replace(/"/g,'&quot;')}"></div>`;
+    correctHtml += `<option value="${letter}" ${data?.correct===letter?'selected':''}>${upper}</option>`;
+  }
+
   div.innerHTML=`
     <div class="q-block-head">
       <span class="q-num-badge">سؤال ${n}</span>
@@ -782,20 +871,23 @@ window.addQuestion=function(containerId, data=null){
         </div>
         <input type="hidden" class="q-image" value="${data?.image||''}">
       </div>
-      <div class="fw"><label class="flbl">الإجابة الصحيحة</label>
-        <select class="q-correct finp">
-          <option value="a" ${data?.correct==='a'?'selected':''}>A</option>
-          <option value="b" ${data?.correct==='b'?'selected':''}>B</option>
-          <option value="c" ${data?.correct==='c'?'selected':''}>C</option>
-          <option value="d" ${data?.correct==='d'?'selected':''}>D</option>
-        </select>
+      <div class="fw" style="display:flex; flex-direction:column; justify-content:space-between;">
+         <div class="fw">
+             <label class="flbl">عدد الاختيارات</label>
+             <select class="q-opt-count finp" onchange="updateOptionsUI(this)">
+                 ${countOpts}
+             </select>
+         </div>
+         <div class="fw" style="margin-bottom:0;">
+             <label class="flbl">الإجابة الصحيحة</label>
+             <select class="q-correct finp">
+                 ${correctHtml}
+             </select>
+         </div>
       </div>
     </div>
-    <div class="q-opts">
-      <div><div class="opt-lbl">A</div><input class="q-a finp" placeholder="خيار أ" value="${(data?.a||'').replace(/"/g,'&quot;')}"></div>
-      <div><div class="opt-lbl">B</div><input class="q-b finp" placeholder="خيار ب" value="${(data?.b||'').replace(/"/g,'&quot;')}"></div>
-      <div><div class="opt-lbl">C</div><input class="q-c finp" placeholder="خيار ج" value="${(data?.c||'').replace(/"/g,'&quot;')}"></div>
-      <div><div class="opt-lbl">D</div><input class="q-d finp" placeholder="خيار د" value="${(data?.d||'').replace(/"/g,'&quot;')}"></div>
+    <div class="dynamic-opts">
+        ${inputsHtml}
     </div>`;
   document.getElementById(containerId).appendChild(div);
 
@@ -867,15 +959,18 @@ window.clearImagePreview=function(btn){
 function getQuestionsFrom(containerId){
   const qs=[];
   document.querySelectorAll('#'+containerId+' .question-block').forEach(b=>{
-    qs.push({
+    const optionsCount = parseInt(b.querySelector('.q-opt-count').value) || 4;
+    const qObj = {
       text:b.querySelector('.q-text').value||'',
       image:b.querySelector('.q-image').value||'',
-      a:b.querySelector('.q-a').value||'A',
-      b:b.querySelector('.q-b').value||'B',
-      c:b.querySelector('.q-c').value||'C',
-      d:b.querySelector('.q-d').value||'D',
-      correct:b.querySelector('.q-correct').value
-    });
+      correct:b.querySelector('.q-correct').value,
+      optionsCount: optionsCount
+    };
+    for(let i=0; i<optionsCount; i++){
+        const letter = OPT_LETTERS[i];
+        qObj[letter] = b.querySelector('.q-'+letter)?.value || '';
+    }
+    qs.push(qObj);
   });
   return qs;
 }
