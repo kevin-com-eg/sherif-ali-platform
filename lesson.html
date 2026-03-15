@@ -358,6 +358,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
 
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
 let examTimer,myStudentId="000000",plyrPlayer=false;
@@ -371,7 +372,6 @@ window.switchTab=(tab)=>{
   document.getElementById(`btn-${tab}-tab`).classList.add('active');
 };
 
-/* ── إرجاع الدالة لشكلها الطبيعي عشان الشاشة تختفي ── */
 function hideLoader(){
   const el=document.getElementById('loadingScreen');
   if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);}
@@ -394,7 +394,6 @@ async function initLessonPage(){
         myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
         hideLoader(); initLesson(); startAccessTimer(p.expiry);
         verifyAccessInBackground(currentUser,lessonId);
-        // فحص الـ gate في الخلفية بعد تحميل الحصة
         checkHomeworkGateBackground(lessonId);
         return;
       }
@@ -419,38 +418,29 @@ async function initLessonPage(){
   }catch(err){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
 }
 
-// فحص الـ gate بعد تحميل الصفحة (مش بيعطل اللود)
 async function checkHomeworkGateBackground(lessonId){
   try{
     const blocked=await checkHomeworkGate(lessonId);
     if(blocked) showHomeworkGate(blocked);
-  }catch(e){/* لو الجداول مش موجودة → تجاهل */}
+  }catch(e){}
 }
 
 /* ── HOMEWORK GATE ── */
 async function checkHomeworkGate(lessonId){
   try{
-    // هل في واجب مرتبط بهذه الحصة؟ (الحصة اللي قبلها)
     const{data:hwList}=await supabaseClient.from('homework').select('*').order('created_at',{ascending:true});
     if(!hwList||hwList.length===0) return null;
-
-    // هل الحصة دي مرتبطة بواجب سابق؟
-    // الـ homework بيحتوي على حقل next_lesson_id = id الحصة اللي تتفتح بعده
     const requiredHw=hwList.find(hw=>hw.next_lesson_id===lessonId);
     if(!requiredHw) return null;
-
-    // هل الطالب عمل الواجب؟
-    const{data:hwResult}=await supabaseClient.from('hw_results').select('*')
-      .eq('email',currentUser.email).eq('hw_id',requiredHw.id).single();
-    if(hwResult) return null; // عمل الواجب ✅
-    return requiredHw; // مش عمله ❌
+    const{data:hwResult}=await supabaseClient.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',requiredHw.id).single();
+    if(hwResult) return null; 
+    return requiredHw; 
   }catch(e){return null;}
 }
 
 function showHomeworkGate(hw){
   document.getElementById('hwGateMsg').textContent=`لا يمكنك فتح هذه الحصة قبل إنهاء واجب: "${hw.title}" — اعمل الواجب الأول وهترجع هنا تلقائياً`;
   document.getElementById('hwGateWall').classList.remove('hidden');
-  // حفظ الـ hw id لما نروح للصفحة الحصة بتاعته
   sessionStorage.setItem('requiredHwId',hw.id);
   sessionStorage.setItem('requiredHwLessonId',hw.lessonid||'');
 }
@@ -476,8 +466,6 @@ async function verifyAccessInBackground(user,lessonId){
 }
 
 initLessonPage();
-
-// لو الرابط فيه ?tab=homework → اروح للواجب بعد تحميل الحصة
 const urlTab=new URLSearchParams(window.location.search).get('tab');
 
 function startAccessTimer(expiryTime){
@@ -536,7 +524,6 @@ async function initLesson(){
   if(!snap) return;
   lessonData=snap; questions=lessonData.questions||[];
 
-  // تحميل الواجب المرتبط بهذه الحصة
   await loadHomeworkForLesson(id);
 
   const prev=rSnap?.find(r=>r.lesson===lessonData.name);
@@ -548,7 +535,6 @@ async function initLesson(){
     if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockFeatures(buildScoreMsg(pd.score,questions.length,true));}catch(e){}}
   }
 
-  // لو URL فيه tab=homework → اذهب للواجب تلقائياً
   if(urlTab==='homework') setTimeout(()=>switchTab('homework'),300);
 }
 
@@ -557,24 +543,21 @@ async function initLesson(){
 ════════════════════════════════════ */
 async function loadHomeworkForLesson(lessonId){
   try{
-    // الواجبات المرتبطة بهذه الحصة
     const{data:hwList}=await supabaseClient.from('homework').select('*').eq('lessonid',lessonId).limit(1);
     if(!hwList||hwList.length===0){
-      // لا يوجد واجب لهذه الحصة
       renderNoHomework();
       return;
     }
     hwData=hwList[0];
     hwQuestions=hwData.questions||[];
 
-    // هل الطالب عمل الواجب من قبل؟
     const{data:hwRes}=await supabaseClient.from('hw_results').select('*')
       .eq('email',currentUser.email).eq('hw_id',hwData.id).single();
 
     if(hwRes){
       hwDone=true;
+      hwUserAns=hwRes.userans||{}; 
       renderHomeworkDone(hwRes);
-      // فتح الـ tab
       document.getElementById('btn-homework-tab').classList.add('unlocked');
       document.getElementById('btn-homework-tab').classList.remove('locked-dim');
     } else {
@@ -618,14 +601,34 @@ function renderHomeworkLocked(){
 function renderHomeworkDone(result){
   const pct=result.total>0?Math.round(result.score/result.total*100):0;
   const clr=pct>=70?'var(--teal)':pct>=50?'var(--gold)':'var(--red)';
+  
+  let reviewHtml = '<div style="margin-top:24px;text-align:right;"><div class="review-section-title" style="color:var(--text);margin-bottom:15px;font-size:1rem; border-top:1px solid var(--border); padding-top:15px;">مراجعة إجابات الواجب:</div>';
+  
+  hwQuestions.forEach((q,i) => {
+    const ok = hwUserAns[i] === q.correct;
+    reviewHtml += `
+      <div class="review-item ${ok?'correct':'wrong'}" style="text-align:right; margin-bottom:10px; padding:15px; border-radius:12px; background:var(--white); border:1px solid ${ok?'var(--teal4)':'#fecaca'};">
+        <div class="review-meta">
+          <span class="review-q-label">سؤال ${i+1}</span>
+          <span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span>
+        </div>
+        ${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}
+        <div class="review-q-text" style="font-size:.9rem;font-weight:700;">${q.text||'اختر الإجابة الصحيحة:'}</div>
+        <div class="review-ans" style="font-size:.8rem;color:var(--text2);">إجابتك: <span style="font-weight:700;color:var(--text);">${q[hwUserAns[i]]||'لم تجب'}</span></div>
+        ${!ok ? `<div class="review-correct-ans" style="font-size:.8rem;color:var(--teal);font-weight:700;margin-top:5px;">✓ الإجابة الصحيحة: ${q[q.correct]}</div>` : ''}
+      </div>`;
+  });
+  reviewHtml += '</div>';
+
   document.getElementById('tab-homework').innerHTML=`
-    <div style="background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;">
-      <div class="hw-done-icon">✅</div>
-      <div class="hw-done-title">تم تسليم الواجب!</div>
+    <div style="background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:36px 20px;text-align:center;">
+      <div class="hw-done-icon" style="font-size:3rem; margin-bottom:10px;">✅</div>
+      <div class="hw-done-title" style="font-size:1.4rem;font-weight:900;color:var(--teal);">تم تسليم الواجب بنجاح!</div>
       <div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:${clr};margin:16px 0 8px;">${result.score}<span style="font-size:1.2rem;color:var(--text2);">/${result.total}</span></div>
       <div style="font-size:.85rem;color:var(--teal2);font-weight:700;">${pct}% — ${pct>=70?'ممتاز 🌟':pct>=50?'جيد 👍':'تحتاج مراجعة 📖'}</div>
-      <div class="hw-done-sub" style="margin-top:12px;">تم فتح الحصة التالية — استمر في التعلم!</div>
-    </div>`;
+    </div>
+    ${reviewHtml}
+  `;
 }
 
 let hwStarted=false;
@@ -638,6 +641,9 @@ window.startHomework=function(){
 function renderHwQ(){
   const q=hwQuestions[hwCurIdx];
   const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);
+  const optCount = q.optionsCount || 4;
+  const letters = OPT_LETTERS.slice(0, optCount);
+
   document.getElementById('tab-homework').innerHTML=`
     <div class="quiz-wrap">
       <div class="progress-row">
@@ -649,10 +655,10 @@ function renderHwQ(){
         ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
         <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
         <div class="options">
-          ${['a','b','c','d'].map(opt=>`
+          ${letters.map(opt=>`
             <label class="opt-label" style="${hwUserAns[hwCurIdx]===opt?'border-color:var(--gold);background:#fff7ed;':''}">
               <input type="radio" name="hw" value="${opt}" ${hwUserAns[hwCurIdx]===opt?'checked':''} onchange="hwUserAns[hwCurIdx]=this.value">
-              <span class="opt-key" style="${hwUserAns[hwCurIdx]===opt?'background:var(--gold);border-color:var(--gold);color:#fff;':''}">${opt}</span>
+              <span class="opt-key" style="${hwUserAns[hwCurIdx]===opt?'background:var(--gold);border-color:var(--gold);color:#fff;':''}">${opt.toUpperCase()}</span>
               <span class="opt-text">${q[opt]||''}</span>
             </label>`).join('')}
         </div>
@@ -714,6 +720,9 @@ document.getElementById('startBtn').onclick=()=>{
 function renderQ(){
   const q=questions[curIdx];
   const pct=Math.round((curIdx+1)/questions.length*100);
+  const optCount = q.optionsCount || 4;
+  const letters = OPT_LETTERS.slice(0, optCount);
+
   document.getElementById('qCount').textContent=`${curIdx+1} / ${questions.length}`;
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('qDisplay').innerHTML=`
@@ -721,10 +730,10 @@ function renderQ(){
     ${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}
     <div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div>
     <div class="options">
-      ${['a','b','c','d'].map(opt=>`
+      ${letters.map(opt=>`
         <label class="opt-label">
           <input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}>
-          <span class="opt-key">${opt}</span>
+          <span class="opt-key">${opt.toUpperCase()}</span>
           <span class="opt-text">${q[opt]||''}</span>
         </label>`).join('')}
     </div>`;
@@ -834,13 +843,10 @@ function loadYTApi(){
   document.getElementsByTagName('script')[0].parentNode.insertBefore(tag,document.getElementsByTagName('script')[0]);
 }
 window.onYouTubeIframeAPIReady=()=>initYTPlayer();
-
-/* ── مشكلة القوس تم تصليحها هنا ── */
 function initYTPlayer(){
   const fr=document.getElementById('ytFrame'); if(!fr) return;
   ytPlayer=new YT.Player('ytFrame',{events:{onReady:e=>{ytDur=ytPlayer.getDuration()||0;document.getElementById('vpDur').textContent=fmtTime(ytDur);if(ytTimer)clearInterval(ytTimer);ytTimer=setInterval(updateYTTime,500);},onStateChange:e=>{ytPlaying=(e.data===YT.PlayerState.PLAYING);const w=document.getElementById('vpWrap');if(w){ytPlaying?w.classList.add('playing'):w.classList.remove('playing');}const pb=document.getElementById('vpPlay');if(pb)pb.innerHTML=ytPlaying?`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`:`<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`;}}});
 }
-
 function updateYTTime(){if(!ytPlayer||!ytPlayer.getCurrentTime)return;ytCur=ytPlayer.getCurrentTime()||0;ytDur=ytPlayer.getDuration()||0;document.getElementById('vpDur').textContent=fmtTime(ytDur);document.getElementById('vpCur').textContent=fmtTime(ytCur);const pct=ytDur?(ytCur/ytDur*100):0;document.getElementById('vpFill').style.width=pct+'%';document.getElementById('vpThumb').style.left=pct+'%';}
 window.toggleYtPlay=()=>{if(!ytPlayer||!ytPlayer.getPlayerState)return;ytPlayer.getPlayerState()===YT.PlayerState.PLAYING?ytPlayer.pauseVideo():ytPlayer.playVideo();};
 window.ytSeek=(s)=>{if(!ytPlayer||!ytPlayer.seekTo)return;ytCur=Math.max(0,Math.min(ytDur,ytCur+s));ytPlayer.seekTo(ytCur,true);};
