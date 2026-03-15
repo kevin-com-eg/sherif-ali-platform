@@ -216,13 +216,11 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 </head>
 <body>
 
-<!-- SECURE -->
 <div id="secureLayer">
   <div class="spin-ring"></div>
   <div class="secure-txt">جاري التحقق من صلاحيات المعلم...</div>
 </div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebarEl">
   <div class="sb-logo">
     <div class="sb-logo-icon">MP</div>
@@ -279,7 +277,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
 
-<!-- MAIN -->
 <div class="main-area">
   <div class="topbar">
     <div class="topbar-title" id="topbarTitle">نظرة عامة</div>
@@ -293,7 +290,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 
   <div class="content">
 
-    <!-- ══ OVERVIEW ══ -->
     <div class="section-page active" id="sec-overview">
       <div class="stats-row">
         <div class="stat-c"><div class="stat-icon">👥</div><div><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">طالب مسجل</div></div></div>
@@ -311,9 +307,7 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- ══ LESSONS ══ -->
     <div class="section-page" id="sec-lessons">
-      <!-- إدارة الحصص -->
       <div class="card">
         <div class="card-head">
           <div class="card-title">📚 الحصص المضافة</div>
@@ -326,7 +320,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
           </div>
         </div>
       </div>
-      <!-- فورم إضافة/تعديل -->
       <div class="card" id="lessonFormCard">
         <div class="card-head"><div class="card-title" id="lessonFormTitle">➕ إضافة حصة جديدة</div></div>
         <div class="card-body">
@@ -360,9 +353,7 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- ══ HOMEWORK ══ -->
     <div class="section-page" id="sec-homework">
-      <!-- إدارة الواجبات -->
       <div class="card">
         <div class="card-head">
           <div class="card-title">📋 الواجبات المضافة</div>
@@ -370,12 +361,11 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
         </div>
         <div style="padding:4px;">
           <div class="table-wrap">
-            <table><thead><tr><th>عنوان الواجب</th><th>المرحلة</th><th>عدد الأسئلة</th><th style="text-align:center;">إجراءات</th></tr></thead>
+            <table><thead><tr><th>الواجب</th><th>المرحلة</th><th>الارتباطات</th><th style="text-align:center;">إجراءات</th></tr></thead>
             <tbody id="homeworkListBody"><tr><td colspan="4" class="td-empty">جاري التحميل...</td></tr></tbody></table>
           </div>
         </div>
       </div>
-      <!-- فورم الواجب -->
       <div class="card" id="homeworkFormCard">
         <div class="card-head"><div class="card-title" id="hwFormTitle">➕ إضافة واجب جديد</div></div>
         <div class="card-body">
@@ -386,7 +376,10 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
             </div>
           </div>
           <div class="fg2">
-            <div class="fw"><label class="flbl">الحصة المرتبطة (اختياري)</label><input id="hwLesson" class="finp" placeholder="اسم الحصة"></div>
+            <div class="fw"><label class="flbl">مكان الواجب (يظهر داخل حصة)</label><select id="hwLessonId" class="finp"><option value="">-- جاري التحميل... --</option></select></div>
+            <div class="fw"><label class="flbl">شرط الفتح (الواجب ده بيفتح انهي حصة؟)</label><select id="hwNextLessonId" class="finp"><option value="">-- جاري التحميل... --</option></select></div>
+          </div>
+          <div class="fg2">
             <div class="fw"><label class="flbl">تاريخ التسليم (اختياري)</label><input id="hwDeadline" type="date" class="finp"></div>
           </div>
           <div class="divider"></div>
@@ -404,7 +397,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- ══ RESULTS ══ -->
     <div class="section-page" id="sec-results">
       <div class="card">
         <div class="card-head">
@@ -423,7 +415,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- ══ CODES ══ -->
     <div class="section-page" id="sec-codes">
       <div class="card">
         <div class="card-head">
@@ -445,7 +436,6 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- ══ NOTIF ══ -->
     <div class="section-page" id="sec-notif">
       <div class="card">
         <div class="card-head"><div class="card-title">📢 إرسال تنبيه عام</div></div>
@@ -481,7 +471,10 @@ async function checkAdminAuth(){
 checkAdminAuth();
 
 async function loadAll(){
-  await Promise.all([loadStats(),loadResults(),loadLessons(),loadHomework()]);
+  await loadStats();
+  await loadResults();
+  await loadLessons(); // بيحمل الحصص الأول عشان نربط بيها الواجبات
+  await loadHomework(); 
 }
 
 /* ── SIDEBAR NAV ── */
@@ -556,26 +549,39 @@ async function loadLessons(){
   try{
     const{data,error}=await supabaseClient.from('lessons').select('*').order('created_at',{ascending:false});
     if(error) throw error;
+    
     allLessonsData={};
-    if(!data||data.length===0){tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد حصص مضافة بعد</td></tr>`;return;}
-    const gradeMap={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
-    let rows='';
-    data.forEach(d=>{
-      allLessonsData[d.id]=d;
-      rows+=`<tr>
-        <td class="td-name">${d.name}</td>
-        <td style="color:var(--text2);font-size:.8rem;">${gradeMap[d.grade]||'—'}</td>
-        <td style="color:var(--teal);font-weight:700;">${d.price?d.price+' ج':'مجاني'}</td>
-        <td style="color:var(--text2);font-size:.8rem;">${d.validitydays||7} يوم</td>
-        <td style="text-align:center;">
-          <div style="display:flex;gap:6px;justify-content:center;">
-            <button class="btn btn-ghost" style="padding:5px 10px;font-size:.75rem;" onclick='startEditLesson("${d.id}")'>تعديل ✏️</button>
-            <button class="btn btn-danger" style="padding:5px 10px;font-size:.75rem;" onclick='deleteLesson("${d.id}")'>حذف 🗑️</button>
-          </div>
-        </td>
-      </tr>`;
-    });
-    tbody.innerHTML=rows;
+    let options = '<option value="">-- غير مرتبط (بدون ارتباط) --</option>'; // عشان قائمة الواجبات
+    
+    if(!data||data.length===0){
+      tbody.innerHTML=`<tr><td colspan="5" class="td-empty">لا توجد حصص مضافة بعد</td></tr>`;
+    } else {
+      const gradeMap={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
+      let rows='';
+      data.forEach(d=>{
+        allLessonsData[d.id]=d;
+        options += `<option value="${d.id}">${d.name}</option>`;
+        rows+=`<tr>
+          <td class="td-name">${d.name}</td>
+          <td style="color:var(--text2);font-size:.8rem;">${gradeMap[d.grade]||'—'}</td>
+          <td style="color:var(--teal);font-weight:700;">${d.price?d.price+' ج':'مجاني'}</td>
+          <td style="color:var(--text2);font-size:.8rem;">${d.validitydays||7} يوم</td>
+          <td style="text-align:center;">
+            <div style="display:flex;gap:6px;justify-content:center;">
+              <button class="btn btn-ghost" style="padding:5px 10px;font-size:.75rem;" onclick='startEditLesson("${d.id}")'>تعديل ✏️</button>
+              <button class="btn btn-danger" style="padding:5px 10px;font-size:.75rem;" onclick='deleteLesson("${d.id}")'>حذف 🗑️</button>
+            </div>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML=rows;
+    }
+    
+    // ربط قائمة الحصص بفورم الواجبات
+    const hwL=document.getElementById('hwLessonId'), hwNL=document.getElementById('hwNextLessonId');
+    if(hwL) hwL.innerHTML=options;
+    if(hwNL) hwNL.innerHTML=options;
+
   }catch(e){tbody.innerHTML=`<tr><td colspan="5" class="td-empty" style="color:var(--red);">خطأ</td></tr>`;}
 }
 
@@ -657,10 +663,19 @@ async function loadHomework(){
     data.forEach(d=>{
       allHwData[d.id]=d;
       const qCount=(d.questions||[]).length;
+      const l1 = allLessonsData[d.lessonid]?.name || 'غير محدد';
+      const l2 = allLessonsData[d.next_lesson_id]?.name || 'لا يقفل شيء';
+
       rows+=`<tr>
-        <td class="td-name">${d.title||d.name||'—'}</td>
+        <td class="td-name">
+          ${d.title||d.name||'—'}<br>
+          <span style="font-size:0.7rem; color:var(--text3)">${qCount} سؤال</span>
+        </td>
         <td style="color:var(--text2);font-size:.8rem;">${gradeMap[d.grade]||'—'}</td>
-        <td><span class="badge badge-teal">${qCount} سؤال</span></td>
+        <td style="font-size:.75rem;">
+          <div style="color:var(--teal)">📍 يظهر في: ${l1}</div>
+          <div style="color:var(--gold)">🔒 يفتح: ${l2}</div>
+        </td>
         <td style="text-align:center;">
           <div style="display:flex;gap:6px;justify-content:center;">
             <button class="btn btn-ghost" style="padding:5px 10px;font-size:.75rem;" onclick='startEditHw("${d.id}")'>تعديل ✏️</button>
@@ -670,13 +685,16 @@ async function loadHomework(){
       </tr>`;
     });
     tbody.innerHTML=rows;
-  }catch(e){tbody.innerHTML=`<tr><td colspan="4" class="td-empty">جدول homework غير موجود في Supabase — أنشئه أولاً</td></tr>`;}
+  }catch(e){tbody.innerHTML=`<tr><td colspan="4" class="td-empty">الرجاء إضافة جدول الواجبات أو عمود grade في قاعدة البيانات</td></tr>`;}
 }
 
 function resetHomeworkForm(){
   editingHwId=null;
-  ['hwTitle','hwLesson','hwDeadline'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hwTitle').value='';
   document.getElementById('hwGrade').value='1';
+  document.getElementById('hwLessonId').value='';
+  document.getElementById('hwNextLessonId').value='';
+  document.getElementById('hwDeadline').value='';
   document.getElementById('hwQuestionsContainer').innerHTML='';
   document.getElementById('hwFormTitle').textContent='➕ إضافة واجب جديد';
   document.getElementById('saveHwBtn').textContent='نشر الواجب 📤';
@@ -688,7 +706,8 @@ window.startEditHw=(id)=>{
   editingHwId=id;
   document.getElementById('hwTitle').value=d.title||d.name||'';
   document.getElementById('hwGrade').value=d.grade||'1';
-  document.getElementById('hwLesson').value=d.lesson||'';
+  document.getElementById('hwLessonId').value=d.lessonid||'';
+  document.getElementById('hwNextLessonId').value=d.next_lesson_id||'';
   document.getElementById('hwDeadline').value=d.deadline||'';
   document.getElementById('hwQuestionsContainer').innerHTML='';
   if(d.questions) d.questions.forEach(q=>addQuestion('hwQuestionsContainer',q));
@@ -709,14 +728,26 @@ window.deleteHw=async(id)=>{
 async function saveHomework(){
   const title=document.getElementById('hwTitle').value;
   const grade=document.getElementById('hwGrade').value;
-  const lesson=document.getElementById('hwLesson').value;
+  const lessonid=document.getElementById('hwLessonId').value;
+  const next_lesson_id=document.getElementById('hwNextLessonId').value;
   const deadline=document.getElementById('hwDeadline').value;
+  
   if(!title) return alert("ادخل عنوان الواجب!");
+  
   const questions=getQuestionsFrom('hwQuestionsContainer');
   const btn=document.getElementById('saveHwBtn');
   btn.textContent="جاري الحفظ..."; btn.disabled=true;
+  
   try{
-    const payload={title,grade,lesson,deadline:deadline||null,questions};
+    const payload={
+      title,
+      grade,
+      lessonid: lessonid || null,
+      next_lesson_id: next_lesson_id || null,
+      deadline: deadline || null,
+      questions
+    };
+    
     if(editingHwId){
       const{error}=await supabaseClient.from('homework').update(payload).eq('id',editingHwId);
       if(error) throw error; alert("تم تحديث الواجب! ✅");
@@ -768,7 +799,6 @@ window.addQuestion=function(containerId, data=null){
     </div>`;
   document.getElementById(containerId).appendChild(div);
 
-  // لو في صورة موجودة (تعديل) → اعرضها
   if(data?.image){
     const zone=div.querySelector('.q-img-zone');
     showImagePreview(zone, data.image);
@@ -796,13 +826,11 @@ function processImageFile(file, zone){
   if(!file.type.startsWith('image/')){alert('الملف ليس صورة!'); return;}
   if(file.size > 2*1024*1024){alert('حجم الصورة أكبر من 2MB — اختار صورة أصغر'); return;}
 
-  // إظهار spinner
   zone.innerHTML=`<div class="img-uploading"><div class="mini-spin"></div><span>جاري معالجة الصورة...</span></div>`;
 
   const reader = new FileReader();
   reader.onload = (ev) => {
     const base64 = ev.target.result;
-    // حفظ الـ base64 في hidden input
     const hiddenInput = zone.closest('.fw').querySelector('.q-image');
     if(hiddenInput) hiddenInput.value = base64;
     showImagePreview(zone, base64);
@@ -823,7 +851,6 @@ window.clearImagePreview=function(btn){
   const preview = btn.closest('.img-drop-preview');
   const hiddenInput = preview.closest('.fw').querySelector('.q-image');
   if(hiddenInput) hiddenInput.value='';
-  // إعادة zone
   preview.classList.remove('img-drop-preview');
   preview.classList.add('img-drop-zone');
   preview.setAttribute('ondragover',"handleDragOver(event,this)");
