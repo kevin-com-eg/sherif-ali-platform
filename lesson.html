@@ -231,14 +231,12 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 </head>
 <body oncontextmenu="return false;">
 
-<!-- LOADING -->
 <div id="loadingScreen">
   <div class="ld-logo">MP</div>
   <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
   <div class="ld-txt">جاري التحقق من الصلاحيات...</div>
 </div>
 
-<!-- HOMEWORK GATE WALL -->
 <div id="hwGateWall" class="hw-gate-wall hidden">
   <div class="hw-gate-card">
     <div class="hw-gate-icon">📋</div>
@@ -252,7 +250,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   </div>
 </div>
 
-<!-- LOCK SCREEN -->
 <div id="codeLockScreen" class="hidden">
   <div class="lock-card">
     <button class="lock-back" onclick="window.history.back()">↩ رجوع</button>
@@ -264,7 +261,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   </div>
 </div>
 
-<!-- LESSON CONTENT -->
 <div id="lessonContent" class="hidden">
   <nav>
     <div class="nav-inner">
@@ -295,7 +291,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
   <main>
 
-    <!-- QUIZ TAB -->
     <div id="tab-quiz">
       <div id="startScreen">
         <span class="start-emoji">🚀</span>
@@ -340,13 +335,10 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
       </div>
     </div>
 
-    <!-- HOMEWORK TAB -->
     <div id="tab-homework" class="hidden"></div>
 
-    <!-- VIDEO TAB -->
     <div id="tab-video" class="hidden"></div>
 
-    <!-- PDF TAB -->
     <div id="tab-pdf" class="hidden">
       <div class="pdf-card">
         <div class="pdf-icon">📚</div>
@@ -379,9 +371,9 @@ window.switchTab=(tab)=>{
   document.getElementById(`btn-${tab}-tab`).classList.add('active');
 };
 
+/* ── التعديل هنا: منع اختفاء شاشة التحميل ── */
 function hideLoader(){
-  const el=document.getElementById('loadingScreen');
-  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);}
+  return; 
 }
 
 /* ── AUTH & ACCESS ── */
