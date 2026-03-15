@@ -555,6 +555,25 @@ document.getElementById('verifyBtn').onclick=async()=>{
   hideLoader();
 };
 
+function initVideoPlayer() {
+  if(lessonData.video && !plyrPlayer){
+    plyrPlayer = true;
+    const vc = document.getElementById('tab-video');
+    const url = lessonData.video;
+    let html = `<div class="vid-section-title">فيديو الشرح</div>`;
+    if(url.includes('youtube.com') || url.includes('youtu.be')){
+      const m = url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
+      const vId = m ? m[1] : null;
+      html += buildYTPlayer(vId);
+      vc.innerHTML = html; loadYTApi();
+    } else if(url.includes('mediadelivery.net') || url.includes('bunny')){
+      html += buildBunnyPlayer(url); vc.innerHTML = html;
+    } else {
+      html += buildMP4Player(url); vc.innerHTML = html; initMP4Player();
+    }
+  }
+}
+
 async function initLesson(){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
@@ -759,25 +778,30 @@ function saveHwAns(){
   if(s) hwUserAns[hwCurIdx]=s.value;
 }
 
-async function submitHomework(){
+function submitHomework(){
   saveHwAns();
   showLoader("جاري تسليم الواجب...");
   let score=0;
   hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
-  try{
-    await supabaseClient.from('hw_results').insert([{
-      email:currentUser.email,
-      hw_id:hwData.id,
-      lesson:lessonData?.name||'',
-      score,total:hwQuestions.length,
-      userans:hwUserAns
-    }]);
-  }catch(e){console.log(e);}
-  hwDone=true;
-  renderHomeworkDone({score,total:hwQuestions.length});
-  hideLoader();
+  
+  supabaseClient.from('hw_results').insert([{
+    email:currentUser.email,
+    hw_id:hwData.id,
+    lesson:lessonData?.name||'',
+    score,total:hwQuestions.length,
+    userans:hwUserAns
+  }]).then(()=>{}).catch(e=>{console.log(e);});
+  
+  setTimeout(() => {
+      hwDone=true;
+      renderHomeworkDone({score,total:hwQuestions.length});
+      hideLoader();
+  }, 500);
 }
 
+/* ════════════════════════════════════
+   EXAM SYSTEM
+════════════════════════════════════ */
 function buildScoreMsg(score,total,wasPrev){
   const pct=total>0?Math.round(score/total*100):0;
   return{score,total,pct,wasPrev};
@@ -825,16 +849,27 @@ function saveAns(){const s=document.querySelector('input[name="math"]:checked');
 document.getElementById('nextBtn').onclick=()=>{saveAns();curIdx++;renderQ();};
 document.getElementById('prevBtn').onclick=()=>{saveAns();curIdx--;renderQ();};
 
-document.getElementById('finishBtn').onclick=async()=>{
+document.getElementById('finishBtn').onclick=()=>{
   saveAns(); clearInterval(examTimer);
   showLoader("جاري تصحيح الامتحان...");
   let score=0; questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
-  try{await supabaseClient.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns}]);}catch(e){}
-  const id=new URLSearchParams(window.location.search).get('id');
-  localStorage.setItem(`exam_data_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));
-  generateReview(); unlockFeatures(buildScoreMsg(score,questions.length,false));
-  window.scrollTo({top:0,behavior:'smooth'});
-  hideLoader();
+  
+  supabaseClient.from('results').insert([{
+      email:currentUser.email,
+      lesson:lessonData.name,
+      score,
+      total:questions.length,
+      userans:userAns
+  }]).then(()=>{}).catch(e=>{console.log(e);});
+
+  setTimeout(() => {
+      const id=new URLSearchParams(window.location.search).get('id');
+      localStorage.setItem(`exam_data_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));
+      generateReview(); 
+      unlockFeatures(buildScoreMsg(score,questions.length,false));
+      window.scrollTo({top:0,behavior:'smooth'});
+      hideLoader();
+  }, 500);
 };
 
 function generateReview(){
