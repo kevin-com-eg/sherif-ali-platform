@@ -513,6 +513,26 @@ document.getElementById('verifyBtn').onclick=async()=>{
   btn.textContent="تفعيل الحصة ←"; btn.disabled=false;
 };
 
+/* ── دالة منفصلة لتشغيل الفيديو عشان نستخدمها بسهولة ── */
+function initVideoPlayer() {
+  if(lessonData.video && !plyrPlayer){
+    plyrPlayer = true;
+    const vc = document.getElementById('tab-video');
+    const url = lessonData.video;
+    let html = `<div class="vid-section-title">فيديو الشرح</div>`;
+    if(url.includes('youtube.com') || url.includes('youtu.be')){
+      const m = url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
+      const vId = m ? m[1] : null;
+      html += buildYTPlayer(vId);
+      vc.innerHTML = html; loadYTApi();
+    } else if(url.includes('mediadelivery.net') || url.includes('bunny')){
+      html += buildBunnyPlayer(url); vc.innerHTML = html;
+    } else {
+      html += buildMP4Player(url); vc.innerHTML = html; initMP4Player();
+    }
+  }
+}
+
 async function initLesson(){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
@@ -525,6 +545,31 @@ async function initLesson(){
   lessonData=snap; questions=lessonData.questions||[];
 
   await loadHomeworkForLesson(id);
+
+  /* ── فحص هل يوجد امتحان أم لا ── */
+  if (questions.length === 0) {
+    document.getElementById('tab-quiz').innerHTML = `
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;box-shadow:var(--shadow);margin-top:20px;">
+        <div style="font-size:3rem;margin-bottom:14px;">🎓</div>
+        <div style="font-size:1.2rem;font-weight:900;color:var(--text);">لا يوجد امتحان لهذه الحصة</div>
+        <div style="font-size:.88rem;color:var(--text2);margin-top:8px;">تم فتح فيديو الشرح والملزمة مباشرة لك</div>
+      </div>
+    `;
+    ['video','pdf'].forEach(t=>{
+      document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
+      document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
+    });
+    
+    initVideoPlayer();
+    if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
+    
+    if(urlTab === 'homework') {
+        setTimeout(()=>switchTab('homework'), 100);
+    } else {
+        setTimeout(()=>switchTab('video'), 100);
+    }
+    return;
+  }
 
   const prev=rSnap?.find(r=>r.lesson===lessonData.name);
   if(prev){
@@ -801,22 +846,9 @@ function unlockFeatures(msgObj){
     document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
     document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
   });
-  if(lessonData.video&&!plyrPlayer){
-    plyrPlayer=true;
-    const vc=document.getElementById('tab-video');
-    const url=lessonData.video;
-    let html=`<div class="vid-section-title">فيديو الشرح</div>`;
-    if(url.includes('youtube.com')||url.includes('youtu.be')){
-      const m=url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-      const vId=m?m[1]:null;
-      html+=buildYTPlayer(vId);
-      vc.innerHTML=html; loadYTApi();
-    } else if(url.includes('mediadelivery.net')||url.includes('bunny')){
-      html+=buildBunnyPlayer(url); vc.innerHTML=html;
-    } else {
-      html+=buildMP4Player(url); vc.innerHTML=html; initMP4Player();
-    }
-  }
+  
+  initVideoPlayer();
+  
   if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
 }
 
