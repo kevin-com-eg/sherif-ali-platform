@@ -215,23 +215,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   cursor:pointer;background:transparent;
 }
 
-/* غطاء الصورة المصغرة (بيظهر وبيتخفى) */
-.sp-cover{
-  position:absolute;inset:0;z-index:30;
-  background:#000 center/cover no-repeat;
-  display:flex;align-items:center;justify-content:center;
-  transition:opacity .3s;
-}
-.sp-cover.hide{opacity:0;pointer-events:none;}
-.sp-play-circle{
-  width:72px;height:72px;border-radius:50%;
-  background:rgba(13,122,95,.88);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 32px rgba(0,0,0,.5);
-  transition:transform .2s,background .2s;
-}
-.sp-cover:hover .sp-play-circle{transform:scale(1.12);background:var(--teal);}
-.sp-play-circle svg{width:32px;height:32px;fill:#fff;margin-left:5px;}
+/* لا غطاء صورة */
 
 /* العلامة المائية المتحركة */
 .sp-watermark{
@@ -707,21 +691,23 @@ let SP={
 
 /* ─── بناء HTML البلاير ─── */
 function buildStealthPlayerHTML(embedInfo){
-  const coverImg=lessonData.image||
-    (embedInfo.type==='youtube'?`https://img.youtube.com/vi/${embedInfo.id}/hqdefault.jpg`:'');
+  // YouTube → div فارغ تملأه الـ API
+  // Dailymotion → iframe مباشر
+  const innerHtml = embedInfo.type === 'youtube'
+    ? `<div id="ytApiContainer" style="position:absolute;inset:0;"></div>`
+    : `<iframe id="spIframe"
+         src="${embedInfo.src}"
+         allow="autoplay; encrypted-media"
+         allowfullscreen
+         referrerpolicy="no-referrer"
+         style="position:absolute;top:-60px;left:-2px;width:calc(100% + 4px);height:calc(100% + 120px);border:none;pointer-events:none;">
+       </iframe>`;
 
   return `
   <div class="stealth-player" id="spWrap">
 
-    <!-- iframe مخفي -->
-    <div class="sp-iframe-box">
-      <iframe id="spIframe"
-        src="${embedInfo.src}"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen
-        referrerpolicy="no-referrer">
-      </iframe>
-    </div>
+    <!-- حاوية الفيديو -->
+    <div class="sp-iframe-box">${innerHtml}</div>
 
     <!-- دروع الحجب -->
     <div class="sp-shield sp-shield-top"></div>
@@ -733,18 +719,10 @@ function buildStealthPlayerHTML(embedInfo){
     <div class="sp-overlay" id="spOverlay"></div>
 
     <!-- غطاء التحميل -->
-    <div class="sp-buffer" id="spBuffer"><div class="sp-spinner"></div></div>
+    <div class="sp-buffer show" id="spBuffer"><div class="sp-spinner"></div></div>
 
     <!-- العلامة المائية -->
     <div class="sp-watermark"><span>ID: ${myStudentId}</span></div>
-
-    <!-- صورة الغلاف -->
-    <div class="sp-cover" id="spCover"
-         style="${coverImg?`background-image:url('${coverImg}')`:'background:#111'}">
-      <div class="sp-play-circle">
-        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      </div>
-    </div>
 
     <!-- شريط التحكم -->
     <div class="sp-controls" id="spControls">
@@ -809,22 +787,20 @@ function initStealthPlayer(){
   SP.type=embedInfo.type;
   vc.innerHTML=`<div class="vid-section-title">فيديو الشرح</div>${buildStealthPlayerHTML(embedInfo)}`;
 
-  SP.iframe=document.getElementById('spIframe');
+  if(SP.type==='dailymotion'){
+    SP.iframe=document.getElementById('spIframe');
+  }
 
   // ── ربط الأحداث ──
-  bindStealthEvents(embedInfo);
+  bindStealthEvents();
 
   // ── تحميل YouTube API إذا لزم ──
   if(SP.type==='youtube'){
     loadYTAPI();
   }
-  // Dailymotion — بنستخدم postMessage API
+  // Dailymotion
   if(SP.type==='dailymotion'){
     window.addEventListener('message', dmMessageHandler);
-    // طلب duration بعد تحميل الإطار
-    setTimeout(()=>{
-      dmSend('time');
-    },2000);
     spShowBuffer();
   }
 }
@@ -842,14 +818,41 @@ function loadYTAPI(){
 window.onYouTubeIframeAPIReady=()=>initYTBridge();
 
 function initYTBridge(){
-  // نربط الـ iframe الموجود بـ YT.Player
-  SP.ytPlayer=new YT.Player('spIframe',{
+  const m=lessonData.video.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
+  const vId=m?m[1]:null;
+  if(!vId) return;
+
+  const container=document.getElementById('ytApiContainer');
+  if(!container) return;
+
+  SP.ytPlayer=new YT.Player('ytApiContainer',{
+    videoId: vId,
+    playerVars:{
+      playsinline:1,
+      controls:0,
+      rel:0,
+      modestbranding:1,
+      disablekb:1,
+      iv_load_policy:3,
+      origin:window.location.origin
+    },
     events:{
       onReady:()=>{
         SP.ytReady=true;
         SP.dur=SP.ytPlayer.getDuration()||0;
         document.getElementById('spDur').textContent=fmtTime(SP.dur);
         spHideBuffer();
+        // اضبط pointer-events:none على الإطار الذي أنشأته YT
+        const ytIframe=document.getElementById('ytApiContainer')?.querySelector('iframe');
+        if(ytIframe){
+          ytIframe.style.position='absolute';
+          ytIframe.style.top='-60px';
+          ytIframe.style.left='-2px';
+          ytIframe.style.width='calc(100% + 4px)';
+          ytIframe.style.height='calc(100% + 120px)';
+          ytIframe.style.pointerEvents='none';
+          ytIframe.style.border='none';
+        }
         if(SP.tickTimer) clearInterval(SP.tickTimer);
         SP.tickTimer=setInterval(spYTTick,500);
       },
@@ -857,12 +860,12 @@ function initYTBridge(){
         SP.playing=(e.data===YT.PlayerState.PLAYING);
         spSyncPlayBtn();
         if(SP.playing){
-          spHideCover();spHideBuffer();
+          spHideBuffer();
           scheduleHideControls();
         } else if(e.data===YT.PlayerState.BUFFERING){
           spShowBuffer();
         } else {
-          spShowCover();spHideBuffer();
+          spHideBuffer();
         }
       }
     }
@@ -890,12 +893,12 @@ function dmMessageHandler(e){
   switch(d.event){
     case 'apiready':    spHideBuffer(); break;
     case 'play':case 'playing':
-      SP.playing=true;spSyncPlayBtn();spHideCover();spHideBuffer();
+      SP.playing=true;spSyncPlayBtn();spHideBuffer();
       scheduleHideControls();
       if(!SP.tickTimer) SP.tickTimer=setInterval(()=>dmSend('getProgress'),500);
       break;
     case 'pause':case 'end':
-      SP.playing=false;spSyncPlayBtn();spShowCover();clearInterval(SP.tickTimer);SP.tickTimer=null;
+      SP.playing=false;spSyncPlayBtn();spHideBuffer();clearInterval(SP.tickTimer);SP.tickTimer=null;
       break;
     case 'progress':
       if(d.time!==undefined) SP.cur=d.time;
@@ -916,7 +919,7 @@ function dmMessageHandler(e){
 
 /* ─── Play / Pause موحد ─── */
 function spTogglePlay(){
-  if(SP.type==='youtube'&&SP.ytPlayer){
+  if(SP.type==='youtube'&&SP.ytPlayer&&SP.ytReady){
     if(SP.playing) SP.ytPlayer.pauseVideo();
     else SP.ytPlayer.playVideo();
   } else if(SP.type==='dailymotion'){
@@ -971,9 +974,7 @@ window.spFullscreen=function(){
   else document.exitFullscreen();
 };
 
-/* ─── Cover & Buffer ─── */
-function spShowCover(){const c=document.getElementById('spCover');if(c)c.classList.remove('hide');}
-function spHideCover(){const c=document.getElementById('spCover');if(c)c.classList.add('hide');}
+/* ─── Buffer ─── */
 function spShowBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.add('show');}
 function spHideBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.remove('show');}
 
@@ -1008,7 +1009,6 @@ function scheduleHideControls(){
 /* ─── ربط أحداث البلاير ─── */
 function bindStealthEvents(){
   const overlay=document.getElementById('spOverlay');
-  const cover=document.getElementById('spCover');
   const timeline=document.getElementById('spTimeline');
   const wrap=document.getElementById('spWrap');
 
@@ -1018,8 +1018,6 @@ function bindStealthEvents(){
     spTogglePlay();
     scheduleHideControls();
   });
-  // Click على الـ cover
-  cover.addEventListener('click',()=>spTogglePlay());
 
   // Mousemove → أظهر الـ controls
   wrap.addEventListener('mousemove',()=>{
