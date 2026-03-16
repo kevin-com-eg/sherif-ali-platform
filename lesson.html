@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+/* ── التنسيقات العامة (ستايلك الأصلي) ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
 :root{
@@ -16,26 +17,11 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
   --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.15);--nav-h:62px;
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
 /* ── LOADING ── */
 #loadingScreen{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--white); transition: opacity 0.3s;}
 .ld-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:900;color:#fff;font-family:var(--mono);box-shadow:0 8px 24px rgba(13,122,95,.3);}
-.ld-dots{display:flex;gap:7px;}
-.ld-dot{width:8px;height:8px;border-radius:50%;background:var(--teal4);animation:ldp 1.2s ease-in-out infinite;}
-.ld-dot:nth-child(2){animation-delay:.2s;}
-.ld-dot:nth-child(3){animation-delay:.4s;}
-@keyframes ldp{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1);background:var(--teal);}}
-
-/* ── DEV TOOLS BLOCKER ── */
-#devToolsBlocker { position: fixed; inset: 0; z-index: 999999; background: rgba(5, 8, 15, 0.98); backdrop-filter: blur(20px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-
-/* ── LOCK SCREEN ── */
-#codeLockScreen{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
-.lock-card{width:100%;max-width:420px;background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:44px 34px 36px;text-align:center;position:relative;box-shadow:var(--shadow2);animation:riseIn .5s both;}
-.lock-back{position:absolute;top:16px;right:16px;display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.78rem;font-weight:700;color:var(--text2);cursor:pointer;}
-.lock-input{width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:14px 18px;border-radius:12px;font-family:var(--mono);font-size:1.05rem;letter-spacing:4px;text-align:center;outline:none;margin:14px 0;}
-.lock-btn{width:100%;background:var(--teal);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:900;cursor:pointer;}
 
 /* ── NAVBAR ── */
 nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white);border-bottom:1px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,.05);}
@@ -44,14 +30,9 @@ nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white
 .tab-btn{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;border:none;background:none;font-family:var(--sans);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--text3);transition:all .22s;opacity:.45;pointer-events:none;white-space:nowrap;}
 .tab-btn.unlocked{opacity:1;pointer-events:auto;color:var(--text2);}
 .tab-btn.active{background:var(--teal)!important;color:#fff!important;opacity:1!important;}
-.nav-right{display:flex;align-items:center;gap:8px;}
-.access-pill{display:flex;align-items:center;gap:5px;background:var(--teal3);border:1px solid var(--teal4);border-radius:9px;padding:6px 11px;font-family:var(--mono);font-size:.67rem;color:var(--teal);}
-#timerBox{display:flex;align-items:center;gap:5px;background:#fee2e2;border:1px solid #fecaca;color:var(--red);border-radius:9px;padding:6px 13px;font-family:var(--mono);font-size:.83rem;}
-
-main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:26px 20px 70px;}
 
 /* ─────────────────────────────────────────────
-    🔥 DAILYMOTION PRO PLAYER STYLE 🔥
+    🔥 DAILYMOTION PRO PLAYER 🔥
 ───────────────────────────────────────────── */
 .pro-player-wrap {
     position: relative; width: 100%; aspect-ratio: 16/9;
@@ -59,94 +40,57 @@ main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:26px 20px
     box-shadow: var(--shadow2); border: 1px solid rgba(255,255,255,0.08);
 }
 .vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; }
+/* تكبير بسيط لضمان اختفاء حواف Dailymotion */
 .vp-iframe-wrap iframe { 
-    width: 100%; height: 120%; position: absolute; top: -10%; border: none; 
-    pointer-events: none !important; 
+    width: 100%; height: 110%; position: absolute; top: -5%; border: none; 
 }
-.vid-blocker { position: absolute; background: #000; z-index: 15; pointer-events: none; }
-.vid-blocker-top { top: 0; left: 0; right: 0; height: 55px; } 
+.vid-blocker { position: absolute; background: #000; z-index: 5; pointer-events: none; }
+.vid-blocker-top { top: 0; left: 0; right: 0; height: 50px; } 
 .vid-blocker-bottom-right { bottom: 0; right: 0; width: 140px; height: 50px; } 
 
-.pro-watermark { position: absolute; inset: 0; z-index: 25; pointer-events: none; overflow: hidden; }
+.pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
 .pro-watermark span {
     position: absolute; font-family: var(--mono); font-size: 1.1rem; font-weight: 900;
-    color: rgba(255,255,255,0.2); text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-    animation: wmMove 20s linear infinite alternate; white-space: nowrap;
+    color: rgba(255,255,255,0.15); text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    animation: wmMove 25s linear infinite alternate;
 }
-@keyframes wmMove { 0%{top:10%;left:5%;} 100%{top:80%;left:70%;} }
+@keyframes wmMove { 0%{top:5%;left:5%;} 100%{top:85%;left:75%;} }
 
 .video-cover {
-    position: absolute; inset: 0; z-index: 30;
+    position: absolute; inset: 0; z-index: 20;
     background-size: cover; background-position: center;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
 }
-.video-cover::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
-
+.video-cover::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.4); }
 .play-btn-circle {
-    position: relative; z-index: 31; width: 70px; height: 70px;
+    position: relative; z-index: 21; width: 75px; height: 75px;
     background: var(--teal); border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; transition: 0.3s;
+    align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(13,122,95,0.5);
 }
 
-.vid-controls {
-    position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
-    padding: 15px 20px; background: linear-gradient(to top, rgba(0,0,0,1), transparent);
-    opacity: 0; transition: 0.3s; direction: ltr;
-}
-.pro-player-wrap:hover .vid-controls, .pro-player-wrap.paused .vid-controls { opacity: 1; }
-
-.vid-timeline { height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; cursor: pointer; margin-bottom: 12px; position: relative; }
-.vid-progress { position: absolute; height: 100%; background: var(--teal); border-radius: 4px; width: 0%; }
-
-.vid-ctrl-row { display: flex; align-items: center; justify-content: space-between; }
-.vid-ctrl-group { display: flex; align-items: center; gap: 15px; }
-.v-btn { background: none; border: none; color: #fff; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
-.v-btn:hover { color: var(--teal); }
-.v-btn svg { width: 24px; height: 24px; fill: currentColor; }
-
-.speed-menu {
-    position: absolute; bottom: 65px; right: 20px; background: rgba(20,25,30,0.95);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px;
-    display: none; flex-direction: column; z-index: 50; min-width: 90px;
-}
-.speed-menu button {
-    background: none; border: none; color: #fff; padding: 8px 12px;
-    font-size: 0.8rem; cursor: pointer; text-align: left; border-radius: 6px; font-family: var(--mono);
-}
-.speed-menu button:hover { background: var(--teal); }
-.speed-active { display: flex; }
-
-/* ── QUIZ & HOMEWORK STYLES (من كودك الأصلي) ── */
-.q-card, .score-card, .pdf-card { background:var(--white); border:1px solid var(--border2); border-radius:20px; padding:26px; box-shadow:var(--shadow); margin-bottom:20px;}
-.q-text { font-size:1.1rem; font-weight:700; margin-bottom:20px; line-height:1.6; }
-.options { display:flex; flex-direction:column; gap:10px; }
-.opt-label { display:flex; align-items:center; gap:12px; background:var(--bg); border:1.5px solid var(--border2); border-radius:12px; padding:13px 15px; cursor:pointer; }
-.opt-label:has(input:checked) { border-color:var(--teal); background:var(--teal3); }
+/* ── Content Sections ── */
+main{max-width:900px;margin:0 auto;padding:26px 20px;}
+.q-card, .score-card { background:var(--white); border-radius:22px; padding:32px; box-shadow:var(--shadow); margin-bottom:20px; }
 .hidden { display:none !important; }
-@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.lock-btn{width:100%; background:var(--teal); color:#fff; border:none; padding:15px; border-radius:12px; font-weight:900; cursor:pointer;}
 </style>
 </head>
 <body oncontextmenu="return false;">
 
 <div id="loadingScreen">
     <div class="ld-logo">MP</div>
-    <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
-    <div class="ld-txt" id="ldText">جاري التحقق من الصلاحيات...</div>
-</div>
-
-<div id="devToolsBlocker" class="hidden">
-    <div style="font-size:5rem;margin-bottom:20px;">🛑</div>
-    <h2>تحذير أمني!</h2>
-    <p>يرجى إغلاق أدوات المطور للمتابعة.</p>
+    <div id="ldText">جاري التحقق...</div>
 </div>
 
 <div id="codeLockScreen" class="hidden">
-    <div class="lock-card">
-        <button class="lock-back" onclick="window.history.back()">↩ رجوع</button>
-        <div style="font-size:3rem;margin-bottom:15px;">🎫</div>
-        <h3>تفعيل الحصة</h3>
-        <input id="accessCodeInput" class="lock-input" placeholder="أدخل الكود هنا">
-        <button id="verifyBtn" class="lock-btn">تفعيل الحصة ←</button>
+    <div style="display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px;">
+        <div class="score-card" style="max-width:400px; width:100%; text-align:center;">
+            <div style="font-size:3rem; margin-bottom:15px;">🎫</div>
+            <h3 style="margin-bottom:10px;">تفعيل الحصة</h3>
+            <p style="font-size:0.9rem; color:var(--text2); margin-bottom:20px;">أدخل الكود الخاص بك لفتح المحتوى</p>
+            <input id="accessCodeInput" style="width:100%; padding:14px; border-radius:10px; border:1px solid var(--border2); text-align:center; margin-bottom:15px;" placeholder="أدخل الكود هنا">
+            <button id="verifyBtn" class="lock-btn">تفعيل الآن</button>
+        </div>
     </div>
 </div>
 
@@ -159,234 +103,179 @@ main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:26px 20px
                 <button id="btn-video-tab" class="tab-btn locked-dim" onclick="switchTab('video')">📺 الشرح</button>
                 <button id="btn-pdf-tab" class="tab-btn locked-dim" onclick="switchTab('pdf')">📚 الملزمة</button>
             </div>
-            <div class="nav-right">
-                <div id="accessTimerBox" class="access-pill hidden"><span id="accessCountdown">--:--</span></div>
-                <div id="timerBox" class="hidden"><span id="timerVal">40:00</span></div>
-            </div>
         </div>
     </nav>
 
     <main>
         <div id="tab-quiz">
             <div id="startScreen" class="score-card" style="text-align:center;">
-                <span style="font-size:3rem;">🚀</span>
                 <h2>جاهز تبدأ الامتحان؟</h2>
-                <button id="startBtn" class="lock-btn" style="width:auto; padding:12px 40px; margin-top:20px;">ابدأ الامتحان</button>
+                <button onclick="startQuiz()" class="lock-btn" style="width:auto; padding:12px 50px; margin-top:20px;">ابدأ الآن</button>
             </div>
             <div id="quizApp" class="hidden">
                 <div id="qDisplay"></div>
-                <div style="display:flex; justify-content:space-between; margin-top:20px;">
-                    <button id="prevBtn" class="v-btn" style="color:var(--text2)">السابق</button>
-                    <button id="nextBtn" class="lock-btn" style="width:auto; padding:10px 30px;">التالي</button>
-                    <button id="finishBtn" class="lock-btn hidden" style="width:auto; padding:10px 30px; background:var(--gold);">إنهاء</button>
-                </div>
+                <button onclick="nextQuestion()" id="nextBtn" class="lock-btn" style="width:auto; padding:12px 40px; margin-top:20px;">السؤال التالي ←</button>
             </div>
             <div id="reviewArea" class="hidden">
                 <div id="scoreBanner"></div>
-                <div id="reviewList"></div>
             </div>
         </div>
 
-        <div id="tab-video" class="hidden"></div>
+        <div id="tab-video" class="hidden">
+            <div class="pro-player-wrap" id="playerWrap">
+                <div class="pro-watermark"><span>STUDENT ID: <span id="sid_label">000000</span></span></div>
+                <div class="vp-iframe-wrap">
+                    <div class="vid-blocker vid-blocker-top"></div>
+                    <div class="vid-blocker vid-blocker-bottom-right"></div>
+                    <iframe id="dmFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                    <div class="video-cover" id="videoCover" onclick="startDailymotion()">
+                        <div class="play-btn-circle">
+                            <svg viewBox="0 0 24 24" width="35" height="35" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="tab-homework" class="hidden"></div>
         <div id="tab-pdf" class="hidden">
             <div class="pdf-card" style="text-align:center;">
                 <div style="font-size:3rem;">📚</div>
-                <h3>ملزمة الحصة</h3>
-                <a id="pdfLink" href="#" target="_blank" class="lock-btn" style="display:inline-block; text-decoration:none; margin-top:20px; width:auto; padding:12px 40px;">تحميل الملزمة</a>
+                <h3 style="margin-top:10px;">ملزمة الحصة</h3>
+                <a id="pdfLink" href="#" target="_blank" class="lock-btn" style="display:inline-block; text-decoration:none; margin-top:20px; width:auto; padding:12px 40px;">تحميل PDF</a>
             </div>
         </div>
     </main>
 </div>
 
 <script>
+// الإعدادات الأساسية
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
 
-let currentUser=null, questions=[], curIdx=0, userAns={}, lessonData=null;
-let myStudentId="000000", isVideoInited=false, vidDuration=0, vidCur=0, isPlaying=false;
-let hwData=null, hwQuestions=[], hwUserAns={}, hwCurIdx=0;
+let currentUser, lessonData, questions=[], curIdx=0, userAns={}, myStudentId;
 
-/* ════════════════════════════════════
-    🔥 DAILYMOTION PRO PLAYER LOGIC 🔥
-════════════════════════════════════ */
-function buildDailymotionPlayer() {
-    isVideoInited = true;
-    const vc = document.getElementById('tab-video');
-    const url = lessonData?.video;
-    if(!url) return vc.innerHTML = "الفيديو غير متاح.";
-
-    const vId = url.match(/(?:video\/|dai\.ly\/)([a-zA-Z0-9]+)/)?.[1] || url;
-    const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
-
-    vc.innerHTML = `
-    <div class="pro-player-wrap paused" id="playerWrap">
-        <div class="pro-watermark"><span>STUDENT ID: ${myStudentId}</span></div>
-        <div class="vp-iframe-wrap">
-            <div class="vid-blocker vid-blocker-top"></div>
-            <div class="vid-blocker vid-blocker-bottom-right"></div>
-            <iframe id="dmFrame" src="https://www.dailymotion.com/embed/video/${vId}?api=postMessage&controls=0" allow="autoplay; fullscreen"></iframe>
-            <div class="video-cover" id="videoCover" onclick="togglePlay()" style="background-image:url('${coverImg}')">
-                <div class="play-btn-circle"><svg viewBox="0 0 24 24" width="30" height="30" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
-            </div>
-            <div style="position:absolute;inset:0;z-index:20;" onclick="togglePlay()"></div>
-        </div>
-        <div id="speedMenu" class="speed-menu">
-            <button onclick="changeSpeed(0.5)">0.5x</button>
-            <button onclick="changeSpeed(1)">عادي</button>
-            <button onclick="changeSpeed(1.5)">1.5x</button>
-            <button onclick="changeSpeed(2)">2x</button>
-        </div>
-        <div class="vid-controls">
-            <div class="vid-timeline" onclick="seekFromBar(event)">
-                <div class="vid-progress" id="vidProgress"></div>
-            </div>
-            <div class="vid-ctrl-row">
-                <div class="vid-ctrl-group">
-                    <button class="v-btn" onclick="togglePlay()" id="playBtn"><svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z" fill="white"/></svg></button>
-                    <button class="v-btn" onclick="seekVid(-10)"><svg viewBox="0 0 24 24"><path d="M12.5 3v18L5 12l7.5-9zm1.1 0l7.5 9-7.5 9V3z" fill="white"/></svg></button>
-                    <span id="vidTime" style="color:white; font-family:var(--mono); font-size:0.8rem;">0:00</span>
-                </div>
-                <div class="vid-ctrl-group">
-                    <button class="v-btn" onclick="toggleSpeedMenu()"><svg viewBox="0 0 24 24" fill="white"><path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-0.28-10.43zM10 11l4 2-4 2v-4z"/></svg></button>
-                    <button class="v-btn" onclick="toggleFull()"><svg viewBox="0 0 24 24" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
-                </div>
-            </div>
-        </div>
-    </div>`;
-    
-    window.addEventListener("message", handleDmMessage);
-}
-
-function handleDmMessage(e) {
-    if(!e.origin.includes("dailymotion")) return;
-    let data; try { data=JSON.parse(e.data); } catch(err) { return; }
-    if(data.event==="durationchange") vidDuration = data.duration;
-    if(data.event==="timeupdate") {
-        vidCur = data.time;
-        document.getElementById("vidProgress").style.width = (vidCur/vidDuration*100) + "%";
-        document.getElementById("vidTime").innerText = Math.floor(vidCur/60) + ":" + ("0"+Math.floor(vidCur%60)).slice(-2);
-    }
-    if(data.event==="play") {
-        isPlaying = true;
-        document.getElementById("videoCover").style.display = "none";
-        document.getElementById("playIcon").innerHTML = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="white"/>`;
-    }
-    if(data.event==="pause") {
-        isPlaying = false;
-        document.getElementById("playIcon").innerHTML = `<path d="M8 5v14l11-7z" fill="white"/>`;
-    }
-}
-
-function dmCmd(cmd, param={}){
-    const fr = document.getElementById("dmFrame");
-    if(fr) fr.contentWindow.postMessage(JSON.stringify({command:cmd, parameters:param}), "*");
-}
-
-window.togglePlay = () => isPlaying ? dmCmd("pause") : dmCmd("play");
-window.seekVid = (val) => dmCmd("seek", {time: vidCur + val});
-window.seekFromBar = (e) => dmCmd("seek", {time: (e.offsetX / e.currentTarget.offsetWidth) * vidDuration});
-window.changeSpeed = (s) => { dmCmd("playbackrate", {rate: s}); toggleSpeedMenu(); };
-window.toggleSpeedMenu = () => document.getElementById("speedMenu").classList.toggle("speed-active");
-window.toggleFull = () => {
-    const el = document.getElementById("playerWrap");
-    if(!document.fullscreenElement) el.requestFullscreen(); else document.exitFullscreen();
-};
-
-/* ════════════════════════════════════
-    CORE LOGIC (المنطق الأصلي بالكامل)
-════════════════════════════════════ */
-async function initLessonPage(){
-    showLoader();
+// 1. بدء التشغيل والتحقق
+async function init() {
     const id = new URLSearchParams(window.location.search).get('id');
     const {data:{session}} = await supabaseClient.auth.getSession();
     if(!session) return window.location.href="index.html";
     currentUser = session.user;
 
-    // الحصول على بيانات الطالب
-    const {data:userRes} = await supabaseClient.from('users').select('studentid').eq('id', currentUser.id).single();
-    myStudentId = userRes?.studentid || currentUser.id.substring(0,6).toUpperCase();
-
-    // تحميل بيانات الحصة والنتائج
-    const [{data:ls}, {data:res}] = await Promise.all([
-        supabaseClient.from('lessons').select('*').eq('id', id).single(),
-        supabaseClient.from('results').select('*').eq('email', currentUser.email).order('date', {ascending:false})
-    ]);
-
+    const {data:ls} = await supabaseClient.from('lessons').select('*').eq('id', id).single();
     if(ls) {
         lessonData = ls;
         questions = ls.questions || [];
-        document.getElementById('lessonContent').classList.remove('hidden');
-        document.getElementById('codeLockScreen').classList.add('hidden');
+        myStudentId = currentUser.id.substring(0,6).toUpperCase();
+        document.getElementById('sid_label').innerText = myStudentId;
         
-        // التحقق إذا كان الامتحان محلول
-        const prev = res?.find(r => r.lesson === ls.name);
-        if(prev) { userAns = prev.userans; unlockFeatures({score:prev.score, total:questions.length, pct:Math.round(prev.score/questions.length*100)}); }
-        
-        await loadHomeworkForLesson(id);
-    } else {
-        document.getElementById('codeLockScreen').classList.remove('hidden');
+        // التحقق من صلاحية الدخول (هل الكود مفعّل مسبقاً؟)
+        const {data:access} = await supabaseClient.from('codes').select('*').eq('usedby', currentUser.email).eq('lessonid', id.toLowerCase()).single();
+        if(access) {
+            document.getElementById('lessonContent').classList.remove('hidden');
+            // هل حل الامتحان قبل كدة؟
+            const {data:examDone} = await supabaseClient.from('results').select('*').eq('email', currentUser.email).eq('lesson', ls.name).single();
+            if(examDone) unlockEverything();
+        } else {
+            document.getElementById('codeLockScreen').classList.remove('hidden');
+        }
     }
-    hideLoader();
+    document.getElementById('loadingScreen').style.display='none';
 }
 
+// 2. تفعيل الكود
+document.getElementById('verifyBtn').onclick = async () => {
+    const code = document.getElementById('accessCodeInput').value.trim();
+    if(!code) return alert("اكتب الكود الأول");
+    
+    document.getElementById('ldText').innerText = "جاري التفعيل...";
+    document.getElementById('loadingScreen').style.display='flex';
+
+    const {data:codeCheck} = await supabaseClient.from('codes').select('*').eq('code', code).eq('used', false).single();
+    if(codeCheck) {
+        await supabaseClient.from('codes').update({used:true, usedby:currentUser.email, lessonid:lessonData.id.toLowerCase()}).eq('code', code);
+        location.reload();
+    } else {
+        alert("الكود غير صحيح أو مستخدم مسبقاً");
+        document.getElementById('loadingScreen').style.display='none';
+    }
+};
+
+// 3. المشغل الاحترافي
+function startDailymotion() {
+    const vId = lessonData.video.match(/(?:video\/|dai\.ly\/)([a-zA-Z0-9]+)/)?.[1] || lessonData.video;
+    const frame = document.getElementById('dmFrame');
+    document.getElementById('videoCover').style.opacity = '0';
+    setTimeout(() => document.getElementById('videoCover').style.display = 'none', 300);
+    
+    // تشغيل الفيديو فوراً مع إعدادات Dailymotion
+    frame.src = `https://www.dailymotion.com/embed/video/${vId}?autoplay=1&ui-logo=0&sharing-enable=0&info=0&controls=1`;
+}
+
+// 4. نظام الامتحان (المنطق الأصلي)
+function startQuiz() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('quizApp').classList.remove('hidden');
+    renderQ();
+}
+function renderQ() {
+    const q = questions[curIdx];
+    document.getElementById('qDisplay').innerHTML = `
+        <div class="q-card">
+            <h4 style="color:var(--teal); margin-bottom:15px;">السؤال ${curIdx+1} من ${questions.length}</h4>
+            <div style="font-weight:700; font-size:1.1rem; margin-bottom:20px;">${q.text}</div>
+            <div style="display:grid; gap:10px;">
+                ${['a','b','c','d'].map(l => q[l] ? `<label class="opt-label"><input type="radio" name="math" value="${l}"> ${q[l]}</label>` : '').join('')}
+            </div>
+        </div>`;
+}
+async function nextQuestion() {
+    const sel = document.querySelector('input[name="math"]:checked');
+    if(!sel) return alert("اختار إجابة الأول يا بطل");
+    userAns[curIdx] = sel.value;
+
+    if(curIdx < questions.length -1) {
+        curIdx++; renderQ();
+    } else {
+        finishQuiz();
+    }
+}
+async function finishQuiz() {
+    document.getElementById('loadingScreen').style.display='flex';
+    let score = 0;
+    questions.forEach((q,i) => { if(userAns[i] === q.correct) score++; });
+    
+    await supabaseClient.from('results').insert([{ email:currentUser.email, lesson:lessonData.name, score, total:questions.length, userans:userAns }]);
+    unlockEverything();
+    switchTab('video');
+    document.getElementById('loadingScreen').style.display='none';
+}
+
+function unlockEverything() {
+    ['video','pdf','homework'].forEach(t => {
+        const btn = document.getElementById(`btn-${t}-tab`);
+        if(btn) { btn.classList.add('unlocked'); btn.classList.remove('locked-dim'); }
+    });
+    if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
+    document.getElementById('tab-quiz').innerHTML = `<div class="score-card" style="text-align:center;"><h3>تم إنهاء الامتحان بنجاح ✅</h3><p>تقدر دلوقتي تشوف الشرح وتحمل الملزمة</p></div>`;
+}
+
+// 5. التنقل بين التابات
 window.switchTab = (tab) => {
     document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
-    if(tab === 'video' && !isVideoInited) buildDailymotionPlayer();
+    
+    if(tab === 'video' && lessonData) {
+        const vId = lessonData.video.match(/(?:video\/|dai\.ly\/)([a-zA-Z0-9]+)/)?.[1] || lessonData.video;
+        const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
+        document.getElementById('videoCover').style.backgroundImage = `url('${coverImg}')`;
+    }
 };
 
-// وظيفة فتح المميزات بعد الامتحان
-function unlockFeatures(msg) {
-    document.getElementById('reviewArea').classList.remove('hidden');
-    document.getElementById('startScreen').classList.add('hidden');
-    ['video','pdf','homework'].forEach(t => {
-        const btn = document.getElementById(`btn-${t}-tab`);
-        if(btn) { btn.classList.add('unlocked'); btn.classList.remove('locked-dim'); }
-    });
-    if(lessonData?.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
-}
-
-// وظائف الامتحان الأساسية
-document.getElementById('startBtn').onclick = () => {
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('quizApp').classList.remove('hidden');
-    renderQ();
-};
-
-function renderQ() {
-    const q = questions[curIdx];
-    const letters = OPT_LETTERS.slice(0, q.optionsCount || 4);
-    document.getElementById('qDisplay').innerHTML = `
-        <div class="q-card">
-            <div class="q-text">${q.text}</div>
-            <div class="options">
-                ${letters.map(l => `<label class="opt-label"><input type="radio" name="q" value="${l}" ${userAns[curIdx]==l?'checked':''}> ${q[l]}</label>`).join('')}
-            </div>
-        </div>`;
-    document.getElementById('finishBtn').classList.toggle('hidden', curIdx !== questions.length - 1);
-}
-
-document.getElementById('nextBtn').onclick = () => { 
-    const sel = document.querySelector('input[name="q"]:checked');
-    if(sel) userAns[curIdx] = sel.value;
-    if(curIdx < questions.length - 1) { curIdx++; renderQ(); }
-};
-
-/* LOAD HOMEWORK */
-async function loadHomeworkForLesson(lessonId) {
-    const {data:hw} = await supabaseClient.from('homework').select('*').eq('lessonid', lessonId).single();
-    if(hw) { hwData = hw; hwQuestions = hw.questions || []; }
-}
-
-function showLoader(){ document.getElementById('loadingScreen').style.display='flex'; }
-function hideLoader(){ document.getElementById('loadingScreen').style.display='none'; }
-
-initLessonPage();
+init();
 </script>
 </body>
 </html>
