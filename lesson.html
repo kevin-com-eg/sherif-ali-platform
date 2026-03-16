@@ -6,12 +6,7 @@
     <title>MathPro | منطقة الحصة</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
@@ -20,11 +15,6 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --border:#e2e8ed;--border2:#d0dae2;--text:#1a2332;--text2:#5a6a7a;--text3:#8a9aaa;
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
   --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--nav-h:62px;
-  
-  /* Plyr Custom Colors */
-  --plyr-color-main: var(--teal);
-  --plyr-video-control-color-hover: #fff;
-  --plyr-video-control-background-hover: var(--teal2);
 }
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter 0.2s, opacity 0.2s;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:2px;}
@@ -125,8 +115,9 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .q-btn.primary{background:var(--teal);color:#fff;box-shadow:0 4px 14px rgba(13,122,95,.22);}
 .q-btn.primary:hover{background:var(--teal2);box-shadow:0 6px 20px rgba(13,122,95,.32);}
 .q-btn.finish{background:#eff6ff;border:1.5px solid #bfdbfe;color:#2563eb;}
+.q-btn.finish:hover{background:#dbeafe;}
 
-/* ── SCORE ── */
+/* ── SCORE & REVIEW ── */
 .score-card{background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;position:relative;overflow:hidden;margin-bottom:18px;animation:riseIn .5s both;box-shadow:var(--shadow);}
 .score-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--teal),transparent);}
 .score-ring{width:110px;height:110px;margin:0 auto 18px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
@@ -151,36 +142,97 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .review-ans span{color:var(--text);font-weight:700;}
 .review-correct-ans{font-size:.82rem;color:var(--teal);font-weight:700;margin-top:5px;}
 
-/* ── HOMEWORK ── */
+/* ── HOMEWORK TAB ── */
 #tab-homework .hw-locked-screen{background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;box-shadow:var(--shadow);}
 .hw-locked-icon{font-size:3.5rem;margin-bottom:18px;}
 .hw-locked-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
 .hw-locked-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:380px;margin:0 auto 28px;}
-.hw-start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
+.hw-start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
+.hw-start-btn:hover{box-shadow:0 10px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
 .hw-done-screen{background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;}
 
 .hw-gate-wall{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;}
 .hw-gate-card{background:var(--white);border-radius:24px;padding:44px 32px;text-align:center;max-width:440px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.2);animation:riseIn .4s both;position:relative;}
+.hw-gate-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.hw-gate-icon{font-size:3.5rem;margin-bottom:16px;}
+.hw-gate-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
+.hw-gate-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:340px;margin:0 auto 28px;}
+.hw-gate-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:13px 36px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 5px 16px rgba(217,119,6,.25);}
 
-/* ── PLYR VIDEO PLAYER ── */
-.vid-section-title{font-size:.75rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
-.vid-section-title::before{content:'';width:4px;height:14px;background:var(--teal);border-radius:2px;}
+/* ── DAILYMOTION PRO PLAYER ── */
+.vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
 
-.player-wrapper {
+.pro-player-wrap {
     position: relative; width: 100%; border-radius: 16px;
     overflow: hidden; background: #000; box-shadow: var(--shadow2);
-    border: 1px solid var(--border2);
+    display: flex; flex-direction: column; justify-content: center;
+    aspect-ratio: 16/9;
 }
+.pro-player-wrap:fullscreen, .pro-player-wrap:-webkit-full-screen { border-radius: 0; }
 
-.player-watermark {
-    position: absolute; inset: 0; z-index: 50; pointer-events: none; overflow: hidden;
-}
-.player-watermark span {
+.vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; background: #000; }
+.vp-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; pointer-events: none !important; }
+
+/* العلامة المائية للطلاب */
+.pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
+.pro-watermark span {
     position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
-    color: rgba(255,255,255,0.4); text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+    color: rgba(255,255,255,0.3); text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
     animation: wmMove 25s linear infinite alternate; white-space: nowrap;
 }
 @keyframes wmMove { 0% { top: 10%; left: 10%; } 25% { top: 70%; left: 20%; } 50% { top: 40%; left: 70%; } 75% { top: 20%; left: 50%; } 100% { top: 60%; left: 80%; } }
+
+/* طبقات الحماية لإخفاء اللوجوهات الأصلية (Dailymotion) */
+.vid-blocker { position: absolute; background: #000; z-index: 15; pointer-events: none; transition: opacity 0.3s ease; }
+.vid-blocker-top { top: 0; left: 0; right: 0; height: 60px; } 
+.vid-blocker-bottom-right { bottom: 0; right: 0; width: 140px; height: 60px; } 
+
+/* طبقة للضغط والتشغيل */
+.vp-vid-overlay { position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent; }
+
+/* الغطاء الذكي (بيخفي الشاشة أثناء التوقف) */
+.yt-thumbnail-cover {
+    position: absolute; inset: 0; z-index: 35; 
+    background-size: cover; background-position: center; background-color: #000;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.yt-thumbnail-cover .yt-play-btn {
+    width: 75px; height: 55px; background: rgba(13,122,95,0.9);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: all 0.2s;
+}
+.yt-thumbnail-cover:hover .yt-play-btn { transform: scale(1.1); background: var(--teal); }
+.yt-play-btn svg { width: 32px; height: 32px; fill: #fff; margin-left: 5px; }
+
+/* شريط التحكم السفلي الاحترافي */
+.pro-controls {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    padding: 10px 20px 15px; display: flex; flex-direction: column; gap: 8px;
+    opacity: 0; transition: opacity 0.3s; direction: ltr; cursor: auto;
+}
+.pro-player-wrap:hover .pro-controls, .pro-player-wrap.active-controls .pro-controls { opacity: 1; }
+.pro-player-wrap.hide-controls .pro-controls { opacity: 0 !important; }
+
+.pro-timeline-container { width: 100%; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+.pro-timeline-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; position: relative; transition: height 0.1s; }
+.pro-timeline-container:hover .pro-timeline-bg { height: 8px; }
+.pro-timeline-progress { position: absolute; top: 0; left: 0; height: 100%; background: var(--teal); border-radius: 3px; pointer-events: none; transition: width 0.1s linear; }
+.pro-timeline-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--teal); border-radius: 50%; opacity: 0; pointer-events: none; transition: opacity 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+.pro-timeline-container:hover .pro-timeline-thumb { opacity: 1; }
+
+.pro-controls-bottom { display: flex; align-items: center; justify-content: space-between; }
+.pro-ctrl-group { display: flex; align-items: center; gap: 15px; }
+
+.pro-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.85; transition: all 0.2s; padding: 0; }
+.pro-btn:hover { opacity: 1; transform: scale(1.15); color: var(--teal); }
+.pro-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.pro-time { color: #fff; font-family: var(--mono); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 3px #000;}
+
+.pro-player-wrap:fullscreen .pro-controls { z-index: 9999; position: absolute; bottom: 0; }
+.pro-player-wrap:fullscreen .vp-iframe-wrap iframe { height: 100vh; }
+.pro-player-wrap:fullscreen .yt-thumbnail-cover { z-index: 9998; }
 
 /* ── PDF ── */
 .pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
@@ -189,6 +241,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .pdf-title{font-size:1.5rem;font-weight:900;margin-bottom:8px;color:var(--text);}
 .pdf-sub{color:var(--text2);font-size:.87rem;margin-bottom:30px;line-height:1.7;}
 .pdf-dl-btn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 40px;border-radius:13px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;text-decoration:none;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
+.pdf-dl-btn:hover{box-shadow:0 12px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
@@ -204,6 +257,9 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .access-pill .lbl{display:none;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
+  .pro-controls{padding:12px 14px 10px;}
+  .pro-left,.pro-right{gap:10px;}
+  .pro-time{font-size:.75rem;}
 }
 </style>
 </head>
@@ -227,7 +283,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     <div class="hw-gate-title">لازم تعمل الواجب الأول!</div>
     <div class="hw-gate-sub" id="hwGateMsg">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب</div>
     <button class="hw-gate-btn" onclick="goToHomework()">اذهب للواجب</button>
-    <span class="hw-gate-dismiss" style="display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
+    <span class="hw-gate-dismiss" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
   </div>
 </div>
 
@@ -279,7 +335,10 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
         <button id="startBtn" class="start-btn">ابدأ الامتحان</button>
       </div>
       <div id="quizApp" class="hidden quiz-wrap">
-        <div class="progress-row"><span id="qCount" class="q-count">1 / 10</span><div class="prog-track"><div class="prog-fill" id="progFill" style="width:10%"></div></div></div>
+        <div class="progress-row">
+          <span id="qCount" class="q-count">1 / 10</span>
+          <div class="prog-track"><div class="prog-fill" id="progFill" style="width:10%"></div></div>
+        </div>
         <div class="q-card" id="qDisplay"></div>
         <div class="quiz-nav">
           <button id="prevBtn" class="q-btn ghost hidden">السابق</button>
@@ -344,9 +403,8 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY
 const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
 
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
-let examTimer,myStudentId="000000";
+let examTimer,myStudentId="000000",vidPlayerInited=false;
 let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
-let plyrInstance = null;
 
 function showLoader(text = "جاري التحميل...") {
   const el = document.getElementById('loadingScreen');
@@ -365,9 +423,8 @@ window.switchTab = (tab) => {
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
     
-    // إذا فتح تاب الفيديو ولسه مش متأسس
-    if(tab === 'video' && !document.getElementById('player')) {
-        initVideoPlayer();
+    if(tab === 'video' && !vidPlayerInited) {
+        buildDailymotionPlayer();
     }
     
     hideLoader();
@@ -399,7 +456,7 @@ async function initLessonPage(){
 
     const{data:codesData}=await supabaseClient.from('codes').select('*').eq('usedby',currentUser.email);
     let hasAccess=false,validExpiry=null;
-    if(codesData) codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now){hasAccess=true;validExpiry=cd.expiryat;}});
+    if(codesData) codesData.forEach(cd=>{if(cd.lessonid == lessonId && cd.expiryat>now){hasAccess=true;validExpiry=cd.expiryat;}});
     
     if(hasAccess){
       localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:validExpiry,studentId:myStudentId}));
@@ -462,7 +519,7 @@ document.getElementById('verifyBtn').onclick=async()=>{
         await supabaseClient.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code);
         localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));
         location.reload();
-      } else if(cd.usedby===currentUser.email&&cd.lessonid===lessonId&&cd.expiryat>now){
+      } else if(cd.usedby===currentUser.email && cd.lessonid == lessonId && cd.expiryat>now){
         localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:cd.expiryat,studentId:myStudentId}));
         location.reload();
       } else {alert("كود غير صالح أو مستخدم مسبقاً!");}
@@ -473,59 +530,181 @@ document.getElementById('verifyBtn').onclick=async()=>{
 
 
 /* ════════════════════════════════════
-   🔥 PLYR VIDEO PLAYER 🔥
+   🔥 THE ULTIMATE DAILYMOTION PLAYER (Direct API) 🔥
 ════════════════════════════════════ */
-function initVideoPlayer() {
+let dmPlayerFrame = null;
+let vidDuration = 0;
+let vidCur = 0;
+let isVideoPlaying = false;
+let hideControlsTimer = null;
+
+function buildDailymotionPlayer() {
     const vc = document.getElementById('tab-video');
     const url = lessonData?.video;
     if(!url) {
         vc.innerHTML = '<div style="text-align:center;padding:50px;">لا يوجد فيديو متاح لهذه الحصة.</div>';
         return;
     }
+    
+    vidPlayerInited = true;
 
-    let playerHtml = `
+    const m = url.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+    const vId = m ? m[1] : url; 
+
+    const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
+
+    vc.innerHTML = `
     <div class="vid-section-title">فيديو الشرح</div>
-    <div class="player-wrapper">
-        <div class="player-watermark"><span>ID: ${myStudentId}</span></div>
-    `;
+    
+    <div class="pro-player-wrap paused-state" id="dmPlayerWrapper" oncontextmenu="return false;">
+        <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
 
-    // لو رابط Dailymotion
-    if (url.includes('dailymotion.com') || url.includes('dai.ly')) {
-        const m = url.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
-        const vId = m ? m[1] : url; 
+        <div class="vp-iframe-wrap">
+            <div class="vid-blocker vid-blocker-top"></div>
+            <div class="vid-blocker vid-blocker-bottom-right"></div>
+            
+            <div id="dmCover" class="yt-thumbnail-cover" style="background-image: url('${coverImg}');" onclick="toggleDmPlay()">
+                <div class="yt-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            </div>
+            
+            <div class="vp-yt-overlay" onclick="toggleDmPlay()"></div>
+            
+            <iframe id="dmFrame"
+                src="https://www.dailymotion.com/embed/video/${vId}?api=postMessage&controls=0&ui-logo=0&sharing-enable=0&info=0"
+                allow="autoplay; fullscreen" allowfullscreen>
+            </iframe>
+        </div>
         
-        // استدعاء Dailymotion نيتف بشكل نظيف وبدون زراير وهمية
-        playerHtml += `<iframe src="https://www.dailymotion.com/embed/video/${vId}?ui-logo=0&sharing-enable=0&info=0&controls=1" style="width:100%; aspect-ratio:16/9; border:none;" allowfullscreen allow="autoplay"></iframe>`;
-    } 
-    // لو رابط YouTube
-    else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        const m = url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-        const vId = m ? m[1] : null;
-        playerHtml += `<div class="plyr__video-embed" id="player"><iframe src="https://www.youtube.com/embed/${vId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1" allowfullscreen allowtransparency allow="autoplay"></iframe></div>`;
-    } 
-    // لو Vimeo
-    else if (url.includes('vimeo.com')) {
-        const vId = url.split('/').pop();
-        playerHtml += `<div class="plyr__video-embed" id="player"><iframe src="https://player.vimeo.com/video/${vId}?loop=false&byline=false&portrait=false&title=false&speed=true&transparent=0&gesture=media" allowfullscreen allowtransparency allow="autoplay"></iframe></div>`;
-    } 
-    // لو MP4 (أو Bunny.net مباشر)
-    else {
-        playerHtml += `<video id="player" playsinline controls data-poster="${lessonData.image || ''}"><source src="${url}" type="video/mp4" /></video>`;
-    }
+        <div class="pro-controls" id="dmControls">
+            <div class="pro-timeline-container" id="vpProg">
+                <div class="pro-timeline-bg">
+                    <div class="pro-timeline-progress" id="vpFill" style="width:0%"></div>
+                    <div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div>
+                </div>
+            </div>
+            <div class="pro-controls-bottom">
+                <div class="pro-ctrl-group">
+                    <button class="pro-btn" id="bottomPlayBtn" onclick="toggleDmPlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                    <button class="pro-btn" onclick="seekDmVideo(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
+                    <button class="pro-btn" onclick="seekDmVideo(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
+                    <div class="pro-time"><span id="dmCur">0:00</span> / <span id="dmDur">0:00</span></div>
+                </div>
+                <div class="pro-ctrl-group">
+                    <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                </div>
+            </div>
+        </div>
+    </div>`;
 
-    playerHtml += `</div>`;
-    vc.innerHTML = playerHtml;
+    dmPlayerFrame = document.getElementById('dmFrame');
+    setupDmDragging();
+    
+    const wrapper = document.getElementById('dmPlayerWrapper');
+    wrapper.addEventListener('mousemove', resetHideTimer);
+    wrapper.addEventListener('mouseleave', () => {
+        if(isVideoPlaying) wrapper.classList.add('hide-controls');
+    });
+}
 
-    // تشغيل مكتبة Plyr على الرابط لو مكنش Dailymotion
-    if (!url.includes('dailymotion.com') && !url.includes('dai.ly')) {
-        plyrInstance = new Plyr('#player', {
-            controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'fullscreen'],
-            settings: ['speed'],
-            speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] }
-        });
+function dmCmd(cmd, params={}) {
+    if (dmPlayerFrame && dmPlayerFrame.contentWindow) {
+        dmPlayerFrame.contentWindow.postMessage(JSON.stringify({command: cmd, parameters: params}), '*');
     }
 }
 
+window.addEventListener('message', e => {
+    if (!e.origin.includes('dailymotion.com')) return;
+    let data; try { data = JSON.parse(e.data); } catch(err) { return; }
+
+    if (data.event === 'durationchange') {
+        vidDuration = data.duration;
+        document.getElementById('dmDur').textContent = fmtTime(vidDuration);
+    }
+    if (data.event === 'timeupdate') {
+        vidCur = data.time;
+        document.getElementById('dmCur').textContent = fmtTime(vidCur);
+        const pct = vidDuration ? (vidCur / vidDuration * 100) : 0;
+        document.getElementById('vpFill').style.width = pct + '%';
+        document.getElementById('vpThumb').style.left = pct + '%';
+    }
+    if (data.event === 'play' || data.event === 'playing') {
+        isVideoPlaying = true;
+        updatePlayUI(true);
+    }
+    if (data.event === 'pause' || data.event === 'ended') {
+        isVideoPlaying = false;
+        updatePlayUI(false);
+    }
+});
+
+function updatePlayUI(playing) {
+    const wrap = document.getElementById('dmPlayerWrapper');
+    const playBtn = document.getElementById('bottomPlayBtn');
+    const cover = document.getElementById('dmCover');
+
+    if (wrap) {
+        if (playing) { wrap.classList.add('active-controls'); wrap.classList.remove('paused-state'); wrap.classList.remove('hide-controls'); }
+        else { wrap.classList.remove('active-controls'); wrap.classList.add('paused-state'); wrap.classList.remove('hide-controls'); }
+    }
+    if (playBtn) {
+        playBtn.innerHTML = playing
+            ? `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+            : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+    }
+    if (cover) {
+        cover.style.display = playing ? 'none' : 'flex';
+    }
+    if(playing) resetHideTimer();
+}
+
+window.toggleDmPlay = () => {
+    if (isVideoPlaying) dmCmd('pause');
+    else dmCmd('play');
+};
+
+window.seekDmVideo = function(sec) {
+    let newTime = vidCur + sec;
+    if(newTime < 0) newTime = 0;
+    if(vidDuration && newTime > vidDuration) newTime = vidDuration;
+    dmCmd('seek', {time: newTime});
+};
+
+function setupDmDragging() {
+    const prog = document.getElementById('vpProg');
+    if(!prog) return;
+    let isDragging = false;
+    const updateProgress = (e) => { 
+        const r = prog.getBoundingClientRect(); 
+        const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); 
+        dmCmd('seek', {time: pct * vidDuration}); 
+    };
+    prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
+    document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
+    document.addEventListener('mouseup', () => { isDragging = false; });
+    prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
+    document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
+    document.addEventListener('touchend', () => { isDragging = false; });
+}
+
+function resetHideTimer() {
+    const wrapper = document.getElementById('dmPlayerWrapper');
+    if(wrapper) {
+        wrapper.classList.remove('hide-controls');
+        clearTimeout(hideControlsTimer);
+        if(isVideoPlaying){
+            hideControlsTimer = setTimeout(() => { wrapper.classList.add('hide-controls'); }, 2500);
+        }
+    }
+}
+
+window.toggleFullscreen = () => {
+    const w = document.getElementById('dmPlayerWrapper');
+    if (!w) return;
+    if (!document.fullscreenElement) w.requestFullscreen();
+    else document.exitFullscreen();
+};
+
+function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
 
 /* ── LESSON & QUIZ LOGIC ── */
 async function initLesson(){
