@@ -209,9 +209,11 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .sp-shield-left  {top:0;left:0;bottom:0;width:6px;}
 .sp-shield-right {top:0;right:0;bottom:0;width:6px;}
 
-/* غطاء التفاعل الرئيسي (double-click للـ play/pause) */
+/* غطاء التفاعل — مش يغطي منطقة الـ controls السفلية */
 .sp-overlay{
-  position:absolute;inset:0;z-index:20;
+  position:absolute;top:0;left:0;right:0;
+  bottom:60px; /* ترك مساحة الـ controls */
+  z-index:20;
   cursor:pointer;background:transparent;
 }
 
@@ -881,19 +883,20 @@ function spYTTick(){
   spUpdateUI();
 }
 
-/* ─── Dailymotion postMessage (الفورمات الصح) ─── */
-function dmSend(command, extraParams={}){
+/* ─── Dailymotion postMessage (API الصح) ─── */
+function dmSend(command, params){
   if(!SP.iframe||!SP.iframe.contentWindow) return;
-  const msg={command};
-  // seek بيحتاج parameters array
-  if(command==='seek') msg.parameters=[extraParams.time||0];
+  // فورمات DM الصح: {event:'command', command:'play'}
+  const msg={event:'command', command};
+  if(params!==undefined) msg.parameters=Array.isArray(params)?params:[params];
   SP.iframe.contentWindow.postMessage(JSON.stringify(msg),'*');
 }
 
 function dmMessageHandler(e){
-  if(!SP.iframe) return;
-  // قبول الرسايل من dailymotion أو same-origin
-  if(e.source!==SP.iframe.contentWindow) return;
+  // قبول من أي أوريجن فيه dailymotion أو * (DM بيبعت من ساب-فريمات أحياناً)
+  const origin=String(e.origin||'');
+  if(!origin.includes('dailymotion')&&origin!=='null'&&origin!==window.location.origin) return;
+
   let d;
   try{ d=typeof e.data==='string'?JSON.parse(e.data):e.data; }catch{ return; }
   if(!d||!d.event) return;
@@ -901,55 +904,50 @@ function dmMessageHandler(e){
   switch(d.event){
     case 'apiready':
       spHideBuffer();
-      // اطلب autoplay
-      dmSend('play');
+      // لا نعمل autoplay هنا — المستخدم بيضغط play
       break;
 
     case 'play':
     case 'playing':
       SP.playing=true;
-      if(d.duration) SP.dur=d.duration;
-      spSyncPlayBtn();spHideBuffer();
+      if(d.duration&&d.duration>0){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
+      spSyncPlayBtn(); spHideBuffer();
       scheduleHideControls();
       break;
 
     case 'pause':
-      SP.playing=false;spSyncPlayBtn();
+      SP.playing=false; spSyncPlayBtn();
       break;
 
-    case 'end':
-      SP.playing=false;spSyncPlayBtn();
+    case 'end':case 'ended':
+      SP.playing=false; spSyncPlayBtn();
       break;
 
     case 'timeupdate':
-      // DM بيبعت videoTime أو time
       if(d.videoTime!==undefined) SP.cur=d.videoTime;
       else if(d.time!==undefined) SP.cur=d.time;
-      if(d.duration) SP.dur=d.duration;
+      if(d.duration&&d.duration>0){
+        SP.dur=d.duration;
+        document.getElementById('spDur').textContent=fmtTime(SP.dur);
+      }
       spUpdateUI();
       break;
 
     case 'durationchange':
-      if(d.duration){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
+      if(d.duration&&d.duration>0){
+        SP.dur=d.duration;
+        document.getElementById('spDur').textContent=fmtTime(SP.dur);
+      }
       break;
 
-    case 'seeking':
     case 'seeked':
       if(d.videoTime!==undefined) SP.cur=d.videoTime;
-      else if(d.time!==undefined) SP.cur=d.time;
-      spUpdateUI();
-      break;
+      spUpdateUI(); break;
 
-    case 'waiting':
-    case 'buffering':
-      spShowBuffer();
-      break;
-
-    case 'loadedmetadata':
-    case 'canplay':
-      if(d.duration) SP.dur=d.duration;
+    case 'waiting':case 'stalled': spShowBuffer(); break;
+    case 'canplay':case 'loadedmetadata':
       spHideBuffer();
-      document.getElementById('spDur').textContent=fmtTime(SP.dur);
+      if(d.duration&&d.duration>0){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
       break;
   }
 }
@@ -973,7 +971,7 @@ window.spSeek=function(sec){
     SP.ytPlayer.seekTo(t,true);
   } else if(SP.type==='dailymotion'){
     const t=Math.max(0,Math.min(SP.dur,SP.cur+sec));
-    dmSend('seek',{time:t});
+    dmSend('seek',[t]);
     SP.cur=t; spUpdateUI();
   }
 };
@@ -984,7 +982,7 @@ function spSeekToFraction(frac){
   const t=frac*SP.dur;
   SP.cur=t; spUpdateUI();
   if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.seekTo(t,true);
-  else if(SP.type==='dailymotion') dmSend('seek',{time:t});
+  else if(SP.type==='dailymotion') dmSend('seek',[t]);
 }
 
 /* ─── السرعة ─── */
@@ -993,7 +991,7 @@ window.spSetSpeed=function(s){
   document.getElementById('spSpeedLbl').textContent=s+'x';
   document.querySelectorAll('.sp-speed-item').forEach(el=>el.classList.toggle('active',parseFloat(el.textContent)===s));
   if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.setPlaybackRate(s);
-  else if(SP.type==='dailymotion') dmSend('setPlaybackRate',{rate:s});
+  else if(SP.type==='dailymotion') dmSend('setPlaybackRate',[s]);
   document.getElementById('spSpeedMenu').classList.remove('open');
 };
 
