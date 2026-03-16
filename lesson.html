@@ -177,8 +177,8 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 /* غلاف البلاير الرئيسي */
 .stealth-player{
   position:relative;width:100%;aspect-ratio:16/9;
-  background:#000;border-radius:16px;overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.4);
+  background:#000;border-radius:12px;overflow:hidden;
+  box-shadow:0 4px 32px rgba(0,0,0,.5);
   user-select:none;-webkit-user-select:none;
 }
 .stealth-player:fullscreen,
@@ -199,15 +199,16 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   border:none;pointer-events:none;
 }
 
-/* طبقات الحجب — تمنع أي click يوصل للـ iframe */
-.sp-shield{
-  position:absolute;z-index:10;
-  background:transparent;pointer-events:auto;cursor:default;
+/* حواجز سوداء صلبة — تحجب عناصر يوتيوب/ديلي موشن نهائياً */
+.sp-blinder{
+  position:absolute;z-index:15;
+  background:#000;pointer-events:none;
 }
-.sp-shield-top   {top:0;left:0;right:0;height:68px;}
-.sp-shield-bottom{bottom:0;left:0;right:0;height:68px;}
-.sp-shield-left  {top:0;left:0;bottom:0;width:6px;}
-.sp-shield-right {top:0;right:0;bottom:0;width:6px;}
+/* فقط العلوي مهم ليوتيوب — السفلي بيتغطى بالـ controls */
+.sp-blinder-top   {top:0;left:0;right:0;height:80px;}
+.sp-blinder-bottom{bottom:55px;left:0;right:0;height:20px;} /* تحت الفيديو وفوق controls */
+.sp-blinder-left  {top:0;left:0;bottom:0;width:3px;}
+.sp-blinder-right {top:0;right:0;bottom:0;width:3px;}
 
 /* غطاء التفاعل — مش يغطي منطقة الـ controls السفلية */
 .sp-overlay{
@@ -691,16 +692,14 @@ let SP={
 
 /* ─── بناء HTML البلاير ─── */
 function buildStealthPlayerHTML(embedInfo){
-  // YouTube → div فارغ تملأه الـ API
-  // Dailymotion → iframe مباشر
   const innerHtml = embedInfo.type === 'youtube'
-    ? `<div id="ytApiContainer" style="position:absolute;inset:0;"></div>`
+    ? `<div id="ytApiContainer" style="position:absolute;top:-100px;left:-4px;right:-4px;bottom:-100px;"></div>`
     : `<iframe id="spIframe"
          src="${embedInfo.src}"
          allow="autoplay; encrypted-media"
          allowfullscreen
          referrerpolicy="no-referrer"
-         style="position:absolute;top:-60px;left:-2px;width:calc(100% + 4px);height:calc(100% + 120px);border:none;pointer-events:none;">
+         style="position:absolute;top:-70px;left:-2px;width:calc(100% + 4px);height:calc(100% + 140px);border:none;pointer-events:none;">
        </iframe>`;
 
   return `
@@ -709,11 +708,11 @@ function buildStealthPlayerHTML(embedInfo){
     <!-- حاوية الفيديو -->
     <div class="sp-iframe-box">${innerHtml}</div>
 
-    <!-- دروع الحجب -->
-    <div class="sp-shield sp-shield-top"></div>
-    <div class="sp-shield sp-shield-bottom"></div>
-    <div class="sp-shield sp-shield-left"></div>
-    <div class="sp-shield sp-shield-right"></div>
+    <!-- حواجز سوداء صلبة تحجب يوتيوب نهائياً -->
+    <div class="sp-blinder sp-blinder-top"></div>
+    <div class="sp-blinder sp-blinder-bottom"></div>
+    <div class="sp-blinder sp-blinder-left"></div>
+    <div class="sp-blinder sp-blinder-right"></div>
 
     <!-- overlay التفاعل -->
     <div class="sp-overlay" id="spOverlay"></div>
@@ -837,10 +836,10 @@ function initStealthPlayer(){
 function applyYTIframeStyle(iframe){
   Object.assign(iframe.style,{
     position:'absolute',
-    top:'-70px',
-    left:'-2px',
-    width:'calc(100% + 4px)',
-    height:'calc(100% + 140px)',
+    top:'-100px',
+    left:'-4px',
+    width:'calc(100% + 8px)',
+    height:'calc(100% + 200px)',
     pointerEvents:'none',
     border:'none'
   });
