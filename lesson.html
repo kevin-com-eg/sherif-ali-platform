@@ -190,22 +190,17 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   overflow:hidden;
   background:#000;
 }
-/* CSS fallback للـ DM iframe — YT iframe بيتضبط بـ JS */
+/* CSS fallback للـ DM iframe */
 .sp-iframe-box iframe{
-  position:absolute;
-  top:-56px;left:-2px;
-  width:calc(100% + 4px);
-  height:calc(100% + 112px);
+  position:absolute;inset:0;
+  width:100%;height:100%;
   border:none;pointer-events:none;
 }
 
-/* حواجز سوداء صلبة — تحجب عناصر يوتيوب/ديلي موشن نهائياً */
-.sp-blinder{
-  position:absolute;z-index:15;
-  background:#000;pointer-events:none;
-}
-.sp-blinder-top   {top:0;left:0;right:0;height:42px;}
-.sp-blinder-bottom{bottom:55px;left:0;right:0;height:14px;}
+/* حواجز جانبية فقط */
+.sp-blinder{position:absolute;z-index:15;background:#000;pointer-events:none;}
+.sp-blinder-top   {display:none;}
+.sp-blinder-bottom{display:none;}
 .sp-blinder-left  {top:0;left:0;bottom:0;width:2px;}
 .sp-blinder-right {top:0;right:0;bottom:0;width:2px;}
 
@@ -715,13 +710,13 @@ let SP={
 /* ─── بناء HTML البلاير ─── */
 function buildStealthPlayerHTML(embedInfo){
   const innerHtml = embedInfo.type === 'youtube'
-    ? `<div id="ytApiContainer" style="position:absolute;top:-56px;left:-2px;right:-2px;bottom:-56px;"></div>`
+    ? `<div id="ytApiContainer" style="position:absolute;inset:0;"></div>`
     : `<iframe id="spIframe"
          src="${embedInfo.src}"
          allow="autoplay; encrypted-media"
          allowfullscreen
          referrerpolicy="no-referrer"
-         style="position:absolute;top:-56px;left:-2px;width:calc(100% + 4px);height:calc(100% + 112px);border:none;pointer-events:none;">
+         style="position:absolute;inset:0;width:100%;height:100%;border:none;pointer-events:none;">
        </iframe>`;
 
   return `
@@ -875,10 +870,8 @@ function initStealthPlayer(){
 function applyYTIframeStyle(iframe){
   Object.assign(iframe.style,{
     position:'absolute',
-    top:'-56px',
-    left:'-2px',
-    width:'calc(100% + 4px)',
-    height:'calc(100% + 112px)',
+    top:'0', left:'0',
+    width:'100%', height:'100%',
     pointerEvents:'none',
     border:'none'
   });
@@ -937,7 +930,6 @@ function initYTBridge(){
           spShowBuffer();
         } else {
           spHideBuffer();
-          if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED) spShowCover();
         }
       }
     }
@@ -984,11 +976,11 @@ function dmMessageHandler(e){
       break;
 
     case 'pause':
-      SP.playing=false; spSyncPlayBtn(); spShowCover();
+      SP.playing=false; spSyncPlayBtn();
       break;
 
     case 'end':case 'ended':
-      SP.playing=false; spSyncPlayBtn(); spShowCover();
+      SP.playing=false; spSyncPlayBtn();
       break;
 
     case 'timeupdate':
