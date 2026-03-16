@@ -256,62 +256,100 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   100%{top:55%;left:82%;}
 }
 
-/* ── شريط التحكم السفلي ── */
+/* ══════════════════════════════════
+   CONTROLS — Dr.Tamer Style
+══════════════════════════════════ */
 .sp-controls{
   position:absolute;bottom:0;left:0;right:0;z-index:40;
-  padding:8px 16px 12px;direction:ltr;
-  background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.5) 60%,transparent 100%);
-  transition:opacity .3s;
+  background:#1a1a2e;
+  direction:ltr;
 }
 
-/* شريط التقدم */
-.sp-timeline{width:100%;height:18px;cursor:pointer;display:flex;align-items:center;margin-bottom:6px;}
-.sp-bar{width:100%;height:4px;background:rgba(255,255,255,.25);border-radius:4px;position:relative;transition:height .1s;}
-.sp-timeline:hover .sp-bar{height:6px;}
-.sp-bar-fill{position:absolute;top:0;left:0;height:100%;background:var(--teal);border-radius:4px;pointer-events:none;}
-.sp-bar-thumb{
-  position:absolute;top:50%;transform:translate(-50%,-50%);
-  width:14px;height:14px;border-radius:50%;background:var(--teal);
-  opacity:0;pointer-events:none;transition:opacity .2s;
-  box-shadow:0 0 6px rgba(0,0,0,.5);
+/* ── Timeline range ── */
+.sp-timeline-wrap{padding:0 12px;padding-top:6px;}
+.sp-timeline-inp{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:5px;border-radius:5px;outline:none;cursor:pointer;
+  background:linear-gradient(to right, var(--teal) 0%, var(--teal) 0%, rgba(255,255,255,.25) 0%);
+  transition:height .1s;
 }
-.sp-timeline:hover .sp-bar-thumb{opacity:1;}
+.sp-timeline-inp:hover{height:7px;}
+.sp-timeline-inp::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--teal);cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,.5);
+}
+.sp-timeline-inp::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;border:none;
+  background:var(--teal);cursor:pointer;
+}
 
-/* صف الأزرار */
-.sp-btns{display:flex;align-items:center;justify-content:space-between;}
-.sp-grp{display:flex;align-items:center;gap:12px;}
-.sp-btn{
-  background:none;border:none;color:#fff;cursor:pointer;
+/* ── Controls bar ── */
+.sp-ctrl-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 12px 8px;gap:4px;
+}
+.sp-ctrl-left,.sp-ctrl-right{display:flex;align-items:center;gap:10px;}
+.sp-cb{
+  background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  opacity:.85;transition:opacity .15s,transform .15s,color .15s;padding:0;
+  padding:4px;border-radius:6px;transition:color .15s,background .15s;
+  flex-shrink:0;
 }
-.sp-btn:hover{opacity:1;transform:scale(1.15);color:var(--teal);}
-.sp-btn svg{width:20px;height:20px;fill:currentColor;}
-.sp-time{color:#fff;font-family:var(--mono);font-size:.8rem;font-weight:700;letter-spacing:.5px;text-shadow:0 1px 3px #000;}
+.sp-cb:hover{color:#fff;background:rgba(255,255,255,.12);}
+.sp-cb svg{width:22px;height:22px;fill:currentColor;}
+.sp-cb.sm svg{width:18px;height:18px;}
 
-/* السرعة */
-.sp-speed-wrap{position:relative;}
-.sp-speed-btn{
-  font-family:var(--sans);font-size:.85rem;font-weight:700;
-  color:#fff;border:none;background:none;cursor:pointer;
-  opacity:.85;transition:opacity .15s,color .15s;text-shadow:0 1px 3px #000;
+/* الوقت */
+.sp-dur{
+  color:rgba(255,255,255,.8);font-family:var(--mono);
+  font-size:.78rem;white-space:nowrap;
 }
-.sp-speed-btn:hover{opacity:1;color:var(--teal);}
-.sp-speed-menu{
-  position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);
-  background:rgba(10,15,25,.97);border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;padding:5px;min-width:80px;display:none;
-  box-shadow:0 8px 32px rgba(0,0,0,.8);
+
+/* الصوت */
+.sp-vol-wrap{display:flex;align-items:center;gap:6px;}
+.sp-vol-inp{
+  -webkit-appearance:none;appearance:none;
+  width:70px;height:4px;border-radius:4px;outline:none;cursor:pointer;
+  background:linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.85) 100%,rgba(255,255,255,.25) 100%);
 }
-.sp-speed-menu.open{display:block;animation:riseIn .15s ease-out;}
-.sp-speed-item{
-  display:block;width:100%;padding:7px 10px;
+.sp-vol-inp::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:#fff;cursor:pointer;
+}
+.sp-vol-inp::-moz-range-thumb{
+  width:12px;height:12px;border-radius:50%;border:none;background:#fff;cursor:pointer;
+}
+
+/* السرعة والجودة */
+.sp-pop-wrap{position:relative;}
+.sp-pop-btn{
+  background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;
+  font-family:var(--sans);font-size:.82rem;font-weight:700;
+  padding:4px 7px;border-radius:6px;display:flex;align-items:center;gap:4px;
+  transition:color .15s,background .15s;white-space:nowrap;
+}
+.sp-pop-btn:hover{color:#fff;background:rgba(255,255,255,.12);}
+.sp-pop-btn svg{width:15px;height:15px;fill:currentColor;}
+.sp-pop-menu{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:rgba(10,12,22,.97);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:5px;min-width:90px;display:none;
+  box-shadow:0 8px 32px rgba(0,0,0,.9);z-index:60;
+}
+.sp-pop-menu.open{display:block;animation:riseIn .15s ease-out;}
+.sp-pop-item{
+  display:block;width:100%;padding:7px 12px;
   font-family:var(--mono);font-size:.78rem;color:rgba(255,255,255,.8);
   background:none;border:none;cursor:pointer;text-align:center;
-  border-radius:7px;transition:all .12s;font-weight:700;margin-bottom:1px;
+  border-radius:7px;transition:all .12s;font-weight:700;
 }
-.sp-speed-item:hover{background:rgba(255,255,255,.1);color:#fff;}
-.sp-speed-item.active{background:var(--teal);color:#fff;}
+.sp-pop-item:hover{background:rgba(255,255,255,.1);color:#fff;}
+.sp-pop-item.active{background:var(--teal);color:#fff;}
+.sp-pop-label{
+  padding:4px 10px 6px;font-family:var(--mono);font-size:.62rem;
+  color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;
+  display:block;
+}
 
 /* مؤشر Buffer */
 .sp-buffer{
@@ -328,8 +366,13 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Fullscreen fixes */
-.stealth-player:fullscreen .sp-controls{z-index:9999;position:absolute;bottom:0;}
+.stealth-player:fullscreen .sp-controls,
 .stealth-player:-webkit-full-screen .sp-controls{z-index:9999;position:absolute;bottom:0;}
+@media(max-width:640px){
+  .sp-vol-inp{width:50px;}
+  .sp-cb svg{width:18px;height:18px;}
+  .sp-dur{font-size:.7rem;}
+}
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
@@ -750,62 +793,65 @@ function buildStealthPlayerHTML(embedInfo){
 
     <!-- شريط التحكم -->
     <div class="sp-controls" id="spControls">
-      <!-- Timeline -->
-      <div class="sp-timeline" id="spTimeline">
-        <div class="sp-bar">
-          <div class="sp-bar-fill" id="spFill" style="width:0%"></div>
-          <div class="sp-bar-thumb" id="spThumb" style="left:0%"></div>
-        </div>
+      <!-- Timeline range -->
+      <div class="sp-timeline-wrap">
+        <input type="range" class="sp-timeline-inp" id="spRange" min="0" max="1000" step="1" value="0">
       </div>
       <!-- أزرار -->
-      <div class="sp-btns">
-        <div class="sp-grp">
+      <div class="sp-ctrl-bar">
+        <div class="sp-ctrl-left">
           <!-- Play/Pause -->
-          <button class="sp-btn" id="spPlayBtn" onclick="spTogglePlay()">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <button class="sp-cb" id="spPlayBtn" onclick="spTogglePlay()">
+            <svg viewBox="0 0 16 16"><path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445zM8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>
           </button>
-          <!-- رجوع 10 ثواني -->
-          <button class="sp-btn" onclick="spSeek(-10)">
-            <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          <!-- رجوع -->
+          <button class="sp-cb sm" onclick="spSeek(-10)">
+            <svg viewBox="0 0 16 16"><path d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5z"/></svg>
           </button>
-          <!-- تقديم 10 ثواني -->
-          <button class="sp-btn" onclick="spSeek(10)">
-            <svg viewBox="0 0 24 24"><path d="M18.92 6.01C17.06 4.38 14.66 3.38 12 3.38c-4.65 0-8.58 3.03-9.96 7.22l2.36.78C5.45 8.19 8.46 5.88 12 5.88c1.96 0 3.73.72 5.12 1.88L14 11h9V2l-4.08 4.01z"/></svg>
+          <!-- تقديم -->
+          <button class="sp-cb sm" onclick="spSeek(10)">
+            <svg viewBox="0 0 16 16"><path d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5z"/></svg>
           </button>
-          <div class="sp-time"><span id="spCur">0:00</span> / <span id="spDur">0:00</span></div>
+          <!-- صوت -->
+          <div class="sp-vol-wrap">
+            <button class="sp-cb sm" id="spVolBtn" onclick="spToggleMute()">
+              <svg id="spVolIcon" viewBox="0 0 16 16"><path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/></svg>
+            </button>
+            <input type="range" class="sp-vol-inp" id="spVolRange" min="0" max="100" value="100" step="1">
+          </div>
+          <!-- الوقت -->
+          <div class="sp-dur"><span id="spCur">0:00:00</span> / <span id="spDur">0:00:00</span></div>
         </div>
-        <div class="sp-grp">
+        <div class="sp-ctrl-right">
           <!-- السرعة -->
-          <div class="sp-speed-wrap">
-            <button class="sp-speed-btn" id="spSpeedBtn" onclick="spToggleSpeedMenu()">
+          <div class="sp-pop-wrap">
+            <button class="sp-pop-btn" onclick="spToggleSpeedMenu()">
+              <svg viewBox="0 0 16 16"><path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692ZM15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692Z"/></svg>
               <span id="spSpeedLbl">1x</span>
             </button>
-            <div class="sp-speed-menu" id="spSpeedMenu">
-              ${[0.5,0.75,1,1.25,1.5,2].map(s=>`
-              <button class="sp-speed-item${s===1?' active':''}" onclick="spSetSpeed(${s})">${s}x</button>`).join('')}
+            <div class="sp-pop-menu" id="spSpeedMenu">
+              <span class="sp-pop-label">السرعة</span>
+              ${[0.5,0.75,1,1.25,1.5,1.75,2].map(s=>`<button class="sp-pop-item${s===1?' active':''}" onclick="spSetSpeed(${s})">${s}x</button>`).join('')}
             </div>
           </div>
           <!-- الجودة -->
-          <div class="sp-speed-wrap">
-            <button class="sp-speed-btn" id="spQualBtn" onclick="spToggleQualMenu()">
-              <span id="spQualLbl">
-                <svg style="width:16px;height:16px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-                HD
-              </span>
+          <div class="sp-pop-wrap">
+            <button class="sp-pop-btn" id="spQualBtn" onclick="spToggleQualMenu()">
+              <svg viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></svg>
+              <span id="spQualLbl">480p</span>
             </button>
-            <div class="sp-speed-menu" id="spQualMenu">
-              <div style="padding:4px 10px 6px;font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">الجودة</div>
-              <button class="sp-speed-item" onclick="spSetQuality('hd1080')">1080p</button>
-              <button class="sp-speed-item" onclick="spSetQuality('hd720')">720p</button>
-              <button class="sp-speed-item" onclick="spSetQuality('large')">480p</button>
-              <button class="sp-speed-item" onclick="spSetQuality('medium')">360p</button>
-              <button class="sp-speed-item" onclick="spSetQuality('small')">240p</button>
-              <button class="sp-speed-item active" onclick="spSetQuality('auto')">تلقائي</button>
+            <div class="sp-pop-menu" id="spQualMenu">
+              <span class="sp-pop-label">الجودة</span>
+              <button class="sp-pop-item" onclick="spSetQuality('hd1080')">1080p</button>
+              <button class="sp-pop-item" onclick="spSetQuality('hd720')">720p</button>
+              <button class="sp-pop-item active" onclick="spSetQuality('large')">480p</button>
+              <button class="sp-pop-item" onclick="spSetQuality('medium')">360p</button>
+              <button class="sp-pop-item" onclick="spSetQuality('small')">240p</button>
             </div>
           </div>
           <!-- ملء الشاشة -->
-          <button class="sp-btn" onclick="spFullscreen()">
-            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          <button class="sp-cb" onclick="spFullscreen()">
+            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
           </button>
         </div>
       </div>
@@ -1049,83 +1095,58 @@ function spSeekToFraction(frac){
 window.spSetSpeed=function(s){
   SP.speed=s;
   document.getElementById('spSpeedLbl').textContent=s+'x';
-  document.querySelectorAll('.sp-speed-item').forEach(el=>el.classList.toggle('active',parseFloat(el.textContent)===s));
+  document.querySelectorAll('#spSpeedMenu .sp-pop-item').forEach(el=>el.classList.toggle('active',parseFloat(el.textContent)===s));
   if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.setPlaybackRate(s);
   else if(SP.type==='dailymotion') dmSend('setPlaybackRate',[s]);
-  document.getElementById('spSpeedMenu').classList.remove('open');
+  document.getElementById('spSpeedMenu')?.classList.remove('open');
 };
+
+function scheduleHideControls(){ /* controls دايماً ظاهرة */ }
 
 window.spToggleSpeedMenu=function(){
   document.getElementById('spQualMenu')?.classList.remove('open');
-  const m=document.getElementById('spSpeedMenu');
-  m.classList.toggle('open');
+  document.getElementById('spSpeedMenu')?.classList.toggle('open');
 };
 
 window.spToggleQualMenu=function(){
   document.getElementById('spSpeedMenu')?.classList.remove('open');
-  const m=document.getElementById('spQualMenu');
-  // لو يوتيوب: حدّث قائمة الجودات المتاحة فعلياً
   if(SP.type==='youtube') spUpdateYTQualMenu();
-  m.classList.toggle('open');
+  document.getElementById('spQualMenu')?.classList.toggle('open');
 };
 
-/* ─── قراءة وضبط الجودة ─── */
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.sp-pop-wrap')){
+    document.getElementById('spSpeedMenu')?.classList.remove('open');
+    document.getElementById('spQualMenu')?.classList.remove('open');
+  }
+});
 const YT_QUAL_LABELS={'hd1080':'1080p','hd720':'720p','large':'480p','medium':'360p','small':'240p','tiny':'144p','auto':'تلقائي'};
 
 function spUpdateYTQualMenu(){
   if(!SP.ytPlayer||!SP.ytPlayer.getAvailableQualityLevels) return;
   const levels=SP.ytPlayer.getAvailableQualityLevels()||[];
-  const cur=SP.ytPlayer.getPlaybackQuality()||'auto';
+  const cur=SP.ytPlayer.getPlaybackQuality()||'large';
   const menu=document.getElementById('spQualMenu');
   if(!menu||levels.length===0) return;
-
   const allQ=['hd1080','hd720','large','medium','small','tiny'];
   const available=allQ.filter(q=>levels.includes(q));
-  available.push('auto');
-
-  menu.innerHTML=`<div style="padding:4px 10px 6px;font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">الجودة</div>`
-    +available.map(q=>`<button class="sp-speed-item${(q===cur||(!levels.includes(cur)&&q==='auto'))?' active':''}" onclick="spSetQuality('${q}')">${YT_QUAL_LABELS[q]||q}</button>`).join('');
-
-  // حدّث الـ label
-  const curLabel=YT_QUAL_LABELS[cur]||'HD';
-  document.getElementById('spQualLbl').innerHTML=`<svg style="width:14px;height:14px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5v-3l3 1.5-3 1.5zM5 9h6v6H5z"/></svg> ${curLabel}`;
+  menu.innerHTML=`<span class="sp-pop-label">الجودة</span>`
+    +available.map(q=>`<button class="sp-pop-item${q===cur?' active':''}" onclick="spSetQuality('${q}')">${YT_QUAL_LABELS[q]||q}</button>`).join('');
+  document.getElementById('spQualLbl').textContent=YT_QUAL_LABELS[cur]||'HD';
 }
 
 window.spSetQuality=function(q){
-  // أغلق القائمة
   document.getElementById('spQualMenu')?.classList.remove('open');
+  const lbl=YT_QUAL_LABELS[q]||q;
+  document.getElementById('spQualLbl').textContent=lbl;
+  document.querySelectorAll('#spQualMenu .sp-pop-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===lbl));
 
   if(SP.type==='youtube'&&SP.ytPlayer){
-    if(q==='auto'){
-      // YT: اختر أعلى جودة متاحة
-      const levels=SP.ytPlayer.getAvailableQualityLevels()||[];
-      SP.ytPlayer.setPlaybackQuality(levels[0]||'hd720');
-    } else {
-      SP.ytPlayer.setPlaybackQuality(q);
-    }
-    // حدّث الـ label بعد لحظة
-    setTimeout(()=>{
-      const cur=SP.ytPlayer.getPlaybackQuality();
-      const lbl=YT_QUAL_LABELS[cur]||'HD';
-      document.getElementById('spQualLbl').innerHTML=`<svg style="width:14px;height:14px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5v-3l3 1.5-3 1.5zM5 9h6v6H5z"/></svg> ${lbl}`;
-      document.querySelectorAll('#spQualMenu .sp-speed-item').forEach(el=>{
-        el.classList.toggle('active', el.textContent.trim()===lbl||el.textContent.trim()===(YT_QUAL_LABELS[q]||q));
-      });
-    },400);
+    SP.ytPlayer.setPlaybackQuality(q==='auto'?(SP.ytPlayer.getAvailableQualityLevels()||[])[0]||'hd720':q);
   }
-
   if(SP.type==='dailymotion'){
-    // DM: أرقام مباشرة
     const dmMap={'hd1080':1080,'hd720':720,'large':480,'medium':360,'small':240,'auto':0};
-    const val=dmMap[q]||0;
-    if(val===0) dmSend('setQuality',['auto']);
-    else dmSend('setQuality',[val]);
-    // حدّث الـ label
-    const lbl=YT_QUAL_LABELS[q]||'HD';
-    document.getElementById('spQualLbl').innerHTML=`<svg style="width:14px;height:14px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5v-3l3 1.5-3 1.5zM5 9h6v6H5z"/></svg> ${lbl}`;
-    document.querySelectorAll('#spQualMenu .sp-speed-item').forEach(el=>{
-      el.classList.toggle('active', el.textContent.trim()===lbl);
-    });
+    dmSend('setQuality',[dmMap[q]||0]);
   }
 };
 document.addEventListener('click',e=>{
@@ -1154,72 +1175,83 @@ function spSyncPlayBtn(){
   const btn=document.getElementById('spPlayBtn');
   if(!btn) return;
   btn.innerHTML=SP.playing
-    ?`<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
-    :`<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+    ?`<svg viewBox="0 0 16 16" style="width:22px;height:22px;fill:currentColor"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>`
+    :`<svg viewBox="0 0 16 16" style="width:22px;height:22px;fill:currentColor"><path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445zM8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>`;
 }
 
 /* ─── Update UI bar ─── */
 function spUpdateUI(){
-  const pct=SP.dur?(SP.cur/SP.dur*100):0;
-  const fill=document.getElementById('spFill');
-  const thumb=document.getElementById('spThumb');
+  const pct=SP.dur?(SP.cur/SP.dur*1000):0;
+  const range=document.getElementById('spRange');
   const cur=document.getElementById('spCur');
-  if(fill) fill.style.width=pct+'%';
-  if(thumb) thumb.style.left=pct+'%';
+  if(range){
+    range.value=pct;
+    // لون التقدم
+    range.style.background=`linear-gradient(to right,var(--teal) 0%,var(--teal) ${pct/10}%,rgba(255,255,255,.25) ${pct/10}%)`;
+  }
   if(cur) cur.textContent=fmtTime(SP.cur);
 }
 
-/* ─── إخفاء تلقائي للـ controls ─── */
-function scheduleHideControls(){
-  const w=document.getElementById('spWrap');
-  if(!w) return;
-  clearTimeout(SP.hideTimer);
-  SP.hideTimer=setTimeout(()=>{if(SP.playing)w.classList.remove('sp-active');},2800);
+/* ─── Volume ─── */
+window.spToggleMute=function(){
+  const icon=document.getElementById('spVolIcon');
+  const rng=document.getElementById('spVolRange');
+  if(!icon||!rng) return;
+  if(SP.muted){
+    SP.muted=false;
+    rng.value=SP.lastVol||100;
+    spApplyVolume(SP.lastVol||100);
+    icon.innerHTML=`<path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>`;
+  } else {
+    SP.lastVol=parseInt(rng.value)||100;
+    SP.muted=true;
+    spApplyVolume(0);
+    rng.value=0;
+    icon.innerHTML=`<path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>`;
+  }
+};
+SP.muted=false; SP.lastVol=100;
+
+function spApplyVolume(v){
+  if(SP.type==='youtube'&&SP.ytPlayer&&SP.ytReady){
+    if(v===0) SP.ytPlayer.mute(); else { SP.ytPlayer.unMute(); SP.ytPlayer.setVolume(v); }
+  }
+  // DM مش بيدعم volume عبر postMessage بشكل موثوق
 }
 
 /* ─── ربط أحداث البلاير ─── */
 function bindStealthEvents(){
   const overlay=document.getElementById('spOverlay');
-  const timeline=document.getElementById('spTimeline');
   const wrap=document.getElementById('spWrap');
+  const range=document.getElementById('spRange');
+  const volRng=document.getElementById('spVolRange');
 
-  // Click على الـ overlay (play/pause)
-  overlay.addEventListener('click',()=>{
-    wrap.classList.add('sp-active');
-    spTogglePlay();
-    scheduleHideControls();
-  });
+  // Click على الـ overlay
+  overlay.addEventListener('click',()=>{ spTogglePlay(); });
 
-  // Mousemove → أظهر الـ controls
-  wrap.addEventListener('mousemove',()=>{
-    wrap.classList.add('sp-active');
-    scheduleHideControls();
-  });
-  wrap.addEventListener('mouseleave',()=>{
-    if(SP.playing) wrap.classList.remove('sp-active');
-  });
+  // Timeline range input
+  if(range){
+    range.addEventListener('input',()=>{
+      const frac=range.value/1000;
+      SP.cur=frac*SP.dur;
+      spUpdateUI();
+    });
+    range.addEventListener('change',()=>{
+      spSeekToFraction(range.value/1000);
+    });
+  }
 
-  // Touch
-  wrap.addEventListener('touchstart',()=>{
-    wrap.classList.add('sp-active');
-    clearTimeout(SP.hideTimer);
-    SP.hideTimer=setTimeout(()=>{if(SP.playing)wrap.classList.remove('sp-active');},3000);
-  },{passive:true});
+  // Volume range
+  if(volRng){
+    volRng.addEventListener('input',()=>{
+      const v=parseInt(volRng.value);
+      SP.lastVol=v;SP.muted=(v===0);
+      volRng.style.background=`linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.85) ${v}%,rgba(255,255,255,.25) ${v}%)`;
+      spApplyVolume(v);
+    });
+  }
 
-  // Timeline drag
-  const getFrac=(e)=>{
-    const r=timeline.getBoundingClientRect();
-    const clientX=e.touches?e.touches[0].clientX:e.clientX;
-    return Math.max(0,Math.min(1,(clientX-r.left)/r.width));
-  };
-  timeline.addEventListener('mousedown',(e)=>{
-    SP.dragging=true;spSeekToFraction(getFrac(e));
-  });
-  document.addEventListener('mousemove',(e)=>{if(SP.dragging)spSeekToFraction(getFrac(e));});
-  document.addEventListener('mouseup',()=>{SP.dragging=false;});
-  timeline.addEventListener('touchstart',(e)=>{SP.dragging=true;spSeekToFraction(getFrac(e));},{passive:true});
-  document.addEventListener('touchmove',(e)=>{if(SP.dragging)spSeekToFraction(getFrac(e));},{passive:true});
-  document.addEventListener('touchend',()=>{SP.dragging=false;});
+  // Mousemove → controls دايماً ظاهرة (مش بتتخفى)
 }
 
 /* ─── Format time ─── */
