@@ -14,9 +14,9 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --bg:#f0f4f7;--white:#fff;--teal:#0d7a5f;--teal2:#0a6650;--teal3:#e8f5f1;--teal4:#c8e8e0;
   --border:#e2e8ed;--border2:#d0dae2;--text:#1a2332;--text2:#5a6a7a;--text3:#8a9aaa;
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
-  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--nav-h:62px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 12px 36px rgba(0,0,0,.15);--nav-h:62px;
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter 0.2s, opacity 0.2s;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:2px;}
 .hidden{display:none!important;}
 
@@ -50,9 +50,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .lock-sub{font-size:.87rem;color:var(--text2);line-height:1.65;margin-bottom:28px;}
 .lock-input{width:100%;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:14px 18px;border-radius:12px;font-family:var(--mono);font-size:1.05rem;letter-spacing:4px;text-align:center;outline:none;margin-bottom:14px;transition:all .25s;}
 .lock-input:focus{border-color:var(--teal);background:var(--white);box-shadow:0 0 0 3px rgba(13,122,95,.1);}
-.lock-input::placeholder{color:var(--text3);letter-spacing:1px;font-size:.85rem;}
 .lock-btn{width:100%;background:var(--teal);color:#fff;border:none;padding:14px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(13,122,95,.25);min-height:50px;}
-.lock-btn:hover{background:var(--teal2);box-shadow:0 10px 28px rgba(13,122,95,.35);transform:translateY(-1px);}
 
 /* ── NAVBAR ── */
 nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white);border-bottom:1px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,.05);}
@@ -60,7 +58,6 @@ nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white
 .nav-left{display:flex;align-items:center;gap:10px;min-width:0;}
 .back-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:8px 13px;flex-shrink:0;font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;}
 .back-btn:hover{border-color:var(--teal);color:var(--teal);}
-.back-btn span{display:inline;}
 .tabs{display:flex;gap:3px;background:var(--bg);border:1px solid var(--border2);border-radius:11px;padding:3px;overflow-x:auto;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab-btn{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;border:none;background:none;font-family:var(--sans);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--text3);transition:all .22s;opacity:.45;pointer-events:none;white-space:nowrap;}
@@ -72,194 +69,155 @@ nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white
 .access-pill{display:flex;align-items:center;gap:5px;background:var(--teal3);border:1px solid var(--teal4);border-radius:9px;padding:6px 11px;font-family:var(--mono);font-size:.67rem;color:var(--teal);white-space:nowrap;}
 .access-pill .lbl{color:var(--text2);font-size:.63rem;}
 #timerBox{display:flex;align-items:center;gap:5px;background:#fee2e2;border:1px solid #fecaca;color:var(--red);border-radius:9px;padding:6px 13px;font-family:var(--mono);font-size:.83rem;}
-#timerBox.urgent{animation:pRed 1s infinite;}
-@keyframes pRed{0%,100%{border-color:#fecaca}50%{border-color:#f87171}}
 
+/* ── MAIN ── */
 main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px 70px;}
 
-/* ── START SCREEN ── */
+/* ── UI COMPONENTS (Compressed for length) ── */
 #startScreen{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;position:relative;overflow:hidden;animation:riseIn .5s both;box-shadow:var(--shadow);}
 #startScreen::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--teal),transparent);}
-.start-emoji{font-size:3.2rem;display:block;margin-bottom:22px;animation:floatE 3s ease-in-out infinite;}
-@keyframes floatE{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.start-emoji{font-size:3.2rem;display:block;margin-bottom:22px;}
 .start-title{font-size:clamp(1.5rem,4vw,1.9rem);font-weight:900;color:var(--text);margin-bottom:10px;}
-.start-title span{color:var(--teal);}
 .start-sub{color:var(--text2);font-size:.9rem;line-height:1.75;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto;}
-.start-warn{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fed7aa;color:var(--gold);font-size:.78rem;font-weight:700;padding:9px 18px;border-radius:10px;margin-bottom:32px;font-family:var(--mono);}
 .start-btn{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:#fff;border:none;padding:15px 48px;border-radius:14px;font-family:var(--sans);font-size:1.05rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 24px rgba(13,122,95,.28);min-height:54px;}
-.start-btn:hover{background:var(--teal2);box-shadow:0 10px 32px rgba(13,122,95,.38);transform:translateY(-2px);}
 
-/* ── QUIZ ── */
 .quiz-wrap{display:flex;flex-direction:column;gap:18px;}
 .progress-row{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.75rem;color:var(--text2);}
 .prog-track{flex:1;height:5px;background:var(--border2);border-radius:5px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(to right,var(--teal),var(--teal2));border-radius:5px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+.prog-fill{height:100%;background:linear-gradient(to right,var(--teal),var(--teal2));border-radius:5px;transition:width .4s;}
 .q-count{color:var(--teal);font-weight:700;white-space:nowrap;}
 .q-card{background:var(--white);border:1px solid var(--border2);border-radius:20px;padding:26px;animation:riseIn .3s both;box-shadow:var(--shadow);}
 .q-label{font-family:var(--mono);font-size:.65rem;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
 .q-label::before{content:'';width:14px;height:2px;background:var(--teal);border-radius:2px;}
 .q-img{width:100%;max-height:240px;object-fit:contain;border-radius:12px;margin-bottom:18px;border:1px solid var(--border);background:var(--bg);}
-.q-text{font-size:clamp(.95rem,2.5vw,1.1rem);font-weight:800;line-height:1.7;margin-bottom:20px;color:var(--text);}
+.q-text{font-size:1.05rem;font-weight:800;line-height:1.7;margin-bottom:20px;color:var(--text);}
 .options{display:flex;flex-direction:column;gap:8px;}
-.opt-label{display:flex;align-items:center;gap:12px;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .2s;min-height:50px;}
+.opt-label{display:flex;align-items:center;gap:12px;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .2s;}
 .opt-label:hover{border-color:var(--teal);background:var(--teal3);}
 .opt-label:has(input:checked){border-color:var(--teal);background:var(--teal3);}
-.opt-label input[type=radio]{width:17px;height:17px;accent-color:var(--teal);flex-shrink:0;}
-.opt-key{font-family:var(--mono);font-size:.6rem;font-weight:700;color:var(--text3);background:var(--white);border:1px solid var(--border2);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;text-transform:uppercase;transition:all .2s;}
+.opt-label input[type=radio]{width:17px;height:17px;accent-color:var(--teal);}
+.opt-key{font-family:var(--mono);font-size:.6rem;font-weight:700;color:var(--text3);background:var(--white);border:1px solid var(--border2);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
 .opt-label:has(input:checked) .opt-key{background:var(--teal);border-color:var(--teal);color:#fff;}
-.opt-text{font-size:.9rem;font-weight:700;flex:1;color:var(--text);}
-.quiz-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.q-btn{display:flex;align-items:center;gap:6px;padding:11px 20px;border-radius:11px;border:none;font-family:var(--sans);font-weight:900;font-size:.87rem;cursor:pointer;transition:all .25s;white-space:nowrap;min-height:46px;}
+.opt-text{font-size:.9rem;font-weight:700;flex:1;}
+.quiz-nav{display:flex;align-items:center;justify-content:space-between;}
+.q-btn{display:flex;align-items:center;gap:6px;padding:11px 20px;border-radius:11px;border:none;font-family:var(--sans);font-weight:900;font-size:.87rem;cursor:pointer;min-height:46px;}
 .q-btn.ghost{background:var(--white);border:1.5px solid var(--border2);color:var(--text2);}
-.q-btn.ghost:hover{border-color:var(--teal);color:var(--teal);}
-.q-btn.primary{background:var(--teal);color:#fff;box-shadow:0 4px 14px rgba(13,122,95,.22);}
-.q-btn.primary:hover{background:var(--teal2);box-shadow:0 6px 20px rgba(13,122,95,.32);}
+.q-btn.primary{background:var(--teal);color:#fff;}
 .q-btn.finish{background:#eff6ff;border:1.5px solid #bfdbfe;color:#2563eb;}
-.q-btn.finish:hover{background:#dbeafe;}
 
-/* ── SCORE & REVIEW ── */
-.score-card{background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;position:relative;overflow:hidden;margin-bottom:18px;animation:riseIn .5s both;box-shadow:var(--shadow);}
-.score-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--teal),transparent);}
+.score-card{background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;position:relative;margin-bottom:18px;animation:riseIn .5s both;box-shadow:var(--shadow);}
 .score-ring{width:110px;height:110px;margin:0 auto 18px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
 .score-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
 .score-ring-num{font-family:var(--mono);font-size:2.1rem;font-weight:700;line-height:1;}
-.score-ring-pct{font-size:.63rem;color:var(--text3);font-family:var(--mono);}
 .score-of{font-family:var(--mono);font-size:.83rem;color:var(--text2);margin-top:4px;}
-.score-msg{color:var(--text2);font-size:.87rem;margin-top:7px;}
-.score-unlock{display:inline-flex;align-items:center;gap:7px;background:var(--teal3);border:1px solid var(--teal4);color:var(--teal);font-size:.77rem;font-weight:700;padding:8px 18px;border-radius:18px;margin-top:14px;font-family:var(--mono);}
-.review-section-title{font-size:.72rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono);margin-bottom:12px;}
-.review-item{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:10px;animation:riseIn .35s both;box-shadow:var(--shadow);}
+
+.review-item{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:10px;animation:riseIn .35s both;}
 .review-item.correct{border-color:var(--teal4);}
 .review-item.wrong{border-color:#fecaca;}
-.review-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;}
-.review-q-label{font-family:var(--mono);font-size:.63rem;color:var(--teal);text-transform:uppercase;letter-spacing:1px;}
-.rbadge{font-family:var(--mono);font-size:.6rem;font-weight:900;padding:3px 10px;border-radius:7px;}
-.rbadge.correct{background:var(--teal3);color:var(--teal);border:1px solid var(--teal4);}
-.rbadge.wrong{background:#fee2e2;color:var(--red);border:1px solid #fecaca;}
-.review-q-text{font-size:.93rem;font-weight:800;margin-bottom:8px;line-height:1.6;color:var(--text);}
-.review-ans{font-size:.82rem;color:var(--text2);margin-bottom:2px;}
-.review-ans span{color:var(--text);font-weight:700;}
-.review-correct-ans{font-size:.82rem;color:var(--teal);font-weight:700;margin-top:5px;}
 
-/* ── HOMEWORK TAB ── */
-#tab-homework .hw-locked-screen{background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;box-shadow:var(--shadow);}
-.hw-locked-icon{font-size:3.5rem;margin-bottom:18px;}
+#tab-homework .hw-locked-screen{background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;}
 .hw-locked-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
-.hw-locked-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:380px;margin:0 auto 28px;}
-.hw-start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
-.hw-start-btn:hover{box-shadow:0 10px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
-.hw-done-screen{background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;}
+.hw-start-btn{background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;}
+.hw-done-screen{background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;}
 
-/* ── THE PRO CUSTOM PLAYER (DAILYMOTION ONLY) ── */
+.hw-gate-wall{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.hw-gate-card{background:var(--white);border-radius:24px;padding:44px 32px;text-align:center;max-width:440px;width:100%;box-shadow:var(--shadow2);animation:riseIn .4s both;}
+
+.pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);}
+.pdf-dl-btn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 40px;border-radius:13px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;text-decoration:none;}
+
+/* ─────────────────────────────────────────────
+   🔥 THE NEW DAILYMOTION PLAYER 🔥
+───────────────────────────────────────────── */
 .vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
 .vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
 
-.pro-player-wrap {
-    position: relative; width: 100%; border-radius: 16px;
-    overflow: hidden; background: #000; box-shadow: var(--shadow2);
-    display: flex; flex-direction: column; justify-content: center;
-    aspect-ratio: 16/9;
+.dm-player-wrapper {
+    position: relative; width: 100%; aspect-ratio: 16/9;
+    border-radius: 18px; overflow: hidden; background: #000;
+    box-shadow: var(--shadow2); border: 1px solid var(--border2);
 }
-.pro-player-wrap:fullscreen, .pro-player-wrap:-webkit-full-screen { border-radius: 0; }
+.dm-player-wrapper:fullscreen { border-radius: 0; border: none; }
 
-.vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; background: #000; }
-.vp-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; pointer-events: none !important; }
-
-/* العلامة المائية للطلاب */
-.pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
-.pro-watermark span {
-    position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
-    color: rgba(255,255,255,0.3); text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
-    animation: wmMove 25s linear infinite alternate; white-space: nowrap;
+/* Dailymotion Iframe Container */
+#dmPlayerContainer {
+    position: absolute; inset: 0; width: 100%; height: 100%;
 }
-@keyframes wmMove { 0% { top: 10%; left: 10%; } 25% { top: 70%; left: 20%; } 50% { top: 40%; left: 70%; } 75% { top: 20%; left: 50%; } 100% { top: 60%; left: 80%; } }
+/* منع الماوس من الوصول للفيديو عشان اللوجو واللينكات */
+#dmPlayerContainer iframe {
+    width: 100%; height: 100%; border: none; pointer-events: none !important;
+}
 
-/* طبقات الحماية لإخفاء اللوجوهات الأصلية (Dailymotion) */
-.vid-blocker { position: absolute; background: #000; z-index: 15; pointer-events: none; transition: opacity 0.3s ease; }
-.vid-blocker-top { top: 0; left: 0; right: 0; height: 60px; } 
-.vid-blocker-bottom-right { bottom: 0; right: 0; width: 140px; height: 60px; } 
+/* درع حماية فوق الفيديو عشان يستقبل الكليك للتشغيل والايقاف */
+.dm-click-blocker {
+    position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent;
+}
 
-/* طبقة للضغط والتشغيل */
-.vp-vid-overlay { position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent; }
-
-/* الغطاء الذكي (بيخفي الشاشة أثناء التوقف) */
-.yt-thumbnail-cover {
-    position: absolute; inset: 0; z-index: 35; 
+/* 🔥 غلاف الفيديو الأنيق (Thumbnail & Play Button) 🔥 */
+.dm-cover {
+    position: absolute; inset: 0; z-index: 30;
     background-size: cover; background-position: center; background-color: #000;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
-.yt-thumbnail-cover .yt-play-btn {
-    width: 75px; height: 55px; background: rgba(13,122,95,0.9);
-    border-radius: 16px; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: all 0.2s;
+.dm-cover::before {
+    content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.4);
 }
-.yt-thumbnail-cover:hover .yt-play-btn { transform: scale(1.1); background: var(--teal); }
-.yt-play-btn svg { width: 32px; height: 32px; fill: #fff; margin-left: 5px; }
+.dm-big-play {
+    position: relative; z-index: 2; width: 75px; height: 55px;
+    background: var(--teal); border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5); transition: transform 0.2s, background 0.2s;
+}
+.dm-cover:hover .dm-big-play { transform: scale(1.08); background: var(--teal2); }
+.dm-big-play svg { width: 34px; height: 34px; fill: #fff; margin-left: 5px; }
 
-/* شريط التحكم السفلي الاحترافي */
-.pro-controls {
+/* العلامة المائية للطلاب */
+.dm-watermark {
+    position: absolute; inset: 0; z-index: 15; pointer-events: none; overflow: hidden;
+}
+.dm-watermark span {
+    position: absolute; font-family: var(--mono); font-size: 1.4rem; font-weight: 900;
+    color: rgba(255,255,255,0.3); text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    animation: wmMove 25s linear infinite alternate; white-space: nowrap;
+}
+@keyframes wmMove { 0%{top:10%;left:5%;} 25%{top:60%;left:15%;} 50%{top:30%;left:55%;} 75%{top:15%;left:40%;} 100%{top:70%;left:60%;} }
+
+/* ── شريط التحكم السفلي ── */
+.dm-controls {
     position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
-    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
     padding: 10px 20px 15px; display: flex; flex-direction: column; gap: 8px;
-    opacity: 0; transition: opacity 0.3s; direction: ltr;
+    opacity: 0; transition: opacity 0.3s; direction: ltr; cursor: auto;
 }
-.pro-player-wrap:hover .pro-controls, .pro-player-wrap.active-controls .pro-controls { opacity: 1; }
+/* إظهار الشريط عند التحريك أو الإيقاف */
+.dm-player-wrapper:hover .dm-controls, .dm-player-wrapper.paused-state .dm-controls { opacity: 1; }
+/* إخفاء الشريط برمجياً */
+.dm-player-wrapper.hide-controls .dm-controls { opacity: 0 !important; }
 
-.pro-timeline-container { width: 100%; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
-.pro-timeline-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; position: relative; transition: height 0.1s; }
-.pro-timeline-container:hover .pro-timeline-bg { height: 8px; }
-.pro-timeline-progress { position: absolute; top: 0; left: 0; height: 100%; background: var(--teal); border-radius: 3px; pointer-events: none; transition: width 0.1s linear; }
-.pro-timeline-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--teal); border-radius: 50%; opacity: 0; pointer-events: none; transition: opacity 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-.pro-timeline-container:hover .pro-timeline-thumb { opacity: 1; }
+.dm-timeline { width: 100%; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+.dm-timeline-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; position: relative; transition: height 0.1s; }
+.dm-timeline:hover .dm-timeline-bg { height: 7px; }
+.dm-timeline-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--teal); border-radius: 3px; pointer-events: none; transition: width 0.1s linear; }
+.dm-timeline-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 15px; height: 15px; background: var(--teal); border-radius: 50%; opacity: 0; pointer-events: none; transition: opacity 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+.dm-timeline:hover .dm-timeline-thumb { opacity: 1; }
 
-.pro-controls-bottom { display: flex; align-items: center; justify-content: space-between; }
-.pro-ctrl-group { display: flex; align-items: center; gap: 15px; }
-
-.pro-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.85; transition: all 0.2s; padding: 0; }
-.pro-btn:hover { opacity: 1; transform: scale(1.15); color: var(--teal); }
-.pro-btn svg { width: 22px; height: 22px; fill: currentColor; }
-
-.pro-time { color: #fff; font-family: var(--mono); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 3px #000;}
-
-.pro-player-wrap:fullscreen .pro-controls { z-index: 9999; position: absolute; bottom: 0; }
-.pro-player-wrap:fullscreen .vp-iframe-wrap iframe { height: 100vh; }
-.pro-player-wrap:fullscreen .yt-thumbnail-cover { z-index: 9998; }
-
-/* ── PDF ── */
-.pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
-.pdf-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
-.pdf-icon{width:72px;height:72px;margin:0 auto 20px;background:#fff7ed;border:1px solid #fed7aa;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;}
-.pdf-title{font-size:1.5rem;font-weight:900;margin-bottom:8px;color:var(--text);}
-.pdf-sub{color:var(--text2);font-size:.87rem;margin-bottom:30px;line-height:1.7;}
-.pdf-dl-btn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 40px;border-radius:13px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;text-decoration:none;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
-.pdf-dl-btn:hover{box-shadow:0 12px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
-
-/* ── HW GATE WALL ── */
-.hw-gate-wall{position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;}
-.hw-gate-card{background:var(--white);border-radius:24px;padding:44px 32px;text-align:center;max-width:440px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.2);animation:riseIn .4s both;position:relative;}
-.hw-gate-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
-.hw-gate-icon{font-size:3.5rem;margin-bottom:16px;}
-.hw-gate-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
-.hw-gate-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:340px;margin:0 auto 28px;}
-.hw-gate-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:13px 36px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 5px 16px rgba(217,119,6,.25);}
+.dm-bottom-row { display: flex; align-items: center; justify-content: space-between; }
+.dm-left-ctrl, .dm-right-ctrl { display: flex; align-items: center; gap: 16px; }
+.dm-btn { background: none; border: none; color: #fff; cursor: pointer; opacity: 0.85; transition: all 0.2s; padding: 0; display: flex; align-items: center; justify-content: center; }
+.dm-btn:hover { opacity: 1; transform: scale(1.15); color: var(--teal); }
+.dm-btn svg { width: 24px; height: 24px; fill: currentColor; }
+.dm-time { color: #fff; font-family: var(--mono); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 3px #000; }
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-
 @media(max-width:640px){
   :root{--nav-h:56px;}
   main{padding:18px 14px 70px;}
   .back-btn span{display:none;}
   .tab-btn{padding:6px 10px;font-size:.78rem;}
   .q-card{padding:20px 16px;}
-  #startScreen{padding:44px 20px;}
-  .score-card{padding:28px 20px;}
-  .review-item{padding:16px 14px;}
-  .access-pill .lbl{display:none;}
-  .quiz-nav{flex-wrap:wrap;}
-  .q-btn.finish{width:100%;justify-content:center;}
-  .pro-controls{padding:12px 14px 10px;}
-  .pro-left,.pro-right{gap:10px;}
-  .pro-time{font-size:.75rem;}
+  .dm-controls{padding:12px 14px 10px;}
+  .dm-left-ctrl,.dm-right-ctrl{gap:10px;}
+  .dm-time{font-size:.75rem;}
 }
 </style>
 </head>
@@ -277,7 +235,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     <div class="hw-gate-title">لازم تعمل الواجب الأول!</div>
     <div class="hw-gate-sub" id="hwGateMsg">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب — اعمل الواجب الأول وهتفتح الحصة تلقائياً</div>
     <button class="hw-gate-btn" onclick="goToHomework()">اذهب للواجب</button>
-    <span class="hw-gate-dismiss" style="display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
+    <span class="hw-gate-dismiss" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
   </div>
 </div>
 
@@ -326,10 +284,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
         <span class="start-emoji">🚀</span>
         <div class="start-title">جاهز تبدأ <span>الامتحان؟</span></div>
         <p class="start-sub">بعد إنهاء الامتحان هتفتح فيديو الشرح والملزمة تلقائياً — خلي بالك من الوقت!</p>
-        <div class="start-warn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          مدة الامتحان: 40 دقيقة فقط
-        </div>
         <button id="startBtn" class="start-btn">ابدأ الامتحان</button>
       </div>
 
@@ -354,7 +308,9 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     </div>
 
     <div id="tab-homework" class="hidden"></div>
+    
     <div id="tab-video" class="hidden"></div>
+    
     <div id="tab-pdf" class="hidden">
       <div class="pdf-card">
         <div class="pdf-icon">📚</div>
@@ -374,49 +330,16 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     document.addEventListener('contextmenu', e => e.preventDefault());
 
     window.addEventListener('keydown', (e) => {
-        if (
-            e.keyCode === 123 || 
-            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-            (e.ctrlKey && e.keyCode === 85)
-        ) {
-            e.preventDefault(); 
-            alert("⚠️ غير مسموح بفتح أدوات المطور للحفاظ على خصوصية المحتوى."); 
-            return false;
+        if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault(); alert("⚠️ غير مسموح بفتح أدوات المطور."); return false;
         }
         if (e.key === 'PrintScreen' || e.keyCode === 44) {
             navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
-            alert("⚠️ غير مسموح بأخذ لقطات شاشة لحماية المحتوى.");
         }
     });
 
-    window.addEventListener('keyup', (e) => {
-        if (e.key === 'PrintScreen' || e.keyCode === 44) {
-            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
-        }
-    });
-
-    const detectDevTools = () => {
-        const widthThreshold = window.outerWidth - window.innerWidth > 160;
-        const heightThreshold = window.outerHeight - window.innerHeight > 160;
-        if (widthThreshold || heightThreshold) {
-            alert("⚠️ غير مسموح بفتح أدوات المطور (Developer Tools).\nيرجى إغلاقها فوراً للمتابعة.");
-            window.location.reload(); 
-        }
-    };
-    setInterval(detectDevTools, 1000);
-
-    setInterval(function() {
-        (function(a) { return (function(a) { return (Function('Function(arguments[0].constructor(\'debugger\')())')(a)); })(a); })(window);
-    }, 100);
-
-    window.addEventListener('blur', () => {
-        document.body.style.filter = 'blur(15px)';
-        document.body.style.opacity = '0.4';
-    });
-    window.addEventListener('focus', () => {
-        document.body.style.filter = 'none';
-        document.body.style.opacity = '1';
-    });
+    window.addEventListener('blur', () => { document.body.style.filter = 'blur(15px)'; document.body.style.opacity = '0.4'; });
+    window.addEventListener('focus', () => { document.body.style.filter = 'none'; document.body.style.opacity = '1'; });
 })();
 
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
@@ -430,13 +353,8 @@ let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
 
 function showLoader(text = "جاري التحميل...") {
   const el = document.getElementById('loadingScreen');
-  if(el){
-    const txtEl = document.getElementById('ldText');
-    if(txtEl) txtEl.textContent = text;
-    el.style.display = 'flex'; void el.offsetWidth; el.style.opacity = '1';
-  }
+  if(el){ document.getElementById('ldText').textContent = text; el.style.display = 'flex'; void el.offsetWidth; el.style.opacity = '1'; }
 }
-
 function hideLoader(){
   const el = document.getElementById('loadingScreen');
   if(el){ el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }
@@ -449,6 +367,12 @@ window.switchTab = (tab) => {
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
+    
+    // إذا كان المفتوح هو الفيديو وتم تجهيزه، قم بإظهاره
+    if(tab === 'video' && !document.getElementById('dmPlayerWrapper')) {
+        buildDailymotionPlayer();
+    }
+    
     hideLoader();
   }, 400); 
 };
@@ -460,36 +384,30 @@ async function initLessonPage(){
   const{data:{session}}=await supabaseClient.auth.getSession();
   if(!session){hideLoader();window.location.href="index.html";return;}
   currentUser=session.user;
-  const savedLocal=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
-  const now=Date.now();
-
-  if(savedLocal){
-    try{
+  
+  try{
+    const{data:uData}=await supabaseClient.from('users').select('studentid').eq('id',currentUser.id).single();
+    if(uData) myStudentId=uData.studentid||currentUser.id.substring(0,6).toUpperCase();
+    
+    const savedLocal=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
+    const now=Date.now();
+    if(savedLocal){
       const p=JSON.parse(savedLocal);
       if(p.expiry>now){
-        myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
         await initLesson(); startAccessTimer(p.expiry);
-        verifyAccessInBackground(currentUser,lessonId);
         checkHomeworkGateBackground(lessonId);
-        hideLoader();
-        return;
+        hideLoader(); return;
       }
-    }catch(e){}
-  }
+    }
 
-  try{
-    const[{data:uData},{data:codesData}]=await Promise.all([
-      supabaseClient.from('users').select('studentid').eq('id',currentUser.id).single(),
-      supabaseClient.from('codes').select('*').eq('usedby',currentUser.email)
-    ]);
-    if(uData) myStudentId=uData.studentid||currentUser.id.substring(0,6).toUpperCase();
+    const{data:codesData}=await supabaseClient.from('codes').select('*').eq('usedby',currentUser.email);
     let hasAccess=false,validExpiry=null;
     if(codesData) codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now){hasAccess=true;validExpiry=cd.expiryat;}});
+    
     if(hasAccess){
       localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:validExpiry,studentId:myStudentId}));
       await initLesson(); startAccessTimer(validExpiry);
-      checkHomeworkGateBackground(lessonId);
-      hideLoader();
+      checkHomeworkGateBackground(lessonId); hideLoader();
     } else {
       hideLoader(); document.getElementById('codeLockScreen').classList.remove('hidden');
     }
@@ -498,53 +416,31 @@ async function initLessonPage(){
 
 async function checkHomeworkGateBackground(lessonId){
   try{
-    const blocked=await checkHomeworkGate(lessonId);
-    if(blocked) showHomeworkGate(blocked);
+    const{data:hwList}=await supabaseClient.from('homework').select('*').eq('next_lesson_id',lessonId).limit(1);
+    if(hwList&&hwList.length>0){
+        const{data:hwResult}=await supabaseClient.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',hwList[0].id).single();
+        if(!hwResult) showHomeworkGate(hwList[0]);
+    }
   }catch(e){}
 }
 
-async function checkHomeworkGate(lessonId){
-  try{
-    const{data:hwList}=await supabaseClient.from('homework').select('*').order('created_at',{ascending:true});
-    if(!hwList||hwList.length===0) return null;
-    const requiredHw=hwList.find(hw=>hw.next_lesson_id===lessonId);
-    if(!requiredHw) return null;
-    const{data:hwResult}=await supabaseClient.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',requiredHw.id).single();
-    if(hwResult) return null; 
-    return requiredHw; 
-  }catch(e){return null;}
-}
-
 function showHomeworkGate(hw){
-  document.getElementById('hwGateMsg').textContent=`لا يمكنك فتح هذه الحصة قبل إنهاء واجب: "${hw.title}" — اعمل الواجب الأول وهترجع هنا تلقائياً`;
+  document.getElementById('hwGateMsg').textContent=`لا يمكنك فتح هذه الحصة قبل إنهاء واجب: "${hw.title}"`;
   document.getElementById('hwGateWall').classList.remove('hidden');
-  sessionStorage.setItem('requiredHwId',hw.id);
   sessionStorage.setItem('requiredHwLessonId',hw.lessonid||'');
 }
-
 window.goToHomework=()=>{
   const hwLessonId=sessionStorage.getItem('requiredHwLessonId');
   if(hwLessonId){ window.location.href=`lesson.html?id=${hwLessonId}&tab=homework`; } else { document.getElementById('hwGateWall').classList.add('hidden'); }
 };
 
-async function verifyAccessInBackground(user,lessonId){
-  try{
-    const{data:codesData}=await supabaseClient.from('codes').select('expiryat,lessonid').eq('usedby',user.email);
-    if(!codesData) return;
-    const now=Date.now(); let ok=false;
-    codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now)ok=true;});
-    if(!ok) localStorage.removeItem(`access_${user.id}_${lessonId}`);
-  }catch(e){}
-}
-
 initLessonPage();
-const urlTab=new URLSearchParams(window.location.search).get('tab');
 
 function startAccessTimer(expiryTime){
   document.getElementById('accessTimerBox').classList.remove('hidden');
   const tick=()=>{
     const dist=expiryTime-Date.now();
-    if(dist<=0){clearInterval(iv);alert("انتهت صلاحية هذه الحصة.");location.reload();return;}
+    if(dist<=0){clearInterval(iv);alert("انتهت صلاحية الحصة.");location.reload();return;}
     const d=Math.floor(dist/86400000),h=Math.floor((dist%86400000)/3600000);
     const m=Math.floor((dist%3600000)/60000),s=Math.floor((dist%60000)/1000);
     document.getElementById('accessCountdown').textContent=d>0?`${d}ي ${h}س`:`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
@@ -555,188 +451,207 @@ function startAccessTimer(expiryTime){
 document.getElementById('verifyBtn').onclick=async()=>{
   const code=document.getElementById('accessCodeInput').value.trim();
   const lessonId=new URLSearchParams(window.location.search).get('id');
-  if(!code) return alert("من فضلك أدخل الكود");
-  showLoader("جاري التحقق من الكود...");
+  if(!code) return alert("أدخل الكود");
+  showLoader("جاري التحقق...");
   try{
-    if(!currentUser){
-      const{data:{session}}=await supabaseClient.auth.getSession();
-      if(!session){window.location.href="index.html";return;}
-      currentUser=session.user;
-    }
     const{data:codeDataArr}=await supabaseClient.from('codes').select('*').eq('code',code);
     if(codeDataArr&&codeDataArr.length>0){
       const cd=codeDataArr[0],now=Date.now();
       const{data:lArr}=await supabaseClient.from('lessons').select('*').eq('id',lessonId);
       let vd=7; if(lArr&&lArr.length>0&&lArr[0].validitydays) vd=lArr[0].validitydays;
+      
       if(!cd.used){
         const exp=now+vd*24*60*60*1000;
-        const{error:e}=await supabaseClient.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code);
-        if(e) throw e;
+        await supabaseClient.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code);
         localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));
         location.reload();
       } else if(cd.usedby===currentUser.email&&cd.lessonid===lessonId&&cd.expiryat>now){
         localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:cd.expiryat,studentId:myStudentId}));
         location.reload();
-      } else if(cd.expiryat&&cd.expiryat<=now){alert("هذا الكود انتهت صلاحيته!");}
-      else{alert("هذا الكود مستخدم لحساب آخر!");}
+      } else {alert("كود غير صالح أو مستخدم مسبقاً!");}
     } else{alert("الكود غير صحيح!");}
-  }catch(e){alert("خطأ: "+e.message);}
+  }catch(e){alert("خطأ");}
   hideLoader();
 };
 
-/* ── DAILYMOTION PRO PLAYER (PURE IFRAME API) ── */
-let vidDur = 0;
-let vidCur = 0;
-let isPlaying = false;
 
-function initVideoPlayer() {
-  const vc = document.getElementById('tab-video');
-  const url = lessonData?.video;
-  if(!url) return;
+/* ════════════════════════════════════
+   🔥 THE ULTIMATE DAILYMOTION PLAYER 🔥
+════════════════════════════════════ */
+let dmPlayer = null;
+let vidDuration = 0;
+let isVideoPlaying = false;
+let hideControlsTimer = null;
 
-  const m = url.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
-  const vId = m ? m[1] : url; 
+function buildDailymotionPlayer() {
+    const vc = document.getElementById('tab-video');
+    const url = lessonData?.video;
+    if(!url) {
+        vc.innerHTML = '<div style="text-align:center;padding:50px;">لا يوجد فيديو متاح لهذه الحصة.</div>';
+        return;
+    }
 
-  const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
-  
-  vc.innerHTML = `
-  <div class="vid-section-title">فيديو الشرح</div>
-  <div class="pro-player-wrap" id="vpWrap" oncontextmenu="return false;">
-      <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
-      <div class="vp-iframe-wrap">
-          <div class="vid-blocker vid-blocker-top"></div>
-          <div class="vid-blocker vid-blocker-bottom-right"></div>
-          
-          <div id="vidCover" class="yt-thumbnail-cover" style="background-image: url('${coverImg}');" onclick="togglePlay()">
-             <div class="yt-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-          </div>
-          
-          <div class="vp-yt-overlay" onclick="togglePlay()"></div>
-          
-          <iframe id="dmFrame"
-              src="https://www.dailymotion.com/embed/video/${vId}?api=postMessage&id=dmFrame&controls=0&info=0&logo=0&related=0&sharing-enable=0&ui-logo=0"
-              allow="autoplay; fullscreen" allowfullscreen
-              style="width: 100%; height: 100%; border: none; pointer-events: none !important;">
-          </iframe>
-      </div>
-      
-      <div class="pro-controls" id="vpControls">
-          <div class="pro-timeline-container" id="vpProg">
-              <div class="pro-timeline-bg">
-                  <div class="pro-timeline-progress" id="vpFill" style="width:0%"></div>
-                  <div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div>
-              </div>
-          </div>
-          <div class="pro-controls-bottom">
-              <div class="pro-ctrl-group">
-                  <button class="pro-btn" id="bottomPlayBtn" onclick="togglePlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-                  <button class="pro-btn" onclick="seek(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
-                  <button class="pro-btn" onclick="seek(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
-                  <div class="pro-time"><span id="vpCur">0:00</span> / <span id="vpDur">0:00</span></div>
-              </div>
-              <div class="pro-ctrl-group">
-                  <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
-              </div>
-          </div>
-      </div>
-  </div>`;
+    // استخراج كود الفيديو من أي رابط Dailymotion
+    const m = url.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+    const vId = m ? m[1] : url; 
 
-  initDrag();
-}
+    // جلب صورة الغلاف الأصلية للفيديو من Dailymotion
+    const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
 
-function dmCmd(cmd, params) {
-    const fr = document.getElementById('dmFrame');
-    if (fr && fr.contentWindow) {
-        fr.contentWindow.postMessage(JSON.stringify({command: cmd, parameters: params || {}}), '*');
+    vc.innerHTML = `
+    <div class="vid-section-title">فيديو الشرح</div>
+    
+    <div class="dm-player-wrapper paused-state" id="dmPlayerWrapper" oncontextmenu="return false;">
+        <div class="dm-watermark"><span>ID: ${myStudentId}</span></div>
+
+        <div class="vp-iframe-wrap">
+            <div id="dmPlayerContainer"></div>
+        </div>
+
+        <div class="dm-click-blocker" onclick="toggleDmVideo()"></div>
+
+        <div class="dm-cover" id="dmCover" style="background-image: url('${coverImg}');" onclick="startDmVideo('${vId}')">
+            <div class="dm-big-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+
+        <div class="dm-controls" id="dmControls" dir="ltr">
+            <div class="dm-timeline" id="dmTimeline">
+                <div class="dm-timeline-bg">
+                    <div class="dm-timeline-fill" id="dmFill"></div>
+                    <div class="dm-timeline-thumb" id="dmThumb"></div>
+                </div>
+            </div>
+            <div class="dm-bottom-row">
+                <div class="dm-left-ctrl">
+                    <button class="dm-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                </div>
+                <div class="dm-right-ctrl">
+                    <span class="dm-time"><span id="dmCur">0:00</span> / <span id="dmDur">0:00</span></span>
+                    <button class="dm-btn" onclick="seekDmVideo(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
+                    <button class="dm-btn" onclick="seekDmVideo(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
+                    <button class="dm-btn" id="dmPlayBtn" onclick="toggleDmVideo()">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    // تحميل مكتبة Dailymotion
+    if (!window.DM) {
+        const script = document.createElement('script');
+        script.src = "https://api.dmcdn.net/all.js";
+        document.head.appendChild(script);
     }
 }
 
-window.addEventListener('message', e => {
-    if (e.origin && e.origin.includes('dailymotion.com')) {
-        try {
-            const data = JSON.parse(e.data);
-            if (data.event === 'durationchange') {
-                vidDur = data.duration;
-                document.getElementById('vpDur').textContent = fmtTime(vidDur);
-            }
-            if (data.event === 'timeupdate') {
-                vidCur = data.time;
-                document.getElementById('vpCur').textContent = fmtTime(vidCur);
-                const pct = vidDur ? (vidCur / vidDur * 100) : 0;
-                document.getElementById('vpFill').style.width = pct + '%';
-                document.getElementById('vpThumb').style.left = pct + '%';
-            }
-            if (data.event === 'play' || data.event === 'playing') {
-                isPlaying = true;
-                updateUI(true);
-            }
-            if (data.event === 'pause' || data.event === 'ended') {
-                isPlaying = false;
-                updateUI(false);
-            }
-        } catch(err) {}
-    }
-});
+window.startDmVideo = function(vId) {
+    if (!window.DM) { setTimeout(() => startDmVideo(vId), 500); return; }
+    
+    // إخفاء الغلاف
+    document.getElementById('dmCover').style.display = 'none';
+    
+    // تهيئة المشغل
+    DM.init({ apiKey: '', status: true, cookie: true });
+    dmPlayer = DM.player(document.getElementById('dmPlayerContainer'), {
+        video: vId,
+        width: "100%", height: "100%",
+        params: {
+            autoplay: true,
+            controls: false, // إخفاء عناصر تحكم Dailymotion الأصلية
+            'ui-logo': false,
+            'ui-start-screen-info': false,
+            'sharing-enable': false,
+            rel: 0
+        }
+    });
 
-function updateUI(playing) {
-    const wrap = document.getElementById('vpWrap');
-    const playBtn = document.getElementById('bottomPlayBtn');
-    const cover = document.getElementById('vidCover');
+    dmPlayer.addEventListener('apiready', () => {
+        vidDuration = dmPlayer.duration || 0;
+        document.getElementById('dmDur').textContent = fmtTime(vidDuration);
+    });
 
-    if (wrap) {
-        if (playing) wrap.classList.add('active-controls');
-        else wrap.classList.remove('active-controls');
-    }
-    if (playBtn) {
-        playBtn.innerHTML = playing
-            ? `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
-            : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-    }
-    if (cover) {
-        cover.style.display = playing ? 'none' : 'flex';
-    }
-}
+    dmPlayer.addEventListener('timeupdate', () => {
+        const cur = dmPlayer.currentTime || 0;
+        vidDuration = dmPlayer.duration || vidDuration;
+        document.getElementById('dmCur').textContent = fmtTime(cur);
+        document.getElementById('dmDur').textContent = fmtTime(vidDuration);
+        
+        const pct = vidDuration ? (cur / vidDuration * 100) : 0;
+        document.getElementById('dmFill').style.width = pct + '%';
+        document.getElementById('dmThumb').style.left = pct + '%';
+    });
 
-window.togglePlay = () => {
-    if (isPlaying) dmCmd('pause');
-    else dmCmd('play');
-};
+    dmPlayer.addEventListener('play', () => {
+        isVideoPlaying = true;
+        document.getElementById('dmPlayBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+        document.getElementById('dmPlayerWrapper').classList.remove('paused-state');
+        resetHideTimer();
+    });
 
-window.seek = (s) => {
-    vidCur = Math.max(0, Math.min(vidDur, vidCur + s));
-    dmCmd('seek', {time: vidCur});
-};
+    dmPlayer.addEventListener('pause', () => {
+        isVideoPlaying = false;
+        document.getElementById('dmPlayBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+        document.getElementById('dmPlayerWrapper').classList.add('paused-state');
+        document.getElementById('dmPlayerWrapper').classList.remove('hide-controls');
+    });
 
-function initDrag() {
-    const prog = document.getElementById('vpProg');
-    if(!prog) return;
+    // سحب شريط الوقت
+    const prog = document.getElementById('dmTimeline');
     let isDragging = false;
-    const updateProgress = (e) => {
+    const updateProg = (e) => {
         const r = prog.getBoundingClientRect();
         const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
-        dmCmd('seek', {time: pct * vidDur});
+        dmPlayer.seek(pct * vidDuration);
     };
-    prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
-    document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
+    prog.addEventListener('mousedown', (e) => { isDragging = true; updateProg(e); });
+    document.addEventListener('mousemove', (e) => { if(isDragging) updateProg(e); });
     document.addEventListener('mouseup', () => { isDragging = false; });
-    prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
-    document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
+    prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive:true});
+    document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive:true});
     document.addEventListener('touchend', () => { isDragging = false; });
+
+    // إخفاء تلقائي للشريط
+    const wrapper = document.getElementById('dmPlayerWrapper');
+    wrapper.addEventListener('mousemove', resetHideTimer);
+    wrapper.addEventListener('mouseleave', () => {
+        if(isVideoPlaying) wrapper.classList.add('hide-controls');
+    });
+};
+
+function resetHideTimer() {
+    const wrapper = document.getElementById('dmPlayerWrapper');
+    wrapper.classList.remove('hide-controls');
+    clearTimeout(hideControlsTimer);
+    if(isVideoPlaying){
+        hideControlsTimer = setTimeout(() => { wrapper.classList.add('hide-controls'); }, 2500);
+    }
 }
 
-window.toggleFullscreen=()=>{
-  const w=document.getElementById('vpWrap');
-  if(!w)return;
-  if(!document.fullscreenElement) w.requestFullscreen();
-  else document.exitFullscreen();
+window.toggleDmVideo = function() {
+    if (!dmPlayer) return;
+    if (dmPlayer.paused) dmPlayer.play();
+    else dmPlayer.pause();
+};
+
+window.seekDmVideo = function(sec) {
+    if (!dmPlayer) return;
+    const cur = dmPlayer.currentTime || 0;
+    dmPlayer.seek(Math.max(0, Math.min(vidDuration, cur + sec)));
+};
+
+window.toggleFullscreen = () => {
+    const w = document.getElementById('dmPlayerWrapper');
+    if (!w) return;
+    if (!document.fullscreenElement) w.requestFullscreen();
+    else document.exitFullscreen();
 };
 
 function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
 
+
 /* ── LESSON & QUIZ LOGIC ── */
 async function initLesson(){
-  document.getElementById('codeLockScreen').classList.add('hidden');
-  document.getElementById('lessonContent').classList.remove('hidden');
   const id=new URLSearchParams(window.location.search).get('id');
   const[{data:snap},{data:rSnap}]=await Promise.all([
     supabaseClient.from('lessons').select('*').eq('id',id).single(),
@@ -758,7 +673,6 @@ async function initLesson(){
       document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
       document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
     });
-    initVideoPlayer();
     if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
     if(urlTab === 'homework') { setTimeout(()=>switchTab('homework'), 100); } else { setTimeout(()=>switchTab('video'), 100); }
     return;
@@ -818,7 +732,7 @@ function renderHomeworkDone(result){
 
 window.startHomework=function(){
   if(!hwQuestions||hwQuestions.length===0) return alert("لا توجد أسئلة في الواجب بعد.");
-  showLoader("جاري تجهيز الواجب..."); setTimeout(() => { hwStarted=true; hwCurIdx=0; hwUserAns={}; renderHwQ(); hideLoader(); }, 400);
+  showLoader("جاري تجهيز الواجب..."); setTimeout(() => { hwCurIdx=0; hwUserAns={}; renderHwQ(); hideLoader(); }, 400);
 };
 
 function renderHwQ(){
@@ -845,7 +759,7 @@ function submitHomework(){
   saveHwAns(); showLoader("جاري تسليم الواجب...");
   let score=0; hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
   supabaseClient.from('hw_results').insert([{ email:currentUser.email, hw_id:hwData.id, lesson:lessonData?.name||'', score,total:hwQuestions.length, userans:hwUserAns }]).then(()=>{}).catch(e=>{});
-  setTimeout(() => { hwDone=true; renderHomeworkDone({score,total:hwQuestions.length}); hideLoader(); }, 500);
+  setTimeout(() => { renderHomeworkDone({score,total:hwQuestions.length}); hideLoader(); }, 500);
 }
 
 function buildScoreMsg(score,total,wasPrev){ const pct=total>0?Math.round(score/total*100):0; return{score,total,pct,wasPrev}; }
@@ -902,7 +816,7 @@ function unlockFeatures(msgObj){
   const radius=42,circ=2*Math.PI*radius,offset=circ-(pct/100)*circ;
   document.getElementById('scoreBanner').innerHTML=`<div class="score-ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${radius}" fill="none" stroke="var(--border2)" stroke-width="6"/><circle cx="55" cy="55" r="${radius}" fill="none" stroke="${clr}" stroke-width="6" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 4px ${clr})"/></svg><div class="score-ring-num" style="color:${clr}">${msgObj.score}</div><div class="score-ring-pct">${pct}%</div></div><div class="score-of">من ${msgObj.total} سؤال</div><div class="score-msg">${msgObj.wasPrev?'✦ لقد أديت هذا الامتحان من قبل':'✦ تم تسجيل درجتك بنجاح'}</div><div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>`;
   ['video','pdf'].forEach(t=>{ document.getElementById(`btn-${t}-tab`).classList.add('unlocked'); document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim'); });
-  initVideoPlayer(); if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
+  if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
 }
 
 function startTimer(){
