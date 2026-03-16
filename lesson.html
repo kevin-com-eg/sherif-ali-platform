@@ -165,7 +165,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-gate-dismiss:hover{color:var(--text2);}
 
 /* ════════════════════════════════
-   STEALTH VIDEO PLAYER
+   CUSTOM VIDEO PLAYER (NO YOUTUBE)
 ════════════════════════════════ */
 .vid-section-title{
   font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;
@@ -175,58 +175,43 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
 
 /* غلاف البلاير الرئيسي */
-.stealth-player{
+.custom-player{
   position:relative;width:100%;aspect-ratio:16/9;
   background:#000;border-radius:12px;overflow:hidden;
   box-shadow:0 4px 32px rgba(0,0,0,.5);
   user-select:none;-webkit-user-select:none;
 }
-.stealth-player:fullscreen,
-.stealth-player:-webkit-full-screen{border-radius:0;}
+.custom-player:fullscreen,
+.custom-player:-webkit-full-screen{border-radius:0;}
 
-/* حاوية الـ iframe — overflow:hidden يقطع واجهة يوتيوب */
-.sp-iframe-box{
+/* حاوية الفيديو */
+.cp-video-box{
   position:absolute;inset:0;
   overflow:hidden;
   background:#000;
 }
-/* CSS fallback للـ DM iframe */
-.sp-iframe-box iframe{
+.cp-video-box video{
   position:absolute;inset:0;
   width:100%;height:100%;
-  border:none;pointer-events:none;
+  border:none;
+  object-fit:contain;
 }
 
-/* حواجز جانبية فقط */
-.sp-blinder{position:absolute;z-index:15;background:#000;pointer-events:none;}
-.sp-blinder-top   {display:none;}
-.sp-blinder-bottom{display:none;}
-.sp-blinder-left  {top:0;left:0;bottom:0;width:2px;}
-.sp-blinder-right {top:0;right:0;bottom:0;width:2px;}
-
-/* غطاء التفاعل — فوق يوتيوب UI (z~40) بس تحت الـ cover */
-.sp-overlay{
-  position:absolute;top:0;left:0;right:0;
-  bottom:60px;
-  z-index:45;
-  cursor:pointer;background:transparent;
-}
-
-/* غطاء البداية — يخفي زرار يوتيوب ويعرض زرارنا */
-.sp-cover{
+/* غطاء البداية */
+.cp-cover{
   position:absolute;inset:0;z-index:50;
   background:#111;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;
 }
-.sp-cover.hide{display:none;}
-.sp-cover-thumb{
+.cp-cover.hide{display:none;}
+.cp-cover-thumb{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
   opacity:.75;transition:opacity .3s;
 }
-.sp-cover:hover .sp-cover-thumb{opacity:.9;}
-.sp-cover-btn{
+.cp-cover:hover .cp-cover-thumb{opacity:.9;}
+.cp-cover-btn{
   position:relative;z-index:2;
   width:68px;height:68px;border-radius:50%;
   background:var(--teal);
@@ -234,15 +219,15 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   box-shadow:0 6px 32px rgba(0,0,0,.55);
   transition:transform .2s,background .2s;
 }
-.sp-cover:hover .sp-cover-btn{transform:scale(1.1);background:var(--teal2);}
-.sp-cover-btn svg{width:28px;height:28px;fill:#fff;margin-left:4px;}
+.cp-cover:hover .cp-cover-btn{transform:scale(1.1);background:var(--teal2);}
+.cp-cover-btn svg{width:28px;height:28px;fill:#fff;margin-left:4px;}
 
 /* العلامة المائية المتحركة */
-.sp-watermark{
+.cp-watermark{
   position:absolute;inset:0;z-index:25;
   pointer-events:none;overflow:hidden;
 }
-.sp-watermark span{
+.cp-watermark span{
   position:absolute;font-family:var(--mono);font-size:1.3rem;font-weight:900;
   color:rgba(255,255,255,.22);text-shadow:1px 1px 4px rgba(0,0,0,.7);
   animation:wmFloat 30s linear infinite alternate;white-space:nowrap;
@@ -257,108 +242,108 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 }
 
 /* ══════════════════════════════════
-   CONTROLS — Dr.Tamer Style
+   CONTROLS — Custom Style
 ══════════════════════════════════ */
-.sp-controls{
+.cp-controls{
   position:absolute;bottom:0;left:0;right:0;z-index:40;
   background:#1a1a2e;
   direction:ltr;
 }
 
 /* ── Timeline range ── */
-.sp-timeline-wrap{padding:0 12px;padding-top:6px;}
-.sp-timeline-inp{
+.cp-timeline-wrap{padding:0 12px;padding-top:6px;}
+.cp-timeline-inp{
   -webkit-appearance:none;appearance:none;
   width:100%;height:5px;border-radius:5px;outline:none;cursor:pointer;
   background:linear-gradient(to right, var(--teal) 0%, var(--teal) 0%, rgba(255,255,255,.25) 0%);
   transition:height .1s;
 }
-.sp-timeline-inp:hover{height:7px;}
-.sp-timeline-inp::-webkit-slider-thumb{
+.cp-timeline-inp:hover{height:7px;}
+.cp-timeline-inp::-webkit-slider-thumb{
   -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
   background:var(--teal);cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,.5);
 }
-.sp-timeline-inp::-moz-range-thumb{
+.cp-timeline-inp::-moz-range-thumb{
   width:14px;height:14px;border-radius:50%;border:none;
   background:var(--teal);cursor:pointer;
 }
 
 /* ── Controls bar ── */
-.sp-ctrl-bar{
+.cp-ctrl-bar{
   display:flex;align-items:center;justify-content:space-between;
   padding:6px 12px 8px;gap:4px;
 }
-.sp-ctrl-left,.sp-ctrl-right{display:flex;align-items:center;gap:10px;}
-.sp-cb{
+.cp-ctrl-left,.cp-ctrl-right{display:flex;align-items:center;gap:10px;}
+.cp-cb{
   background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   padding:4px;border-radius:6px;transition:color .15s,background .15s;
   flex-shrink:0;
 }
-.sp-cb:hover{color:#fff;background:rgba(255,255,255,.12);}
-.sp-cb svg{width:22px;height:22px;fill:currentColor;}
-.sp-cb.sm svg{width:18px;height:18px;}
+.cp-cb:hover{color:#fff;background:rgba(255,255,255,.12);}
+.cp-cb svg{width:22px;height:22px;fill:currentColor;}
+.cp-cb.sm svg{width:18px;height:18px;}
 
 /* الوقت */
-.sp-dur{
+.cp-dur{
   color:rgba(255,255,255,.8);font-family:var(--mono);
   font-size:.78rem;white-space:nowrap;
 }
 
 /* الصوت */
-.sp-vol-wrap{display:flex;align-items:center;gap:6px;}
-.sp-vol-inp{
+.cp-vol-wrap{display:flex;align-items:center;gap:6px;}
+.cp-vol-inp{
   -webkit-appearance:none;appearance:none;
   width:70px;height:4px;border-radius:4px;outline:none;cursor:pointer;
   background:linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.85) 100%,rgba(255,255,255,.25) 100%);
 }
-.sp-vol-inp::-webkit-slider-thumb{
+.cp-vol-inp::-webkit-slider-thumb{
   -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
   background:#fff;cursor:pointer;
 }
-.sp-vol-inp::-moz-range-thumb{
+.cp-vol-inp::-moz-range-thumb{
   width:12px;height:12px;border-radius:50%;border:none;background:#fff;cursor:pointer;
 }
 
-/* السرعة والجودة */
-.sp-pop-wrap{position:relative;}
-.sp-pop-btn{
+/* السرعة */
+.cp-pop-wrap{position:relative;}
+.cp-pop-btn{
   background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;
   font-family:var(--sans);font-size:.82rem;font-weight:700;
   padding:4px 7px;border-radius:6px;display:flex;align-items:center;gap:4px;
   transition:color .15s,background .15s;white-space:nowrap;
 }
-.sp-pop-btn:hover{color:#fff;background:rgba(255,255,255,.12);}
-.sp-pop-btn svg{width:15px;height:15px;fill:currentColor;}
-.sp-pop-menu{
+.cp-pop-btn:hover{color:#fff;background:rgba(255,255,255,.12);}
+.cp-pop-btn svg{width:15px;height:15px;fill:currentColor;}
+.cp-pop-menu{
   position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
   background:rgba(10,12,22,.97);border:1px solid rgba(255,255,255,.1);
   border-radius:10px;padding:5px;min-width:90px;display:none;
   box-shadow:0 8px 32px rgba(0,0,0,.9);z-index:60;
 }
-.sp-pop-menu.open{display:block;animation:riseIn .15s ease-out;}
-.sp-pop-item{
+.cp-pop-menu.open{display:block;animation:riseIn .15s ease-out;}
+.cp-pop-item{
   display:block;width:100%;padding:7px 12px;
   font-family:var(--mono);font-size:.78rem;color:rgba(255,255,255,.8);
   background:none;border:none;cursor:pointer;text-align:center;
   border-radius:7px;transition:all .12s;font-weight:700;
 }
-.sp-pop-item:hover{background:rgba(255,255,255,.1);color:#fff;}
-.sp-pop-item.active{background:var(--teal);color:#fff;}
-.sp-pop-label{
+.cp-pop-item:hover{background:rgba(255,255,255,.1);color:#fff;}
+.cp-pop-item.active{background:var(--teal);color:#fff;}
+.cp-pop-label{
   padding:4px 10px 6px;font-family:var(--mono);font-size:.62rem;
   color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;
   display:block;
 }
 
 /* مؤشر Buffer */
-.sp-buffer{
+.cp-buffer{
   position:absolute;inset:0;z-index:22;
   display:flex;align-items:center;justify-content:center;
   pointer-events:none;opacity:0;transition:opacity .2s;
 }
-.sp-buffer.show{opacity:1;}
-.sp-spinner{
+.cp-buffer.show{opacity:1;}
+.cp-spinner{
   width:44px;height:44px;border:3px solid rgba(255,255,255,.15);
   border-top-color:var(--teal);border-radius:50%;
   animation:spin .7s linear infinite;
@@ -366,13 +351,36 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Fullscreen fixes */
-.stealth-player:fullscreen .sp-controls,
-.stealth-player:-webkit-full-screen .sp-controls{z-index:9999;position:absolute;bottom:0;}
-@media(max-width:640px){
-  .sp-vol-inp{width:50px;}
-  .sp-cb svg{width:18px;height:18px;}
-  .sp-dur{font-size:.7rem;}
+.custom-player:fullscreen .cp-controls,
+.custom-player:-webkit-full-screen .cp-controls{z-index:9999;position:absolute;bottom:0;}
+
+/* رسالة عدم توفر الفيديو */
+.cp-no-video{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:var(--bg);
+  color:var(--text2);
+  text-align:center;
+  padding:40px 20px;
 }
+.cp-no-video-icon{font-size:4rem;margin-bottom:16px;opacity:.5;}
+.cp-no-video-text{font-size:1.1rem;font-weight:700;margin-bottom:8px;color:var(--text);}
+.cp-no-video-sub{font-size:.85rem;max-width:300px;line-height:1.6;}
+
+/* رسالة الفيديو المحمي */
+.cp-protected-video{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color:#fff;
+  text-align:center;
+  padding:40px 20px;
+}
+.cp-protected-icon{font-size:4rem;margin-bottom:16px;}
+.cp-protected-text{font-size:1.2rem;font-weight:900;margin-bottom:12px;}
+.cp-protected-sub{font-size:.9rem;max-width:350px;line-height:1.7;opacity:.8;}
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
@@ -388,9 +396,10 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .access-pill .lbl{display:none;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
-  .sp-controls{padding:6px 10px 8px;}
-  .sp-time{font-size:.72rem;}
-  .sp-btn svg{width:18px;height:18px;}
+  .cp-controls{padding:6px 10px 8px;}
+  .cp-dur{font-size:.7rem;}
+  .cp-cb svg{width:18px;height:18px;}
+  .cp-vol-inp{width:50px;}
 }
 </style>
 </head>
@@ -698,159 +707,100 @@ document.getElementById('verifyBtn').onclick=async()=>{
 };
 
 /* ════════════════════════════════════════════════════════
-   STEALTH VIDEO PLAYER — يدعم YouTube و Dailymotion
+   CUSTOM VIDEO PLAYER — NO YOUTUBE (Protected Video)
 ════════════════════════════════════════════════════════ */
 
-/* ─── كاشف نوع الـ URL ─── */
-function detectVideoType(url){
-  if(!url) return null;
-  if(/youtube\.com|youtu\.be/.test(url)) return 'youtube';
-  if(/dailymotion\.com|dai\.ly/.test(url)) return 'dailymotion';
-  return 'mp4';
-}
-
-/* ─── استخراج الـ ID ─── */
-function extractYouTubeId(url){
-  const m=url.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-  return m?m[1]:null;
-}
-function extractDailymotionId(url){
-  const m=url.match(/(?:dailymotion\.com\/(?:video\/|embed\/video\/)|dai\.ly\/)([a-zA-Z0-9]+)/);
-  return m?m[1]:null;
-}
-
-/* ─── بناء الـ iFrame URL لكل منصة ─── */
-function buildEmbedUrl(url){
-  const type=detectVideoType(url);
-  if(type==='youtube'){
-    const id=extractYouTubeId(url);
-    if(!id) return null;
-    return {
-      src:`https://www.youtube.com/embed/${id}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`,
-      type:'youtube', id
-    };
-  }
-  if(type==='dailymotion'){
-    const id=extractDailymotionId(url);
-    if(!id) return null;
-    return {
-      src:`https://www.dailymotion.com/embed/video/${id}?api=postMessage&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0&related=0&endscreen-enable=0&queue-enable=0`,
-      type:'dailymotion', id
-    };
-  }
-  return null; // mp4 — عمل بلاير آخر لو حبيت
-}
-
 /* ─── State البلاير ─── */
-let SP={
-  iframe:null, type:null,
-  playing:false, dur:0, cur:0,
-  speed:1, dragging:false,
-  hideTimer:null, tickTimer:null,
-  ytReady:false
+let CP={
+  video:null, playing:false, dur:0, cur:0,
+  speed:1, muted:false, lastVol:100
 };
 
 /* ─── بناء HTML البلاير ─── */
-function buildStealthPlayerHTML(embedInfo){
-  const innerHtml = embedInfo.type === 'youtube'
-    ? `<div id="ytApiContainer" style="position:absolute;inset:0;"></div>`
-    : `<iframe id="spIframe"
-         src="${embedInfo.src}"
-         allow="autoplay; encrypted-media"
-         allowfullscreen
-         referrerpolicy="no-referrer"
-         style="position:absolute;inset:0;width:100%;height:100%;border:none;pointer-events:none;">
-       </iframe>`;
-
+function buildCustomPlayerHTML(videoUrl){
+  const hasVideo = videoUrl && videoUrl.trim() !== '';
+  
+  if(!hasVideo){
+    return `
+    <div class="custom-player" id="cpWrap">
+      <div class="cp-no-video">
+        <div class="cp-no-video-icon">📹</div>
+        <div class="cp-no-video-text">لا يوجد فيديو لهذه الحصة</div>
+        <div class="cp-no-video-sub">سيتم توفير الفيديو قريباً</div>
+      </div>
+    </div>`;
+  }
+  
   return `
-  <div class="stealth-player" id="spWrap">
+  <div class="custom-player" id="cpWrap">
 
     <!-- حاوية الفيديو -->
-    <div class="sp-iframe-box">${innerHtml}</div>
+    <div class="cp-video-box">
+      <video id="cpVideo" preload="metadata" playsinline>
+        <source src="${videoUrl}" type="video/mp4">
+        متصفحك لا يدعم تشغيل الفيديو
+      </video>
+    </div>
 
-    <!-- حواجز سوداء صلبة تحجب يوتيوب نهائياً -->
-    <div class="sp-blinder sp-blinder-top"></div>
-    <div class="sp-blinder sp-blinder-bottom"></div>
-    <div class="sp-blinder sp-blinder-left"></div>
-    <div class="sp-blinder sp-blinder-right"></div>
-
-    <!-- overlay التفاعل -->
-    <div class="sp-overlay" id="spOverlay"></div>
-
-    <!-- غطاء البداية (يختفي عند الضغط play) -->
-    <div class="sp-cover" id="spCover" onclick="spTogglePlay()">
-      <div class="sp-cover-thumb" id="spCoverThumb"></div>
-      <div class="sp-cover-btn">
+    <!-- غطاء البداية -->
+    <div class="cp-cover" id="cpCover" onclick="cpTogglePlay()">
+      <div class="cp-cover-thumb" id="cpCoverThumb"></div>
+      <div class="cp-cover-btn">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </div>
     </div>
 
     <!-- غطاء التحميل -->
-    <div class="sp-buffer show" id="spBuffer"><div class="sp-spinner"></div></div>
+    <div class="cp-buffer show" id="cpBuffer"><div class="cp-spinner"></div></div>
 
     <!-- العلامة المائية -->
-    <div class="sp-watermark"><span>ID: ${myStudentId}</span></div>
+    <div class="cp-watermark"><span>ID: ${myStudentId}</span></div>
 
     <!-- شريط التحكم -->
-    <div class="sp-controls" id="spControls">
+    <div class="cp-controls" id="cpControls">
       <!-- Timeline range -->
-      <div class="sp-timeline-wrap">
-        <input type="range" class="sp-timeline-inp" id="spRange" min="0" max="1000" step="1" value="0">
+      <div class="cp-timeline-wrap">
+        <input type="range" class="cp-timeline-inp" id="cpRange" min="0" max="1000" step="1" value="0">
       </div>
       <!-- أزرار -->
-      <div class="sp-ctrl-bar">
-        <div class="sp-ctrl-left">
+      <div class="cp-ctrl-bar">
+        <div class="cp-ctrl-left">
           <!-- Play/Pause -->
-          <button class="sp-cb" id="spPlayBtn" onclick="spTogglePlay()">
+          <button class="cp-cb" id="cpPlayBtn" onclick="cpTogglePlay()">
             <svg viewBox="0 0 16 16"><path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445zM8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>
           </button>
           <!-- رجوع -->
-          <button class="sp-cb sm" onclick="spSeek(-10)">
+          <button class="cp-cb sm" onclick="cpSeek(-10)">
             <svg viewBox="0 0 16 16"><path d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5z"/></svg>
           </button>
           <!-- تقديم -->
-          <button class="sp-cb sm" onclick="spSeek(10)">
+          <button class="cp-cb sm" onclick="cpSeek(10)">
             <svg viewBox="0 0 16 16"><path d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5z"/></svg>
           </button>
           <!-- صوت -->
-          <div class="sp-vol-wrap">
-            <button class="sp-cb sm" id="spVolBtn" onclick="spToggleMute()">
-              <svg id="spVolIcon" viewBox="0 0 16 16"><path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/></svg>
+          <div class="cp-vol-wrap">
+            <button class="cp-cb sm" id="cpVolBtn" onclick="cpToggleMute()">
+              <svg id="cpVolIcon" viewBox="0 0 16 16"><path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/></svg>
             </button>
-            <input type="range" class="sp-vol-inp" id="spVolRange" min="0" max="100" value="100" step="1">
+            <input type="range" class="cp-vol-inp" id="cpVolRange" min="0" max="100" value="100" step="1">
           </div>
           <!-- الوقت -->
-          <div class="sp-dur"><span id="spCur">0:00:00</span> / <span id="spDur">0:00:00</span></div>
+          <div class="cp-dur"><span id="cpCur">0:00</span> / <span id="cpDur">0:00</span></div>
         </div>
-        <div class="sp-ctrl-right">
+        <div class="cp-ctrl-right">
           <!-- السرعة -->
-          <div class="sp-pop-wrap">
-            <button class="sp-pop-btn" onclick="spToggleSpeedMenu(event)">
+          <div class="cp-pop-wrap">
+            <button class="cp-pop-btn" onclick="cpToggleSpeedMenu(event)">
               <svg viewBox="0 0 16 16"><path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692ZM15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692Z"/></svg>
-              <span id="spSpeedLbl">1x</span>
+              <span id="cpSpeedLbl">1x</span>
             </button>
-            <div class="sp-pop-menu" id="spSpeedMenu">
-              <span class="sp-pop-label">السرعة</span>
-              ${[0.5,0.75,1,1.25,1.5,1.75,2].map(s=>`<button class="sp-pop-item${s===1?' active':''}" onclick="spSetSpeed(${s})">${s}x</button>`).join('')}
-            </div>
-          </div>
-          <!-- الجودة -->
-          <div class="sp-pop-wrap">
-            <button class="sp-pop-btn" id="spQualBtn" onclick="spToggleQualMenu(event)">
-              <svg viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></svg>
-              <span id="spQualLbl">480p</span>
-            </button>
-            <div class="sp-pop-menu" id="spQualMenu">
-              <span class="sp-pop-label">الجودة</span>
-              <button class="sp-pop-item" onclick="spSetQuality('hd1080')">1080p</button>
-              <button class="sp-pop-item" onclick="spSetQuality('hd720')">720p</button>
-              <button class="sp-pop-item active" onclick="spSetQuality('large')">480p</button>
-              <button class="sp-pop-item" onclick="spSetQuality('medium')">360p</button>
-              <button class="sp-pop-item" onclick="spSetQuality('small')">240p</button>
+            <div class="cp-pop-menu" id="cpSpeedMenu">
+              <span class="cp-pop-label">السرعة</span>
+              ${[0.5,0.75,1,1.25,1.5,1.75,2].map(s=>`<button class="cp-pop-item${s===1?' active':''}" onclick="cpSetSpeed(${s})">${s}x</button>`).join('')}
             </div>
           </div>
           <!-- ملء الشاشة -->
-          <button class="sp-cb" onclick="spFullscreen()">
+          <button class="cp-cb" onclick="cpFullscreen()">
             <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
           </button>
         </div>
@@ -860,411 +810,237 @@ function buildStealthPlayerHTML(embedInfo){
 }
 
 /* ─── تهيئة البلاير ─── */
-function initStealthPlayer(){
-  if(vidPlayerInited||!lessonData.video) return;
+function initCustomPlayer(){
+  if(vidPlayerInited) return;
   vidPlayerInited=true;
 
   const vc=document.getElementById('tab-video');
-  const embedInfo=buildEmbedUrl(lessonData.video);
-
-  if(!embedInfo){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير مدعوم</div>`;
-    return;
-  }
-
-  SP.type=embedInfo.type;
-  vc.innerHTML=`<div class="vid-section-title">فيديو الشرح</div>${buildStealthPlayerHTML(embedInfo)}`;
+  const videoUrl = lessonData?.video || '';
+  
+  vc.innerHTML=`<div class="vid-section-title">فيديو الشرح</div>${buildCustomPlayerHTML(videoUrl)}`;
 
   // ضع الـ thumbnail على الـ cover
-  const thumbEl=document.getElementById('spCoverThumb');
-  if(thumbEl){
-    let thumb='';
-    if(lessonData.image) thumb=lessonData.image;
-    else if(embedInfo.type==='youtube') thumb=`https://img.youtube.com/vi/${embedInfo.id}/hqdefault.jpg`;
-    if(thumb) thumbEl.style.backgroundImage=`url('${thumb}')`;
+  const thumbEl=document.getElementById('cpCoverThumb');
+  if(thumbEl && lessonData.image){
+    thumbEl.style.backgroundImage=`url('${lessonData.image}')`;
   }
 
-  if(SP.type==='dailymotion'){
-    SP.iframe=document.getElementById('spIframe');
-  }
+  const video = document.getElementById('cpVideo');
+  if(!video) return;
+  
+  CP.video = video;
 
-  // لو يوتيوب: راقب الـ container وبمجرد ما YT تخلق الـ iframe اضبط أبعاده فوراً
-  if(SP.type==='youtube'){
-    const container=document.getElementById('ytApiContainer');
-    if(container){
-      const obs=new MutationObserver(()=>{
-        const f=container.querySelector('iframe');
-        if(f){ applyYTIframeStyle(f); obs.disconnect(); }
-      });
-      obs.observe(container,{childList:true,subtree:true});
-    }
-  }
-
-  // ── ربط الأحداث ──
-  bindStealthEvents();
-
-  if(SP.type==='youtube') loadYTAPI();
-
-  if(SP.type==='dailymotion'){
-    window.addEventListener('message', dmMessageHandler);
-    spShowBuffer();
-    SP.iframe.addEventListener('load',()=>{ setTimeout(()=>spHideBuffer(),3000); });
-  }
+  // ── ربط أحداث الفيديو ──
+  bindCustomPlayerEvents();
 }
 
-/* ─── تطبيق تنسيق الـ iframe فور إنشائه (لإخفاء واجهة يوتيوب) ─── */
-function applyYTIframeStyle(iframe){
-  Object.assign(iframe.style,{
-    position:'absolute',
-    inset:'0',
-    width:'100%', height:'100%',
-    pointerEvents:'none',
-    border:'none'
+/* ─── ربط أحداث البلاير ─── */
+function bindCustomPlayerEvents(){
+  const video = CP.video;
+  const range = document.getElementById('cpRange');
+  const volRng = document.getElementById('cpVolRange');
+  
+  if(!video) return;
+
+  // Video events
+  video.addEventListener('loadedmetadata', () => {
+    CP.dur = video.duration || 0;
+    document.getElementById('cpDur').textContent = fmtTime(CP.dur);
+    cpHideBuffer();
+  });
+  
+  video.addEventListener('canplay', () => {
+    cpHideBuffer();
+  });
+  
+  video.addEventListener('waiting', () => {
+    cpShowBuffer();
+  });
+  
+  video.addEventListener('playing', () => {
+    cpHideBuffer();
+    cpHideCover();
+  });
+  
+  video.addEventListener('play', () => {
+    CP.playing = true;
+    cpSyncPlayBtn();
+    cpHideCover();
+  });
+  
+  video.addEventListener('pause', () => {
+    CP.playing = false;
+    cpSyncPlayBtn();
+  });
+  
+  video.addEventListener('timeupdate', () => {
+    CP.cur = video.currentTime || 0;
+    CP.dur = video.duration || 0;
+    cpUpdateUI();
+  });
+  
+  video.addEventListener('ended', () => {
+    CP.playing = false;
+    cpSyncPlayBtn();
+  });
+
+  // Timeline range input
+  if(range){
+    range.addEventListener('input', () => {
+      const frac = range.value / 1000;
+      CP.cur = frac * CP.dur;
+      cpUpdateUI();
+    });
+    range.addEventListener('change', () => {
+      const frac = range.value / 1000;
+      video.currentTime = frac * CP.dur;
+    });
+  }
+
+  // Volume range
+  if(volRng){
+    volRng.addEventListener('input', () => {
+      const v = parseInt(volRng.value);
+      CP.lastVol = v;
+      CP.muted = (v === 0);
+      video.volume = v / 100;
+      volRng.style.background = `linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.85) ${v}%,rgba(255,255,255,.25) ${v}%)`;
+      cpUpdateVolIcon();
+    });
+  }
+  
+  // Click on video to play/pause
+  video.addEventListener('click', () => {
+    cpTogglePlay();
   });
 }
 
-/* ─── YouTube API ─── */
-let ytApiLoaded=false;
-function loadYTAPI(){
-  if(window.YT&&window.YT.Player){initYTBridge();return;}
-  if(ytApiLoaded) return;
-  ytApiLoaded=true;
-  const tag=document.createElement('script');
-  tag.src='https://www.youtube.com/iframe_api';
-  document.head.appendChild(tag);
-}
-window.onYouTubeIframeAPIReady=()=>initYTBridge();
-
-function initYTBridge(){
-  const m=lessonData.video.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-  const vId=m?m[1]:null;
-  if(!vId) return;
-
-  const container=document.getElementById('ytApiContainer');
-  if(!container) return;
-
-  SP.ytPlayer=new YT.Player('ytApiContainer',{
-    videoId: vId,
-    playerVars:{
-      playsinline:1,
-      controls:0,
-      rel:0,
-      modestbranding:1,
-      disablekb:1,
-      iv_load_policy:3,
-      origin:window.location.origin
-    },
-    events:{
-      onReady:()=>{
-        SP.ytReady=true;
-        SP.dur=SP.ytPlayer.getDuration()||0;
-        document.getElementById('spDur').textContent=fmtTime(SP.dur);
-        // أعد تطبيق الـ style كـ safety (لو الـ observer فاته)
-        const f=document.getElementById('ytApiContainer')?.querySelector('iframe');
-        if(f) applyYTIframeStyle(f);
-        spHideBuffer();
-        if(SP.tickTimer) clearInterval(SP.tickTimer);
-        SP.tickTimer=setInterval(spYTTick,500);
-      },
-      onStateChange:(e)=>{
-        SP.playing=(e.data===YT.PlayerState.PLAYING);
-        spSyncPlayBtn();
-        if(SP.playing){
-          spHideCover(); spHideBuffer();
-          scheduleHideControls();
-        } else if(e.data===YT.PlayerState.BUFFERING){
-          spShowBuffer();
-        } else {
-          spHideBuffer();
-        }
-      }
-    }
-  });
-}
-
-function spYTTick(){
-  if(!SP.ytPlayer||!SP.ytPlayer.getCurrentTime) return;
-  SP.cur=SP.ytPlayer.getCurrentTime()||0;
-  SP.dur=SP.ytPlayer.getDuration()||0;
-  spUpdateUI();
-}
-
-/* ─── Dailymotion postMessage (API الصح) ─── */
-function dmSend(command, params){
-  if(!SP.iframe||!SP.iframe.contentWindow) return;
-  // فورمات DM الصح: {event:'command', command:'play'}
-  const msg={event:'command', command};
-  if(params!==undefined) msg.parameters=Array.isArray(params)?params:[params];
-  SP.iframe.contentWindow.postMessage(JSON.stringify(msg),'*');
-}
-
-function dmMessageHandler(e){
-  // قبول من أي أوريجن فيه dailymotion أو * (DM بيبعت من ساب-فريمات أحياناً)
-  const origin=String(e.origin||'');
-  if(!origin.includes('dailymotion')&&origin!=='null'&&origin!==window.location.origin) return;
-
-  let d;
-  try{ d=typeof e.data==='string'?JSON.parse(e.data):e.data; }catch{ return; }
-  if(!d||!d.event) return;
-
-  switch(d.event){
-    case 'apiready':
-      spHideBuffer();
-      // لا نعمل autoplay هنا — المستخدم بيضغط play
-      break;
-
-    case 'play':
-    case 'playing':
-      SP.playing=true;
-      if(d.duration&&d.duration>0){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
-      spSyncPlayBtn(); spHideCover(); spHideBuffer();
-      scheduleHideControls();
-      break;
-
-    case 'pause':
-      SP.playing=false; spSyncPlayBtn();
-      break;
-
-    case 'end':case 'ended':
-      SP.playing=false; spSyncPlayBtn();
-      break;
-
-    case 'timeupdate':
-      if(d.videoTime!==undefined) SP.cur=d.videoTime;
-      else if(d.time!==undefined) SP.cur=d.time;
-      if(d.duration&&d.duration>0){
-        SP.dur=d.duration;
-        document.getElementById('spDur').textContent=fmtTime(SP.dur);
-      }
-      spUpdateUI();
-      break;
-
-    case 'durationchange':
-      if(d.duration&&d.duration>0){
-        SP.dur=d.duration;
-        document.getElementById('spDur').textContent=fmtTime(SP.dur);
-      }
-      break;
-
-    case 'seeked':
-      if(d.videoTime!==undefined) SP.cur=d.videoTime;
-      spUpdateUI(); break;
-
-    case 'waiting':case 'stalled': spShowBuffer(); break;
-    case 'canplay':case 'loadedmetadata':
-      spHideBuffer();
-      if(d.duration&&d.duration>0){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
-      break;
+/* ─── Play / Pause ─── */
+function cpTogglePlay(){
+  const video = CP.video;
+  if(!video) return;
+  
+  if(CP.playing){
+    video.pause();
+  } else {
+    video.play().catch(()=>{});
   }
 }
-
-/* ─── Play / Pause موحد ─── */
-function spTogglePlay(){
-  if(SP.type==='youtube'&&SP.ytPlayer&&SP.ytReady){
-    if(SP.playing) SP.ytPlayer.pauseVideo();
-    else SP.ytPlayer.playVideo();
-  } else if(SP.type==='dailymotion'){
-    if(SP.playing) dmSend('pause');
-    else dmSend('play');
-  }
-}
-window.spTogglePlay=spTogglePlay;
+window.cpTogglePlay = cpTogglePlay;
 
 /* ─── Seek ─── */
-window.spSeek=function(sec){
-  if(SP.type==='youtube'&&SP.ytPlayer){
-    const t=Math.max(0,Math.min(SP.dur,SP.cur+sec));
-    SP.ytPlayer.seekTo(t,true);
-  } else if(SP.type==='dailymotion'){
-    const t=Math.max(0,Math.min(SP.dur,SP.cur+sec));
-    dmSend('seek',[t]);
-    SP.cur=t; spUpdateUI();
-  }
+window.cpSeek = function(sec){
+  const video = CP.video;
+  if(!video) return;
+  
+  const t = Math.max(0, Math.min(CP.dur, video.currentTime + sec));
+  video.currentTime = t;
+  CP.cur = t;
+  cpUpdateUI();
 };
-
-/* ─── الانتقال للـ timeline ─── */
-function spSeekToFraction(frac){
-  frac=Math.max(0,Math.min(1,frac));
-  const t=frac*SP.dur;
-  SP.cur=t; spUpdateUI();
-  if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.seekTo(t,true);
-  else if(SP.type==='dailymotion') dmSend('seek',[t]);
-}
 
 /* ─── السرعة ─── */
-window.spSetSpeed=function(s){
-  SP.speed=s;
-  document.getElementById('spSpeedLbl').textContent=s+'x';
-  document.querySelectorAll('#spSpeedMenu .sp-pop-item').forEach(el=>el.classList.toggle('active',parseFloat(el.textContent)===s));
-  if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.setPlaybackRate(s);
-  else if(SP.type==='dailymotion') dmSend('setPlaybackRate',[s]);
-  document.getElementById('spSpeedMenu')?.classList.remove('open');
+window.cpSetSpeed = function(s){
+  const video = CP.video;
+  if(!video) return;
+  
+  CP.speed = s;
+  video.playbackRate = s;
+  document.getElementById('cpSpeedLbl').textContent = s + 'x';
+  document.querySelectorAll('#cpSpeedMenu .cp-pop-item').forEach(el => {
+    el.classList.toggle('active', parseFloat(el.textContent) === s);
+  });
+  document.getElementById('cpSpeedMenu')?.classList.remove('open');
 };
 
-function scheduleHideControls(){ /* controls دايماً ظاهرة */ }
+window.cpToggleSpeedMenu = function(e){
+  if(e) e.stopPropagation();
+  const menu = document.getElementById('cpSpeedMenu');
+  if(!menu) return;
+  const isOpen = menu.classList.contains('open');
+  cpCloseAllPopups();
+  if(!isOpen) menu.classList.add('open');
+};
 
-function spCloseAllPopups(){ 
-  document.getElementById('spSpeedMenu')?.classList.remove('open');
-  document.getElementById('spQualMenu')?.classList.remove('open');
+function cpCloseAllPopups(){ 
+  document.getElementById('cpSpeedMenu')?.classList.remove('open');
 }
 
-window.spToggleSpeedMenu=function(e){
-  if(e) e.stopPropagation();
-  const isOpen=document.getElementById('spSpeedMenu')?.classList.contains('open');
-  spCloseAllPopups();
-  if(!isOpen) document.getElementById('spSpeedMenu')?.classList.add('open');
-};
-
-window.spToggleQualMenu=function(e){
-  if(e) e.stopPropagation();
-  const isOpen=document.getElementById('spQualMenu')?.classList.contains('open');
-  spCloseAllPopups();
-  if(!isOpen){
-    if(SP.type==='youtube') spUpdateYTQualMenu();
-    document.getElementById('spQualMenu')?.classList.add('open');
-  }
-};
-
-document.addEventListener('click',()=>spCloseAllPopups());
-const YT_QUAL_LABELS={'hd1080':'1080p','hd720':'720p','large':'480p','medium':'360p','small':'240p','tiny':'144p','auto':'تلقائي'};
-
-function spUpdateYTQualMenu(){
-  if(!SP.ytPlayer||!SP.ytPlayer.getAvailableQualityLevels) return;
-  const levels=SP.ytPlayer.getAvailableQualityLevels()||[];
-  const cur=SP.ytPlayer.getPlaybackQuality()||'large';
-  const menu=document.getElementById('spQualMenu');
-  if(!menu||levels.length===0) return;
-  const allQ=['hd1080','hd720','large','medium','small','tiny'];
-  const available=allQ.filter(q=>levels.includes(q));
-  menu.innerHTML=`<span class="sp-pop-label">الجودة</span>`
-    +available.map(q=>`<button class="sp-pop-item${q===cur?' active':''}" onclick="spSetQuality('${q}')">${YT_QUAL_LABELS[q]||q}</button>`).join('');
-  document.getElementById('spQualLbl').textContent=YT_QUAL_LABELS[cur]||'HD';
-}
-
-window.spSetQuality=function(q){
-  document.getElementById('spQualMenu')?.classList.remove('open');
-  const lbl=YT_QUAL_LABELS[q]||q;
-  document.getElementById('spQualLbl').textContent=lbl;
-  document.querySelectorAll('#spQualMenu .sp-pop-item').forEach(el=>el.classList.toggle('active',el.textContent.trim()===lbl));
-
-  if(SP.type==='youtube'&&SP.ytPlayer){
-    SP.ytPlayer.setPlaybackQuality(q==='auto'?(SP.ytPlayer.getAvailableQualityLevels()||[])[0]||'hd720':q);
-  }
-  if(SP.type==='dailymotion'){
-    const dmMap={'hd1080':1080,'hd720':720,'large':480,'medium':360,'small':240,'auto':0};
-    dmSend('setQuality',[dmMap[q]||0]);
-  }
-};
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.sp-speed-wrap')){
-    document.getElementById('spSpeedMenu')?.classList.remove('open');
-    document.getElementById('spQualMenu')?.classList.remove('open');
-  }
-});
+document.addEventListener('click', () => cpCloseAllPopups());
 
 /* ─── Fullscreen ─── */
-window.spFullscreen=function(){
-  const w=document.getElementById('spWrap');
+window.cpFullscreen = function(){
+  const w = document.getElementById('cpWrap');
   if(!w) return;
   if(!document.fullscreenElement) w.requestFullscreen().catch(()=>{});
   else document.exitFullscreen();
 };
 
 /* ─── Buffer ─── */
-function spShowCover(){const c=document.getElementById('spCover');if(c)c.classList.remove('hide');}
-function spHideCover(){const c=document.getElementById('spCover');if(c)c.classList.add('hide');}
-function spShowBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.add('show');}
-function spHideBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.remove('show');}
+function cpShowCover(){const c=document.getElementById('cpCover');if(c)c.classList.remove('hide');}
+function cpHideCover(){const c=document.getElementById('cpCover');if(c)c.classList.add('hide');}
+function cpShowBuffer(){const b=document.getElementById('cpBuffer');if(b)b.classList.add('show');}
+function cpHideBuffer(){const b=document.getElementById('cpBuffer');if(b)b.classList.remove('show');}
 
 /* ─── Sync Play Button ─── */
-function spSyncPlayBtn(){
-  const btn=document.getElementById('spPlayBtn');
+function cpSyncPlayBtn(){
+  const btn = document.getElementById('cpPlayBtn');
   if(!btn) return;
-  btn.innerHTML=SP.playing
-    ?`<svg viewBox="0 0 16 16" style="width:22px;height:22px;fill:currentColor"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>`
-    :`<svg viewBox="0 0 16 16" style="width:22px;height:22px;fill:currentColor"><path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445zM8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>`;
+  btn.innerHTML = CP.playing
+    ? `<svg viewBox="0 0 16 16" style="width:22px;height:22px;fill:currentColor"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>`
+    : `<svg viewBox="0 0 16 16" style="width:22px;height:22px;fill:currentColor"><path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445zM8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>`;
 }
 
 /* ─── Update UI bar ─── */
-function spUpdateUI(){
-  const pct=SP.dur?(SP.cur/SP.dur*1000):0;
-  const range=document.getElementById('spRange');
-  const cur=document.getElementById('spCur');
+function cpUpdateUI(){
+  const pct = CP.dur ? (CP.cur / CP.dur * 1000) : 0;
+  const range = document.getElementById('cpRange');
+  const cur = document.getElementById('cpCur');
   if(range){
-    range.value=pct;
-    // لون التقدم
-    range.style.background=`linear-gradient(to right,var(--teal) 0%,var(--teal) ${pct/10}%,rgba(255,255,255,.25) ${pct/10}%)`;
+    range.value = pct;
+    range.style.background = `linear-gradient(to right,var(--teal) 0%,var(--teal) ${pct/10}%,rgba(255,255,255,.25) ${pct/10}%)`;
   }
-  if(cur) cur.textContent=fmtTime(SP.cur);
+  if(cur) cur.textContent = fmtTime(CP.cur);
 }
 
 /* ─── Volume ─── */
-window.spToggleMute=function(){
-  const icon=document.getElementById('spVolIcon');
-  const rng=document.getElementById('spVolRange');
-  if(!icon||!rng) return;
-  if(SP.muted){
-    SP.muted=false;
-    rng.value=SP.lastVol||100;
-    spApplyVolume(SP.lastVol||100);
-    icon.innerHTML=`<path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>`;
+window.cpToggleMute = function(){
+  const video = CP.video;
+  const icon = document.getElementById('cpVolIcon');
+  const rng = document.getElementById('cpVolRange');
+  if(!video || !icon || !rng) return;
+  
+  if(CP.muted){
+    CP.muted = false;
+    video.muted = false;
+    rng.value = CP.lastVol || 100;
+    video.volume = (CP.lastVol || 100) / 100;
+    cpUpdateVolIcon();
   } else {
-    SP.lastVol=parseInt(rng.value)||100;
-    SP.muted=true;
-    spApplyVolume(0);
-    rng.value=0;
-    icon.innerHTML=`<path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>`;
+    CP.lastVol = parseInt(rng.value) || 100;
+    CP.muted = true;
+    video.muted = true;
+    rng.value = 0;
+    cpUpdateVolIcon();
   }
 };
-SP.muted=false; SP.lastVol=100;
 
-function spApplyVolume(v){
-  if(SP.type==='youtube'&&SP.ytPlayer&&SP.ytReady){
-    if(v===0) SP.ytPlayer.mute(); else { SP.ytPlayer.unMute(); SP.ytPlayer.setVolume(v); }
+function cpUpdateVolIcon(){
+  const icon = document.getElementById('cpVolIcon');
+  if(!icon) return;
+  
+  if(CP.muted || (CP.video && CP.video.volume === 0)){
+    icon.innerHTML = `<path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0z"/>`;
+  } else {
+    icon.innerHTML = `<path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/>`;
   }
-  // DM مش بيدعم volume عبر postMessage بشكل موثوق
-}
-
-/* ─── ربط أحداث البلاير ─── */
-function bindStealthEvents(){
-  const overlay=document.getElementById('spOverlay');
-  const wrap=document.getElementById('spWrap');
-  const range=document.getElementById('spRange');
-  const volRng=document.getElementById('spVolRange');
-
-  // Click على الـ overlay
-  overlay.addEventListener('click',()=>{ spTogglePlay(); });
-
-  // Timeline range input
-  if(range){
-    range.addEventListener('input',()=>{
-      const frac=range.value/1000;
-      SP.cur=frac*SP.dur;
-      spUpdateUI();
-    });
-    range.addEventListener('change',()=>{
-      spSeekToFraction(range.value/1000);
-    });
-  }
-
-  // Volume range
-  if(volRng){
-    volRng.addEventListener('input',()=>{
-      const v=parseInt(volRng.value);
-      SP.lastVol=v;SP.muted=(v===0);
-      volRng.style.background=`linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.85) ${v}%,rgba(255,255,255,.25) ${v}%)`;
-      spApplyVolume(v);
-    });
-  }
-
-  // Mousemove → controls دايماً ظاهرة (مش بتتخفى)
 }
 
 /* ─── Format time ─── */
 function fmtTime(s){
-  s=Math.floor(s||0);
-  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;
-  return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;
+  s = Math.floor(s || 0);
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sc = s % 60;
+  return h ? `${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}` : `${m}:${String(sc).padStart(2,'0')}`;
 }
 
 /* ════════════════════════════════════
@@ -1292,7 +1068,7 @@ async function initLesson(){
       document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
       document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
     });
-    initStealthPlayer();
+    initCustomPlayer();
     if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
     if(urlTab==='homework'){setTimeout(()=>switchTab('homework'),100);}else{setTimeout(()=>switchTab('video'),100);}
     return;
@@ -1450,7 +1226,7 @@ function unlockFeatures(msgObj){
     document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
     document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
   });
-  initStealthPlayer();
+  initCustomPlayer();
   if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
 }
 
