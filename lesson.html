@@ -137,105 +137,11 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
 /* ── HOMEWORK TAB ── */
 #tab-homework .hw-locked-screen{background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;box-shadow:var(--shadow);}
-#tab-homework .hw-locked-screen::before{content:'';display:block;font-size:3rem;margin-bottom:16px;}
 .hw-locked-icon{font-size:3.5rem;margin-bottom:18px;}
 .hw-locked-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
 .hw-locked-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:380px;margin:0 auto 28px;}
-.hw-locked-badge{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fed7aa;color:var(--gold);font-size:.75rem;font-weight:700;padding:8px 16px;border-radius:10px;margin-bottom:28px;font-family:var(--mono);}
 .hw-start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
 .hw-start-btn:hover{box-shadow:0 10px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
-.hw-done-screen{background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;}
-.hw-done-icon{font-size:3.5rem;margin-bottom:16px;}
-.hw-done-title{font-size:1.5rem;font-weight:900;color:var(--teal);margin-bottom:8px;}
-.hw-done-sub{font-size:.88rem;color:var(--teal2);line-height:1.7;}
-
-/* ── THE PRO CUSTOM PLAYER (YOUR YOUTUBE API IDEA + OUR UI) ── */
-.vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
-.vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
-
-.pro-player-wrap {
-    position: relative; width: 100%; border-radius: 16px;
-    overflow: hidden; background: #000; box-shadow: var(--shadow2);
-    display: flex; flex-direction: column; justify-content: center;
-    aspect-ratio: 16/9;
-}
-.pro-player-wrap:fullscreen, .pro-player-wrap:-webkit-full-screen { border-radius: 0; }
-
-/* إعدادات احتواء اليوتيوب في الـ div الجديد */
-.vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; background: #000; }
-.vp-iframe-wrap iframe {
-    width: 100%; height: 100%; border: none; display: block;
-    pointer-events: none !important; /* دي بتمنع الماوس نهائياً إنه يلمس اليوتيوب */
-}
-
-/* العلامة المائية */
-.pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
-.pro-watermark span {
-    position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
-    color: rgba(255,255,255,0.3); text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
-    animation: wmMove 25s linear infinite alternate; white-space: nowrap;
-}
-@keyframes wmMove { 0% { top: 10%; left: 10%; } 25% { top: 70%; left: 20%; } 50% { top: 40%; left: 70%; } 75% { top: 20%; left: 50%; } 100% { top: 60%; left: 80%; } }
-
-/* طبقات الحماية (عشان نضمن 100% إن اللينك ميتداسش عليه) */
-.yt-blocker { position: absolute; background: transparent; z-index: 30; pointer-events: auto; }
-.yt-blocker-top { top: 0; left: 0; right: 0; height: 70px; }
-.yt-blocker-bottom-right { bottom: 40px; right: 0; width: 160px; height: 80px; }
-.vp-yt-overlay { position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent; }
-
-/* الغطاء الذكي (بيخفي الشاشة أثناء التوقف) */
-.yt-thumbnail-cover {
-    position: absolute; inset: 0; z-index: 35; 
-    background-size: cover; background-position: center; background-color: #000;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.yt-thumbnail-cover .yt-play-btn {
-    width: 75px; height: 55px; background: rgba(13,122,95,0.9);
-    border-radius: 16px; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: all 0.2s;
-}
-.yt-thumbnail-cover:hover .yt-play-btn { transform: scale(1.1); background: var(--teal); }
-.yt-play-btn svg { width: 32px; height: 32px; fill: #fff; margin-left: 5px; }
-
-/* شريط التحكم السفلي الاحترافي بتاعنا إحنا */
-.pro-controls {
-    position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
-    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
-    padding: 10px 20px 15px; display: flex; flex-direction: column; gap: 8px;
-    opacity: 0; transition: opacity 0.3s; direction: ltr;
-}
-.pro-player-wrap:hover .pro-controls, .pro-player-wrap.active-controls .pro-controls { opacity: 1; }
-
-.pro-timeline-container { width: 100%; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
-.pro-timeline-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; position: relative; transition: height 0.1s; }
-.pro-timeline-container:hover .pro-timeline-bg { height: 8px; }
-.pro-timeline-progress { position: absolute; top: 0; left: 0; height: 100%; background: var(--teal); border-radius: 3px; pointer-events: none; transition: width 0.1s linear; }
-.pro-timeline-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--teal); border-radius: 50%; opacity: 0; pointer-events: none; transition: opacity 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-.pro-timeline-container:hover .pro-timeline-thumb { opacity: 1; }
-
-.pro-controls-bottom { display: flex; align-items: center; justify-content: space-between; }
-.pro-ctrl-group { display: flex; align-items: center; gap: 15px; }
-
-.pro-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.85; transition: all 0.2s; padding: 0; }
-.pro-btn:hover { opacity: 1; transform: scale(1.15); color: var(--teal); }
-.pro-btn svg { width: 22px; height: 22px; fill: currentColor; }
-
-.pro-time { color: #fff; font-family: var(--mono); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 1px 3px #000;}
-.pro-speed-btn { font-family: var(--sans); font-size: 0.9rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 5px; opacity: 0.85; cursor: pointer; border: none; background: none; text-shadow: 0 1px 3px #000;}
-.pro-speed-btn:hover { opacity: 1; color: var(--teal); }
-
-/* Popup القوائم */
-.vpc-popup-wrap{position:relative;}
-.vpc-popup{position:absolute;bottom:calc(100% + 15px);left:50%;transform:translateX(-50%);background:rgba(15,20,32,.98);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:6px;min-width:90px;display:none;box-shadow:0 8px 32px rgba(0,0,0,.8);}
-.vpc-popup.open{display:block;animation:riseIn .2s ease-out;}
-.vpc-popup-item{display:block;width:100%;padding:8px 12px;font-family:var(--mono);font-size:.8rem;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;text-align:center;border-radius:8px;transition:all .15s;margin-bottom:2px;font-weight:700;}
-.vpc-popup-item:hover{background:rgba(255,255,255,.1);color:#fff;}
-.vpc-popup-item.active{color:#fff;background:var(--teal);}
-
-/* Fullscreen Fixes */
-.pro-player-wrap:fullscreen .pro-controls { z-index: 9999; position: absolute; bottom: 0; }
-.pro-player-wrap:fullscreen .vp-iframe-wrap iframe { height: 100vh; }
-.pro-player-wrap:fullscreen .yt-thumbnail-cover { z-index: 9998; }
 
 /* ── PDF ── */
 .pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
@@ -258,6 +164,171 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-gate-dismiss{display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;transition:color .2s;}
 .hw-gate-dismiss:hover{color:var(--text2);}
 
+/* ════════════════════════════════
+   STEALTH VIDEO PLAYER
+════════════════════════════════ */
+.vid-section-title{
+  font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;
+  letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;
+  display:flex;align-items:center;gap:7px;
+}
+.vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
+
+/* غلاف البلاير الرئيسي */
+.stealth-player{
+  position:relative;width:100%;aspect-ratio:16/9;
+  background:#000;border-radius:16px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+  user-select:none;-webkit-user-select:none;
+}
+.stealth-player:fullscreen,
+.stealth-player:-webkit-full-screen{border-radius:0;}
+
+/* حاوية الـ iframe — مخفية خلف overlay */
+.sp-iframe-box{
+  position:absolute;inset:0;
+  /* نوسّع الـ iframe لإخفاء شريط اليوتيوب/ديلي موشن */
+  overflow:hidden;
+}
+.sp-iframe-box iframe{
+  position:absolute;
+  /* اخفي الـ UI العلوي والسفلي بالتوسيع */
+  top:-60px;left:-2px;right:-2px;
+  width:calc(100% + 4px);
+  height:calc(100% + 120px);
+  border:none;pointer-events:none;
+}
+
+/* طبقات الحجب — تمنع أي click يوصل للـ iframe */
+.sp-shield{
+  position:absolute;z-index:10;
+  background:transparent;pointer-events:auto;cursor:default;
+}
+.sp-shield-top   {top:0;left:0;right:0;height:68px;}
+.sp-shield-bottom{bottom:0;left:0;right:0;height:68px;}
+.sp-shield-left  {top:0;left:0;bottom:0;width:6px;}
+.sp-shield-right {top:0;right:0;bottom:0;width:6px;}
+
+/* غطاء التفاعل الرئيسي (double-click للـ play/pause) */
+.sp-overlay{
+  position:absolute;inset:0;z-index:20;
+  cursor:pointer;background:transparent;
+}
+
+/* غطاء الصورة المصغرة (بيظهر وبيتخفى) */
+.sp-cover{
+  position:absolute;inset:0;z-index:30;
+  background:#000 center/cover no-repeat;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .3s;
+}
+.sp-cover.hide{opacity:0;pointer-events:none;}
+.sp-play-circle{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(13,122,95,.88);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transition:transform .2s,background .2s;
+}
+.sp-cover:hover .sp-play-circle{transform:scale(1.12);background:var(--teal);}
+.sp-play-circle svg{width:32px;height:32px;fill:#fff;margin-left:5px;}
+
+/* العلامة المائية المتحركة */
+.sp-watermark{
+  position:absolute;inset:0;z-index:25;
+  pointer-events:none;overflow:hidden;
+}
+.sp-watermark span{
+  position:absolute;font-family:var(--mono);font-size:1.3rem;font-weight:900;
+  color:rgba(255,255,255,.22);text-shadow:1px 1px 4px rgba(0,0,0,.7);
+  animation:wmFloat 30s linear infinite alternate;white-space:nowrap;
+}
+@keyframes wmFloat{
+  0%  {top:8%;left:8%;}
+  20% {top:65%;left:15%;}
+  40% {top:30%;left:72%;}
+  60% {top:75%;left:60%;}
+  80% {top:15%;left:50%;}
+  100%{top:55%;left:82%;}
+}
+
+/* ── شريط التحكم السفلي ── */
+.sp-controls{
+  position:absolute;bottom:0;left:0;right:0;z-index:40;
+  padding:8px 16px 12px;direction:ltr;
+  background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.5) 60%,transparent 100%);
+  opacity:0;transition:opacity .25s;pointer-events:none;
+}
+.stealth-player:hover .sp-controls,
+.stealth-player.sp-active .sp-controls{opacity:1;pointer-events:auto;}
+
+/* شريط التقدم */
+.sp-timeline{width:100%;height:18px;cursor:pointer;display:flex;align-items:center;margin-bottom:6px;}
+.sp-bar{width:100%;height:4px;background:rgba(255,255,255,.25);border-radius:4px;position:relative;transition:height .1s;}
+.sp-timeline:hover .sp-bar{height:6px;}
+.sp-bar-fill{position:absolute;top:0;left:0;height:100%;background:var(--teal);border-radius:4px;pointer-events:none;}
+.sp-bar-thumb{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:14px;height:14px;border-radius:50%;background:var(--teal);
+  opacity:0;pointer-events:none;transition:opacity .2s;
+  box-shadow:0 0 6px rgba(0,0,0,.5);
+}
+.sp-timeline:hover .sp-bar-thumb{opacity:1;}
+
+/* صف الأزرار */
+.sp-btns{display:flex;align-items:center;justify-content:space-between;}
+.sp-grp{display:flex;align-items:center;gap:12px;}
+.sp-btn{
+  background:none;border:none;color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.85;transition:opacity .15s,transform .15s,color .15s;padding:0;
+}
+.sp-btn:hover{opacity:1;transform:scale(1.15);color:var(--teal);}
+.sp-btn svg{width:20px;height:20px;fill:currentColor;}
+.sp-time{color:#fff;font-family:var(--mono);font-size:.8rem;font-weight:700;letter-spacing:.5px;text-shadow:0 1px 3px #000;}
+
+/* السرعة */
+.sp-speed-wrap{position:relative;}
+.sp-speed-btn{
+  font-family:var(--sans);font-size:.85rem;font-weight:700;
+  color:#fff;border:none;background:none;cursor:pointer;
+  opacity:.85;transition:opacity .15s,color .15s;text-shadow:0 1px 3px #000;
+}
+.sp-speed-btn:hover{opacity:1;color:var(--teal);}
+.sp-speed-menu{
+  position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);
+  background:rgba(10,15,25,.97);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:5px;min-width:80px;display:none;
+  box-shadow:0 8px 32px rgba(0,0,0,.8);
+}
+.sp-speed-menu.open{display:block;animation:riseIn .15s ease-out;}
+.sp-speed-item{
+  display:block;width:100%;padding:7px 10px;
+  font-family:var(--mono);font-size:.78rem;color:rgba(255,255,255,.8);
+  background:none;border:none;cursor:pointer;text-align:center;
+  border-radius:7px;transition:all .12s;font-weight:700;margin-bottom:1px;
+}
+.sp-speed-item:hover{background:rgba(255,255,255,.1);color:#fff;}
+.sp-speed-item.active{background:var(--teal);color:#fff;}
+
+/* مؤشر Buffer */
+.sp-buffer{
+  position:absolute;inset:0;z-index:22;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;transition:opacity .2s;
+}
+.sp-buffer.show{opacity:1;}
+.sp-spinner{
+  width:44px;height:44px;border:3px solid rgba(255,255,255,.15);
+  border-top-color:var(--teal);border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Fullscreen fixes */
+.stealth-player:fullscreen .sp-controls{z-index:9999;position:absolute;bottom:0;}
+.stealth-player:-webkit-full-screen .sp-controls{z-index:9999;position:absolute;bottom:0;}
+
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:640px){
@@ -272,9 +343,9 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .access-pill .lbl{display:none;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
-  .pro-controls{padding:12px 14px 10px;}
-  .pro-left,.pro-right{gap:10px;}
-  .pro-time{font-size:.75rem;}
+  .sp-controls{padding:6px 10px 8px;}
+  .sp-time{font-size:.72rem;}
+  .sp-btn svg{width:18px;height:18px;}
 }
 </style>
 </head>
@@ -290,9 +361,9 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   <div class="hw-gate-card">
     <div class="hw-gate-icon">📋</div>
     <div class="hw-gate-title">لازم تعمل الواجب الأول!</div>
-    <div class="hw-gate-sub" id="hwGateMsg">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب — اعمل الواجب الأول وهتفتح الحصة تلقائياً</div>
+    <div class="hw-gate-sub" id="hwGateMsg">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب</div>
     <button class="hw-gate-btn" onclick="goToHomework()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       اذهب للواجب
     </button>
     <span class="hw-gate-dismiss" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
@@ -304,7 +375,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     <button class="lock-back" onclick="window.history.back()">↩ رجوع</button>
     <div class="lock-icon">🎫</div>
     <div class="lock-title">تفعيل الحصة</div>
-    <div class="lock-sub">أدخل الكود الذي حصلت عليه من الأستاذ لفتح هذه الحصة والبدء في التدريب</div>
+    <div class="lock-sub">أدخل الكود الذي حصلت عليه من الأستاذ لفتح هذه الحصة</div>
     <input id="accessCodeInput" class="lock-input" placeholder="أدخل الكود هنا" autocomplete="off" spellcheck="false" inputmode="text">
     <button id="verifyBtn" class="lock-btn">تفعيل الحصة ←</button>
   </div>
@@ -384,7 +455,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     </div>
 
     <div id="tab-homework" class="hidden"></div>
-    <div id="tab-video" class="hidden"></div>
+    <div id="tab-video"    class="hidden"></div>
     <div id="tab-pdf" class="hidden">
       <div class="pdf-card">
         <div class="pdf-icon">📚</div>
@@ -401,92 +472,68 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
 <script>
 /* ════════════════════════════════════
-   SECURITY, DEV TOOLS & SCREENSHOT PROTECTION
+   SECURITY
 ════════════════════════════════════ */
-(function() {
-    document.addEventListener('contextmenu', e => e.preventDefault());
-
-    window.addEventListener('keydown', (e) => {
-        if (
-            e.keyCode === 123 || 
-            (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-            (e.ctrlKey && e.keyCode === 85)
-        ) {
-            e.preventDefault(); 
-            alert("⚠️ غير مسموح بفتح أدوات المطور للحفاظ على خصوصية المحتوى."); 
-            return false;
-        }
-        if (e.key === 'PrintScreen' || e.keyCode === 44) {
-            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
-            alert("⚠️ غير مسموح بأخذ لقطات شاشة لحماية المحتوى.");
-        }
-    });
-
-    window.addEventListener('keyup', (e) => {
-        if (e.key === 'PrintScreen' || e.keyCode === 44) {
-            navigator.clipboard.writeText('⚠️ غير مسموح بأخذ لقطات شاشة.');
-        }
-    });
-
-    const detectDevTools = () => {
-        const widthThreshold = window.outerWidth - window.innerWidth > 160;
-        const heightThreshold = window.outerHeight - window.innerHeight > 160;
-        if (widthThreshold || heightThreshold) {
-            alert("⚠️ غير مسموح بفتح أدوات المطور (Developer Tools).\nيرجى إغلاقها فوراً للمتابعة.");
-            window.location.reload(); 
-        }
-    };
-    setInterval(detectDevTools, 1000);
-
-    setInterval(function() {
-        (function(a) { return (function(a) { return (Function('Function(arguments[0].constructor(\'debugger\')())')(a)); })(a); })(window);
-    }, 100);
-
-    window.addEventListener('blur', () => {
-        document.body.style.filter = 'blur(15px)';
-        document.body.style.opacity = '0.4';
-    });
-    window.addEventListener('focus', () => {
-        document.body.style.filter = 'none';
-        document.body.style.opacity = '1';
-    });
+(function(){
+  document.addEventListener('contextmenu',e=>e.preventDefault());
+  window.addEventListener('keydown',(e)=>{
+    if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&(e.keyCode===73||e.keyCode===74))||(e.ctrlKey&&e.keyCode===85)){
+      e.preventDefault();alert("⚠️ غير مسموح بفتح أدوات المطور.");return false;
+    }
+    if(e.key==='PrintScreen'||e.keyCode===44){
+      navigator.clipboard.writeText('⚠️ غير مسموح.');
+      alert("⚠️ غير مسموح بأخذ لقطات شاشة.");
+    }
+  });
+  window.addEventListener('keyup',(e)=>{if(e.key==='PrintScreen'||e.keyCode===44)navigator.clipboard.writeText('⚠️ غير مسموح.');});
+  const detect=()=>{if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){alert("⚠️ غير مسموح بفتح أدوات المطور.");window.location.reload();}};
+  setInterval(detect,1000);
+  setInterval(function(){(function(a){return(function(a){return(Function('Function(arguments[0].constructor(\'debugger\')())')(a));})(a);})(window);},100);
+  window.addEventListener('blur',()=>{document.body.style.filter='blur(15px)';document.body.style.opacity='0.4';});
+  window.addEventListener('focus',()=>{document.body.style.filter='none';document.body.style.opacity='1';});
 })();
 
+/* ════════════════════════════════════
+   SUPABASE & GLOBALS
+════════════════════════════════════ */
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
+const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
 let examTimer,myStudentId="000000",vidPlayerInited=false;
-let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
+let hwData=null,hwUserAns={},hwCurIdx=0,hwDone=false,hwQuestions=[],hwStarted=false;
 
-function showLoader(text = "جاري التحميل...") {
-  const el = document.getElementById('loadingScreen');
-  if(el){
-    const txtEl = document.getElementById('ldText');
-    if(txtEl) txtEl.textContent = text;
-    el.style.display = 'flex'; void el.offsetWidth; el.style.opacity = '1';
-  }
+/* ════════════════════════════════════
+   LOADER HELPERS
+════════════════════════════════════ */
+function showLoader(text="جاري التحميل..."){
+  const el=document.getElementById('loadingScreen');
+  if(el){document.getElementById('ldText').textContent=text;el.style.display='flex';void el.offsetWidth;el.style.opacity='1';}
 }
-
 function hideLoader(){
-  const el = document.getElementById('loadingScreen');
-  if(el){ el.style.opacity = '0'; setTimeout(() => { el.style.display = 'none'; }, 300); }
+  const el=document.getElementById('loadingScreen');
+  if(el){el.style.opacity='0';setTimeout(()=>{el.style.display='none';},300);}
 }
 
-window.switchTab = (tab) => {
+/* ════════════════════════════════════
+   TAB SWITCHING
+════════════════════════════════════ */
+window.switchTab=(tab)=>{
   showLoader("جاري التحميل...");
-  setTimeout(() => {
+  setTimeout(()=>{
     document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
     hideLoader();
-  }, 400); 
+  },400);
 };
 
-/* ── AUTH & ACCESS ── */
+/* ════════════════════════════════════
+   AUTH & ACCESS
+════════════════════════════════════ */
 async function initLessonPage(){
   const lessonId=new URLSearchParams(window.location.search).get('id');
   if(!lessonId){hideLoader();return;}
@@ -495,78 +542,66 @@ async function initLessonPage(){
   currentUser=session.user;
   const savedLocal=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
   const now=Date.now();
-
   if(savedLocal){
     try{
       const p=JSON.parse(savedLocal);
       if(p.expiry>now){
         myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
-        await initLesson(); startAccessTimer(p.expiry);
+        await initLesson();startAccessTimer(p.expiry);
         verifyAccessInBackground(currentUser,lessonId);
         checkHomeworkGateBackground(lessonId);
-        hideLoader();
-        return;
+        hideLoader();return;
       }
     }catch(e){}
   }
-
   try{
     const[{data:uData},{data:codesData}]=await Promise.all([
       supabaseClient.from('users').select('studentid').eq('id',currentUser.id).single(),
       supabaseClient.from('codes').select('*').eq('usedby',currentUser.email)
     ]);
-    if(uData) myStudentId=uData.studentid||currentUser.id.substring(0,6).toUpperCase();
+    if(uData)myStudentId=uData.studentid||currentUser.id.substring(0,6).toUpperCase();
     let hasAccess=false,validExpiry=null;
-    if(codesData) codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now){hasAccess=true;validExpiry=cd.expiryat;}});
+    if(codesData)codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now){hasAccess=true;validExpiry=cd.expiryat;}});
     if(hasAccess){
       localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:validExpiry,studentId:myStudentId}));
-      await initLesson(); startAccessTimer(validExpiry);
-      checkHomeworkGateBackground(lessonId);
-      hideLoader();
-    } else {
-      hideLoader(); document.getElementById('codeLockScreen').classList.remove('hidden');
-    }
+      await initLesson();startAccessTimer(validExpiry);
+      checkHomeworkGateBackground(lessonId);hideLoader();
+    }else{hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
   }catch(err){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
 }
 
 async function checkHomeworkGateBackground(lessonId){
-  try{
-    const blocked=await checkHomeworkGate(lessonId);
-    if(blocked) showHomeworkGate(blocked);
-  }catch(e){}
+  try{const blocked=await checkHomeworkGate(lessonId);if(blocked)showHomeworkGate(blocked);}catch(e){}
 }
-
 async function checkHomeworkGate(lessonId){
   try{
     const{data:hwList}=await supabaseClient.from('homework').select('*').order('created_at',{ascending:true});
-    if(!hwList||hwList.length===0) return null;
+    if(!hwList||hwList.length===0)return null;
     const requiredHw=hwList.find(hw=>hw.next_lesson_id===lessonId);
-    if(!requiredHw) return null;
+    if(!requiredHw)return null;
     const{data:hwResult}=await supabaseClient.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',requiredHw.id).single();
-    if(hwResult) return null; 
-    return requiredHw; 
+    if(hwResult)return null;
+    return requiredHw;
   }catch(e){return null;}
 }
-
 function showHomeworkGate(hw){
-  document.getElementById('hwGateMsg').textContent=`لا يمكنك فتح هذه الحصة قبل إنهاء واجب: "${hw.title}" — اعمل الواجب الأول وهترجع هنا تلقائياً`;
+  document.getElementById('hwGateMsg').textContent=`لا يمكنك فتح هذه الحصة قبل إنهاء واجب: "${hw.title}"`;
   document.getElementById('hwGateWall').classList.remove('hidden');
   sessionStorage.setItem('requiredHwId',hw.id);
   sessionStorage.setItem('requiredHwLessonId',hw.lessonid||'');
 }
-
 window.goToHomework=()=>{
-  const hwLessonId=sessionStorage.getItem('requiredHwLessonId');
-  if(hwLessonId){ window.location.href=`lesson.html?id=${hwLessonId}&tab=homework`; } else { document.getElementById('hwGateWall').classList.add('hidden'); }
+  const id=sessionStorage.getItem('requiredHwLessonId');
+  if(id){window.location.href=`lesson.html?id=${id}&tab=homework`;}
+  else{document.getElementById('hwGateWall').classList.add('hidden');}
 };
-
 async function verifyAccessInBackground(user,lessonId){
   try{
     const{data:codesData}=await supabaseClient.from('codes').select('expiryat,lessonid').eq('usedby',user.email);
-    if(!codesData) return;
-    const now=Date.now(); let ok=false;
+    if(!codesData)return;
+    const now=Date.now();let ok=false;
     codesData.forEach(cd=>{if(cd.lessonid===lessonId&&cd.expiryat>now)ok=true;});
-    if(!ok) localStorage.removeItem(`access_${user.id}_${lessonId}`);
+    if(!ok)localStorage.removeItem(`access_${user.id}_${lessonId}`);
   }catch(e){}
 }
 
@@ -582,13 +617,13 @@ function startAccessTimer(expiryTime){
     const m=Math.floor((dist%3600000)/60000),s=Math.floor((dist%60000)/1000);
     document.getElementById('accessCountdown').textContent=d>0?`${d}ي ${h}س`:`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   };
-  tick(); const iv=setInterval(tick,1000);
+  tick();const iv=setInterval(tick,1000);
 }
 
 document.getElementById('verifyBtn').onclick=async()=>{
   const code=document.getElementById('accessCodeInput').value.trim();
   const lessonId=new URLSearchParams(window.location.search).get('id');
-  if(!code) return alert("من فضلك أدخل الكود");
+  if(!code)return alert("من فضلك أدخل الكود");
   showLoader("جاري التحقق من الكود...");
   try{
     if(!currentUser){
@@ -600,273 +635,434 @@ document.getElementById('verifyBtn').onclick=async()=>{
     if(codeDataArr&&codeDataArr.length>0){
       const cd=codeDataArr[0],now=Date.now();
       const{data:lArr}=await supabaseClient.from('lessons').select('*').eq('id',lessonId);
-      let vd=7; if(lArr&&lArr.length>0&&lArr[0].validitydays) vd=lArr[0].validitydays;
+      let vd=7;if(lArr&&lArr.length>0&&lArr[0].validitydays)vd=lArr[0].validitydays;
       if(!cd.used){
         const exp=now+vd*24*60*60*1000;
         const{error:e}=await supabaseClient.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code);
-        if(e) throw e;
+        if(e)throw e;
         localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));
         location.reload();
-      } else if(cd.usedby===currentUser.email&&cd.lessonid===lessonId&&cd.expiryat>now){
+      }else if(cd.usedby===currentUser.email&&cd.lessonid===lessonId&&cd.expiryat>now){
         localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:cd.expiryat,studentId:myStudentId}));
         location.reload();
-      } else if(cd.expiryat&&cd.expiryat<=now){alert("هذا الكود انتهت صلاحيته!");}
+      }else if(cd.expiryat&&cd.expiryat<=now){alert("هذا الكود انتهت صلاحيته!");}
       else{alert("هذا الكود مستخدم لحساب آخر!");}
-    } else{alert("الكود غير صحيح!");}
+    }else{alert("الكود غير صحيح!");}
   }catch(e){alert("خطأ: "+e.message);}
   hideLoader();
 };
 
-/* ── THE PRO CUSTOM PLAYER (YOUTUBE API METHOD) ── */
-let ytPlayer=null, ytDur=0, ytCur=0, ytPlaying=false, ytTimer=null;
+/* ════════════════════════════════════════════════════════
+   STEALTH VIDEO PLAYER — يدعم YouTube و Dailymotion
+════════════════════════════════════════════════════════ */
 
-function initVideoPlayer() {
-  if(lessonData.video && !vidPlayerInited){
-    vidPlayerInited = true;
-    const vc = document.getElementById('tab-video');
-    const url = lessonData.video;
-    let html = `<div class="vid-section-title">فيديو الشرح</div>`;
-    
-    if(url.includes('youtube.com') || url.includes('youtu.be')){
-      const m = url.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-      const vId = m ? m[1] : null;
-      html += buildYTPlayer(vId);
-      vc.innerHTML = html; 
-      loadYTApi();
-    } else {
-      // MP4 / Bunny
-      html += `
-        <div class="pro-player-wrap" id="vpWrap" oncontextmenu="return false;">
-            <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
-            <video class="pro-video" id="vpVid" playsinline disablePictureInPicture><source src="${url}" type="video/mp4"></video>
-            <div id="ytCover" class="yt-thumbnail-cover" style="display:none;"></div> <div id="centerPlayBtn" class="pro-center-play" onclick="toggleYtPlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="pro-controls" id="vpControls">${getControlsHTML()}</div>
-        </div>`;
-      vc.innerHTML = html; 
-      initMP4Player();
-    }
+/* ─── كاشف نوع الـ URL ─── */
+function detectVideoType(url){
+  if(!url) return null;
+  if(/youtube\.com|youtu\.be/.test(url)) return 'youtube';
+  if(/dailymotion\.com|dai\.ly/.test(url)) return 'dailymotion';
+  return 'mp4';
+}
+
+/* ─── استخراج الـ ID ─── */
+function extractYouTubeId(url){
+  const m=url.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
+  return m?m[1]:null;
+}
+function extractDailymotionId(url){
+  const m=url.match(/(?:dailymotion\.com\/(?:video\/|embed\/video\/)|dai\.ly\/)([a-zA-Z0-9]+)/);
+  return m?m[1]:null;
+}
+
+/* ─── بناء الـ iFrame URL لكل منصة ─── */
+function buildEmbedUrl(url){
+  const type=detectVideoType(url);
+  if(type==='youtube'){
+    const id=extractYouTubeId(url);
+    if(!id) return null;
+    return {
+      src:`https://www.youtube.com/embed/${id}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`,
+      type:'youtube', id
+    };
   }
+  if(type==='dailymotion'){
+    const id=extractDailymotionId(url);
+    if(!id) return null;
+    return {
+      src:`https://www.dailymotion.com/embed/video/${id}?controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0&related=0&endscreen-enable=0&queue-enable=0&mute=0`,
+      type:'dailymotion', id
+    };
+  }
+  return null; // mp4 — عمل بلاير آخر لو حبيت
 }
 
-// ── HTML الخاص بشريط التحكم المشترك ──
-function getControlsHTML() {
-    return `
-      <div class="pro-timeline-container" id="vpProg">
-          <div class="pro-timeline-bg">
-              <div class="pro-timeline-progress" id="vpFill" style="width:0%"></div>
-              <div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div>
-          </div>
-      </div>
-      <div class="pro-controls-bottom">
-          <div class="pro-ctrl-group">
-              <button class="pro-btn" id="bottomPlayBtn" onclick="toggleYtPlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              <button class="pro-btn" onclick="ytSeek(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
-              <button class="pro-btn" onclick="ytSeek(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
-              <div class="pro-time"><span id="vpCur">0:00</span> / <span id="vpDur">0:00</span></div>
-          </div>
-          <div class="pro-ctrl-group">
-              <div class="vpc-popup-wrap">
-                  <button class="pro-speed-btn" onclick="togglePopup('speedPop')"><span id="vpSpeedLbl">1x</span></button>
-                  <div class="vpc-popup" id="speedPop">
-                      ${[0.5,0.75,1,1.25,1.5,2].map(s=>`<button class="vpc-popup-item ${s===1?'active':''}" onclick="setSpeed(${s})">${s}x</button>`).join('')}
-                  </div>
-              </div>
-              <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
-          </div>
-      </div>
-    `;
-}
+/* ─── State البلاير ─── */
+let SP={
+  iframe:null, type:null,
+  playing:false, dur:0, cur:0,
+  speed:1, dragging:false,
+  hideTimer:null, tickTimer:null,
+  ytReady:false
+};
 
-// بناء واجهة اليوتيوب استناداً لكود الـ YouTube API
-function buildYTPlayer(vId){
-  const coverImg = lessonData.image || `https://img.youtube.com/vi/${vId}/hqdefault.jpg`;
+/* ─── بناء HTML البلاير ─── */
+function buildStealthPlayerHTML(embedInfo){
+  const coverImg=lessonData.image||
+    (embedInfo.type==='youtube'?`https://img.youtube.com/vi/${embedInfo.id}/hqdefault.jpg`:'');
+
   return `
-  <div class="pro-player-wrap" id="vpWrap" oncontextmenu="return false;">
-      <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
-      <div class="vp-iframe-wrap">
-          <div class="yt-blocker yt-blocker-top"></div>
-          <div class="yt-blocker yt-blocker-bottom-right"></div>
-          
-          <div id="ytCover" class="yt-thumbnail-cover" style="background-image: url('${coverImg}');" onclick="toggleYtPlay()">
-             <div class="yt-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-          </div>
-          
-          <div class="vp-yt-overlay" onclick="toggleYtPlay()"></div>
-          
-          <div id="ytFrame"></div>
+  <div class="stealth-player" id="spWrap">
+
+    <!-- iframe مخفي -->
+    <div class="sp-iframe-box">
+      <iframe id="spIframe"
+        src="${embedInfo.src}"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen
+        referrerpolicy="no-referrer">
+      </iframe>
+    </div>
+
+    <!-- دروع الحجب -->
+    <div class="sp-shield sp-shield-top"></div>
+    <div class="sp-shield sp-shield-bottom"></div>
+    <div class="sp-shield sp-shield-left"></div>
+    <div class="sp-shield sp-shield-right"></div>
+
+    <!-- overlay التفاعل -->
+    <div class="sp-overlay" id="spOverlay"></div>
+
+    <!-- غطاء التحميل -->
+    <div class="sp-buffer" id="spBuffer"><div class="sp-spinner"></div></div>
+
+    <!-- العلامة المائية -->
+    <div class="sp-watermark"><span>ID: ${myStudentId}</span></div>
+
+    <!-- صورة الغلاف -->
+    <div class="sp-cover" id="spCover"
+         style="${coverImg?`background-image:url('${coverImg}')`:'background:#111'}">
+      <div class="sp-play-circle">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </div>
-      
-      <div class="pro-controls" id="vpControls">${getControlsHTML()}</div>
+    </div>
+
+    <!-- شريط التحكم -->
+    <div class="sp-controls" id="spControls">
+      <!-- Timeline -->
+      <div class="sp-timeline" id="spTimeline">
+        <div class="sp-bar">
+          <div class="sp-bar-fill" id="spFill" style="width:0%"></div>
+          <div class="sp-bar-thumb" id="spThumb" style="left:0%"></div>
+        </div>
+      </div>
+      <!-- أزرار -->
+      <div class="sp-btns">
+        <div class="sp-grp">
+          <!-- Play/Pause -->
+          <button class="sp-btn" id="spPlayBtn" onclick="spTogglePlay()">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <!-- رجوع 10 ثواني -->
+          <button class="sp-btn" onclick="spSeek(-10)">
+            <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          </button>
+          <!-- تقديم 10 ثواني -->
+          <button class="sp-btn" onclick="spSeek(10)">
+            <svg viewBox="0 0 24 24"><path d="M18.92 6.01C17.06 4.38 14.66 3.38 12 3.38c-4.65 0-8.58 3.03-9.96 7.22l2.36.78C5.45 8.19 8.46 5.88 12 5.88c1.96 0 3.73.72 5.12 1.88L14 11h9V2l-4.08 4.01z"/></svg>
+          </button>
+          <div class="sp-time"><span id="spCur">0:00</span> / <span id="spDur">0:00</span></div>
+        </div>
+        <div class="sp-grp">
+          <!-- السرعة -->
+          <div class="sp-speed-wrap">
+            <button class="sp-speed-btn" id="spSpeedBtn" onclick="spToggleSpeedMenu()">
+              <span id="spSpeedLbl">1x</span>
+            </button>
+            <div class="sp-speed-menu" id="spSpeedMenu">
+              ${[0.5,0.75,1,1.25,1.5,2].map(s=>`
+              <button class="sp-speed-item${s===1?' active':''}" onclick="spSetSpeed(${s})">${s}x</button>`).join('')}
+            </div>
+          </div>
+          <!-- ملء الشاشة -->
+          <button class="sp-btn" onclick="spFullscreen()">
+            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>`;
 }
 
-// تحميل مكتبة يوتيوب API
-function loadYTApi(){
-  if(window.YT&&window.YT.Player){initYTPlayer();return;}
-  const tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+/* ─── تهيئة البلاير ─── */
+function initStealthPlayer(){
+  if(vidPlayerInited||!lessonData.video) return;
+  vidPlayerInited=true;
+
+  const vc=document.getElementById('tab-video');
+  const embedInfo=buildEmbedUrl(lessonData.video);
+
+  if(!embedInfo){
+    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير مدعوم</div>`;
+    return;
+  }
+
+  SP.type=embedInfo.type;
+  vc.innerHTML=`<div class="vid-section-title">فيديو الشرح</div>${buildStealthPlayerHTML(embedInfo)}`;
+
+  SP.iframe=document.getElementById('spIframe');
+
+  // ── ربط الأحداث ──
+  bindStealthEvents(embedInfo);
+
+  // ── تحميل YouTube API إذا لزم ──
+  if(SP.type==='youtube'){
+    loadYTAPI();
+  }
+  // Dailymotion — بنستخدم postMessage API
+  if(SP.type==='dailymotion'){
+    window.addEventListener('message', dmMessageHandler);
+    // طلب duration بعد تحميل الإطار
+    setTimeout(()=>{
+      dmSend('time');
+    },2000);
+    spShowBuffer();
+  }
 }
 
-// تهيئة اليوتيوب بعد تحميل الـ API
-window.onYouTubeIframeAPIReady = () => initYTPlayer();
+/* ─── YouTube API ─── */
+let ytApiLoaded=false;
+function loadYTAPI(){
+  if(window.YT&&window.YT.Player){initYTBridge();return;}
+  if(ytApiLoaded) return;
+  ytApiLoaded=true;
+  const tag=document.createElement('script');
+  tag.src='https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+window.onYouTubeIframeAPIReady=()=>initYTBridge();
 
-function initYTPlayer(){
-  const frameContainer = document.getElementById('ytFrame'); 
-  if(!frameContainer) return;
-  
-  const m = lessonData.video.match(/(?:youtu.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);
-  const vId = m ? m[1] : null;
-  if(!vId) return;
-
-  ytPlayer = new YT.Player('ytFrame', {
-    videoId: vId,
-    playerVars: {
-      'playsinline': 1,
-      'controls': 0,           // شلل زراير يوتيوب الأساسية
-      'rel': 0,                // منع الفيديوهات المقترحة
-      'modestbranding': 1,     // تقليل ظهور اللوجو
-      'disablekb': 1,          // قفل الكيبورد الخاص بيوتيوب
-      'iv_load_policy': 3,     // منع التعليقات
-      'origin': window.location.origin
-    },
-    events: {
-      'onReady': e => {
-          ytDur = ytPlayer.getDuration() || 0;
-          document.getElementById('vpDur').textContent = fmtTime(ytDur);
-          if(ytTimer) clearInterval(ytTimer);
-          ytTimer = setInterval(updateYTTime, 500);
+function initYTBridge(){
+  // نربط الـ iframe الموجود بـ YT.Player
+  SP.ytPlayer=new YT.Player('spIframe',{
+    events:{
+      onReady:()=>{
+        SP.ytReady=true;
+        SP.dur=SP.ytPlayer.getDuration()||0;
+        document.getElementById('spDur').textContent=fmtTime(SP.dur);
+        spHideBuffer();
+        if(SP.tickTimer) clearInterval(SP.tickTimer);
+        SP.tickTimer=setInterval(spYTTick,500);
       },
-      'onStateChange': e => {
-          ytPlaying = (e.data === YT.PlayerState.PLAYING);
-          const w = document.getElementById('vpWrap');
-          const bPlay = document.getElementById('bottomPlayBtn');
-          
-          if(w){ ytPlaying ? w.classList.add('active-controls') : w.classList.remove('active-controls'); }
-          if(bPlay) bPlay.innerHTML = ytPlaying ? `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>` : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-          
-          const cover = document.getElementById('ytCover');
-          if(ytPlaying) {
-               if(cover) cover.style.display = 'none';
-          } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.UNSTARTED || e.data === YT.PlayerState.ENDED) {
-               if(cover) cover.style.display = 'flex';
-          }
+      onStateChange:(e)=>{
+        SP.playing=(e.data===YT.PlayerState.PLAYING);
+        spSyncPlayBtn();
+        if(SP.playing){
+          spHideCover();spHideBuffer();
+          scheduleHideControls();
+        } else if(e.data===YT.PlayerState.BUFFERING){
+          spShowBuffer();
+        } else {
+          spShowCover();spHideBuffer();
+        }
       }
     }
   });
-
-  const prog=document.getElementById('vpProg');
-  let isDragging = false;
-  const updateProgress = (e) => { const r = prog.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); ytPlayer.seekTo(pct * ytDur, true); };
-  prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
-  document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
-  document.addEventListener('mouseup', () => { isDragging = false; });
-  prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
-  document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
-  document.addEventListener('touchend', () => { isDragging = false; });
 }
 
-function updateYTTime(){
-    if(!ytPlayer||!ytPlayer.getCurrentTime)return;
-    ytCur=ytPlayer.getCurrentTime()||0;
-    ytDur=ytPlayer.getDuration()||0;
-    document.getElementById('vpDur').textContent=fmtTime(ytDur);
-    document.getElementById('vpCur').textContent=fmtTime(ytCur);
-    const pct=ytDur?(ytCur/ytDur*100):0;
-    document.getElementById('vpFill').style.width=pct+'%';
-    document.getElementById('vpThumb').style.left=pct+'%';
+function spYTTick(){
+  if(!SP.ytPlayer||!SP.ytPlayer.getCurrentTime) return;
+  SP.cur=SP.ytPlayer.getCurrentTime()||0;
+  SP.dur=SP.ytPlayer.getDuration()||0;
+  spUpdateUI();
 }
 
-// وظيفة البلاي الموحدة (يوتيوب و MP4)
-window.toggleYtPlay = () => {
-  const cover = document.getElementById('ytCover');
-  const cPlay = document.getElementById('centerPlayBtn');
-  if(cover) cover.style.display = 'none';
-  if(cPlay) cPlay.classList.add('hidden');
-
-  // For YouTube
-  if(ytPlayer && ytPlayer.getPlayerState){
-      if (ytPlayer.getPlayerState()===YT.PlayerState.PLAYING) ytPlayer.pauseVideo();
-      else ytPlayer.playVideo();
+/* ─── Dailymotion postMessage ─── */
+function dmSend(method,params={}){
+  if(!SP.iframe) return;
+  SP.iframe.contentWindow.postMessage(JSON.stringify({method,...params}),
+    'https://www.dailymotion.com');
+}
+function dmMessageHandler(e){
+  if(!String(e.origin).includes('dailymotion')) return;
+  let d;
+  try{d=JSON.parse(e.data);}catch{return;}
+  if(!d||!d.event) return;
+  switch(d.event){
+    case 'apiready':    spHideBuffer(); break;
+    case 'play':case 'playing':
+      SP.playing=true;spSyncPlayBtn();spHideCover();spHideBuffer();
+      scheduleHideControls();
+      if(!SP.tickTimer) SP.tickTimer=setInterval(()=>dmSend('getProgress'),500);
+      break;
+    case 'pause':case 'end':
+      SP.playing=false;spSyncPlayBtn();spShowCover();clearInterval(SP.tickTimer);SP.tickTimer=null;
+      break;
+    case 'progress':
+      if(d.time!==undefined) SP.cur=d.time;
+      if(d.duration!==undefined){SP.dur=d.duration;document.getElementById('spDur').textContent=fmtTime(SP.dur);}
+      spUpdateUI();
+      break;
+    case 'durationchange':
+      if(d.duration) SP.dur=d.duration;
+      document.getElementById('spDur').textContent=fmtTime(SP.dur);
+      break;
+    case 'seeking':case 'seeked':
+      if(d.time!==undefined){SP.cur=d.time;spUpdateUI();}
+      break;
+    case 'buffering': spShowBuffer(); break;
+    case 'loadedmetadata': spHideBuffer(); break;
   }
-  
-  // For MP4
-  const vid = document.getElementById('vpVid');
-  if(vid) {
-      if(!vid.paused) vid.pause();
-      else vid.play();
+}
+
+/* ─── Play / Pause موحد ─── */
+function spTogglePlay(){
+  if(SP.type==='youtube'&&SP.ytPlayer){
+    if(SP.playing) SP.ytPlayer.pauseVideo();
+    else SP.ytPlayer.playVideo();
+  } else if(SP.type==='dailymotion'){
+    if(SP.playing) dmSend('pause');
+    else dmSend('play');
+  }
+}
+window.spTogglePlay=spTogglePlay;
+
+/* ─── Seek ─── */
+window.spSeek=function(sec){
+  if(SP.type==='youtube'&&SP.ytPlayer){
+    const t=Math.max(0,Math.min(SP.dur,SP.cur+sec));
+    SP.ytPlayer.seekTo(t,true);
+  } else if(SP.type==='dailymotion'){
+    const t=Math.max(0,Math.min(SP.dur,SP.cur+sec));
+    dmSend('seek',{time:t});
   }
 };
 
-window.ytSeek = (s) => {
-    if(ytPlayer && ytPlayer.seekTo){
-        ytCur=Math.max(0,Math.min(ytDur,ytCur+s));
-        ytPlayer.seekTo(ytCur,true);
-    } else {
-        const vid = document.getElementById('vpVid');
-        if(vid) vid.currentTime = Math.max(0, vid.currentTime + s);
-    }
-};
-
-/* ── MP4 PLAYER LOGIC (IF BUNNY/MP4 IS USED) ── */
-function initMP4Player(){
-  const vid = document.getElementById('vpVid');
-  const wrap = document.getElementById('vpWrap');
-  const bPlay = document.getElementById('bottomPlayBtn');
-  const cPlay = document.getElementById('centerPlayBtn');
-  if(!vid) return;
-
-  const playIcon = `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-  const pauseIcon = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-
-  vid.onplay = () => { bPlay.innerHTML = pauseIcon; cPlay.classList.add('hidden'); wrap.classList.add('active-controls'); };
-  vid.onpause = () => { bPlay.innerHTML = playIcon; cPlay.classList.remove('hidden'); wrap.classList.add('active-controls'); };
-
-  let ht;
-  wrap.addEventListener('mousemove', () => { wrap.classList.add('active-controls'); clearTimeout(ht); ht = setTimeout(() => { if(!vid.paused) wrap.classList.remove('active-controls'); }, 2500); });
-  wrap.addEventListener('mouseleave', () => { if(!vid.paused) wrap.classList.remove('active-controls'); });
-
-  vid.ontimeupdate = () => {
-      const p = vid.duration ? (vid.currentTime / vid.duration * 100) : 0;
-      document.getElementById('vpFill').style.width = p + '%';
-      document.getElementById('vpThumb').style.left = p + '%';
-      document.getElementById('vpCur').textContent = fmtTime(vid.currentTime);
-  };
-  vid.onloadedmetadata = () => { document.getElementById('vpDur').textContent = fmtTime(vid.duration); };
-
-  const prog = document.getElementById('vpProg');
-  let isDragging = false;
-  const updateProgress = (e) => { const r = prog.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); vid.currentTime = pct * vid.duration; };
-  prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
-  document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
-  document.addEventListener('mouseup', () => { isDragging = false; });
-  prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
-  document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
-  document.addEventListener('touchend', () => { isDragging = false; });
+/* ─── الانتقال للـ timeline ─── */
+function spSeekToFraction(frac){
+  frac=Math.max(0,Math.min(1,frac));
+  const t=frac*SP.dur;
+  if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.seekTo(t,true);
+  else if(SP.type==='dailymotion') dmSend('seek',{time:t});
 }
 
-window.setSpeed=(s)=>{
-    document.querySelectorAll('.vpc-popup-item').forEach(i=>i.classList.toggle('active',parseFloat(i.textContent)===s));
-    document.getElementById('vpSpeedLbl').textContent=s+'x';
-    const v=document.getElementById('vpVid');
-    if(v) v.playbackRate=s; else if(ytPlayer?.setPlaybackRate) ytPlayer.setPlaybackRate(s);
-    closeAllPopups();
+/* ─── السرعة ─── */
+window.spSetSpeed=function(s){
+  SP.speed=s;
+  document.getElementById('spSpeedLbl').textContent=s+'x';
+  document.querySelectorAll('.sp-speed-item').forEach(el=>el.classList.toggle('active',parseFloat(el.textContent)===s));
+  if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.setPlaybackRate(s);
+  else if(SP.type==='dailymotion') dmSend('setPlaybackRate',{rate:s});
+  document.getElementById('spSpeedMenu').classList.remove('open');
 };
 
-window.togglePopup=(id)=>{const p=document.getElementById(id);const was=p.classList.contains('open');closeAllPopups();if(!was)p.classList.add('open');};
-function closeAllPopups(){document.querySelectorAll('.vpc-popup').forEach(p=>p.classList.remove('open'));}
-document.addEventListener('click',e=>{if(!e.target.closest('.vpc-popup-wrap'))closeAllPopups();});
+window.spToggleSpeedMenu=function(){
+  const m=document.getElementById('spSpeedMenu');
+  m.classList.toggle('open');
+};
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.sp-speed-wrap')) document.getElementById('spSpeedMenu')?.classList.remove('open');
+});
 
-window.toggleFullscreen=()=>{
-  const w=document.getElementById('vpWrap');
-  if(!w)return;
-  if(!document.fullscreenElement) w.requestFullscreen();
+/* ─── Fullscreen ─── */
+window.spFullscreen=function(){
+  const w=document.getElementById('spWrap');
+  if(!w) return;
+  if(!document.fullscreenElement) w.requestFullscreen().catch(()=>{});
   else document.exitFullscreen();
 };
 
-function fmtTime(s){s=Math.floor(s||0);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;}
+/* ─── Cover & Buffer ─── */
+function spShowCover(){const c=document.getElementById('spCover');if(c)c.classList.remove('hide');}
+function spHideCover(){const c=document.getElementById('spCover');if(c)c.classList.add('hide');}
+function spShowBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.add('show');}
+function spHideBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.remove('show');}
 
-/* ── LESSON & QUIZ LOGIC ── */
+/* ─── Sync Play Button ─── */
+function spSyncPlayBtn(){
+  const btn=document.getElementById('spPlayBtn');
+  if(!btn) return;
+  btn.innerHTML=SP.playing
+    ?`<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+    :`<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+}
+
+/* ─── Update UI bar ─── */
+function spUpdateUI(){
+  const pct=SP.dur?(SP.cur/SP.dur*100):0;
+  const fill=document.getElementById('spFill');
+  const thumb=document.getElementById('spThumb');
+  const cur=document.getElementById('spCur');
+  if(fill) fill.style.width=pct+'%';
+  if(thumb) thumb.style.left=pct+'%';
+  if(cur) cur.textContent=fmtTime(SP.cur);
+}
+
+/* ─── إخفاء تلقائي للـ controls ─── */
+function scheduleHideControls(){
+  const w=document.getElementById('spWrap');
+  if(!w) return;
+  clearTimeout(SP.hideTimer);
+  SP.hideTimer=setTimeout(()=>{if(SP.playing)w.classList.remove('sp-active');},2800);
+}
+
+/* ─── ربط أحداث البلاير ─── */
+function bindStealthEvents(){
+  const overlay=document.getElementById('spOverlay');
+  const cover=document.getElementById('spCover');
+  const timeline=document.getElementById('spTimeline');
+  const wrap=document.getElementById('spWrap');
+
+  // Click على الـ overlay (play/pause)
+  overlay.addEventListener('click',()=>{
+    wrap.classList.add('sp-active');
+    spTogglePlay();
+    scheduleHideControls();
+  });
+  // Click على الـ cover
+  cover.addEventListener('click',()=>spTogglePlay());
+
+  // Mousemove → أظهر الـ controls
+  wrap.addEventListener('mousemove',()=>{
+    wrap.classList.add('sp-active');
+    scheduleHideControls();
+  });
+  wrap.addEventListener('mouseleave',()=>{
+    if(SP.playing) wrap.classList.remove('sp-active');
+  });
+
+  // Touch
+  wrap.addEventListener('touchstart',()=>{
+    wrap.classList.add('sp-active');
+    clearTimeout(SP.hideTimer);
+    SP.hideTimer=setTimeout(()=>{if(SP.playing)wrap.classList.remove('sp-active');},3000);
+  },{passive:true});
+
+  // Timeline drag
+  const getFrac=(e)=>{
+    const r=timeline.getBoundingClientRect();
+    const clientX=e.touches?e.touches[0].clientX:e.clientX;
+    return Math.max(0,Math.min(1,(clientX-r.left)/r.width));
+  };
+  timeline.addEventListener('mousedown',(e)=>{
+    SP.dragging=true;spSeekToFraction(getFrac(e));
+  });
+  document.addEventListener('mousemove',(e)=>{if(SP.dragging)spSeekToFraction(getFrac(e));});
+  document.addEventListener('mouseup',()=>{SP.dragging=false;});
+  timeline.addEventListener('touchstart',(e)=>{SP.dragging=true;spSeekToFraction(getFrac(e));},{passive:true});
+  document.addEventListener('touchmove',(e)=>{if(SP.dragging)spSeekToFraction(getFrac(e));},{passive:true});
+  document.addEventListener('touchend',()=>{SP.dragging=false;});
+}
+
+/* ─── Format time ─── */
+function fmtTime(s){
+  s=Math.floor(s||0);
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;
+  return h?`${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`:`${m}:${String(sc).padStart(2,'0')}`;
+}
+
+/* ════════════════════════════════════
+   LESSON & QUIZ LOGIC
+════════════════════════════════════ */
 async function initLesson(){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
@@ -876,31 +1072,28 @@ async function initLesson(){
     supabaseClient.from('results').select('*').eq('email',currentUser?.email).order('date',{ascending:false})
   ]);
   if(!snap) return;
-  lessonData=snap; questions=lessonData.questions||[];
-
+  lessonData=snap;questions=lessonData.questions||[];
   await loadHomeworkForLesson(id);
-
-  if (questions.length === 0) {
-    document.getElementById('tab-quiz').innerHTML = `
+  if(questions.length===0){
+    document.getElementById('tab-quiz').innerHTML=`
       <div style="background:var(--white);border:1px solid var(--border);border-radius:24px;padding:56px 32px;text-align:center;box-shadow:var(--shadow);margin-top:20px;">
         <div style="font-size:3rem;margin-bottom:14px;">🎓</div>
         <div style="font-size:1.2rem;font-weight:900;color:var(--text);">لا يوجد امتحان لهذه الحصة</div>
-        <div style="font-size:.88rem;color:var(--text2);margin-top:8px;">تم فتح فيديو الشرح والملزمة مباشرة لك</div>
+        <div style="font-size:.88rem;color:var(--text2);margin-top:8px;">تم فتح فيديو الشرح والملزمة مباشرة</div>
       </div>`;
     ['video','pdf'].forEach(t=>{
       document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
       document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
     });
-    initVideoPlayer();
-    if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
-    if(urlTab === 'homework') { setTimeout(()=>switchTab('homework'), 100); } else { setTimeout(()=>switchTab('video'), 100); }
+    initStealthPlayer();
+    if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
+    if(urlTab==='homework'){setTimeout(()=>switchTab('homework'),100);}else{setTimeout(()=>switchTab('video'),100);}
     return;
   }
-
   const prev=rSnap?.find(r=>r.lesson===lessonData.name);
   if(prev){
     userAns=prev.userans||{};
-    generateReview(); unlockFeatures(buildScoreMsg(prev.score,questions.length,true));
+    generateReview();unlockFeatures(buildScoreMsg(prev.score,questions.length,true));
   } else {
     const saved=localStorage.getItem(`exam_data_${currentUser.id}_${id}`);
     if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockFeatures(buildScoreMsg(pd.score,questions.length,true));}catch(e){}}
@@ -911,22 +1104,25 @@ async function initLesson(){
 async function loadHomeworkForLesson(lessonId){
   try{
     const{data:hwList}=await supabaseClient.from('homework').select('*').eq('lessonid',lessonId).limit(1);
-    if(!hwList||hwList.length===0){ renderNoHomework(); return; }
-    hwData=hwList[0]; hwQuestions=hwData.questions||[];
+    if(!hwList||hwList.length===0){renderNoHomework();return;}
+    hwData=hwList[0];hwQuestions=hwData.questions||[];
     const{data:hwRes}=await supabaseClient.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',hwData.id).single();
     if(hwRes){
-      hwDone=true; hwUserAns=hwRes.userans||{}; renderHomeworkDone(hwRes);
-      document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
-    } else {
-      hwDone=false; renderHomeworkLocked();
-      document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+      hwDone=true;hwUserAns=hwRes.userans||{};renderHomeworkDone(hwRes);
+      document.getElementById('btn-homework-tab').classList.add('unlocked');
+      document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+    }else{
+      hwDone=false;renderHomeworkLocked();
+      document.getElementById('btn-homework-tab').classList.add('unlocked');
+      document.getElementById('btn-homework-tab').classList.remove('locked-dim');
     }
   }catch(e){renderNoHomework();}
 }
 
 function renderNoHomework(){
   document.getElementById('tab-homework').innerHTML=`<div style="background:var(--white);border:1px solid var(--border);border-radius:20px;padding:52px 28px;text-align:center;box-shadow:var(--shadow);"><div style="font-size:3rem;margin-bottom:14px;">📋</div><div style="font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:8px;">لا يوجد واجب لهذه الحصة</div></div>`;
-  document.getElementById('btn-homework-tab').classList.add('unlocked'); document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+  document.getElementById('btn-homework-tab').classList.add('unlocked');
+  document.getElementById('btn-homework-tab').classList.remove('locked-dim');
 }
 
 function renderHomeworkLocked(){
@@ -936,29 +1132,29 @@ function renderHomeworkLocked(){
 function renderHomeworkDone(result){
   const pct=result.total>0?Math.round(result.score/result.total*100):0;
   const clr=pct>=70?'var(--teal)':pct>=50?'var(--gold)':'var(--red)';
-  let reviewHtml = '<div style="margin-top:24px;text-align:right;"><div class="review-section-title">مراجعة إجابات الواجب:</div>';
-  hwQuestions.forEach((q,i) => {
-    const ok = hwUserAns[i] === q.correct;
-    const ansL = hwUserAns[i] ? hwUserAns[i].toUpperCase() : null;
-    const ansStr = ansL ? (q[hwUserAns[i]] ? `${ansL} - ${q[hwUserAns[i]]}` : ansL) : 'لم تجب';
-    const corrL = q.correct ? q.correct.toUpperCase() : '';
-    const corrStr = q[q.correct] ? `${corrL} - ${q[q.correct]}` : corrL;
-    reviewHtml += `<div class="review-item ${ok?'correct':'wrong'}" style="text-align:right; margin-bottom:10px; padding:15px; border-radius:12px; background:var(--white); border:1px solid ${ok?'var(--teal4)':'#fecaca'};"><div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}<div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>${!ok ? `<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>` : ''}</div>`;
+  let reviewHtml='<div style="margin-top:24px;text-align:right;"><div class="review-section-title">مراجعة إجابات الواجب:</div>';
+  hwQuestions.forEach((q,i)=>{
+    const ok=hwUserAns[i]===q.correct;
+    const ansL=hwUserAns[i]?hwUserAns[i].toUpperCase():null;
+    const ansStr=ansL?(q[hwUserAns[i]]?`${ansL} - ${q[hwUserAns[i]]}`:ansL):'لم تجب';
+    const corrL=q.correct?q.correct.toUpperCase():'';
+    const corrStr=q[q.correct]?`${corrL} - ${q[q.correct]}`:corrL;
+    reviewHtml+=`<div class="review-item ${ok?'correct':'wrong'}" style="text-align:right;margin-bottom:10px;padding:15px;border-radius:12px;background:var(--white);border:1px solid ${ok?'var(--teal4)':'#fecaca'};"><div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}<div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>${!ok?`<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>`:''}</div>`;
   });
-  reviewHtml += '</div>';
-  document.getElementById('tab-homework').innerHTML=`<div style="background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:36px 20px;text-align:center;"><div class="hw-done-icon" style="font-size:3rem; margin-bottom:10px;">✅</div><div class="hw-done-title" style="font-size:1.4rem;font-weight:900;color:var(--teal);">تم تسليم الواجب بنجاح!</div><div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:${clr};margin:16px 0 8px;">${result.score}<span style="font-size:1.2rem;color:var(--text2);">/${result.total}</span></div></div>${reviewHtml}`;
+  reviewHtml+='</div>';
+  document.getElementById('tab-homework').innerHTML=`<div style="background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:36px 20px;text-align:center;"><div style="font-size:3rem;margin-bottom:10px;">✅</div><div style="font-size:1.4rem;font-weight:900;color:var(--teal);">تم تسليم الواجب بنجاح!</div><div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:${clr};margin:16px 0 8px;">${result.score}<span style="font-size:1.2rem;color:var(--text2);">/${result.total}</span></div></div>${reviewHtml}`;
 }
 
 window.startHomework=function(){
-  if(!hwQuestions||hwQuestions.length===0) return alert("لا توجد أسئلة في الواجب بعد.");
-  showLoader("جاري تجهيز الواجب..."); setTimeout(() => { hwStarted=true; hwCurIdx=0; hwUserAns={}; renderHwQ(); hideLoader(); }, 400);
+  if(!hwQuestions||hwQuestions.length===0)return alert("لا توجد أسئلة في الواجب بعد.");
+  showLoader("جاري تجهيز الواجب...");setTimeout(()=>{hwStarted=true;hwCurIdx=0;hwUserAns={};renderHwQ();hideLoader();},400);
 };
 
 function renderHwQ(){
   const q=hwQuestions[hwCurIdx];
   const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);
-  const optCount = q.optionsCount || 4;
-  const letters = OPT_LETTERS.slice(0, optCount);
+  const optCount=q.optionsCount||4;
+  const letters=OPT_LETTERS.slice(0,optCount);
   document.getElementById('tab-homework').innerHTML=`
     <div class="quiz-wrap">
       <div class="progress-row"><span class="q-count" style="color:var(--gold);">${hwCurIdx+1} / ${hwQuestions.length}</span><div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:linear-gradient(to right,var(--gold),#b45309);"></div></div></div>
@@ -967,33 +1163,38 @@ function renderHwQ(){
         </div></div>
       <div class="quiz-nav">
         <button class="q-btn ghost ${hwCurIdx===0?'hidden':''}" onclick="saveHwAns();hwCurIdx--;renderHwQ()">السابق</button>
-        ${hwCurIdx<hwQuestions.length-1 ?`<button class="q-btn primary" style="background:var(--gold);" onclick="saveHwAns();hwCurIdx++;renderHwQ()">التالي</button>` :`<button class="q-btn finish" onclick="saveHwAns();submitHomework()">تسليم الواجب</button>` }
+        ${hwCurIdx<hwQuestions.length-1?`<button class="q-btn primary" style="background:var(--gold);" onclick="saveHwAns();hwCurIdx++;renderHwQ()">التالي</button>`:`<button class="q-btn finish" onclick="saveHwAns();submitHomework()">تسليم الواجب</button>`}
       </div>
     </div>`;
 }
 
-function saveHwAns(){ const s=document.querySelector('input[name="hw"]:checked'); if(s) hwUserAns[hwCurIdx]=s.value; }
+function saveHwAns(){const s=document.querySelector('input[name="hw"]:checked');if(s)hwUserAns[hwCurIdx]=s.value;}
 
 function submitHomework(){
-  saveHwAns(); showLoader("جاري تسليم الواجب...");
-  let score=0; hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
-  supabaseClient.from('hw_results').insert([{ email:currentUser.email, hw_id:hwData.id, lesson:lessonData?.name||'', score,total:hwQuestions.length, userans:hwUserAns }]).then(()=>{}).catch(e=>{});
-  setTimeout(() => { hwDone=true; renderHomeworkDone({score,total:hwQuestions.length}); hideLoader(); }, 500);
+  saveHwAns();showLoader("جاري تسليم الواجب...");
+  let score=0;hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
+  supabaseClient.from('hw_results').insert([{email:currentUser.email,hw_id:hwData.id,lesson:lessonData?.name||'',score,total:hwQuestions.length,userans:hwUserAns}]).then(()=>{}).catch(()=>{});
+  setTimeout(()=>{hwDone=true;renderHomeworkDone({score,total:hwQuestions.length});hideLoader();},500);
 }
 
-function buildScoreMsg(score,total,wasPrev){ const pct=total>0?Math.round(score/total*100):0; return{score,total,pct,wasPrev}; }
+function buildScoreMsg(score,total,wasPrev){const pct=total>0?Math.round(score/total*100):0;return{score,total,pct,wasPrev};}
 
 document.getElementById('startBtn').onclick=()=>{
-  if(questions.length===0) return alert("لا توجد أسئلة في هذا الامتحان بعد.");
+  if(questions.length===0)return alert("لا توجد أسئلة في هذا الامتحان بعد.");
   showLoader("جاري تجهيز الامتحان...");
-  setTimeout(() => { document.getElementById('startScreen').classList.add('hidden'); document.getElementById('quizApp').classList.remove('hidden'); document.getElementById('timerBox').classList.remove('hidden'); renderQ(); startTimer(); hideLoader(); }, 400);
+  setTimeout(()=>{
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('quizApp').classList.remove('hidden');
+    document.getElementById('timerBox').classList.remove('hidden');
+    renderQ();startTimer();hideLoader();
+  },400);
 };
 
 function renderQ(){
   const q=questions[curIdx];
   const pct=Math.round((curIdx+1)/questions.length*100);
-  const optCount = q.optionsCount || 4;
-  const letters = OPT_LETTERS.slice(0, optCount);
+  const optCount=q.optionsCount||4;
+  const letters=OPT_LETTERS.slice(0,optCount);
   document.getElementById('qCount').textContent=`${curIdx+1} / ${questions.length}`;
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('qDisplay').innerHTML=`<div class="q-label">السؤال ${curIdx+1}</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="options">${letters.map(opt=>`<label class="opt-label"><input type="radio" name="math" value="${opt}" ${userAns[curIdx]===opt?'checked':''}><span class="opt-key">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}</div>`;
@@ -1007,40 +1208,49 @@ document.getElementById('nextBtn').onclick=()=>{saveAns();curIdx++;renderQ();};
 document.getElementById('prevBtn').onclick=()=>{saveAns();curIdx--;renderQ();};
 
 document.getElementById('finishBtn').onclick=()=>{
-  saveAns(); clearInterval(examTimer); showLoader("جاري تصحيح الامتحان...");
-  let score=0; questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
-  supabaseClient.from('results').insert([{ email:currentUser.email, lesson:lessonData.name, score, total:questions.length, userans:userAns }]).then(()=>{}).catch(e=>{});
-  setTimeout(() => {
-      const id=new URLSearchParams(window.location.search).get('id');
-      localStorage.setItem(`exam_data_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));
-      generateReview(); unlockFeatures(buildScoreMsg(score,questions.length,false)); window.scrollTo({top:0,behavior:'smooth'}); hideLoader();
-  }, 500);
+  saveAns();clearInterval(examTimer);showLoader("جاري تصحيح الامتحان...");
+  let score=0;questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
+  supabaseClient.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns}]).then(()=>{}).catch(()=>{});
+  setTimeout(()=>{
+    const id=new URLSearchParams(window.location.search).get('id');
+    localStorage.setItem(`exam_data_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));
+    generateReview();unlockFeatures(buildScoreMsg(score,questions.length,false));
+    window.scrollTo({top:0,behavior:'smooth'});hideLoader();
+  },500);
 };
 
 function generateReview(){
-  const list=document.getElementById('reviewList'); list.innerHTML='';
+  const list=document.getElementById('reviewList');list.innerHTML='';
   questions.forEach((q,i)=>{
     const ok=userAns[i]===q.correct;
-    const ansL = userAns[i] ? userAns[i].toUpperCase() : null;
-    const ansStr = ansL ? (q[userAns[i]] ? `${ansL} - ${q[userAns[i]]}` : ansL) : 'لم تجب';
-    const corrL = q.correct ? q.correct.toUpperCase() : '';
-    const corrStr = q[q.correct] ? `${corrL} - ${q[q.correct]}` : corrL;
+    const ansL=userAns[i]?userAns[i].toUpperCase():null;
+    const ansStr=ansL?(q[userAns[i]]?`${ansL} - ${q[userAns[i]]}`:ansL):'لم تجب';
+    const corrL=q.correct?q.correct.toUpperCase():'';
+    const corrStr=q[q.correct]?`${corrL} - ${q[q.correct]}`:corrL;
     list.innerHTML+=`<div class="review-item ${ok?'correct':'wrong'}" style="animation-delay:${i*.05}s"><div class="review-meta"><span class="review-q-label">سؤال ${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ صح':'✗ خطأ'}</span></div>${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;">`:''}<div class="review-q-text" style="font-size:.9rem;font-weight:800;">${q.text||'اختر الإجابة الصحيحة:'}</div><div class="review-ans" style="font-size:.85rem;color:var(--text2);">إجابتك: <span style="font-weight:900;color:var(--text);">${ansStr}</span></div>${!ok?`<div class="review-correct-ans" style="font-size:.85rem;color:var(--teal);font-weight:900;margin-top:5px;">✓ الإجابة الصحيحة: ${corrStr}</div>`:''}</div>`;
   });
 }
 
 function unlockFeatures(msgObj){
-  document.getElementById('startScreen').classList.add('hidden'); document.getElementById('quizApp').classList.add('hidden'); document.getElementById('timerBox').classList.add('hidden'); document.getElementById('reviewArea').classList.remove('hidden');
-  const pct=msgObj.pct; const clr=pct>=70?'var(--teal)':pct>=50?'var(--gold)':'var(--red)';
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('quizApp').classList.add('hidden');
+  document.getElementById('timerBox').classList.add('hidden');
+  document.getElementById('reviewArea').classList.remove('hidden');
+  const pct=msgObj.pct;const clr=pct>=70?'var(--teal)':pct>=50?'var(--gold)':'var(--red)';
   const radius=42,circ=2*Math.PI*radius,offset=circ-(pct/100)*circ;
   document.getElementById('scoreBanner').innerHTML=`<div class="score-ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="${radius}" fill="none" stroke="var(--border2)" stroke-width="6"/><circle cx="55" cy="55" r="${radius}" fill="none" stroke="${clr}" stroke-width="6" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 4px ${clr})"/></svg><div class="score-ring-num" style="color:${clr}">${msgObj.score}</div><div class="score-ring-pct">${pct}%</div></div><div class="score-of">من ${msgObj.total} سؤال</div><div class="score-msg">${msgObj.wasPrev?'✦ لقد أديت هذا الامتحان من قبل':'✦ تم تسجيل درجتك بنجاح'}</div><div class="score-unlock">✅ تم فتح فيديو الشرح والملزمة</div>`;
-  ['video','pdf'].forEach(t=>{ document.getElementById(`btn-${t}-tab`).classList.add('unlocked'); document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim'); });
-  initVideoPlayer(); if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
+  ['video','pdf'].forEach(t=>{
+    document.getElementById(`btn-${t}-tab`).classList.add('unlocked');
+    document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');
+  });
+  initStealthPlayer();
+  if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
 }
 
 function startTimer(){
   examTimer=setInterval(()=>{
-    const m=Math.floor(timeLeft/60),s=timeLeft%60; document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;
+    const m=Math.floor(timeLeft/60),s=timeLeft%60;
+    document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;
     if(timeLeft<=120) document.getElementById('timerBox').classList.add('urgent');
     if(timeLeft--<=0){clearInterval(examTimer);alert("انتهى وقت الامتحان!");document.getElementById('finishBtn').click();}
   },1000);
