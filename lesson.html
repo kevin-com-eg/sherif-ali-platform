@@ -149,62 +149,61 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-done-title{font-size:1.5rem;font-weight:900;color:var(--teal);margin-bottom:8px;}
 .hw-done-sub{font-size:.88rem;color:var(--teal2);line-height:1.7;}
 
-/* ── THE PRO CUSTOM PLAYER (DM/YT API IDEA + OUR UI) ── */
+/* ── THE PRO CUSTOM PLAYER ── */
 .vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
 .vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
 
 .pro-player-wrap {
-  position: relative; width: 100%; border-radius: 16px;
-  overflow: hidden; background: #000; box-shadow: var(--shadow2);
-  display: flex; flex-direction: column; justify-content: center;
-  aspect-ratio: 16/9;
+    position: relative; width: 100%; border-radius: 16px;
+    overflow: hidden; background: #000; box-shadow: var(--shadow2);
+    display: flex; flex-direction: column; justify-content: center;
+    aspect-ratio: 16/9;
 }
 .pro-player-wrap:fullscreen, .pro-player-wrap:-webkit-full-screen { border-radius: 0; }
 
-/* إعدادات احتواء الايفريم */
 .vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; background: #000; }
 .vp-iframe-wrap iframe {
-  width: 100%; height: 100%; border: none; display: block;
-  pointer-events: none !important; /* تمنع الماوس نهائياً إنه يلمس الفيديو الأصلي */
+    width: 100%; height: 100%; border: none; display: block;
+    pointer-events: none !important; /* دي بتمنع الماوس نهائياً إنه يلمس اليوتيوب أو DM */
 }
 
 /* العلامة المائية */
 .pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
 .pro-watermark span {
-  position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
-  color: rgba(255,255,255,0.3); text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
-  animation: wmMove 25s linear infinite alternate; white-space: nowrap;
+    position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
+    color: rgba(255,255,255,0.3); text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    animation: wmMove 25s linear infinite alternate; white-space: nowrap;
 }
 @keyframes wmMove { 0% { top: 10%; left: 10%; } 25% { top: 70%; left: 20%; } 50% { top: 40%; left: 70%; } 75% { top: 20%; left: 50%; } 100% { top: 60%; left: 80%; } }
 
-/* طبقات الحماية لإخفاء اللوجوهات الأصلية (DM / YT) */
-.yt-blocker { position: absolute; background: #000; z-index: 15; pointer-events: none; transition: opacity 0.3s ease; }
-.yt-blocker-top { top: 0; left: 0; right: 0; height: 75px; } /* يخفي الشريطة العلوية */
-.yt-blocker-bottom-right { bottom: 0; right: 0; width: 160px; height: 80px; } /* يخفي لوجو Dailymotion / YT اللي تحت */
-.pro-player-wrap.active-controls .yt-blocker { opacity: 0; } /* يختفي أثناء التشغيل */
+/* طبقات الحماية لإخفاء اللوجوهات */
+.yt-blocker { position: absolute; background: transparent; z-index: 30; pointer-events: auto; }
+.yt-blocker-top { top: 0; left: 0; right: 0; height: 70px; background: #000; opacity: 1; transition: opacity 0.3s; }
+.yt-blocker-bottom-right { bottom: 40px; right: 0; width: 160px; height: 80px; background: #000; opacity: 1; transition: opacity 0.3s; }
+.pro-player-wrap.active-controls .yt-blocker { opacity: 0; pointer-events: none; }
 
 .vp-yt-overlay { position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent; }
 
-/* الغطاء الذكي (بيخفي الشاشة أثناء التوقف) */
+/* الغطاء الذكي (يخفي الفيديو قبل التشغيل) */
 .yt-thumbnail-cover {
-  position: absolute; inset: 0; z-index: 35; 
-  background-size: cover; background-position: center; background-color: #000;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
+    position: absolute; inset: 0; z-index: 35; 
+    background-size: cover; background-position: center; background-color: #000;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
 .yt-thumbnail-cover .yt-play-btn {
-  width: 75px; height: 55px; background: rgba(13,122,95,0.9);
-  border-radius: 16px; display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: all 0.2s;
+    width: 75px; height: 55px; background: rgba(13,122,95,0.9);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: all 0.2s;
 }
 .yt-thumbnail-cover:hover .yt-play-btn { transform: scale(1.1); background: var(--teal); }
 .yt-play-btn svg { width: 32px; height: 32px; fill: #fff; margin-left: 5px; }
 
-/* شريط التحكم السفلي الاحترافي */
+/* شريط التحكم السفلي */
 .pro-controls {
-  position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
-  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
-  padding: 10px 20px 15px; display: flex; flex-direction: column; gap: 8px;
-  opacity: 0; transition: opacity 0.3s; direction: ltr;
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    padding: 10px 20px 15px; display: flex; flex-direction: column; gap: 8px;
+    opacity: 0; transition: opacity 0.3s; direction: ltr;
 }
 .pro-player-wrap:hover .pro-controls, .pro-player-wrap.active-controls .pro-controls { opacity: 1; }
 
@@ -234,7 +233,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .vpc-popup-item:hover{background:rgba(255,255,255,.1);color:#fff;}
 .vpc-popup-item.active{color:#fff;background:var(--teal);}
 
-/* Fullscreen Fixes */
 .pro-player-wrap:fullscreen .pro-controls { z-index: 9999; position: absolute; bottom: 0; }
 .pro-player-wrap:fullscreen .vp-iframe-wrap iframe { height: 100vh; }
 .pro-player-wrap:fullscreen .yt-thumbnail-cover { z-index: 9998; }
@@ -642,7 +640,7 @@ function initVideoPlayer() {
       vc.innerHTML = html; 
       loadDMApi();
     } else {
-      // MP4 / Bunny
+      // MP4
       html += `
         <div class="pro-player-wrap" id="vpWrap" oncontextmenu="return false;">
             <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
@@ -880,7 +878,7 @@ window.ytSeek = (s) => {
     }
 };
 
-/* ── MP4 PLAYER LOGIC ── */
+/* ── MP4 PLAYER LOGIC (IF MP4 IS USED) ── */
 function initMP4Player(){
   const vid = document.getElementById('vpVid');
   const wrap = document.getElementById('vpWrap');
@@ -892,7 +890,7 @@ function initMP4Player(){
   const pauseIcon = `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
 
   vid.onplay = () => { bPlay.innerHTML = pauseIcon; if(cPlay) cPlay.classList.add('hidden'); wrap.classList.add('active-controls'); };
-  vid.onpause = () => { bPlay.innerHTML = playIcon; if(cPlay) cPlay.classList.remove('hidden'); wrap.classList.add('active-controls'); };
+  vid.onpause = () => { bPlay.innerHTML = playIcon; if(cPlay) cPlay.classList.remove('hidden'); wrap.classList.remove('active-controls'); };
 
   let ht;
   wrap.addEventListener('mousemove', () => { wrap.classList.add('active-controls'); clearTimeout(ht); ht = setTimeout(() => { if(!vid.paused) wrap.classList.remove('active-controls'); }, 2500); });
@@ -921,7 +919,9 @@ window.setSpeed=(s)=>{
     document.querySelectorAll('.vpc-popup-item').forEach(i=>i.classList.toggle('active',parseFloat(i.textContent)===s));
     document.getElementById('vpSpeedLbl').textContent=s+'x';
     const v=document.getElementById('vpVid');
-    if(v) v.playbackRate=s; else if(ytPlayer?.setPlaybackRate) ytPlayer.setPlaybackRate(s);
+    if(v) v.playbackRate=s; 
+    else if(ytPlayer?.setPlaybackRate) ytPlayer.setPlaybackRate(s);
+    else if(dmPlayer) dmPlayer.setPlaybackRate(s); // إضافة السرعة لـ Dailymotion
     closeAllPopups();
 };
 
