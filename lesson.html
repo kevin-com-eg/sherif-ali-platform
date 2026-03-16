@@ -7,280 +7,249 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-/* ── التصميم الأساسي ── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#f0f4f7; --white:#fff; --teal:#0d7a5f; --teal2:#0a6650; --teal3:#e8f5f1; --teal4:#c8e8e0;
-  --border:#e2e8ed; --text:#1a2332; --text2:#5a6a7a; --gold:#d97706;
-  --sans:'Tajawal',sans-serif; --mono:'DM Mono',monospace;
-}
-body{font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden;}
+    <style>
+        :root {
+            --bg: #f0f4f7; --white: #fff; --teal: #0d7a5f; --teal2: #0a6650;
+            --border: #e2e8ed; --text: #1a2332; --text2: #5a6a7a;
+            --sans: 'Tajawal', sans-serif; --mono: 'DM Mono', monospace;
+        }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); margin: 0; }
+        
+        /* Loading Screen */
+        #loadingScreen { position: fixed; inset: 0; z-index: 9999; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        
+        /* Timer Bar */
+        #timerBar { background: #1a2332; color: #fff; text-align: center; padding: 10px; position: sticky; top: 0; z-index: 1000; font-family: var(--mono); font-weight: bold; display: none; }
 
-/* ── LOADING ── */
-#loadingScreen{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--white); transition: 0.3s;}
-.ld-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-family:var(--mono);box-shadow:0 8px 24px rgba(13,122,95,.3);}
+        /* Navbar & Tabs */
+        nav { background: #fff; border-bottom: 1px solid var(--border); padding: 10px; }
+        .nav-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: center; }
+        .tabs { display: flex; gap: 10px; }
+        .tab-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #eee; cursor: pointer; font-weight: bold; opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        .tab-btn.unlocked { opacity: 1; pointer-events: auto; background: #ddd; }
+        .tab-btn.active { background: var(--teal) !important; color: #fff; }
 
-/* ── NAVBAR ── */
-nav{position:sticky;top:0;z-index:100;height:62px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;}
-.nav-inner{max-width:960px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center;}
-.tabs{display:flex;gap:5px;background:var(--bg);padding:4px;border-radius:12px;overflow-x:auto;}
-.tab-btn{padding:8px 16px;border-radius:9px;border:none;background:none;font-weight:700;font-size:0.85rem;cursor:pointer;color:var(--text2);opacity:0.4;pointer-events:none;white-space:nowrap;}
-.tab-btn.unlocked{opacity:1;pointer-events:auto;}
-.tab-btn.active{background:var(--teal)!important;color:#fff!important;}
+        /* Video Player & Watermark */
+        .pro-player-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 15px; overflow: hidden; }
+        .vp-iframe-wrap iframe { width: 100%; height: 100%; border: none; }
+        .pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
+        .pro-watermark span { position: absolute; font-family: var(--mono); font-size: 1.2rem; color: rgba(255,255,255,0.2); font-weight: 900; animation: wmMove 15s linear infinite alternate; }
+        @keyframes wmMove { 0% { top: 5%; left: 5%; } 100% { top: 85%; left: 75%; } }
 
-/* ─────────────────────────────────────────────
-    🔥 DAILYMOTION PRO PLAYER (النسخة المستقرة) 🔥
-───────────────────────────────────────────── */
-.pro-player-wrap {
-    position: relative; width: 100%; aspect-ratio: 16/9;
-    border-radius: 20px; overflow: hidden; background: #000;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);
-}
-.vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; }
-.vp-iframe-wrap iframe { width: 100%; height: 112%; position: absolute; top: -6%; border: none; }
-
-/* حواجب الحماية */
-.vid-blocker { position: absolute; background: #000; z-index: 5; pointer-events: none; }
-.vid-blocker-top { top: 0; left: 0; right: 0; height: 50px; } 
-.vid-blocker-br { bottom: 0; right: 0; width: 140px; height: 50px; } 
-
-.pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
-.pro-watermark span {
-    position: absolute; font-family: var(--mono); font-size: 1rem; font-weight: 900;
-    color: rgba(255,255,255,0.15); animation: wmMove 20s linear infinite alternate;
-}
-@keyframes wmMove { 0%{top:10%;left:5%;} 100%{top:85%;left:75%;} }
-
-/* غلاف الفيديو الذكي */
-.video-cover {
-    position: absolute; inset: 0; z-index: 20;
-    background-size: cover; background-position: center;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
-}
-.video-cover::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.4); }
-.play-btn {
-    position: relative; z-index: 21; width: 75px; height: 75px;
-    background: var(--teal); border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(13,122,95,0.5);
-}
-
-/* ── COMPONENTS ── */
-main{max-width:900px;margin:0 auto;padding:20px;}
-.card { background:var(--white); border-radius:22px; padding:30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom:20px; }
-.hidden { display:none !important; }
-.btn-main { width:100%; background:var(--teal); color:#fff; border:none; padding:15px; border-radius:12px; font-weight:900; cursor:pointer; transition:0.2s;}
-.btn-main:active { transform: scale(0.98); }
-.opt-label { display:flex; align-items:center; gap:12px; background:var(--bg); border:1.5px solid var(--border); border-radius:12px; padding:14px; cursor:pointer; margin-bottom:10px;}
-</style>
+        /* General UI */
+        main { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .card { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .hidden { display: none !important; }
+        .btn-main { background: var(--teal); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .opt-label { display: block; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+    </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div id="loadingScreen">
-    <div class="ld-logo">MP</div>
-    <p id="ldText" style="margin-top:15px; font-weight:700; color:var(--teal);">جاري التحقق...</p>
-</div>
+    <div id="loadingScreen">
+        <div style="font-size: 2rem; font-weight: 900; color: var(--teal);">MathPro</div>
+        <p id="ldText">جاري التحميل...</p>
+    </div>
 
-<div id="codeLockScreen" class="hidden">
-    <div style="display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px;">
-        <div class="card" style="max-width:400px; width:100%; text-align:center;">
-            <div style="font-size:3rem;">🎫</div>
-            <h3 style="margin:15px 0 10px;">تفعيل الحصة</h3>
-            <p style="color:var(--text2); font-size:0.9rem; margin-bottom:20px;">أدخل كود التفعيل لبدء الدراسة</p>
-            <input id="accessCodeInput" style="width:100%; padding:14px; border-radius:10px; border:1px solid var(--border); text-align:center; margin-bottom:15px;" placeholder="أدخل الكود هنا">
-            <button onclick="verifyCode()" class="btn-main">تفعيل الحصة الآن</button>
+    <div id="timerBar">⏱️ المتبقي للحصة: <span id="timerDisplay">--:--:--</span></div>
+
+    <div id="codeLockScreen" class="hidden">
+        <div style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
+            <div class="card" style="width: 350px; text-align: center;">
+                <h2>🎫 تفعيل الحصة</h2>
+                <input id="accessCodeInput" type="text" placeholder="أدخل كود التفعيل" style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 8px; text-align: center;">
+                <button onclick="verifyCode()" class="btn-main">بدء الدراسة الآن</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="lessonContent" class="hidden">
-    <nav>
-        <div class="nav-inner">
-            <div class="tabs">
-                <button id="btn-quiz-tab" class="tab-btn unlocked active" onclick="switchTab('quiz')">📝 الامتحان</button>
-                <button id="btn-video-tab" class="tab-btn locked-dim" onclick="switchTab('video')">📺 الشرح</button>
-                <button id="btn-pdf-tab" class="tab-btn locked-dim" onclick="switchTab('pdf')">📚 الملزمة</button>
-                <button id="btn-homework-tab" class="tab-btn locked-dim" onclick="switchTab('homework')">📋 الواجب</button>
+    <div id="lessonContent" class="hidden">
+        <nav>
+            <div class="nav-inner">
+                <div class="tabs">
+                    <button id="btn-quiz-tab" class="tab-btn unlocked active" onclick="switchTab('quiz')">📝 الامتحان</button>
+                    <button id="btn-video-tab" class="tab-btn" onclick="switchTab('video')">📺 الشرح</button>
+                    <button id="btn-pdf-tab" class="tab-btn" onclick="switchTab('pdf')">📚 الملزمة</button>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <main>
-        <div id="tab-quiz">
-            <div id="startScreen" class="card" style="text-align:center;">
-                <h2 style="margin-bottom:15px;">🚀 جاهز للامتحان؟</h2>
-                <p style="color:var(--text2); margin-bottom:25px;">يجب اجتياز الامتحان لفتح فيديو الشرح والملزمة.</p>
-                <button onclick="startQuiz()" class="btn-main" style="width:auto; padding:12px 60px;">ابدأ الامتحان</button>
-            </div>
-            <div id="quizApp" class="hidden">
-                <div id="qDisplay"></div>
-                <button onclick="nextQuestion()" class="btn-main" style="width:auto; padding:12px 50px; margin-top:20px;">التالي ←</button>
-            </div>
-            <div id="reviewArea" class="hidden card" style="text-align:center;">
-                <h3 style="color:var(--teal);">تم إنهاء الامتحان بنجاح! ✅</h3>
-                <p style="margin-top:10px;">تقدر دلوقتي تشوف الشرح وتحمل الملزمة.</p>
-            </div>
-        </div>
-
-        <div id="tab-video" class="hidden">
-            <div class="pro-player-wrap">
-                <div class="pro-watermark"><span>ID: <span id="sid_label">000000</span></span></div>
-                <div class="vp-iframe-wrap">
-                    <div class="vid-blocker vid-blocker-top"></div>
-                    <div class="vid-blocker vid-blocker-br"></div>
-                    <iframe id="dmFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
-                    <div class="video-cover" id="videoCover" onclick="runVideo()">
-                        <div class="play-btn">
-                            <svg viewBox="0 0 24 24" width="35" height="35" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
+        <main>
+            <div id="tab-quiz">
+                <div id="quizContainer">
+                    <div id="startQuizView" class="card" style="text-align: center;">
+                        <h3>جاهز للامتحان القبلي؟</h3>
+                        <p>يجب حل الامتحان لفتح فيديو الشرح.</p>
+                        <button onclick="startQuiz()" class="btn-main" style="width: auto;">ابدأ الآن</button>
+                    </div>
+                    <div id="quizApp" class="hidden">
+                        <div id="qDisplay"></div>
+                        <button onclick="nextQuestion()" class="btn-main" id="nextBtn">السؤال التالي</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="tab-pdf" class="hidden">
-            <div class="card" style="text-align:center;">
-                <div style="font-size:3rem;">📚</div>
-                <h3 style="margin-top:10px;">ملزمة الحصة PDF</h3>
-                <a id="pdfLink" href="#" target="_blank" class="btn-main" style="display:inline-block; text-decoration:none; margin-top:20px; width:auto; padding:12px 50px;">تحميل الملزمة</a>
+            <div id="tab-video" class="hidden">
+                <div class="pro-player-wrap">
+                    <div class="pro-watermark"><span>STUDENT ID: <span id="sid_label">0000</span></span></div>
+                    <div class="vp-iframe-wrap">
+                        <iframe id="dmFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <h3>📺 فيديو الشرح</h3>
+                    <p>شاهد الفيديو بتركيز، يمكنك العودة لمراجعة أخطاء الامتحان في تبويب الامتحان.</p>
+                </div>
             </div>
-        </div>
 
-        <div id="tab-homework" class="hidden">
-            <div class="card" style="text-align:center;">
-                <h3>📋 منطقة الواجب</h3>
-                <p>قريباً سيتم إضافة الواجب هنا.</p>
+            <div id="tab-pdf" class="hidden">
+                <div class="card" style="text-align: center;">
+                    <h3>📚 تحميل ملزمة الحصة</h3>
+                    <a id="pdfLink" href="#" target="_blank" class="btn-main" style="display: inline-block; text-decoration: none; width: auto; margin-top: 15px;">تحميل PDF</a>
+                </div>
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<script>
-// الإعدادات
-const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    <script>
+        const SUPABASE_URL = "https://kspfjzewkpfoeyocbzbm.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let currentUser, lessonData, questions=[], curIdx=0, userAns={}, myStudentId;
+        let currentUser, lessonData, questions = [], curIdx = 0, userAns = {};
 
-// 1. تشغيل الصفحة
-async function init() {
-    const id = new URLSearchParams(window.location.search).get('id');
-    const {data:{session}} = await supabaseClient.auth.getSession();
-    if(!session) return window.location.href="index.html"; // لو مفيش تسجيل دخول
-    currentUser = session.user;
+        async function init() {
+            const lessonId = new URLSearchParams(window.location.search).get('id');
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) { window.location.href = "login.html"; return; }
+            currentUser = session.user;
 
-    const {data:ls} = await supabaseClient.from('lessons').select('*').eq('id', id).single();
-    if(ls) {
-        lessonData = ls;
-        questions = ls.questions || [];
-        myStudentId = currentUser.id.substring(0,6).toUpperCase();
-        document.getElementById('sid_label').innerText = myStudentId;
+            const { data: ls } = await supabaseClient.from('lessons').select('*').eq('id', lessonId).single();
+            if (ls) {
+                lessonData = ls;
+                questions = ls.questions || [];
+                document.getElementById('sid_label').innerText = currentUser.id.substring(0, 6).toUpperCase();
 
-        // التحقق من تفعيل الكود
-        const {data:access} = await supabaseClient.from('codes').select('*').eq('usedby', currentUser.email).eq('lessonid', id.toLowerCase()).single();
-        if(access) {
-            document.getElementById('lessonContent').classList.remove('hidden');
-            // لو حل الامتحان قبل كدة يفتح كل حاجة
-            const {data:examDone} = await supabaseClient.from('results').select('*').eq('email', currentUser.email).eq('lesson', ls.name).single();
-            if(examDone) unlockAll();
-        } else {
-            document.getElementById('codeLockScreen').classList.remove('hidden');
+                const { data: access } = await supabaseClient.from('codes')
+                    .select('*').eq('usedby', currentUser.email).eq('lessonid', lessonId).single();
+
+                if (access) {
+                    showMainUI(access.updated_at);
+                    const { data: res } = await supabaseClient.from('results')
+                        .select('*').eq('email', currentUser.email).eq('lesson', ls.name).single();
+                    if (res) { showReview(res.userans, res.score); unlockTabs(); }
+                } else {
+                    document.getElementById('codeLockScreen').classList.remove('hidden');
+                }
+            }
+            hideLoading();
         }
-    }
-    document.getElementById('loadingScreen').style.opacity = '0';
-    setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 300);
-}
 
-// 2. تفعيل الكود
-async function verifyCode() {
-    const code = document.getElementById('accessCodeInput').value.trim();
-    if(!code) return alert("من فضلك أدخل الكود");
+        function showMainUI(startTime) {
+            document.getElementById('lessonContent').classList.remove('hidden');
+            document.getElementById('timerBar').style.display = 'block';
+            startTimer(startTime);
+        }
 
-    document.getElementById('ldText').innerText = "جاري التفعيل...";
-    document.getElementById('loadingScreen').style.display='flex';
-    document.getElementById('loadingScreen').style.opacity='1';
+        async function verifyCode() {
+            const code = document.getElementById('accessCodeInput').value.trim();
+            const { data: check } = await supabaseClient.from('codes').select('*').eq('code', code).eq('used', false).single();
+            if (check) {
+                await supabaseClient.from('codes').update({ used: true, usedby: currentUser.email, lessonid: lessonData.id }).eq('code', code);
+                location.reload();
+            } else { alert("الكود خاطئ!"); }
+        }
 
-    const {data:codeCheck} = await supabaseClient.from('codes').select('*').eq('code', code).eq('used', false).single();
-    if(codeCheck) {
-        await supabaseClient.from('codes').update({used:true, usedby:currentUser.email, lessonid:lessonData.id.toLowerCase()}).eq('code', code);
-        location.reload();
-    } else {
-        alert("الكود غير صحيح أو تم استخدامه!");
-        document.getElementById('loadingScreen').style.opacity='0';
-        setTimeout(()=>document.getElementById('loadingScreen').style.display='none', 300);
-    }
-}
+        function startTimer(startTime) {
+            const endTime = new Date(startTime).getTime() + (3 * 60 * 60 * 1000); // 3 ساعات
+            setInterval(() => {
+                const now = new Date().getTime();
+                const diff = endTime - now;
+                if (diff < 0) { document.body.innerHTML = "<h1>انتهت صلاحية الحصة</h1>"; return; }
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('timerDisplay').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
 
-// 3. مشغل الفيديو
-function runVideo() {
-    const vId = lessonData.video.match(/(?:video\/|dai\.ly\/)([a-zA-Z0-9]+)/)?.[1] || lessonData.video;
-    const frame = document.getElementById('dmFrame');
-    document.getElementById('videoCover').style.opacity = '0';
-    setTimeout(() => document.getElementById('videoCover').style.display = 'none', 300);
-    frame.src = `https://www.dailymotion.com/embed/video/${vId}?autoplay=1&ui-logo=0&sharing-enable=0&info=0&controls=1`;
-}
+        function startQuiz() {
+            document.getElementById('startQuizView').classList.add('hidden');
+            document.getElementById('quizApp').classList.remove('hidden');
+            renderQuestion();
+        }
 
-// 4. الامتحان
-function startQuiz() {
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('quizApp').classList.remove('hidden');
-    renderQ();
-}
-function renderQ() {
-    const q = questions[curIdx];
-    document.getElementById('qDisplay').innerHTML = `
-        <div class="card">
-            <h4 style="color:var(--teal); margin-bottom:15px;">السؤال ${curIdx+1} من ${questions.length}</h4>
-            <div style="font-weight:700; font-size:1.1rem; margin-bottom:20px;">${q.text}</div>
-            <div>
-                ${['a','b','c','d'].map(l => q[l] ? `<label class="opt-label"><input type="radio" name="math" value="${l}"> ${q[l]}</label>` : '').join('')}
-            </div>
-        </div>`;
-}
-async function nextQuestion() {
-    const sel = document.querySelector('input[name="math"]:checked');
-    if(!sel) return alert("من فضلك اختر إجابة");
-    userAns[curIdx] = sel.value;
+        function renderQuestion() {
+            const q = questions[curIdx];
+            document.getElementById('qDisplay').innerHTML = `
+                <div class="card">
+                    <h4>سؤال ${curIdx + 1} من ${questions.length}</h4>
+                    <p style="font-size: 1.2rem; margin: 15px 0;">${q.text}</p>
+                    ${['a', 'b', 'c', 'd'].map(opt => q[opt] ? `
+                        <label class="opt-label">
+                            <input type="radio" name="quiz" value="${opt}"> ${q[opt]}
+                        </label>
+                    ` : '').join('')}
+                </div>`;
+        }
 
-    if(curIdx < questions.length - 1) {
-        curIdx++; renderQ();
-    } else {
-        finishQuiz();
-    }
-}
-async function finishQuiz() {
-    let score = 0;
-    questions.forEach((q,i) => { if(userAns[i] === q.correct) score++; });
-    await supabaseClient.from('results').insert([{ email:currentUser.email, lesson:lessonData.name, score, total:questions.length, userans:userAns }]);
-    unlockAll();
-    switchTab('video');
-}
+        async function nextQuestion() {
+            const selected = document.querySelector('input[name="quiz"]:checked');
+            if (!selected) return alert("اختر إجابة!");
+            userAns[curIdx] = selected.value;
 
-function unlockAll() {
-    ['video','pdf','homework'].forEach(t => {
-        const btn = document.getElementById(`btn-${t}-tab`);
-        if(btn) { btn.classList.add('unlocked'); btn.classList.remove('locked-dim'); }
-    });
-    if(lessonData?.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
-    document.getElementById('tab-quiz').innerHTML = `<div class="card" style="text-align:center;"><h3>تم اجتياز الامتحان بنجاح ✅</h3></div>`;
-}
+            if (curIdx < questions.length - 1) {
+                curIdx++; renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
 
-// 5. التنقل
-window.switchTab = (tab) => {
-    document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.remove('hidden');
-    document.getElementById(`btn-${tab}-tab`).classList.add('active');
-    
-    if(tab === 'video' && lessonData) {
-        const vId = lessonData.video.match(/(?:video\/|dai\.ly\/)([a-zA-Z0-9]+)/)?.[1] || lessonData.video;
-        const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
-        document.getElementById('videoCover').style.backgroundImage = `url('${coverImg}')`;
-    }
-};
+        async function finishQuiz() {
+            let score = 0;
+            questions.forEach((q, i) => { if (userAns[i] === q.correct) score++; });
+            await supabaseClient.from('results').insert([{ email: currentUser.email, lesson: lessonData.name, score, total: questions.length, userans: userAns }]);
+            showReview(userAns, score);
+            unlockTabs();
+            switchTab('video');
+        }
 
-init();
-</script>
+        function showReview(ans, score) {
+            let html = `<div class="card"><h3>نتيجتك: ${score} من ${questions.length}</h3></div>`;
+            questions.forEach((q, i) => {
+                const correct = ans[i] === q.correct;
+                html += `<div class="card" style="border-right: 5px solid ${correct ? 'green' : 'red'}">
+                    <p><b>${i+1}. ${q.text}</b></p>
+                    <p style="color: ${correct ? 'green' : 'red'}">إجابتك: ${q[ans[i]] || 'لم تجب'}</p>
+                    ${!correct ? `<p style="color: green">الصح: ${q[q.correct]}</p>` : ''}
+                </div>`;
+            });
+            document.getElementById('tab-quiz').innerHTML = html;
+        }
+
+        function unlockTabs() {
+            document.getElementById('btn-video-tab').classList.add('unlocked');
+            document.getElementById('btn-pdf-tab').classList.add('unlocked');
+            if(lessonData.pdf) document.getElementById('pdfLink').href = lessonData.pdf;
+        }
+
+        function switchTab(t) {
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + t).classList.remove('hidden');
+            document.getElementById('btn-' + t + '-tab').classList.add('active');
+            if (t === 'video') runVideo();
+        }
+
+        function runVideo() {
+            const vId = lessonData.video.match(/(?:video\/|dai\.ly\/)([a-zA-Z0-9]+)/)?.[1] || lessonData.video;
+            document.getElementById('dmFrame').src = `https://www.dailymotion.com/embed/video/${vId}?autoplay=1`;
+        }
+
+        function hideLoading() { document.getElementById('loadingScreen').style.display = 'none'; }
+
+        init();
+    </script>
 </body>
 </html>
