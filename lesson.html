@@ -241,10 +241,8 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   position:absolute;bottom:0;left:0;right:0;z-index:40;
   padding:8px 16px 12px;direction:ltr;
   background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.5) 60%,transparent 100%);
-  opacity:0;transition:opacity .25s;pointer-events:none;
+  transition:opacity .3s;
 }
-.stealth-player:hover .sp-controls,
-.stealth-player.sp-active .sp-controls{opacity:1;pointer-events:auto;}
 
 /* شريط التقدم */
 .sp-timeline{width:100%;height:18px;cursor:pointer;display:flex;align-items:center;margin-bottom:6px;}
@@ -673,7 +671,7 @@ function buildEmbedUrl(url){
     const id=extractDailymotionId(url);
     if(!id) return null;
     return {
-      src:`https://www.dailymotion.com/embed/video/${id}?controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0&related=0&endscreen-enable=0&queue-enable=0&mute=0`,
+      src:`https://www.dailymotion.com/embed/video/${id}?api=postMessage&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0&related=0&endscreen-enable=0&queue-enable=0`,
       type:'dailymotion', id
     };
   }
@@ -802,6 +800,10 @@ function initStealthPlayer(){
   if(SP.type==='dailymotion'){
     window.addEventListener('message', dmMessageHandler);
     spShowBuffer();
+    // Fallback: اخفي الـ spinner بعد 5 ثواني لو الـ API ما ردتش
+    SP.iframe.addEventListener('load',()=>{
+      setTimeout(()=>spHideBuffer(),3000);
+    });
   }
 }
 
@@ -879,41 +881,76 @@ function spYTTick(){
   spUpdateUI();
 }
 
-/* ─── Dailymotion postMessage ─── */
-function dmSend(method,params={}){
-  if(!SP.iframe) return;
-  SP.iframe.contentWindow.postMessage(JSON.stringify({method,...params}),
-    'https://www.dailymotion.com');
+/* ─── Dailymotion postMessage (الفورمات الصح) ─── */
+function dmSend(command, extraParams={}){
+  if(!SP.iframe||!SP.iframe.contentWindow) return;
+  const msg={command};
+  // seek بيحتاج parameters array
+  if(command==='seek') msg.parameters=[extraParams.time||0];
+  SP.iframe.contentWindow.postMessage(JSON.stringify(msg),'*');
 }
+
 function dmMessageHandler(e){
-  if(!String(e.origin).includes('dailymotion')) return;
+  if(!SP.iframe) return;
+  // قبول الرسايل من dailymotion أو same-origin
+  if(e.source!==SP.iframe.contentWindow) return;
   let d;
-  try{d=JSON.parse(e.data);}catch{return;}
+  try{ d=typeof e.data==='string'?JSON.parse(e.data):e.data; }catch{ return; }
   if(!d||!d.event) return;
+
   switch(d.event){
-    case 'apiready':    spHideBuffer(); break;
-    case 'play':case 'playing':
-      SP.playing=true;spSyncPlayBtn();spHideBuffer();
+    case 'apiready':
+      spHideBuffer();
+      // اطلب autoplay
+      dmSend('play');
+      break;
+
+    case 'play':
+    case 'playing':
+      SP.playing=true;
+      if(d.duration) SP.dur=d.duration;
+      spSyncPlayBtn();spHideBuffer();
       scheduleHideControls();
-      if(!SP.tickTimer) SP.tickTimer=setInterval(()=>dmSend('getProgress'),500);
       break;
-    case 'pause':case 'end':
-      SP.playing=false;spSyncPlayBtn();spHideBuffer();clearInterval(SP.tickTimer);SP.tickTimer=null;
+
+    case 'pause':
+      SP.playing=false;spSyncPlayBtn();
       break;
-    case 'progress':
-      if(d.time!==undefined) SP.cur=d.time;
-      if(d.duration!==undefined){SP.dur=d.duration;document.getElementById('spDur').textContent=fmtTime(SP.dur);}
+
+    case 'end':
+      SP.playing=false;spSyncPlayBtn();
+      break;
+
+    case 'timeupdate':
+      // DM بيبعت videoTime أو time
+      if(d.videoTime!==undefined) SP.cur=d.videoTime;
+      else if(d.time!==undefined) SP.cur=d.time;
+      if(d.duration) SP.dur=d.duration;
       spUpdateUI();
       break;
+
     case 'durationchange':
+      if(d.duration){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
+      break;
+
+    case 'seeking':
+    case 'seeked':
+      if(d.videoTime!==undefined) SP.cur=d.videoTime;
+      else if(d.time!==undefined) SP.cur=d.time;
+      spUpdateUI();
+      break;
+
+    case 'waiting':
+    case 'buffering':
+      spShowBuffer();
+      break;
+
+    case 'loadedmetadata':
+    case 'canplay':
       if(d.duration) SP.dur=d.duration;
+      spHideBuffer();
       document.getElementById('spDur').textContent=fmtTime(SP.dur);
       break;
-    case 'seeking':case 'seeked':
-      if(d.time!==undefined){SP.cur=d.time;spUpdateUI();}
-      break;
-    case 'buffering': spShowBuffer(); break;
-    case 'loadedmetadata': spHideBuffer(); break;
   }
 }
 
@@ -937,6 +974,7 @@ window.spSeek=function(sec){
   } else if(SP.type==='dailymotion'){
     const t=Math.max(0,Math.min(SP.dur,SP.cur+sec));
     dmSend('seek',{time:t});
+    SP.cur=t; spUpdateUI();
   }
 };
 
@@ -944,6 +982,7 @@ window.spSeek=function(sec){
 function spSeekToFraction(frac){
   frac=Math.max(0,Math.min(1,frac));
   const t=frac*SP.dur;
+  SP.cur=t; spUpdateUI();
   if(SP.type==='youtube'&&SP.ytPlayer) SP.ytPlayer.seekTo(t,true);
   else if(SP.type==='dailymotion') dmSend('seek',{time:t});
 }
