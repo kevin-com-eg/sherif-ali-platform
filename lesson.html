@@ -30,6 +30,15 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 @keyframes ldp{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1);background:var(--teal);}}
 .ld-txt{font-size:.8rem;color:var(--text3);font-family:var(--mono);}
 
+/* ── DEV TOOLS BLOCKER ── */
+#devToolsBlocker {
+    position: fixed; inset: 0; z-index: 999999;
+    background: rgba(5, 8, 15, 0.98); backdrop-filter: blur(20px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px;
+}
+#devToolsBlocker:not(.hidden) { display: flex !important; }
+
 /* ── LOCK SCREEN ── */
 #codeLockScreen{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
 .lock-card{width:100%;max-width:420px;background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:44px 34px 36px;text-align:center;position:relative;box-shadow:var(--shadow2);animation:riseIn .5s both;}
@@ -66,7 +75,6 @@ nav{position:sticky;top:0;z-index:100;height:var(--nav-h);background:var(--white
 #timerBox.urgent{animation:pRed 1s infinite;}
 @keyframes pRed{0%,100%{border-color:#fecaca}50%{border-color:#f87171}}
 
-/* ── MAIN ── */
 main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px 70px;}
 
 /* ── START SCREEN ── */
@@ -109,7 +117,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .q-btn.finish{background:#eff6ff;border:1.5px solid #bfdbfe;color:#2563eb;}
 .q-btn.finish:hover{background:#dbeafe;}
 
-/* ── SCORE ── */
+/* ── SCORE & REVIEW ── */
 .score-card{background:var(--white);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;position:relative;overflow:hidden;margin-bottom:18px;animation:riseIn .5s both;box-shadow:var(--shadow);}
 .score-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;background:linear-gradient(to right,transparent,var(--teal),transparent);}
 .score-ring{width:110px;height:110px;margin:0 auto 18px;position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;}
@@ -119,8 +127,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .score-of{font-family:var(--mono);font-size:.83rem;color:var(--text2);margin-top:4px;}
 .score-msg{color:var(--text2);font-size:.87rem;margin-top:7px;}
 .score-unlock{display:inline-flex;align-items:center;gap:7px;background:var(--teal3);border:1px solid var(--teal4);color:var(--teal);font-size:.77rem;font-weight:700;padding:8px 18px;border-radius:18px;margin-top:14px;font-family:var(--mono);}
-
-/* ── REVIEW ── */
 .review-section-title{font-size:.72rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono);margin-bottom:12px;}
 .review-item{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:10px;animation:riseIn .35s both;box-shadow:var(--shadow);}
 .review-item.correct{border-color:var(--teal4);}
@@ -137,19 +143,14 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
 /* ── HOMEWORK TAB ── */
 #tab-homework .hw-locked-screen{background:var(--white);border:1.5px solid #fed7aa;border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;box-shadow:var(--shadow);}
-#tab-homework .hw-locked-screen::before{content:'';display:block;font-size:3rem;margin-bottom:16px;}
 .hw-locked-icon{font-size:3.5rem;margin-bottom:18px;}
 .hw-locked-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
 .hw-locked-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:380px;margin:0 auto 28px;}
-.hw-locked-badge{display:inline-flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fed7aa;color:var(--gold);font-size:.75rem;font-weight:700;padding:8px 16px;border-radius:10px;margin-bottom:28px;font-family:var(--mono);}
 .hw-start-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:14px 44px;border-radius:13px;font-family:var(--sans);font-size:1rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(217,119,6,.25);min-height:52px;}
 .hw-start-btn:hover{box-shadow:0 10px 28px rgba(217,119,6,.38);transform:translateY(-2px);}
 .hw-done-screen{background:var(--teal3);border:1.5px solid var(--teal4);border-radius:20px;padding:52px 28px;text-align:center;animation:riseIn .4s both;}
-.hw-done-icon{font-size:3.5rem;margin-bottom:16px;}
-.hw-done-title{font-size:1.5rem;font-weight:900;color:var(--teal);margin-bottom:8px;}
-.hw-done-sub{font-size:.88rem;color:var(--teal2);line-height:1.7;}
 
-/* ── DAILYMOTION PRO PLAYER ── */
+/* ── THE PRO CUSTOM PLAYER (DAILYMOTION ONLY) ── */
 .vid-section-title{font-size:.7rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
 .vid-section-title::before{content:'';width:3px;height:14px;background:var(--teal);border-radius:2px;}
 
@@ -162,12 +163,9 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .pro-player-wrap:fullscreen, .pro-player-wrap:-webkit-full-screen { border-radius: 0; }
 
 .vp-iframe-wrap { width: 100%; height: 100%; position: absolute; inset: 0; overflow: hidden; background: #000; }
-.vp-iframe-wrap iframe {
-    width: 100%; height: 100%; border: none; display: block;
-    pointer-events: none !important; /* تمنع الماوس نهائياً إنه يلمس الفيديو الأصلي */
-}
+.vp-iframe-wrap iframe { width: 100%; height: 100%; border: none; display: block; pointer-events: none !important; }
 
-/* العلامة المائية */
+/* العلامة المائية للطلاب */
 .pro-watermark { position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden; }
 .pro-watermark span {
     position: absolute; font-family: var(--mono); font-size: 1.5rem; font-weight: 900;
@@ -176,12 +174,27 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 }
 @keyframes wmMove { 0% { top: 10%; left: 10%; } 25% { top: 70%; left: 20%; } 50% { top: 40%; left: 70%; } 75% { top: 20%; left: 50%; } 100% { top: 60%; left: 80%; } }
 
-/* طبقات الحماية لإخفاء اللوجوهات الأصلية */
+/* طبقات الحماية لإخفاء اللوجوهات الأصلية (Dailymotion) */
 .vid-blocker { position: absolute; background: #000; z-index: 15; pointer-events: none; transition: opacity 0.3s ease; }
 .vid-blocker-top { top: 0; left: 0; right: 0; height: 60px; } 
 .vid-blocker-bottom-right { bottom: 0; right: 0; width: 140px; height: 60px; } 
 
+/* طبقة للضغط والتشغيل */
 .vp-vid-overlay { position: absolute; inset: 0; z-index: 20; cursor: pointer; background: transparent; }
+
+/* الغطاء الذكي (بيخفي الشاشة أثناء التوقف) */
+.yt-thumbnail-cover {
+    position: absolute; inset: 0; z-index: 35; 
+    background-size: cover; background-position: center; background-color: #000;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.yt-thumbnail-cover .yt-play-btn {
+    width: 75px; height: 55px; background: rgba(13,122,95,0.9);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: all 0.2s;
+}
+.yt-thumbnail-cover:hover .yt-play-btn { transform: scale(1.1); background: var(--teal); }
+.yt-play-btn svg { width: 32px; height: 32px; fill: #fff; margin-left: 5px; }
 
 /* شريط التحكم السفلي الاحترافي */
 .pro-controls {
@@ -210,6 +223,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 
 .pro-player-wrap:fullscreen .pro-controls { z-index: 9999; position: absolute; bottom: 0; }
 .pro-player-wrap:fullscreen .vp-iframe-wrap iframe { height: 100vh; }
+.pro-player-wrap:fullscreen .yt-thumbnail-cover { z-index: 9998; }
 
 /* ── PDF ── */
 .pdf-card{background:var(--white);border:1.5px solid #fed7aa;border-radius:22px;padding:52px 28px;text-align:center;position:relative;overflow:hidden;animation:riseIn .4s both;box-shadow:var(--shadow);}
@@ -228,9 +242,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-gate-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:8px;}
 .hw-gate-sub{font-size:.88rem;color:var(--text2);line-height:1.7;max-width:340px;margin:0 auto 28px;}
 .hw-gate-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--gold),#b45309);color:#fff;border:none;padding:13px 36px;border-radius:12px;font-family:var(--sans);font-size:.95rem;font-weight:900;cursor:pointer;transition:all .3s;box-shadow:0 5px 16px rgba(217,119,6,.25);}
-.hw-gate-btn:hover{box-shadow:0 8px 24px rgba(217,119,6,.38);transform:translateY(-1px);}
-.hw-gate-dismiss{display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;transition:color .2s;}
-.hw-gate-dismiss:hover{color:var(--text2);}
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
@@ -247,18 +258,12 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
   .pro-controls{padding:12px 14px 10px;}
-  .pro-ctrl-group{gap:10px;}
+  .pro-left,.pro-right{gap:10px;}
   .pro-time{font-size:.75rem;}
 }
 </style>
 </head>
 <body oncontextmenu="return false;">
-
-<div id="devToolsBlocker" class="hidden">
-  <div style="font-size:5rem;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(239,68,68,0.5));">🛑</div>
-  <h2 style="font-size:2.2rem;font-weight:900;color:#ef4444;margin-bottom:15px;">تحذير أمني!</h2>
-  <p style="font-size:1.1rem;color:#7a9ab5;max-width:400px;line-height:1.6;">تم اكتشاف فتح أدوات المطور (Developer Tools).<br>لحماية محتوى المنصة، يرجى إغلاقها فوراً للمتابعة.</p>
-</div>
 
 <div id="loadingScreen">
   <div class="ld-logo">MP</div>
@@ -272,7 +277,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
     <div class="hw-gate-title">لازم تعمل الواجب الأول!</div>
     <div class="hw-gate-sub" id="hwGateMsg">لا يمكنك فتح هذه الحصة قبل إنهاء الواجب المطلوب — اعمل الواجب الأول وهتفتح الحصة تلقائياً</div>
     <button class="hw-gate-btn" onclick="goToHomework()">اذهب للواجب</button>
-    <span class="hw-gate-dismiss" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
+    <span class="hw-gate-dismiss" style="display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;" onclick="document.getElementById('hwGateWall').classList.add('hidden')">إغلاق ورجوع</span>
   </div>
 </div>
 
@@ -420,7 +425,7 @@ const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY
 const OPT_LETTERS = ['a','b','c','d','e','f','g','h','i','j'];
 
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
-let examTimer,myStudentId="000000",vidPlayerInited=false;
+let examTimer,myStudentId="000000";
 let hwData=null, hwUserAns={}, hwCurIdx=0, hwDone=false, hwQuestions=[];
 
 function showLoader(text = "جاري التحميل...") {
@@ -579,137 +584,145 @@ document.getElementById('verifyBtn').onclick=async()=>{
   hideLoader();
 };
 
-/* ── DAILYMOTION PRO PLAYER ── */
-let dmPlayer=null, vidDur=0, vidCur=0, isPlaying=false;
+/* ── DAILYMOTION PRO PLAYER (PURE IFRAME API) ── */
+let vidDur = 0;
+let vidCur = 0;
+let isPlaying = false;
 
 function initVideoPlayer() {
-  if(lessonData.video && !vidPlayerInited){
-    vidPlayerInited = true;
-    const vc = document.getElementById('tab-video');
-    const url = lessonData.video;
-    
-    const m = url.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
-    const vId = m ? m[1] : url; 
-    
-    vc.innerHTML = `<div class="vid-section-title">فيديو الشرح</div>` + buildDMPlayer(vId);
-    loadDMApi();
-  }
-}
+  const vc = document.getElementById('tab-video');
+  const url = lessonData?.video;
+  if(!url) return;
 
-function getControlsHTML() {
-    return `
-      <div class="pro-timeline-container" id="vpProg">
-          <div class="pro-timeline-bg">
-              <div class="pro-timeline-progress" id="vpFill" style="width:0%"></div>
-              <div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div>
-          </div>
-      </div>
-      <div class="pro-controls-bottom">
-          <div class="pro-ctrl-group">
-              <button class="pro-btn" id="bottomPlayBtn" onclick="toggleDmPlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              <button class="pro-btn" onclick="dmSeek(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
-              <button class="pro-btn" onclick="dmSeek(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
-              <div class="pro-time"><span id="vpCur">0:00</span> / <span id="vpDur">0:00</span></div>
-          </div>
-          <div class="pro-ctrl-group">
-              <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
-          </div>
-      </div>
-    `;
-}
+  const m = url.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+  const vId = m ? m[1] : url; 
 
-function buildDMPlayer(vId) {
-  return `
+  const coverImg = lessonData.image || `https://www.dailymotion.com/thumbnail/video/${vId}`;
+  
+  vc.innerHTML = `
+  <div class="vid-section-title">فيديو الشرح</div>
   <div class="pro-player-wrap" id="vpWrap" oncontextmenu="return false;">
       <div class="pro-watermark"><span>ID: ${myStudentId}</span></div>
       <div class="vp-iframe-wrap">
           <div class="vid-blocker vid-blocker-top"></div>
           <div class="vid-blocker vid-blocker-bottom-right"></div>
           
-          <div class="vp-vid-overlay" onclick="toggleDmPlay()"></div>
-          <div id="dmFrame" data-vid="${vId}" style="width: 100%; height: 100%; border: none; display: block; pointer-events: none !important;"></div>
+          <div id="vidCover" class="yt-thumbnail-cover" style="background-image: url('${coverImg}');" onclick="togglePlay()">
+             <div class="yt-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          
+          <div class="vp-yt-overlay" onclick="togglePlay()"></div>
+          
+          <iframe id="dmFrame"
+              src="https://www.dailymotion.com/embed/video/${vId}?api=postMessage&id=dmFrame&controls=0&info=0&logo=0&related=0&sharing-enable=0&ui-logo=0"
+              allow="autoplay; fullscreen" allowfullscreen
+              style="width: 100%; height: 100%; border: none; pointer-events: none !important;">
+          </iframe>
       </div>
       
-      <div class="pro-controls" id="vpControls">${getControlsHTML()}</div>
+      <div class="pro-controls" id="vpControls">
+          <div class="pro-timeline-container" id="vpProg">
+              <div class="pro-timeline-bg">
+                  <div class="pro-timeline-progress" id="vpFill" style="width:0%"></div>
+                  <div class="pro-timeline-thumb" id="vpThumb" style="left:0%"></div>
+              </div>
+          </div>
+          <div class="pro-controls-bottom">
+              <div class="pro-ctrl-group">
+                  <button class="pro-btn" id="bottomPlayBtn" onclick="togglePlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                  <button class="pro-btn" onclick="seek(-10)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg></button>
+                  <button class="pro-btn" onclick="seek(10)"><svg viewBox="0 0 24 24"><path d="M12 5c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8H4c0 3.31 2.69 6 6 6v4l5-5-5-5V7z"/></svg></button>
+                  <div class="pro-time"><span id="vpCur">0:00</span> / <span id="vpDur">0:00</span></div>
+              </div>
+              <div class="pro-ctrl-group">
+                  <button class="pro-btn" onclick="toggleFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+              </div>
+          </div>
+      </div>
   </div>`;
+
+  initDrag();
 }
 
-function loadDMApi() {
-  if (window.DM) { initDMPlayer(); return; }
-  const tag = document.createElement('script');
-  tag.src = "https://api.dmcdn.net/all.js";
-  tag.onload = () => { initDMPlayer(); };
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
-
-function initDMPlayer() {
-  const container = document.getElementById('dmFrame');
-  if(!container) return;
-  const vId = container.getAttribute('data-vid');
-  
-  DM.init({ apiKey: '', status: true, cookie: true });
-  dmPlayer = DM.player(container, {
-      video: vId,
-      width: "100%", height: "100%",
-      params: { controls: false, autoplay: false, "ui-logo": false, "ui-start-screen-info": false, rel: 0 }
-  });
-  
-  dmPlayer.addEventListener('apiready', () => {
-      vidDur = dmPlayer.duration || 0;
-      document.getElementById('vpDur').textContent = fmtTime(vidDur);
-  });
-  
-  dmPlayer.addEventListener('timeupdate', () => {
-      vidCur = dmPlayer.currentTime || 0;
-      vidDur = dmPlayer.duration || vidDur;
-      document.getElementById('vpDur').textContent = fmtTime(vidDur);
-      document.getElementById('vpCur').textContent = fmtTime(vidCur);
-      const pct = vidDur ? (vidCur / vidDur * 100) : 0;
-      document.getElementById('vpFill').style.width = pct + '%';
-      document.getElementById('vpThumb').style.left = pct + '%';
-  });
-  
-  const updatePlayUI = (playing) => {
-    const bPlay = document.getElementById('bottomPlayBtn');
-    if(bPlay) bPlay.innerHTML = playing ? `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>` : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-    const wrap = document.getElementById('vpWrap');
-    if(wrap) {
-      if(playing) wrap.classList.add('active-controls');
-      else wrap.classList.remove('active-controls');
+function dmCmd(cmd, params) {
+    const fr = document.getElementById('dmFrame');
+    if (fr && fr.contentWindow) {
+        fr.contentWindow.postMessage(JSON.stringify({command: cmd, parameters: params || {}}), '*');
     }
-  };
-
-  dmPlayer.addEventListener('play', () => { isPlaying = true; updatePlayUI(true); });
-  dmPlayer.addEventListener('pause', () => { isPlaying = false; updatePlayUI(false); });
-  dmPlayer.addEventListener('end', () => { isPlaying = false; updatePlayUI(false); });
-
-  const prog=document.getElementById('vpProg');
-  let isDragging = false;
-  const updateProgress = (e) => { 
-      const r = prog.getBoundingClientRect(); 
-      const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); 
-      dmPlayer.seek(pct * vidDur); 
-  };
-  prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
-  document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
-  document.addEventListener('mouseup', () => { isDragging = false; });
-  prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
-  document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
-  document.addEventListener('touchend', () => { isDragging = false; });
 }
 
-window.toggleDmPlay = () => {
-  if (!dmPlayer) return;
-  if (!dmPlayer.paused) dmPlayer.pause();
-  else dmPlayer.play();
+window.addEventListener('message', e => {
+    if (e.origin && e.origin.includes('dailymotion.com')) {
+        try {
+            const data = JSON.parse(e.data);
+            if (data.event === 'durationchange') {
+                vidDur = data.duration;
+                document.getElementById('vpDur').textContent = fmtTime(vidDur);
+            }
+            if (data.event === 'timeupdate') {
+                vidCur = data.time;
+                document.getElementById('vpCur').textContent = fmtTime(vidCur);
+                const pct = vidDur ? (vidCur / vidDur * 100) : 0;
+                document.getElementById('vpFill').style.width = pct + '%';
+                document.getElementById('vpThumb').style.left = pct + '%';
+            }
+            if (data.event === 'play' || data.event === 'playing') {
+                isPlaying = true;
+                updateUI(true);
+            }
+            if (data.event === 'pause' || data.event === 'ended') {
+                isPlaying = false;
+                updateUI(false);
+            }
+        } catch(err) {}
+    }
+});
+
+function updateUI(playing) {
+    const wrap = document.getElementById('vpWrap');
+    const playBtn = document.getElementById('bottomPlayBtn');
+    const cover = document.getElementById('vidCover');
+
+    if (wrap) {
+        if (playing) wrap.classList.add('active-controls');
+        else wrap.classList.remove('active-controls');
+    }
+    if (playBtn) {
+        playBtn.innerHTML = playing
+            ? `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+            : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+    }
+    if (cover) {
+        cover.style.display = playing ? 'none' : 'flex';
+    }
+}
+
+window.togglePlay = () => {
+    if (isPlaying) dmCmd('pause');
+    else dmCmd('play');
 };
 
-window.dmSeek = (s) => {
-  if (!dmPlayer) return;
-  vidCur = Math.max(0, Math.min(vidDur, vidCur + s));
-  dmPlayer.seek(vidCur);
+window.seek = (s) => {
+    vidCur = Math.max(0, Math.min(vidDur, vidCur + s));
+    dmCmd('seek', {time: vidCur});
 };
+
+function initDrag() {
+    const prog = document.getElementById('vpProg');
+    if(!prog) return;
+    let isDragging = false;
+    const updateProgress = (e) => {
+        const r = prog.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+        dmCmd('seek', {time: pct * vidDur});
+    };
+    prog.addEventListener('mousedown', (e) => { isDragging = true; updateProgress(e); });
+    document.addEventListener('mousemove', (e) => { if(isDragging) updateProgress(e); });
+    document.addEventListener('mouseup', () => { isDragging = false; });
+    prog.addEventListener('touchstart', (e) => { isDragging = true; updateProgress(e.touches[0]); }, {passive: true});
+    document.addEventListener('touchmove', (e) => { if(isDragging) updateProgress(e.touches[0]); }, {passive: true});
+    document.addEventListener('touchend', () => { isDragging = false; });
+}
 
 window.toggleFullscreen=()=>{
   const w=document.getElementById('vpWrap');
