@@ -184,18 +184,18 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .stealth-player:fullscreen,
 .stealth-player:-webkit-full-screen{border-radius:0;}
 
-/* حاوية الـ iframe — مخفية خلف overlay */
+/* حاوية الـ iframe — overflow:hidden يقطع واجهة يوتيوب */
 .sp-iframe-box{
   position:absolute;inset:0;
-  /* نوسّع الـ iframe لإخفاء شريط اليوتيوب/ديلي موشن */
   overflow:hidden;
+  background:#000;
 }
+/* CSS fallback للـ DM iframe — YT iframe بيتضبط بـ JS */
 .sp-iframe-box iframe{
   position:absolute;
-  /* اخفي الـ UI العلوي والسفلي بالتوسيع */
-  top:-60px;left:-2px;right:-2px;
+  top:-70px;left:-2px;
   width:calc(100% + 4px);
-  height:calc(100% + 120px);
+  height:calc(100% + 140px);
   border:none;pointer-events:none;
 }
 
@@ -761,6 +761,24 @@ function buildStealthPlayerHTML(embedInfo){
               <button class="sp-speed-item${s===1?' active':''}" onclick="spSetSpeed(${s})">${s}x</button>`).join('')}
             </div>
           </div>
+          <!-- الجودة -->
+          <div class="sp-speed-wrap">
+            <button class="sp-speed-btn" id="spQualBtn" onclick="spToggleQualMenu()">
+              <span id="spQualLbl">
+                <svg style="width:16px;height:16px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                HD
+              </span>
+            </button>
+            <div class="sp-speed-menu" id="spQualMenu">
+              <div style="padding:4px 10px 6px;font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">الجودة</div>
+              <button class="sp-speed-item" onclick="spSetQuality('hd1080')">1080p</button>
+              <button class="sp-speed-item" onclick="spSetQuality('hd720')">720p</button>
+              <button class="sp-speed-item" onclick="spSetQuality('large')">480p</button>
+              <button class="sp-speed-item" onclick="spSetQuality('medium')">360p</button>
+              <button class="sp-speed-item" onclick="spSetQuality('small')">240p</button>
+              <button class="sp-speed-item active" onclick="spSetQuality('auto')">تلقائي</button>
+            </div>
+          </div>
           <!-- ملء الشاشة -->
           <button class="sp-btn" onclick="spFullscreen()">
             <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
@@ -791,22 +809,41 @@ function initStealthPlayer(){
     SP.iframe=document.getElementById('spIframe');
   }
 
+  // لو يوتيوب: راقب الـ container وبمجرد ما YT تخلق الـ iframe اضبط أبعاده فوراً
+  if(SP.type==='youtube'){
+    const container=document.getElementById('ytApiContainer');
+    if(container){
+      const obs=new MutationObserver(()=>{
+        const f=container.querySelector('iframe');
+        if(f){ applyYTIframeStyle(f); obs.disconnect(); }
+      });
+      obs.observe(container,{childList:true,subtree:true});
+    }
+  }
+
   // ── ربط الأحداث ──
   bindStealthEvents();
 
-  // ── تحميل YouTube API إذا لزم ──
-  if(SP.type==='youtube'){
-    loadYTAPI();
-  }
-  // Dailymotion
+  if(SP.type==='youtube') loadYTAPI();
+
   if(SP.type==='dailymotion'){
     window.addEventListener('message', dmMessageHandler);
     spShowBuffer();
-    // Fallback: اخفي الـ spinner بعد 5 ثواني لو الـ API ما ردتش
-    SP.iframe.addEventListener('load',()=>{
-      setTimeout(()=>spHideBuffer(),3000);
-    });
+    SP.iframe.addEventListener('load',()=>{ setTimeout(()=>spHideBuffer(),3000); });
   }
+}
+
+/* ─── تطبيق تنسيق الـ iframe فور إنشائه (لإخفاء واجهة يوتيوب) ─── */
+function applyYTIframeStyle(iframe){
+  Object.assign(iframe.style,{
+    position:'absolute',
+    top:'-70px',
+    left:'-2px',
+    width:'calc(100% + 4px)',
+    height:'calc(100% + 140px)',
+    pointerEvents:'none',
+    border:'none'
+  });
 }
 
 /* ─── YouTube API ─── */
@@ -845,18 +882,10 @@ function initYTBridge(){
         SP.ytReady=true;
         SP.dur=SP.ytPlayer.getDuration()||0;
         document.getElementById('spDur').textContent=fmtTime(SP.dur);
+        // أعد تطبيق الـ style كـ safety (لو الـ observer فاته)
+        const f=document.getElementById('ytApiContainer')?.querySelector('iframe');
+        if(f) applyYTIframeStyle(f);
         spHideBuffer();
-        // اضبط pointer-events:none على الإطار الذي أنشأته YT
-        const ytIframe=document.getElementById('ytApiContainer')?.querySelector('iframe');
-        if(ytIframe){
-          ytIframe.style.position='absolute';
-          ytIframe.style.top='-60px';
-          ytIframe.style.left='-2px';
-          ytIframe.style.width='calc(100% + 4px)';
-          ytIframe.style.height='calc(100% + 120px)';
-          ytIframe.style.pointerEvents='none';
-          ytIframe.style.border='none';
-        }
         if(SP.tickTimer) clearInterval(SP.tickTimer);
         SP.tickTimer=setInterval(spYTTick,500);
       },
@@ -996,11 +1025,83 @@ window.spSetSpeed=function(s){
 };
 
 window.spToggleSpeedMenu=function(){
+  document.getElementById('spQualMenu')?.classList.remove('open');
   const m=document.getElementById('spSpeedMenu');
   m.classList.toggle('open');
 };
+
+window.spToggleQualMenu=function(){
+  document.getElementById('spSpeedMenu')?.classList.remove('open');
+  const m=document.getElementById('spQualMenu');
+  // لو يوتيوب: حدّث قائمة الجودات المتاحة فعلياً
+  if(SP.type==='youtube') spUpdateYTQualMenu();
+  m.classList.toggle('open');
+};
+
+/* ─── قراءة وضبط الجودة ─── */
+const YT_QUAL_LABELS={'hd1080':'1080p','hd720':'720p','large':'480p','medium':'360p','small':'240p','tiny':'144p','auto':'تلقائي'};
+
+function spUpdateYTQualMenu(){
+  if(!SP.ytPlayer||!SP.ytPlayer.getAvailableQualityLevels) return;
+  const levels=SP.ytPlayer.getAvailableQualityLevels()||[];
+  const cur=SP.ytPlayer.getPlaybackQuality()||'auto';
+  const menu=document.getElementById('spQualMenu');
+  if(!menu||levels.length===0) return;
+
+  const allQ=['hd1080','hd720','large','medium','small','tiny'];
+  const available=allQ.filter(q=>levels.includes(q));
+  available.push('auto');
+
+  menu.innerHTML=`<div style="padding:4px 10px 6px;font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;">الجودة</div>`
+    +available.map(q=>`<button class="sp-speed-item${(q===cur||(!levels.includes(cur)&&q==='auto'))?' active':''}" onclick="spSetQuality('${q}')">${YT_QUAL_LABELS[q]||q}</button>`).join('');
+
+  // حدّث الـ label
+  const curLabel=YT_QUAL_LABELS[cur]||'HD';
+  document.getElementById('spQualLbl').innerHTML=`<svg style="width:14px;height:14px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5v-3l3 1.5-3 1.5zM5 9h6v6H5z"/></svg> ${curLabel}`;
+}
+
+window.spSetQuality=function(q){
+  // أغلق القائمة
+  document.getElementById('spQualMenu')?.classList.remove('open');
+
+  if(SP.type==='youtube'&&SP.ytPlayer){
+    if(q==='auto'){
+      // YT: اختر أعلى جودة متاحة
+      const levels=SP.ytPlayer.getAvailableQualityLevels()||[];
+      SP.ytPlayer.setPlaybackQuality(levels[0]||'hd720');
+    } else {
+      SP.ytPlayer.setPlaybackQuality(q);
+    }
+    // حدّث الـ label بعد لحظة
+    setTimeout(()=>{
+      const cur=SP.ytPlayer.getPlaybackQuality();
+      const lbl=YT_QUAL_LABELS[cur]||'HD';
+      document.getElementById('spQualLbl').innerHTML=`<svg style="width:14px;height:14px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5v-3l3 1.5-3 1.5zM5 9h6v6H5z"/></svg> ${lbl}`;
+      document.querySelectorAll('#spQualMenu .sp-speed-item').forEach(el=>{
+        el.classList.toggle('active', el.textContent.trim()===lbl||el.textContent.trim()===(YT_QUAL_LABELS[q]||q));
+      });
+    },400);
+  }
+
+  if(SP.type==='dailymotion'){
+    // DM: أرقام مباشرة
+    const dmMap={'hd1080':1080,'hd720':720,'large':480,'medium':360,'small':240,'auto':0};
+    const val=dmMap[q]||0;
+    if(val===0) dmSend('setQuality',['auto']);
+    else dmSend('setQuality',[val]);
+    // حدّث الـ label
+    const lbl=YT_QUAL_LABELS[q]||'HD';
+    document.getElementById('spQualLbl').innerHTML=`<svg style="width:14px;height:14px;fill:currentColor;vertical-align:middle;margin-bottom:2px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 9.5v-3l3 1.5-3 1.5zM5 9h6v6H5z"/></svg> ${lbl}`;
+    document.querySelectorAll('#spQualMenu .sp-speed-item').forEach(el=>{
+      el.classList.toggle('active', el.textContent.trim()===lbl);
+    });
+  }
+};
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.sp-speed-wrap')) document.getElementById('spSpeedMenu')?.classList.remove('open');
+  if(!e.target.closest('.sp-speed-wrap')){
+    document.getElementById('spSpeedMenu')?.classList.remove('open');
+    document.getElementById('spQualMenu')?.classList.remove('open');
+  }
 });
 
 /* ─── Fullscreen ─── */
