@@ -204,20 +204,20 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .sp-blinder-left  {top:0;left:0;bottom:0;width:2px;}
 .sp-blinder-right {top:0;right:0;bottom:0;width:2px;}
 
-/* غطاء التفاعل — مش يغطي منطقة الـ controls السفلية */
+/* غطاء التفاعل — فوق يوتيوب UI (z~40) بس تحت الـ cover */
 .sp-overlay{
   position:absolute;top:0;left:0;right:0;
-  bottom:60px; /* ترك مساحة الـ controls */
-  z-index:20;
+  bottom:60px;
+  z-index:45;
   cursor:pointer;background:transparent;
 }
 
 /* غطاء البداية — يخفي زرار يوتيوب ويعرض زرارنا */
 .sp-cover{
-  position:absolute;inset:0;z-index:30;
-  background:#000;
+  position:absolute;inset:0;z-index:50;
+  background:#111;
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:background .3s;
+  cursor:pointer;
 }
 .sp-cover.hide{display:none;}
 .sp-cover-thumb{
@@ -710,7 +710,7 @@ let SP={
 /* ─── بناء HTML البلاير ─── */
 function buildStealthPlayerHTML(embedInfo){
   const innerHtml = embedInfo.type === 'youtube'
-    ? `<div id="ytApiContainer" style="position:absolute;inset:0;"></div>`
+    ? `<div id="ytApiContainer" style="position:absolute;top:-56px;left:0;right:0;bottom:-56px;"></div>`
     : `<iframe id="spIframe"
          src="${embedInfo.src}"
          allow="autoplay; encrypted-media"
@@ -870,8 +870,10 @@ function initStealthPlayer(){
 function applyYTIframeStyle(iframe){
   Object.assign(iframe.style,{
     position:'absolute',
-    top:'0', left:'0',
-    width:'100%', height:'100%',
+    top:'-56px',
+    left:'0', right:'0',
+    width:'100%',
+    height:'calc(100% + 112px)',
     pointerEvents:'none',
     border:'none'
   });
