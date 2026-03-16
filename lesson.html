@@ -217,7 +217,30 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   cursor:pointer;background:transparent;
 }
 
-/* لا غطاء صورة */
+/* غطاء البداية — يخفي زرار يوتيوب ويعرض زرارنا */
+.sp-cover{
+  position:absolute;inset:0;z-index:30;
+  background:#000;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .3s;
+}
+.sp-cover.hide{display:none;}
+.sp-cover-thumb{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  opacity:.75;transition:opacity .3s;
+}
+.sp-cover:hover .sp-cover-thumb{opacity:.9;}
+.sp-cover-btn{
+  position:relative;z-index:2;
+  width:68px;height:68px;border-radius:50%;
+  background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 32px rgba(0,0,0,.55);
+  transition:transform .2s,background .2s;
+}
+.sp-cover:hover .sp-cover-btn{transform:scale(1.1);background:var(--teal2);}
+.sp-cover-btn svg{width:28px;height:28px;fill:#fff;margin-left:4px;}
 
 /* العلامة المائية المتحركة */
 .sp-watermark{
@@ -716,6 +739,14 @@ function buildStealthPlayerHTML(embedInfo){
     <!-- overlay التفاعل -->
     <div class="sp-overlay" id="spOverlay"></div>
 
+    <!-- غطاء البداية (يختفي عند الضغط play) -->
+    <div class="sp-cover" id="spCover" onclick="spTogglePlay()">
+      <div class="sp-cover-thumb" id="spCoverThumb"></div>
+      <div class="sp-cover-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+
     <!-- غطاء التحميل -->
     <div class="sp-buffer show" id="spBuffer"><div class="sp-spinner"></div></div>
 
@@ -802,6 +833,15 @@ function initStealthPlayer(){
 
   SP.type=embedInfo.type;
   vc.innerHTML=`<div class="vid-section-title">فيديو الشرح</div>${buildStealthPlayerHTML(embedInfo)}`;
+
+  // ضع الـ thumbnail على الـ cover
+  const thumbEl=document.getElementById('spCoverThumb');
+  if(thumbEl){
+    let thumb='';
+    if(lessonData.image) thumb=lessonData.image;
+    else if(embedInfo.type==='youtube') thumb=`https://img.youtube.com/vi/${embedInfo.id}/hqdefault.jpg`;
+    if(thumb) thumbEl.style.backgroundImage=`url('${thumb}')`;
+  }
 
   if(SP.type==='dailymotion'){
     SP.iframe=document.getElementById('spIframe');
@@ -891,12 +931,13 @@ function initYTBridge(){
         SP.playing=(e.data===YT.PlayerState.PLAYING);
         spSyncPlayBtn();
         if(SP.playing){
-          spHideBuffer();
+          spHideCover(); spHideBuffer();
           scheduleHideControls();
         } else if(e.data===YT.PlayerState.BUFFERING){
           spShowBuffer();
         } else {
           spHideBuffer();
+          if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED) spShowCover();
         }
       }
     }
@@ -938,16 +979,16 @@ function dmMessageHandler(e){
     case 'playing':
       SP.playing=true;
       if(d.duration&&d.duration>0){ SP.dur=d.duration; document.getElementById('spDur').textContent=fmtTime(SP.dur); }
-      spSyncPlayBtn(); spHideBuffer();
+      spSyncPlayBtn(); spHideCover(); spHideBuffer();
       scheduleHideControls();
       break;
 
     case 'pause':
-      SP.playing=false; spSyncPlayBtn();
+      SP.playing=false; spSyncPlayBtn(); spShowCover();
       break;
 
     case 'end':case 'ended':
-      SP.playing=false; spSyncPlayBtn();
+      SP.playing=false; spSyncPlayBtn(); spShowCover();
       break;
 
     case 'timeupdate':
@@ -1111,6 +1152,8 @@ window.spFullscreen=function(){
 };
 
 /* ─── Buffer ─── */
+function spShowCover(){const c=document.getElementById('spCover');if(c)c.classList.remove('hide');}
+function spHideCover(){const c=document.getElementById('spCover');if(c)c.classList.add('hide');}
 function spShowBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.add('show');}
 function spHideBuffer(){const b=document.getElementById('spBuffer');if(b)b.classList.remove('show');}
 
