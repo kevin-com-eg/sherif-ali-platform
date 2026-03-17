@@ -177,45 +177,44 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 /* غلاف البلاير الرئيسي */
 .stealth-player{
   position:relative;width:100%;aspect-ratio:16/9;
-  background:#000;border-radius:12px;overflow:hidden;
-  box-shadow:0 4px 32px rgba(0,0,0,.5);
+  background:#000;border-radius:10px;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.6);
   user-select:none;-webkit-user-select:none;
 }
 .stealth-player:fullscreen,
 .stealth-player:-webkit-full-screen{border-radius:0;}
 
-/* حاوية الـ iframe — overflow:hidden يقطع واجهة يوتيوب */
+/* حاوية الـ iframe */
 .sp-iframe-box{
   position:absolute;inset:0;
   overflow:hidden;
   background:#000;
 }
-/* CSS fallback للـ DM iframe */
 .sp-iframe-box iframe{
   position:absolute;inset:0;
   width:100%;height:100%;
   border:none;pointer-events:none;
 }
 
-/* حواجز جانبية فقط */
+/* حواجز جانبية */
 .sp-blinder{position:absolute;z-index:15;background:#000;pointer-events:none;}
 .sp-blinder-top   {display:none;}
 .sp-blinder-bottom{display:none;}
 .sp-blinder-left  {top:0;left:0;bottom:0;width:2px;}
 .sp-blinder-right {top:0;right:0;bottom:0;width:2px;}
 
-/* غطاء التفاعل — فوق يوتيوب UI (z~40) بس تحت الـ cover */
+/* overlay */
 .sp-overlay{
   position:absolute;top:0;left:0;right:0;
-  bottom:60px;
+  bottom:52px;
   z-index:45;
   cursor:pointer;background:transparent;
 }
 
-/* غطاء البداية — يخفي زرار يوتيوب ويعرض زرارنا */
+/* ══ COVER ══ */
 .sp-cover{
   position:absolute;inset:0;z-index:50;
-  background:#111;
+  background:#000;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;
 }
@@ -223,132 +222,127 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .sp-cover-thumb{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
-  opacity:.75;transition:opacity .3s;
+  opacity:.95;
 }
-.sp-cover:hover .sp-cover-thumb{opacity:.9;}
 .sp-cover-btn{
   position:relative;z-index:2;
-  width:68px;height:68px;border-radius:50%;
-  background:var(--teal);
+  width:72px;height:72px;border-radius:50%;
+  background:var(--teal);border:3px solid rgba(255,255,255,.35);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 6px 32px rgba(0,0,0,.55);
-  transition:transform .2s,background .2s;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+  transition:transform .18s,background .18s;
 }
-.sp-cover:hover .sp-cover-btn{transform:scale(1.1);background:var(--teal2);}
-.sp-cover-btn svg{width:28px;height:28px;fill:#fff;margin-left:4px;}
+.sp-cover:hover .sp-cover-btn{transform:scale(1.08);}
+.sp-cover-btn svg{width:30px;height:30px;fill:#fff;margin-left:5px;}
 
-/* العلامة المائية المتحركة */
+/* العلامة المائية */
 .sp-watermark{
   position:absolute;inset:0;z-index:25;
   pointer-events:none;overflow:hidden;
 }
 .sp-watermark span{
-  position:absolute;font-family:var(--mono);font-size:1.3rem;font-weight:900;
-  color:rgba(255,255,255,.22);text-shadow:1px 1px 4px rgba(0,0,0,.7);
+  position:absolute;font-family:var(--mono);font-size:1.1rem;font-weight:700;
+  color:rgba(255,255,255,.18);text-shadow:1px 1px 3px rgba(0,0,0,.6);
   animation:wmFloat 30s linear infinite alternate;white-space:nowrap;
 }
 @keyframes wmFloat{
-  0%  {top:8%;left:8%;}
-  20% {top:65%;left:15%;}
-  40% {top:30%;left:72%;}
-  60% {top:75%;left:60%;}
-  80% {top:15%;left:50%;}
-  100%{top:55%;left:82%;}
+  0%{top:8%;left:8%;}20%{top:65%;left:15%;}
+  40%{top:30%;left:72%;}60%{top:75%;left:60%;}
+  80%{top:15%;left:50%;}100%{top:55%;left:82%;}
 }
 
-/* ══════════════════════════════════
-   CONTROLS — Dr.Tamer Style
-══════════════════════════════════ */
+/* ══ CONTROLS ══ */
 .sp-controls{
   position:absolute;bottom:0;left:0;right:0;z-index:40;
-  background:#1a1a2e;
+  background:rgba(0,0,0,.88);
   direction:ltr;
 }
 
-/* ── Timeline range ── */
-.sp-timeline-wrap{padding:0 12px;padding-top:6px;}
-.sp-timeline-inp{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:5px;border-radius:5px;outline:none;cursor:pointer;
-  background:linear-gradient(to right, var(--teal) 0%, var(--teal) 0%, rgba(255,255,255,.25) 0%);
-  transition:height .1s;
-}
-.sp-timeline-inp:hover{height:7px;}
-.sp-timeline-inp::-webkit-slider-thumb{
-  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
-  background:var(--teal);cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,.5);
-}
-.sp-timeline-inp::-moz-range-thumb{
-  width:14px;height:14px;border-radius:50%;border:none;
-  background:var(--teal);cursor:pointer;
-}
-
-/* ── Controls bar ── */
+/* شريط الأزرار */
 .sp-ctrl-bar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:6px 12px 8px;gap:4px;
+  padding:8px 14px 6px;gap:6px;
 }
-.sp-ctrl-left,.sp-ctrl-right{display:flex;align-items:center;gap:10px;}
+.sp-ctrl-left,.sp-ctrl-right{display:flex;align-items:center;gap:8px;}
+
+/* الأزرار */
 .sp-cb{
   background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  padding:4px;border-radius:6px;transition:color .15s,background .15s;
+  padding:3px;border-radius:5px;transition:color .12s,transform .12s;
   flex-shrink:0;
 }
-.sp-cb:hover{color:#fff;background:rgba(255,255,255,.12);}
+.sp-cb:hover{color:#fff;transform:scale(1.12);}
 .sp-cb svg{width:22px;height:22px;fill:currentColor;}
-.sp-cb.sm svg{width:18px;height:18px;}
+.sp-cb.sm svg{width:17px;height:17px;}
 
 /* الوقت */
 .sp-dur{
-  color:rgba(255,255,255,.8);font-family:var(--mono);
-  font-size:.78rem;white-space:nowrap;
+  color:rgba(255,255,255,.75);font-family:var(--mono);
+  font-size:.75rem;white-space:nowrap;
 }
 
 /* الصوت */
-.sp-vol-wrap{display:flex;align-items:center;gap:6px;}
+.sp-vol-wrap{display:flex;align-items:center;gap:5px;}
 .sp-vol-inp{
   -webkit-appearance:none;appearance:none;
-  width:70px;height:4px;border-radius:4px;outline:none;cursor:pointer;
-  background:linear-gradient(to right,rgba(255,255,255,.85) 0%,rgba(255,255,255,.85) 100%,rgba(255,255,255,.25) 100%);
+  width:60px;height:3px;border-radius:3px;outline:none;cursor:pointer;
+  background:linear-gradient(to right,rgba(255,255,255,.85) 100%,rgba(255,255,255,.25) 100%);
 }
 .sp-vol-inp::-webkit-slider-thumb{
-  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  -webkit-appearance:none;width:11px;height:11px;border-radius:50%;
   background:#fff;cursor:pointer;
 }
 .sp-vol-inp::-moz-range-thumb{
-  width:12px;height:12px;border-radius:50%;border:none;background:#fff;cursor:pointer;
+  width:11px;height:11px;border-radius:50%;border:none;background:#fff;cursor:pointer;
 }
 
 /* السرعة والجودة */
 .sp-pop-wrap{position:relative;}
 .sp-pop-btn{
-  background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;
-  font-family:var(--sans);font-size:.82rem;font-weight:700;
-  padding:4px 7px;border-radius:6px;display:flex;align-items:center;gap:4px;
-  transition:color .15s,background .15s;white-space:nowrap;
+  background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;
+  font-family:var(--sans);font-size:.78rem;font-weight:700;
+  padding:3px 6px;border-radius:5px;display:flex;align-items:center;gap:3px;
+  transition:color .12s,background .12s;white-space:nowrap;
 }
-.sp-pop-btn:hover{color:#fff;background:rgba(255,255,255,.12);}
-.sp-pop-btn svg{width:15px;height:15px;fill:currentColor;}
+.sp-pop-btn:hover{color:#fff;background:rgba(255,255,255,.1);}
+.sp-pop-btn svg{width:14px;height:14px;fill:currentColor;}
 .sp-pop-menu{
-  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
-  background:rgba(10,12,22,.97);border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;padding:5px;min-width:90px;display:none;
-  box-shadow:0 8px 32px rgba(0,0,0,.9);z-index:60;
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(8,10,20,.97);border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;padding:4px;min-width:88px;display:none;
+  box-shadow:0 6px 28px rgba(0,0,0,.95);z-index:60;
 }
-.sp-pop-menu.open{display:block;animation:riseIn .15s ease-out;}
+.sp-pop-menu.open{display:block;animation:riseIn .12s ease-out;}
 .sp-pop-item{
-  display:block;width:100%;padding:7px 12px;
-  font-family:var(--mono);font-size:.78rem;color:rgba(255,255,255,.8);
+  display:block;width:100%;padding:6px 12px;
+  font-family:var(--mono);font-size:.76rem;color:rgba(255,255,255,.78);
   background:none;border:none;cursor:pointer;text-align:center;
-  border-radius:7px;transition:all .12s;font-weight:700;
+  border-radius:6px;transition:all .1s;font-weight:700;
 }
 .sp-pop-item:hover{background:rgba(255,255,255,.1);color:#fff;}
 .sp-pop-item.active{background:var(--teal);color:#fff;}
 .sp-pop-label{
-  padding:4px 10px 6px;font-family:var(--mono);font-size:.62rem;
-  color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;
+  padding:3px 10px 5px;font-family:var(--mono);font-size:.6rem;
+  color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;
   display:block;
+}
+
+/* ── Progress bar — خط رفيع في الأسفل ── */
+.sp-progress-bar{
+  width:100%;height:3px;background:rgba(255,255,255,.15);
+  position:relative;cursor:pointer;
+}
+.sp-progress-bar:hover{height:5px;transition:height .1s;}
+.sp-progress-fill{
+  position:absolute;top:0;left:0;height:100%;
+  background:var(--teal);border-radius:0;pointer-events:none;
+  transition:width .15s linear;
+}
+.sp-progress-inp{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;cursor:pointer;margin:0;padding:0;
+  -webkit-appearance:none;appearance:none;
 }
 
 /* مؤشر Buffer */
@@ -359,19 +353,21 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 }
 .sp-buffer.show{opacity:1;}
 .sp-spinner{
-  width:44px;height:44px;border:3px solid rgba(255,255,255,.15);
+  width:40px;height:40px;border:3px solid rgba(255,255,255,.12);
   border-top-color:var(--teal);border-radius:50%;
   animation:spin .7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Fullscreen fixes */
+/* Fullscreen */
 .stealth-player:fullscreen .sp-controls,
 .stealth-player:-webkit-full-screen .sp-controls{z-index:9999;position:absolute;bottom:0;}
+
 @media(max-width:640px){
-  .sp-vol-inp{width:50px;}
+  .sp-vol-inp{width:44px;}
   .sp-cb svg{width:18px;height:18px;}
-  .sp-dur{font-size:.7rem;}
+  .sp-dur{font-size:.68rem;}
+  .sp-ctrl-bar{padding:6px 10px 5px;}
 }
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -793,10 +789,6 @@ function buildStealthPlayerHTML(embedInfo){
 
     <!-- شريط التحكم -->
     <div class="sp-controls" id="spControls">
-      <!-- Timeline range -->
-      <div class="sp-timeline-wrap">
-        <input type="range" class="sp-timeline-inp" id="spRange" min="0" max="1000" step="1" value="0">
-      </div>
       <!-- أزرار -->
       <div class="sp-ctrl-bar">
         <div class="sp-ctrl-left">
@@ -812,6 +804,10 @@ function buildStealthPlayerHTML(embedInfo){
           <button class="sp-cb sm" onclick="spSeek(10)">
             <svg viewBox="0 0 16 16"><path d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5z"/></svg>
           </button>
+          <!-- الوقت -->
+          <div class="sp-dur"><span id="spCur">00:00</span> / <span id="spDur">00:00</span></div>
+        </div>
+        <div class="sp-ctrl-right">
           <!-- صوت -->
           <div class="sp-vol-wrap">
             <button class="sp-cb sm" id="spVolBtn" onclick="spToggleMute()">
@@ -819,10 +815,6 @@ function buildStealthPlayerHTML(embedInfo){
             </button>
             <input type="range" class="sp-vol-inp" id="spVolRange" min="0" max="100" value="100" step="1">
           </div>
-          <!-- الوقت -->
-          <div class="sp-dur"><span id="spCur">0:00:00</span> / <span id="spDur">0:00:00</span></div>
-        </div>
-        <div class="sp-ctrl-right">
           <!-- السرعة -->
           <div class="sp-pop-wrap">
             <button class="sp-pop-btn" onclick="spToggleSpeedMenu(event)">
@@ -838,7 +830,7 @@ function buildStealthPlayerHTML(embedInfo){
           <div class="sp-pop-wrap">
             <button class="sp-pop-btn" id="spQualBtn" onclick="spToggleQualMenu(event)">
               <svg viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></svg>
-              <span id="spQualLbl">480p</span>
+              <span id="spQualLbl">HD</span>
             </button>
             <div class="sp-pop-menu" id="spQualMenu">
               <span class="sp-pop-label">الجودة</span>
@@ -851,9 +843,14 @@ function buildStealthPlayerHTML(embedInfo){
           </div>
           <!-- ملء الشاشة -->
           <button class="sp-cb" onclick="spFullscreen()">
-            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
           </button>
         </div>
+      </div>
+      <!-- Progress bar — خط رفيع في الأسفل -->
+      <div class="sp-progress-bar" id="spProgressBar">
+        <div class="sp-progress-fill" id="spFill" style="width:0%"></div>
+        <input type="range" class="sp-progress-inp" id="spRange" min="0" max="1000" step="1" value="0">
       </div>
     </div>
   </div>`;
@@ -1187,14 +1184,12 @@ function spSyncPlayBtn(){
 
 /* ─── Update UI bar ─── */
 function spUpdateUI(){
-  const pct=SP.dur?(SP.cur/SP.dur*1000):0;
+  const pct=SP.dur?(SP.cur/SP.dur*100):0;
+  const fill=document.getElementById('spFill');
   const range=document.getElementById('spRange');
   const cur=document.getElementById('spCur');
-  if(range){
-    range.value=pct;
-    // لون التقدم
-    range.style.background=`linear-gradient(to right,var(--teal) 0%,var(--teal) ${pct/10}%,rgba(255,255,255,.25) ${pct/10}%)`;
-  }
+  if(fill) fill.style.width=pct+'%';
+  if(range) range.value=(pct*10);
   if(cur) cur.textContent=fmtTime(SP.cur);
 }
 
@@ -1228,14 +1223,25 @@ function spApplyVolume(v){
 /* ─── ربط أحداث البلاير ─── */
 function bindStealthEvents(){
   const overlay=document.getElementById('spOverlay');
-  const wrap=document.getElementById('spWrap');
+  const progressBar=document.getElementById('spProgressBar');
   const range=document.getElementById('spRange');
   const volRng=document.getElementById('spVolRange');
 
   // Click على الـ overlay
   overlay.addEventListener('click',()=>{ spTogglePlay(); });
 
-  // Timeline range input
+  // Progress bar click/drag
+  if(progressBar){
+    const getBarFrac=(e)=>{
+      const r=progressBar.getBoundingClientRect();
+      const cx=e.touches?e.touches[0].clientX:e.clientX;
+      return Math.max(0,Math.min(1,(cx-r.left)/r.width));
+    };
+    progressBar.addEventListener('click',(e)=>{ spSeekToFraction(getBarFrac(e)); });
+    progressBar.addEventListener('touchstart',(e)=>{ spSeekToFraction(getBarFrac(e)); },{passive:true});
+  }
+
+  // Range input (hidden overlay on progress bar)
   if(range){
     range.addEventListener('input',()=>{
       const frac=range.value/1000;
@@ -1256,8 +1262,6 @@ function bindStealthEvents(){
       spApplyVolume(v);
     });
   }
-
-  // Mousemove → controls دايماً ظاهرة (مش بتتخفى)
 }
 
 /* ─── Format time ─── */
