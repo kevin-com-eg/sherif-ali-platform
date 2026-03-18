@@ -189,6 +189,20 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
+/* منع التفاعل مع أزرار يوتيوب الأصلية */
+.plyr__video-wrapper iframe,
+.plyr__video-embed iframe {
+    pointer-events: none !important; 
+}
+
+/* تكبير الفيديو بنسبة بسيطة جداً لإخفاء حواف يوتيوب وشعاره إن ظهر */
+.plyr__video-wrapper {
+    overflow: hidden !important;
+}
+.plyr__video-wrapper iframe {
+    transform: scale(1.02);
+}
+
 .modern-wm {
   position: absolute;
   inset: 0;
@@ -589,12 +603,24 @@ function initStealthPlayer(){
     `;
     vc.innerHTML = playerHTML;
     
-    // تهيئة Plyr لليوتيوب
+    // تهيئة Plyr لليوتيوب مع إخفاء الواجهة الأصلية
     plyrInstance = new Plyr('#plyr-player', {
-      controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
-      settings: ['captions', 'quality', 'speed'],
+      controls: [
+        'play-large', 'play', 'progress', 'current-time', 
+        'duration', 'mute', 'volume', 'settings', 'pip', 'fullscreen'
+      ], 
+      settings: ['quality', 'speed'], 
       speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
-      youtube: { noCookie: false, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
+      youtube: { 
+        noCookie: true, 
+        rel: 0, 
+        showinfo: 0, 
+        iv_load_policy: 3, 
+        modestbranding: 1,
+        disablekb: 1, // تعطيل اختصارات الكيبورد ليوتيوب
+        fs: 0, // تعطيل ملء الشاشة الخاص بيوتيوب
+        controls: 0 // إخفاء واجهة يوتيوب الأصلية تماماً
+      }
     });
 
   } else if (type === 'dailymotion') {
