@@ -127,7 +127,7 @@ textarea.finp{resize:vertical;min-height:90px;line-height:1.6;}
 /* ── TABLE ── */
 .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
 table{width:100%;border-collapse:collapse;text-align:right;}
-thead{background:var(--bg);position:sticky;top:0;}
+thead{background:var(--bg);position:sticky;top:0;z-index:10;}
 thead th{padding:12px 16px;font-size:.65rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;font-family:var(--mono);border-bottom:1px solid var(--border);white-space:nowrap;}
 tbody tr{border-bottom:1px solid rgba(0,0,0,.04);transition:background .15s;}
 tbody tr:hover{background:var(--teal3);}
@@ -196,6 +196,59 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 .img-uploading{display:flex;align-items:center;gap:8px;padding:10px;font-size:.78rem;color:var(--text2);}
 .img-uploading .mini-spin{width:16px;height:16px;border:2px solid var(--teal4);border-top-color:var(--teal);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0;}
 
+/* ── STUDENT PROFILE MODAL ── */
+.sp-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none; transition: all 0.3s;
+}
+.sp-overlay.show { opacity: 1; pointer-events: auto; }
+.sp-card {
+    background: var(--white); width: 100%; max-width: 650px;
+    border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    display: flex; flex-direction: column; max-height: 90vh;
+    transform: translateY(20px); transition: transform 0.3s;
+}
+.sp-overlay.show .sp-card { transform: translateY(0); }
+.sp-head {
+    padding: 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--teal3); border-radius: 20px 20px 0 0;
+}
+.sp-student-info { display: flex; align-items: center; gap: 14px; }
+.sp-avatar {
+    width: 50px; height: 50px; border-radius: 14px; background: var(--teal);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 900;
+}
+.sp-name { font-size: 1.2rem; font-weight: 900; color: var(--teal2); margin-bottom: 2px; }
+.sp-email { font-size: 0.8rem; font-family: var(--mono); color: var(--teal); }
+.sp-close {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--white);
+    border: 1px solid var(--teal4); color: var(--red); display: flex;
+    align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
+}
+.sp-close:hover { background: #fee2e2; border-color: #fecaca; }
+.sp-body { padding: 24px; overflow-y: auto; flex: 1; }
+.sp-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.sp-stat-box {
+    background: var(--bg); border: 1px solid var(--border2);
+    border-radius: 12px; padding: 16px; text-align: center;
+}
+.sp-stat-num { font-size: 1.8rem; font-weight: 900; color: var(--teal); font-family: var(--mono); line-height: 1; }
+.sp-stat-lbl { font-size: 0.75rem; color: var(--text2); font-weight: 700; margin-top: 6px; }
+.sp-section-title { font-size: 0.9rem; font-weight: 900; color: var(--text); margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+.sp-section-title::before { content: ''; width: 4px; height: 16px; background: var(--gold); border-radius: 2px; }
+.sp-list { display: flex; flex-direction: column; gap: 8px; }
+.sp-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--white); border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
+}
+.sp-item-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+.sp-item-score { font-family: var(--mono); font-size: 0.8rem; font-weight: 900; color: var(--teal); background: var(--teal3); padding: 4px 10px; border-radius: 6px; }
+.sp-item-date { font-family: var(--mono); font-size: 0.7rem; color: var(--text3); }
+
 /* ── MOBILE ── */
 .mob-toggle{display:none;position:fixed;bottom:16px;right:16px;z-index:200;width:48px;height:48px;background:var(--teal);border-radius:50%;border:none;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(13,122,95,.4);align-items:center;justify-content:center;}
 .sb-backdrop{display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);}
@@ -210,6 +263,7 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
   .topbar{padding:0 16px;}
   .stats-row{grid-template-columns:1fr 1fr;}
   .fg2,.fg3{grid-template-columns:1fr;}
+  .sp-stats { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -457,6 +511,38 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
   </div>
 </div>
 
+<div id="studentProfileModal" class="sp-overlay">
+  <div class="sp-card">
+    <div class="sp-head">
+      <div class="sp-student-info">
+        <div class="sp-avatar">👤</div>
+        <div>
+          <div class="sp-name" id="spName">اسم الطالب</div>
+          <div class="sp-email" id="spEmail">email@student.com</div>
+        </div>
+      </div>
+      <button class="sp-close" onclick="closeStudentProfile()">✖</button>
+    </div>
+    <div class="sp-body">
+      <div class="sp-stats">
+        <div class="sp-stat-box">
+          <div class="sp-stat-num" id="spLessonsCount">0</div>
+          <div class="sp-stat-lbl">حصص اشتراها 🎫</div>
+        </div>
+        <div class="sp-stat-box">
+          <div class="sp-stat-num" id="spExamsCount">0</div>
+          <div class="sp-stat-lbl">امتحانات أداها 📝</div>
+        </div>
+        <div class="sp-stat-box">
+          <div class="sp-stat-num" id="spHwsCount">0</div>
+          <div class="sp-stat-lbl">واجبات سلمها 📋</div>
+        </div>
+      </div>
+      <div id="spDetailsArea"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
@@ -565,6 +651,7 @@ window.switchResTab = (tab) => {
     renderResultsTable();
 };
 
+/* ── دالة إظهار جدول النتائج (معدلة للضغط) ── */
 function renderResultsTable() {
     const tbody=document.getElementById("resultsTable");
     const data = currentResTab === 'exam' ? examResultsData : hwResultsData;
@@ -575,7 +662,19 @@ function renderResultsTable() {
     let rows='';
     data.forEach((r)=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
-      rows+=`<tr class="student-row"><td class="td-name">${r.sName}</td><td class="td-email">${r.email||'—'}</td><td class="td-lesson">${r.lessonName||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date" dir="ltr">${dt}</td></tr>`;
+      // صف الطالب قابل للضغط لفتح البروفايل
+      rows+=`<tr class="student-row" style="cursor:pointer;" onclick="openStudentProfile('${r.email}', '${r.sName}')" title="اضغط لرؤية تفاصيل الطالب">
+        <td class="td-name">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;background:var(--teal3);color:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">👤</div>
+            ${r.sName}
+          </div>
+        </td>
+        <td class="td-email">${r.email||'—'}</td>
+        <td class="td-lesson">${r.lessonName||'—'}</td>
+        <td><span class="td-score">${r.score}/${r.total}</span></td>
+        <td class="td-date" dir="ltr">${dt}</td>
+      </tr>`;
     });
     tbody.innerHTML=rows;
     searchTable(); 
@@ -585,6 +684,92 @@ window.searchTable=()=>{
   const v=document.getElementById("searchInput").value.toLowerCase();
   document.querySelectorAll(".student-row").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
 };
+
+/* ── دوال نافذة الطالب (Student Profile) ── */
+async function openStudentProfile(email, name) {
+    document.getElementById('spName').textContent = name;
+    document.getElementById('spEmail').textContent = email;
+    document.getElementById('studentProfileModal').classList.add('show');
+    
+    document.getElementById('spLessonsCount').textContent = "...";
+    document.getElementById('spExamsCount').textContent = "...";
+    document.getElementById('spHwsCount').textContent = "...";
+    const detailsArea = document.getElementById('spDetailsArea');
+    detailsArea.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text3);">جاري جلب بيانات الطالب... ⏳</div>`;
+
+    try {
+        const studentExams = examResultsData.filter(r => r.email === email);
+        const studentHws = hwResultsData.filter(r => r.email === email);
+
+        let purchasedLessons = [];
+        const { data: codes } = await supabaseClient
+            .from('codes')
+            .select('lessonid, expiryat')
+            .eq('usedby', email)
+            .eq('used', true);
+
+        if (codes) {
+            purchasedLessons = codes.map(c => ({
+                name: allLessonsData[c.lessonid]?.name || 'حصة محذوفة',
+                expiry: new Date(c.expiryat)
+            }));
+        }
+
+        document.getElementById('spLessonsCount').textContent = purchasedLessons.length;
+        document.getElementById('spExamsCount').textContent = studentExams.length;
+        document.getElementById('spHwsCount').textContent = studentHws.length;
+
+        let html = "";
+
+        if(purchasedLessons.length > 0) {
+            html += `<div class="sp-section-title">🎫 الحصص المشترك بها</div><div class="sp-list">`;
+            purchasedLessons.forEach(l => {
+                const isExpired = l.expiry < new Date() ? '<span style="color:var(--red);font-size:0.7rem;">(منتهية)</span>' : '<span style="color:var(--teal);font-size:0.7rem;">(سارية)</span>';
+                html += `<div class="sp-item">
+                    <span class="sp-item-name">${l.name} ${isExpired}</span>
+                    <span class="sp-item-date">تنتهي: ${l.expiry.toLocaleDateString('ar-EG')}</span>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+
+        if(studentExams.length > 0) {
+            html += `<div class="sp-section-title">📝 الامتحانات التي أداها</div><div class="sp-list">`;
+            studentExams.forEach(ex => {
+                html += `<div class="sp-item">
+                    <span class="sp-item-name">${ex.lessonName}</span>
+                    <span class="sp-item-score">${ex.score}/${ex.total}</span>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+
+        if(studentHws.length > 0) {
+            html += `<div class="sp-section-title">📋 الواجبات المسلمة</div><div class="sp-list">`;
+            studentHws.forEach(hw => {
+                html += `<div class="sp-item">
+                    <span class="sp-item-name">${hw.lessonName}</span>
+                    <span class="sp-item-score">${hw.score}/${hw.total}</span>
+                </div>`;
+            });
+            html += `</div>`;
+        }
+
+        if(html === "") {
+            html = `<div style="text-align:center; padding:30px; color:var(--text3); background:var(--bg); border-radius:12px;">هذا الطالب لم يشترك في حصص ولم يحل أي واجبات أو امتحانات بعد.</div>`;
+        }
+
+        detailsArea.innerHTML = html;
+
+    } catch (error) {
+        console.error("Error fetching student profile:", error);
+        detailsArea.innerHTML = `<div style="text-align:center; padding:30px; color:var(--red);">حدث خطأ أثناء جلب البيانات.</div>`;
+    }
+}
+
+function closeStudentProfile() {
+    document.getElementById('studentProfileModal').classList.remove('show');
+}
 
 /* ── LESSONS ── */
 async function loadLessons(){
