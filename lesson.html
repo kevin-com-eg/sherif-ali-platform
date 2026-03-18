@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MathPro | منطقة الحصة</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
@@ -15,6 +20,9 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --border:#e2e8ed;--border2:#d0dae2;--text:#1a2332;--text2:#5a6a7a;--text3:#8a9aaa;
   --red:#dc2626;--gold:#d97706;--sans:'Tajawal',sans-serif;--mono:'DM Mono',monospace;
   --shadow:0 2px 12px rgba(0,0,0,.07);--shadow2:0 8px 32px rgba(0,0,0,.10);--nav-h:62px;
+  /* تخصيص لون مشغل Plyr ليتماشى مع هوية الموقع */
+  --plyr-color-main: var(--teal); 
+  --plyr-video-control-background-hover: var(--teal2);
 }
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter 0.2s,opacity 0.2s;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--teal4);border-radius:2px;}
@@ -164,323 +172,48 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-gate-dismiss{display:block;margin-top:14px;font-size:.78rem;color:var(--text3);cursor:pointer;transition:color .2s;}
 .hw-gate-dismiss:hover{color:var(--text2);}
 
-/* ════════════════════════════════════════════
-   NOVA PLAYER — Modern Cinema UI
-════════════════════════════════════════════ */
 
-/* ── Section label ── */
+/* ════════════════════════════════════════════
+   MODERN VIDEO PLAYER (Plyr)
+════════════════════════════════════════════ */
 .vid-section-title{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.65rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;}
 .vid-section-title::before{content:'';width:3px;height:14px;border-radius:2px;background:linear-gradient(#0d7a5f,#06d48a);}
 
-/* ── Shell ── */
-.nova-player{
-  position:relative;width:100%;aspect-ratio:16/9;
-  background:#080808;
-  border-radius:16px;overflow:hidden;
-  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 100px -20px rgba(0,0,0,.8),0 20px 40px -10px rgba(0,0,0,.5);
-  user-select:none;-webkit-user-select:none;
-}
-.nova-player:fullscreen,.nova-player:-webkit-full-screen{border-radius:0;}
-
-/* ── Video iframe ── */
-.nova-iframe-box{position:absolute;inset:0;overflow:hidden;}
-.nova-iframe-box iframe{position:absolute;inset:0;width:100%;height:100%;border:none;pointer-events:none;}
-.nova-blinder{position:absolute;z-index:20;background:#080808;pointer-events:none;}
-.nova-blinder-l{top:0;left:0;bottom:0;width:2px;}
-.nova-blinder-r{top:0;right:0;bottom:0;width:2px;}
-
-/* ── Click overlay ── */
-.nova-overlay{position:absolute;inset:0;z-index:30;}
-
-/* ── Thumbnail cover ── */
-.nova-cover{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;}
-.nova-cover.gone{opacity:0;pointer-events:none;}
-.nova-cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.75);}
-.nova-cover-shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,.1) 40%,transparent 60%);}
-
-/* big play btn on cover */
-.nova-play-ring{
-  position:relative;z-index:2;
-  width:72px;height:72px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.15);
-  border:2px solid rgba(255,255,255,.5);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  cursor:pointer;
-  transition:background .2s,border-color .2s,transform .2s,box-shadow .2s;
-}
-.nova-cover:hover .nova-play-ring{
-  background:rgba(255,255,255,.25);
-  border-color:#fff;
-  transform:scale(1.08);
-  box-shadow:0 0 0 12px rgba(255,255,255,.08),0 16px 48px rgba(0,0,0,.5);
-}
-.nova-play-ring svg{width:28px;height:28px;fill:#fff;margin-left:4px;}
-
-/* ── Spinner ── */
-.nova-spin{position:absolute;inset:0;z-index:38;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .2s;}
-.nova-spin.on{opacity:1;}
-.nova-spin-ring{
-  width:36px;height:36px;border-radius:50%;
-  border:2.5px solid rgba(255,255,255,.1);
-  border-top-color:rgba(255,255,255,.8);
-  animation:novaRot .65s linear infinite;
-}
-@keyframes novaRot{to{transform:rotate(360deg)}}
-
-/* ── Watermark ── */
-.nova-wm{position:absolute;inset:0;z-index:22;pointer-events:none;overflow:hidden;}
-.nova-wm span{position:absolute;font-family:var(--mono);font-size:.75rem;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,.08);animation:novaWmDrift 35s linear infinite alternate;white-space:nowrap;}
-@keyframes novaWmDrift{0%{top:6%;left:4%;}33%{top:58%;left:12%;}66%{top:20%;left:68%;}100%{top:72%;left:58%;}}
-
-/* ── Click ripple ── */
-.nova-ripple{position:absolute;border-radius:50%;pointer-events:none;z-index:31;width:40px;height:40px;background:rgba(255,255,255,.2);animation:novaRippleAnim .6s ease-out forwards;}
-@keyframes novaRippleAnim{to{transform:scale(6);opacity:0;}}
-
-/* ── Skip toast ── */
-.nova-skip-toast{position:absolute;top:50%;transform:translateY(-50%);z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0;transition:opacity .08s;}
-.nova-skip-toast.show{opacity:1;}
-.nova-skip-toast.left{left:12%;}
-.nova-skip-toast.right{right:12%;}
-.nova-skip-toast svg{width:32px;height:32px;fill:#fff;}
-.nova-skip-toast span{font-family:var(--mono);font-size:.55rem;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.5px;}
-
-/* ════════════════════════════════════════
-   CONTROLS — Floating bottom bar
-   KEY: overflow:visible so popup menus escape
-════════════════════════════════════════ */
-.nova-controls{
-  position:absolute;
-  bottom:0;left:0;right:0;
-  z-index:60;
-  overflow:visible;
-  /* two gradients: tall ambient fade + solid bottom strip */
-  background:linear-gradient(
-    to top,
-    rgba(0,0,0,.88) 0%,
-    rgba(0,0,0,.6)  38%,
-    rgba(0,0,0,.0)  100%
-  );
-  padding-top:80px;
-  transition:opacity .3s ease,transform .3s ease;
-}
-.nova-controls.hidden{opacity:0;pointer-events:none;transform:translateY(6px);}
-
-/* ── Progress / seekbar ── */
-.nova-progress{
-  position:relative;
-  height:24px;
-  display:flex;align-items:center;
-  padding:0 20px;
-  cursor:pointer;
-  margin-bottom:6px;
-}
-.nova-progress-track{
-  position:relative;width:100%;
-  height:3px;border-radius:99px;
-  background:rgba(255,255,255,.2);
-  transition:height .15s ease,transform .15s ease;
-}
-.nova-progress:hover .nova-progress-track{height:5px;}
-.nova-progress-buf{position:absolute;top:0;left:0;height:100%;border-radius:99px;background:rgba(255,255,255,.25);pointer-events:none;}
-.nova-progress-fill{
-  position:absolute;top:0;left:0;height:100%;
-  border-radius:99px;pointer-events:none;
-  background:#fff;
-  transition:width .1s linear;
-}
-/* glowing end dot */
-.nova-progress-dot{
-  position:absolute;top:50%;right:-1px;
-  width:12px;height:12px;border-radius:50%;
-  background:#fff;
-  transform:translateY(-50%) scale(0);
-  pointer-events:none;
-  transition:transform .15s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 0 8px 2px rgba(255,255,255,.5);
-}
-.nova-progress:hover .nova-progress-dot{transform:translateY(-50%) scale(1);}
-/* hover time tooltip */
-.nova-progress-tip{
-  position:absolute;
-  bottom:calc(100% + 10px);
-  background:rgba(10,10,10,.95);color:#fff;
-  font-family:var(--mono);font-size:.67rem;font-weight:700;
-  padding:4px 9px;border-radius:6px;
-  transform:translateX(-50%);pointer-events:none;
-  opacity:0;transition:opacity .1s;white-space:nowrap;
-  box-shadow:0 4px 16px rgba(0,0,0,.5);
-  border:1px solid rgba(255,255,255,.08);
-}
-.nova-progress:hover .nova-progress-tip{opacity:1;}
-/* invisible drag input */
-.nova-progress-inp{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;-webkit-appearance:none;appearance:none;}
-
-/* ── Bottom controls row ── */
-.nova-bar{
-  display:flex;align-items:center;
-  justify-content:space-between;
-  padding:0 14px 14px;
-  gap:4px;
-}
-.nova-bar-l,.nova-bar-r{display:flex;align-items:center;gap:2px;}
-
-/* ── Icon buttons ── */
-.nova-btn{
-  position:relative;
-  background:none;border:none;
-  color:rgba(255,255,255,.75);
-  cursor:pointer;
-  width:36px;height:36px;
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  transition:color .15s,background .15s,transform .12s;
-  flex-shrink:0;
-}
-.nova-btn:hover{color:#fff;background:rgba(255,255,255,.12);transform:scale(1.1);}
-.nova-btn:active{transform:scale(.9);}
-.nova-btn svg{display:block;width:20px;height:20px;fill:currentColor;pointer-events:none;}
-.nova-btn.lg svg{width:24px;height:24px;}
-.nova-btn.sm svg{width:16px;height:16px;}
-
-/* play button — accent */
-#novaPlay{
-  width:40px;height:40px;border-radius:50%;
-  background:rgba(255,255,255,.15);
-  border:1.5px solid rgba(255,255,255,.3);
-}
-#novaPlay:hover{
-  background:rgba(255,255,255,.25);
-  border-color:rgba(255,255,255,.6);
-  transform:scale(1.1);
-  box-shadow:0 0 0 8px rgba(255,255,255,.06);
+.modern-player-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
-/* ── Volume control ── */
-.nova-vol-wrap{display:flex;align-items:center;gap:0;}
-.nova-vol-slide{
-  width:0;overflow:hidden;
-  transition:width .25s cubic-bezier(.4,0,.2,1);
-  display:flex;align-items:center;
-  padding-left:4px;
-}
-.nova-vol-wrap:hover .nova-vol-slide,
-.nova-vol-wrap:focus-within .nova-vol-slide{width:72px;}
-.nova-vol-inp{
-  -webkit-appearance:none;appearance:none;
-  width:68px;height:3px;border-radius:99px;
-  outline:none;cursor:pointer;
-  background:rgba(255,255,255,.25);
-  transition:height .12s;
-}
-.nova-vol-inp:hover{height:5px;}
-.nova-vol-inp::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:12px;height:12px;border-radius:50%;
-  background:#fff;cursor:pointer;
-  box-shadow:0 1px 4px rgba(0,0,0,.4);
-  transition:transform .12s;
-}
-.nova-vol-inp:hover::-webkit-slider-thumb{transform:scale(1.25);}
-.nova-vol-inp::-moz-range-thumb{width:12px;height:12px;border-radius:50%;border:none;background:#fff;cursor:pointer;}
-
-/* ── Time display ── */
-.nova-time{
-  font-family:var(--mono);font-size:.7rem;
-  color:rgba(255,255,255,.6);
-  padding:0 6px;white-space:nowrap;letter-spacing:.2px;
-}
-.nova-time b{color:#fff;font-weight:700;font-size:.72rem;}
-
-/* ── Pill divider ── */
-.nova-div{width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 4px;flex-shrink:0;}
-
-/* ════════════════════════════
-   POPUP MENUS
-   position:absolute upward, z-index high
-════════════════════════════ */
-.nova-pop-wrap{position:relative;}
-
-.nova-pop-btn{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(255,255,255,.09);
-  border:1px solid rgba(255,255,255,.14);
-  color:rgba(255,255,255,.8);cursor:pointer;
-  font-family:var(--mono);font-size:.68rem;font-weight:700;
-  padding:5px 9px;border-radius:8px;
-  transition:all .14s;white-space:nowrap;height:30px;
-}
-.nova-pop-btn:hover{
-  background:rgba(255,255,255,.16);
-  border-color:rgba(255,255,255,.28);
-  color:#fff;transform:scale(1.04);
-}
-.nova-pop-btn svg{width:11px;height:11px;fill:currentColor;flex-shrink:0;}
-
-.nova-pop-menu{
-  position:absolute;
-  bottom:calc(100% + 10px);left:50%;
-  transform:translateX(-50%);
-  min-width:100px;
-  background:rgba(12,13,20,.97);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;padding:5px;
-  display:none;z-index:500;
-  box-shadow:0 24px 64px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.04);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-}
-.nova-pop-menu.on{
-  display:block;
-  animation:novaMenuIn .18s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes novaMenuIn{
-  from{opacity:0;transform:translateX(-50%) translateY(8px) scale(.9);}
-  to{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
-}
-.nova-pop-sep{
-  display:block;padding:4px 10px 6px;
-  font-family:var(--mono);font-size:.52rem;font-weight:700;
-  color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:2.5px;
-  border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:3px;
-}
-.nova-pop-item{
-  display:block;width:100%;padding:7px 14px;
-  text-align:center;font-family:var(--mono);
-  font-size:.72rem;font-weight:700;
-  color:rgba(255,255,255,.55);
-  background:none;border:none;cursor:pointer;
-  border-radius:8px;transition:all .1s;
-}
-.nova-pop-item:hover{background:rgba(255,255,255,.08);color:#fff;}
-.nova-pop-item.on{
-  background:rgba(255,255,255,.12);
-  color:#fff;
-  position:relative;
-}
-.nova-pop-item.on::before{
-  content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);
-  width:4px;height:4px;border-radius:50%;background:#0d7a5f;
+.modern-wm {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  overflow: hidden;
 }
 
-/* ── Custom cursor ── */
-.nova-cursor{
-  position:absolute;z-index:80;pointer-events:none;
-  width:24px;height:24px;border-radius:50%;
-  border:1.5px solid rgba(255,255,255,.4);
-  transform:translate(-50%,-50%);
-  transition:width .18s,height .18s,opacity .18s,background .18s,border-color .18s;
-  opacity:0;
-}
-.nova-player.active .nova-cursor{opacity:1;}
-.nova-player.playing .nova-cursor{
-  width:6px;height:6px;
-  background:rgba(255,255,255,.9);
-  border-color:rgba(255,255,255,.9);
+.modern-wm span {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.15);
+  animation: modernWmDrift 25s linear infinite alternate;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-/* ── Fullscreen ── */
-.nova-player:fullscreen .nova-controls,
-.nova-player:-webkit-full-screen .nova-controls{z-index:9999;}
+@keyframes modernWmDrift {
+  0%   { top: 10%; left: 5%; }
+  33%  { top: 60%; left: 15%; }
+  66%  { top: 20%; left: 70%; }
+  100% { top: 70%; left: 60%; }
+}
 
 /* ── Responsive ── */
 @media(max-width:640px){
@@ -495,14 +228,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .access-pill .lbl{display:none;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
-  .nova-player{border-radius:10px;}
-  .nova-bar{padding:0 10px 10px;}
-  .nova-btn{width:32px;height:32px;}
-  .nova-btn svg{width:17px;height:17px;}
-  #novaPlay{width:36px;height:36px;}
-  .nova-time{font-size:.62rem;}
-  .nova-pop-btn{font-size:.62rem;padding:4px 7px;height:26px;}
-  .nova-div{display:none;}
+  .modern-player-wrapper {border-radius: 10px;}
 }
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -629,6 +355,8 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   </main>
 </div>
 
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
 <script>
 /* ════════════════════════════════════
    SECURITY
@@ -663,6 +391,7 @@ const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
 let examTimer,myStudentId="000000",vidPlayerInited=false;
 let hwData=null,hwUserAns={},hwCurIdx=0,hwDone=false,hwQuestions=[],hwStarted=false;
+let plyrInstance = null; // مرجع لمشغل Plyr
 
 /* ════════════════════════════════════
    LOADER HELPERS
@@ -686,6 +415,10 @@ window.switchTab=(tab)=>{
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
+    
+    // إيقاف الفيديو عند تغيير التبويب
+    if(tab !== 'video' && plyrInstance) plyrInstance.pause();
+
     hideLoader();
   },400);
 };
@@ -812,11 +545,9 @@ document.getElementById('verifyBtn').onclick=async()=>{
 };
 
 /* ════════════════════════════════════════════════════════
-   NOVA VIDEO PLAYER — Clean rewrite
-   Supports: YouTube (IFrame API) + Dailymotion (postMessage)
+   MODERN VIDEO PLAYER (Plyr.js)
 ════════════════════════════════════════════════════════ */
 
-/* ─── URL helpers ─── */
 function detectVideoType(url){
   if(!url)return null;
   if(/youtube\.com|youtu\.be/.test(url))return 'youtube';
@@ -832,175 +563,6 @@ function extractDailymotionId(url){
   return m?m[1]:null;
 }
 
-/* ─── Global player state ─── */
-const NP = {
-  type: null,          // 'youtube' | 'dailymotion'
-  ytPlayer: null,      // YT.Player instance
-  dmIframe: null,      // DM iframe element
-  ytReady: false,
-  playing: false,
-  dur: 0,
-  cur: 0,
-  vol: 100,
-  muted: false,
-  speed: 1,
-  hideTimer: null,
-  tickTimer: null,
-  dmTickTimer: null,
-};
-const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-const YT_QUALS = ['hd1080','hd720','large','medium','small','tiny'];
-const YT_QLABELS = {hd1080:'1080p',hd720:'720p',large:'480p',medium:'360p',small:'240p',tiny:'144p'};
-
-/* ─── Build player HTML ─── */
-function buildNovaPlayerHTML(type, embedSrc, videoId, thumbUrl){
-  const iframeHTML = type === 'youtube'
-    ? `<div id="ytApiContainer" style="position:absolute;inset:0;"></div>`
-    : `<iframe id="dmIframe"
-        src="${embedSrc}"
-        allow="autoplay;encrypted-media"
-        allowfullscreen
-        referrerpolicy="no-referrer"
-        style="position:absolute;inset:0;width:100%;height:100%;border:none;pointer-events:none;">
-       </iframe>`;
-
-  const speedItems = SPEEDS.map(s=>
-    `<button class="nova-pop-item${s===1?' on':''}" data-speed="${s}" onclick="novaSetSpeed(${s})">${s}×</button>`
-  ).join('');
-
-  const qualItems = ['hd1080','hd720','large','medium','small'].map(q=>
-    `<button class="nova-pop-item${q==='large'?' on':''}" data-qual="${q}" onclick="novaSetQuality('${q}')">${YT_QLABELS[q]||q}</button>`
-  ).join('');
-
-  return `
-<div class="nova-player" id="novaWrap">
-
-  <!-- Video layer -->
-  <div class="nova-iframe-box">${iframeHTML}</div>
-  <div class="nova-blinder nova-blinder-l"></div>
-  <div class="nova-blinder nova-blinder-r"></div>
-
-  <!-- Overlay (click = play/pause, dblclick = fullscreen) -->
-  <div class="nova-overlay" id="novaOverlay"></div>
-
-  <!-- Cover / Thumbnail -->
-  <div class="nova-cover" id="novaCover">
-    <div class="nova-cover-bg" id="novaCoverBg" style="${thumbUrl?`background-image:url('${thumbUrl}');`:'background:#111;'}"></div>
-    <div class="nova-cover-shade"></div>
-    <div class="nova-play-ring">
-      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-    </div>
-  </div>
-
-  <!-- Spinner -->
-  <div class="nova-spin on" id="novaSpinner"><div class="nova-spin-ring"></div></div>
-
-  <!-- Watermark -->
-  <div class="nova-wm"><span>ID: ${myStudentId}</span></div>
-
-  <!-- Skip toasts -->
-  <div class="nova-skip-toast left" id="novaSkipL">
-    <svg viewBox="0 0 24 24"><path d="M12.5 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7V3z"/><path d="M12.5 3V7l-3.5-3.5 3.5-3.5v3z"/><text x="12" y="17" text-anchor="middle" font-size="5.5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
-    <span>−10 ثانية</span>
-  </div>
-  <div class="nova-skip-toast right" id="novaSkipR">
-    <svg viewBox="0 0 24 24"><path d="M11.5 3a9 9 0 1 1 9 9h-2a7 7 0 1 0-7-7V3z"/><path d="M11.5 3V7l3.5-3.5-3.5-3.5v3z"/><text x="12" y="17" text-anchor="middle" font-size="5.5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
-    <span>+10 ثانية</span>
-  </div>
-
-  <!-- Custom cursor -->
-  <div class="nova-cursor" id="novaCursor"></div>
-
-  <!-- Controls -->
-  <div class="nova-controls hidden" id="novaControls">
-
-    <!-- Progress / Seekbar -->
-    <div class="nova-progress" id="novaSeek">
-      <div class="nova-progress-track">
-        <div class="nova-progress-buf" id="novaSeekBuf" style="width:0%"></div>
-        <div class="nova-progress-fill" id="novaSeekFill" style="width:0%"></div>
-        <div class="nova-progress-dot" id="novaSeekThumb"></div>
-      </div>
-      <div class="nova-progress-tip" id="novaSeekTip">0:00</div>
-      <input type="range" class="nova-progress-inp" id="novaSeekInp" min="0" max="1000" step="1" value="0">
-    </div>
-
-    <!-- Controls bar -->
-    <div class="nova-bar">
-      <!-- Left -->
-      <div class="nova-bar-l">
-        <!-- Play -->
-        <button class="nova-btn" id="novaPlay" onclick="novaTogglePlay()">
-          <svg id="novaPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-
-        <!-- −10 -->
-        <button class="nova-btn" onclick="novaSeekBy(-10)" title="−10 ثانية">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 3a9 9 0 1 0 8.88 10.5h-2.04A7 7 0 1 1 12.5 5V3z"/><path d="M12.5 1v5.5l-4-2.75 4-2.75z"/><text x="12" y="17" text-anchor="middle" font-size="5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
-        </button>
-        <!-- +10 -->
-        <button class="nova-btn" onclick="novaSeekBy(10)" title="+10 ثانية">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 3a9 9 0 1 1-8.88 10.5h2.04A7 7 0 1 0 11.5 5V3z"/><path d="M11.5 1v5.5l4-2.75-4-2.75z"/><text x="12" y="17" text-anchor="middle" font-size="5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
-        </button>
-
-        <!-- Volume -->
-        <div class="nova-vol-wrap">
-          <button class="nova-btn sm" onclick="novaToggleMute()">
-            <svg id="novaVolIcon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-          </button>
-          <div class="nova-vol-slide">
-            <input type="range" class="nova-vol-inp" id="novaVolInp" min="0" max="100" value="100">
-          </div>
-        </div>
-
-        <div class="nova-div"></div>
-        <!-- Time -->
-        <div class="nova-time">
-          <b id="novaCurTime">0:00</b>
-          <span style="opacity:.25;margin:0 4px">/</span>
-          <span id="novaDurTime">0:00</span>
-        </div>
-      </div>
-
-      <!-- Right -->
-      <div class="nova-bar-r">
-
-        <!-- Speed -->
-        <div class="nova-pop-wrap" id="novaSpeedWrap">
-          <button class="nova-pop-btn" onclick="novaToggleMenu('speed',event)">
-            <span id="novaSpeedLbl">1×</span>
-          </button>
-          <div class="nova-pop-menu" id="novaSpeedMenu">
-            <span class="nova-pop-sep">السرعة</span>
-            ${speedItems}
-          </div>
-        </div>
-
-        <!-- Quality (YouTube only) -->
-        <div class="nova-pop-wrap" id="novaQualWrap" style="${type==='youtube'?'':'display:none'}">
-          <button class="nova-pop-btn" onclick="novaToggleMenu('qual',event)">
-            <span id="novaQualLbl">HD</span>
-          </button>
-          <div class="nova-pop-menu" id="novaQualMenu">
-            <span class="nova-pop-sep">الجودة</span>
-            ${qualItems}
-          </div>
-        </div>
-
-        <!-- Fullscreen -->
-        <button class="nova-btn sm" onclick="novaFullscreen()">
-          <svg id="novaFsIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-          </svg>
-        </button>
-
-      </div>
-    </div>
-  </div>
-</div>`;
-}
-
-/* ─── Init player ─── */
 function initStealthPlayer(){
   if(vidPlayerInited || !lessonData?.video) return;
   vidPlayerInited = true;
@@ -1014,438 +576,41 @@ function initStealthPlayer(){
     return;
   }
 
-  NP.type = type;
-  let embedSrc = '', videoId = '', thumbUrl = '';
+  let playerHTML = '';
 
   if(type === 'youtube'){
-    videoId = extractYouTubeId(url) || '';
-    embedSrc = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&playsinline=1&origin=${encodeURIComponent(window.location.origin)}`;
-    thumbUrl = lessonData.image || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-  } else {
-    videoId = extractDailymotionId(url) || '';
-    embedSrc = `https://www.dailymotion.com/embed/video/${videoId}?api=postMessage&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0&related=0&endscreen-enable=0&queue-enable=0`;
-    thumbUrl = lessonData.image || '';
-  }
-
-  vc.innerHTML = `<div class="vid-section-title">فيديو الشرح</div>${buildNovaPlayerHTML(type, embedSrc, videoId, thumbUrl)}`;
-
-  if(type === 'youtube'){
-    // Fix YT iframe style as soon as it appears
-    const obs = new MutationObserver(()=>{
-      const f = document.getElementById('ytApiContainer')?.querySelector('iframe');
-      if(f){ Object.assign(f.style,{position:'absolute',inset:'0',width:'100%',height:'100%',border:'none',pointerEvents:'none'}); obs.disconnect(); }
+    const videoId = extractYouTubeId(url);
+    playerHTML = `
+      <div class="vid-section-title">فيديو الشرح</div>
+      <div class="modern-player-wrapper">
+        <div id="plyr-player" data-plyr-provider="youtube" data-plyr-embed-id="${videoId}"></div>
+        <div class="modern-wm"><span>ID: ${myStudentId}</span></div>
+      </div>
+    `;
+    vc.innerHTML = playerHTML;
+    
+    // تهيئة Plyr لليوتيوب
+    plyrInstance = new Plyr('#plyr-player', {
+      controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+      settings: ['captions', 'quality', 'speed'],
+      speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
+      youtube: { noCookie: false, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
     });
-    obs.observe(document.getElementById('ytApiContainer'), {childList:true,subtree:true});
-    loadYouTubeAPI();
-  } else {
-    NP.dmIframe = document.getElementById('dmIframe');
-    window.addEventListener('message', novaDMHandler);
-    NP.dmIframe.addEventListener('load', ()=> setTimeout(()=>novaHideSpinner(), 2500));
-    // DM tick for time updates (fallback)
-    NP.dmTickTimer = setInterval(()=>{ if(NP.playing) NP.cur += 0.5; novaUpdateSeek(); }, 500);
-  }
 
-  novaBindEvents();
-}
-
-/* ════════════════
-   YOUTUBE API
-════════════════ */
-let _ytApiLoading = false;
-function loadYouTubeAPI(){
-  if(window.YT?.Player){ novaInitYT(); return; }
-  if(_ytApiLoading) return;
-  _ytApiLoading = true;
-  const s = document.createElement('script');
-  s.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(s);
-}
-window.onYouTubeIframeAPIReady = ()=> novaInitYT();
-
-function novaInitYT(){
-  const vId = extractYouTubeId(lessonData?.video || '');
-  if(!vId) return;
-  if(!document.getElementById('ytApiContainer')) return;
-
-  NP.ytPlayer = new YT.Player('ytApiContainer',{
-    videoId: vId,
-    playerVars:{ playsinline:1,controls:0,rel:0,modestbranding:1,disablekb:1,iv_load_policy:3,origin:window.location.origin },
-    events:{
-      onReady: (e)=>{
-        NP.ytReady = true;
-        NP.dur = e.target.getDuration() || 0;
-        document.getElementById('novaDurTime').textContent = fmtTime(NP.dur);
-        novaHideSpinner();
-        // Fix iframe style again
-        const f = document.getElementById('ytApiContainer')?.querySelector('iframe');
-        if(f) Object.assign(f.style,{position:'absolute',inset:'0',width:'100%',height:'100%',border:'none',pointerEvents:'none'});
-        // Start tick
-        clearInterval(NP.tickTimer);
-        NP.tickTimer = setInterval(novaYTTick, 350);
-      },
-      onStateChange: (e)=>{
-        const S = YT.PlayerState;
-        if(e.data === S.PLAYING){
-          NP.playing = true; novaSetPlaying(true); novaHideSpinner(); novaHideCover(); scheduleHide();
-        } else if(e.data === S.PAUSED){
-          NP.playing = false; novaSetPlaying(false); novaShowControls();
-        } else if(e.data === S.BUFFERING){
-          novaShowSpinner();
-        } else if(e.data === S.ENDED){
-          NP.playing = false; novaSetPlaying(false); novaShowControls();
-        } else {
-          NP.playing = false; novaSetPlaying(false); novaHideSpinner();
-        }
-      },
-      onError: ()=> novaHideSpinner()
-    }
-  });
-}
-
-function novaYTTick(){
-  if(!NP.ytPlayer?.getCurrentTime) return;
-  NP.cur = NP.ytPlayer.getCurrentTime() || 0;
-  NP.dur = NP.ytPlayer.getDuration() || NP.dur;
-  novaUpdateSeek();
-}
-
-/* ════════════════
-   DAILYMOTION
-════════════════ */
-function novaDMSend(cmd, params){
-  if(!NP.dmIframe?.contentWindow) return;
-  const msg = { event:'command', command:cmd };
-  if(params !== undefined) msg.parameters = Array.isArray(params) ? params : [params];
-  NP.dmIframe.contentWindow.postMessage(JSON.stringify(msg), '*');
-}
-
-function novaDMHandler(e){
-  const origin = String(e.origin || '');
-  if(!origin.includes('dailymotion') && origin !== 'null') return;
-  let d;
-  try{ d = typeof e.data==='string' ? JSON.parse(e.data) : e.data; }catch{ return; }
-  if(!d?.event) return;
-
-  switch(d.event){
-    case 'apiready':   novaHideSpinner(); break;
-    case 'play':
-    case 'playing':
-      NP.playing = true; novaSetPlaying(true); novaHideSpinner(); novaHideCover(); novaShowControls(); scheduleHide();
-      if(d.duration > 0){ NP.dur=d.duration; document.getElementById('novaDurTime').textContent=fmtTime(NP.dur); }
-      break;
-    case 'pause':
-      NP.playing = false; novaSetPlaying(false); novaShowControls();
-      break;
-    case 'end': case 'ended':
-      NP.playing = false; novaSetPlaying(false); novaShowControls();
-      break;
-    case 'timeupdate':
-      if(d.videoTime !== undefined) NP.cur = d.videoTime;
-      else if(d.time !== undefined) NP.cur = d.time;
-      if(d.duration > 0){ NP.dur=d.duration; document.getElementById('novaDurTime').textContent=fmtTime(NP.dur); }
-      novaUpdateSeek(); break;
-    case 'durationchange':
-      if(d.duration > 0){ NP.dur=d.duration; document.getElementById('novaDurTime').textContent=fmtTime(NP.dur); } break;
-    case 'seeked':
-      if(d.videoTime !== undefined) NP.cur = d.videoTime; novaUpdateSeek(); break;
-    case 'waiting': case 'stalled': novaShowSpinner(); break;
-    case 'canplay': case 'loadedmetadata':
-      novaHideSpinner();
-      if(d.duration > 0){ NP.dur=d.duration; document.getElementById('novaDurTime').textContent=fmtTime(NP.dur); }
-      break;
+  } else if (type === 'dailymotion') {
+     const videoId = extractDailymotionId(url);
+     // Fallback لـ Dailymotion نظراً لأن Plyr يدعم يوتيوب وفيميو كشكل أساسي
+     playerHTML = `
+      <div class="vid-section-title">فيديو الشرح</div>
+      <div class="modern-player-wrapper">
+        <iframe src="https://www.dailymotion.com/embed/video/${videoId}?autoplay=0&ui-logo=0&sharing-enable=0" allowfullscreen allow="autoplay" style="width:100%; height:100%; border:none;"></iframe>
+        <div class="modern-wm"><span>ID: ${myStudentId}</span></div>
+      </div>
+    `;
+    vc.innerHTML = playerHTML;
   }
 }
 
-/* ════════════════
-   CONTROLS
-════════════════ */
-window.novaTogglePlay = function(){
-  if(NP.type==='youtube' && NP.ytPlayer && NP.ytReady){
-    NP.playing ? NP.ytPlayer.pauseVideo() : NP.ytPlayer.playVideo();
-  } else if(NP.type==='dailymotion'){
-    NP.playing ? novaDMSend('pause') : novaDMSend('play');
-  }
-};
-
-window.novaSeekBy = function(sec){
-  const t = Math.max(0, Math.min(NP.dur, NP.cur + sec));
-  novaSeekTo(t);
-  novaShowSkipToast(sec < 0 ? 'L' : 'R', Math.abs(sec));
-};
-
-function novaSeekTo(t){
-  NP.cur = t; novaUpdateSeek();
-  if(NP.type==='youtube' && NP.ytPlayer) NP.ytPlayer.seekTo(t, true);
-  else if(NP.type==='dailymotion') novaDMSend('seek', [t]);
-}
-
-/* ── Speed ── */
-window.novaSetSpeed = function(s){
-  NP.speed = s;
-  document.getElementById('novaSpeedLbl').textContent = s + '×';
-  document.querySelectorAll('#novaSpeedMenu .nova-pop-item').forEach(el=>{
-    el.classList.toggle('on', parseFloat(el.dataset.speed) === s);
-  });
-  // Apply
-  if(NP.type==='youtube' && NP.ytPlayer && NP.ytReady){
-    NP.ytPlayer.setPlaybackRate(s);  // ✅ correct YT API call
-  } else if(NP.type==='dailymotion'){
-    // DM embed: set speed via URL re-embed (postMessage doesn't support speed)
-    // Best available: re-embed with playbackSpeed param isn't supported either.
-    // So we use a workaround: update the iframe src to add speed via reload at seek position
-    const cur = NP.cur;
-    const id = extractDailymotionId(lessonData.video);
-    if(id && NP.dmIframe){
-      NP.dmIframe.src = `https://www.dailymotion.com/embed/video/${id}?api=postMessage&controls=0&ui-start-screen-info=0&ui-logo=0&sharing-enable=0&related=0&endscreen-enable=0&queue-enable=0&start=${Math.floor(cur)}&autoplay=1`;
-      setTimeout(()=>{ novaDMSend('setPlaybackRate',[s]); }, 2000);
-    }
-  }
-  novaCloseMenus();
-};
-
-/* ── Quality (YouTube only) ── */
-window.novaSetQuality = function(q){
-  const lbl = YT_QLABELS[q] || q;
-  document.getElementById('novaQualLbl').textContent = lbl;
-  document.querySelectorAll('#novaQualMenu .nova-pop-item').forEach(el=>{
-    el.classList.toggle('on', el.dataset.qual === q);
-  });
-  if(NP.type==='youtube' && NP.ytPlayer && NP.ytReady){
-    NP.ytPlayer.setPlaybackQuality(q); // ✅ correct YT API call
-  }
-  novaCloseMenus();
-};
-
-/* ── Volume ── */
-window.novaToggleMute = function(){
-  const inp = document.getElementById('novaVolInp');
-  if(!inp) return;
-  if(NP.muted){
-    NP.muted = false;
-    inp.value = NP.vol;
-    novaApplyVol(NP.vol);
-  } else {
-    NP.muted = true;
-    NP.vol = parseInt(inp.value) || 100;
-    novaApplyVol(0);
-  }
-  novaUpdateVolIcon(NP.muted ? 0 : NP.vol);
-  novaUpdateVolSlider(NP.muted ? 0 : NP.vol);
-};
-
-function novaApplyVol(v){
-  if(NP.type==='youtube' && NP.ytPlayer && NP.ytReady){
-    v===0 ? NP.ytPlayer.mute() : (NP.ytPlayer.unMute(), NP.ytPlayer.setVolume(v));
-  }
-  // DM doesn't reliably support postMessage volume control
-}
-
-/* ── Fullscreen ── */
-window.novaFullscreen = function(){
-  const w = document.getElementById('novaWrap');
-  if(!w) return;
-  document.fullscreenElement ? document.exitFullscreen() : w.requestFullscreen?.().catch(()=>{});
-};
-
-document.addEventListener('fullscreenchange', ()=>{
-  const ic = document.getElementById('novaFsIcon');
-  if(!ic) return;
-  ic.innerHTML = document.fullscreenElement
-    ? `<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>`
-    : `<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>`;
-});
-
-/* ── Popup menus ── */
-function novaCloseMenus(){
-  document.getElementById('novaSpeedMenu')?.classList.remove('on');
-  document.getElementById('novaQualMenu')?.classList.remove('on');
-}
-
-window.novaToggleMenu = function(which, e){
-  if(e){ e.stopPropagation(); }
-  const menuId = which==='speed' ? 'novaSpeedMenu' : 'novaQualMenu';
-  const menu = document.getElementById(menuId);
-  if(!menu) return;
-  const wasOpen = menu.classList.contains('on');
-  novaCloseMenus();
-  if(!wasOpen){
-    if(which==='qual' && NP.type==='youtube') novaRefreshQualMenu();
-    menu.classList.add('on');
-  }
-};
-
-function novaRefreshQualMenu(){
-  if(!NP.ytPlayer?.getAvailableQualityLevels) return;
-  const avail = NP.ytPlayer.getAvailableQualityLevels() || [];
-  const cur = NP.ytPlayer.getPlaybackQuality() || 'large';
-  const menu = document.getElementById('novaQualMenu');
-  if(!menu || !avail.length) return;
-  const filtered = YT_QUALS.filter(q=>avail.includes(q));
-  menu.innerHTML = `<span class="nova-pop-sep">الجودة</span>` +
-    filtered.map(q=>`<button class="nova-pop-item${q===cur?' on':''}" data-qual="${q}" onclick="novaSetQuality('${q}')">${YT_QLABELS[q]||q}</button>`).join('');
-  document.getElementById('novaQualLbl').textContent = YT_QLABELS[cur] || 'HD';
-}
-
-// Close menus on outside click
-document.addEventListener('click', e=>{
-  if(!e.target.closest('.nova-pop-wrap')) novaCloseMenus();
-});
-
-/* ── Controls visibility ── */
-function novaShowControls(){
-  const c = document.getElementById('novaControls');
-  c?.classList.remove('hidden');
-}
-function novaHideControls(){
-  const c = document.getElementById('novaControls');
-  c?.classList.add('hidden');
-}
-function scheduleHide(){
-  clearTimeout(NP.hideTimer);
-  novaShowControls();
-  if(NP.playing){
-    NP.hideTimer = setTimeout(()=>{ if(NP.playing) novaHideControls(); }, 3000);
-  }
-}
-
-/* ── Cover / Spinner ── */
-function novaHideCover(){ document.getElementById('novaCover')?.classList.add('gone'); }
-function novaShowSpinner(){ document.getElementById('novaSpinner')?.classList.add('on'); }
-function novaHideSpinner(){ document.getElementById('novaSpinner')?.classList.remove('on'); }
-
-/* ── Play state sync ── */
-function novaSetPlaying(isPlaying){
-  const wrap = document.getElementById('novaWrap');
-  const icon = document.getElementById('novaPlayIcon');
-  if(!icon) return;
-  if(isPlaying){
-    icon.innerHTML = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
-    wrap?.classList.add('playing');
-  } else {
-    icon.innerHTML = `<path d="M8 5v14l11-7z"/>`;
-    wrap?.classList.remove('playing');
-  }
-}
-
-/* ── Seekbar update ── */
-function novaUpdateSeek(){
-  const pct = NP.dur ? (NP.cur / NP.dur * 100) : 0;
-  document.getElementById('novaSeekFill')?.style.setProperty('width', pct+'%');
-  document.getElementById('novaSeekThumb')?.style.setProperty('left', pct+'%');
-  const si = document.getElementById('novaSeekInp');
-  if(si) si.value = pct * 10;
-  const ct = document.getElementById('novaCurTime');
-  if(ct) ct.textContent = fmtTime(NP.cur);
-}
-
-/* ── Volume icon + slider ── */
-function novaUpdateVolIcon(v){
-  const ic = document.getElementById('novaVolIcon');
-  if(!ic) return;
-  if(v===0) ic.innerHTML=`<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`;
-  else if(v<50) ic.innerHTML=`<path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/>`;
-  else ic.innerHTML=`<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
-}
-function novaUpdateVolSlider(v){
-  const inp = document.getElementById('novaVolInp');
-  if(inp){ inp.value = v; inp.style.background = `linear-gradient(to right,rgba(255,255,255,.85) ${v}%,rgba(255,255,255,.22) ${v}%)`; }
-}
-
-/* ── Skip toast ── */
-function novaShowSkipToast(side, sec){
-  const el = document.getElementById(side==='L' ? 'novaSkipL' : 'novaSkipR');
-  if(!el) return;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(()=>el.classList.remove('show'), 700);
-}
-
-/* ── Bind all events ── */
-function novaBindEvents(){
-  const wrap = document.getElementById('novaWrap');
-  const overlay = document.getElementById('novaOverlay');
-  const cursor = document.getElementById('novaCursor');
-  const seekInp = document.getElementById('novaSeekInp');
-  const seekEl = document.getElementById('novaSeek');
-  const volInp = document.getElementById('novaVolInp');
-  if(!wrap) return;
-
-  /* click = play/pause with ripple */
-  overlay.addEventListener('click', e=>{
-    // Ripple
-    const r = wrap.getBoundingClientRect();
-    const rip = document.createElement('div');
-    rip.className = 'nova-ripple';
-    const sz = 50;
-    Object.assign(rip.style,{width:sz+'px',height:sz+'px',left:(e.clientX-r.left-sz/2)+'px',top:(e.clientY-r.top-sz/2)+'px'});
-    wrap.appendChild(rip);
-    setTimeout(()=>rip.remove(), 600);
-    novaTogglePlay();
-    scheduleHide();
-  });
-
-  /* double-click = fullscreen */
-  let _dc; overlay.addEventListener('click', ()=>{ clearTimeout(_dc); _dc=setTimeout(()=>{},300); });
-  overlay.addEventListener('dblclick', ()=>novaFullscreen());
-
-  /* mouse move */
-  wrap.addEventListener('mousemove', e=>{
-    wrap.classList.add('active');
-    if(cursor){ cursor.style.left=e.offsetX+'px'; cursor.style.top=e.offsetY+'px'; }
-    novaShowControls();
-    scheduleHide();
-  });
-  wrap.addEventListener('mouseleave', ()=>{ wrap.classList.remove('active'); if(NP.playing) novaHideControls(); });
-
-  /* touch */
-  wrap.addEventListener('touchstart', ()=>{ wrap.classList.add('active'); novaShowControls(); scheduleHide(); },{passive:true});
-
-  /* seekbar hover tooltip */
-  seekEl?.addEventListener('mousemove', e=>{
-    const r = seekEl.getBoundingClientRect();
-    const frac = Math.max(0, Math.min(1, (e.clientX-r.left)/r.width));
-    const tip = document.getElementById('novaSeekTip');
-    if(tip){ tip.textContent=fmtTime(frac*NP.dur); tip.style.left=(frac*100)+'%'; }
-  });
-
-  /* seekbar drag */
-  seekInp?.addEventListener('input', ()=>{
-    const frac = seekInp.value / 1000;
-    NP.cur = frac * NP.dur;
-    novaUpdateSeek();
-  });
-  seekInp?.addEventListener('change', ()=>novaSeekTo(seekInp.value/1000 * NP.dur));
-
-  /* volume */
-  volInp?.addEventListener('input', ()=>{
-    const v = parseInt(volInp.value);
-    NP.vol = v; NP.muted = (v===0);
-    novaUpdateVolIcon(v);
-    novaUpdateVolSlider(v);
-    novaApplyVol(v);
-  });
-  // init slider gradient
-  novaUpdateVolSlider(100);
-
-  /* keyboard */
-  document.addEventListener('keydown', e=>{
-    if(document.getElementById('tab-video')?.classList.contains('hidden')) return;
-    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-    switch(e.code){
-      case 'Space':    e.preventDefault(); novaTogglePlay(); scheduleHide(); break;
-      case 'ArrowLeft': e.preventDefault(); novaSeekBy(-10); break;
-      case 'ArrowRight':e.preventDefault(); novaSeekBy(10); break;
-      case 'KeyF':     novaFullscreen(); break;
-      case 'KeyM':     novaToggleMute(); break;
-    }
-  });
-}
-
-function fmtTime(s){
-  s = Math.floor(s||0);
-  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sc=s%60;
-  return h ? `${h}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}` : `${m}:${String(sc).padStart(2,'0')}`;
-}
 
 /* ════════════════════════════════════
    LESSON & QUIZ LOGIC
