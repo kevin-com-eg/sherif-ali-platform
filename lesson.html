@@ -165,143 +165,324 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
 .hw-gate-dismiss:hover{color:var(--text2);}
 
 /* ════════════════════════════════════════════
-   NOVA PLAYER — Built from scratch
+   NOVA PLAYER — Modern Cinema UI
 ════════════════════════════════════════════ */
-.vid-section-title{
-  font-size:.68rem;font-weight:900;color:var(--text2);text-transform:uppercase;
-  letter-spacing:2.5px;font-family:var(--mono);margin-bottom:14px;
-  display:flex;align-items:center;gap:8px;
-}
-.vid-section-title::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--teal),#06d48a);border-radius:2px;}
 
-/* Shell */
+/* ── Section label ── */
+.vid-section-title{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.65rem;font-weight:900;color:var(--text2);text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;}
+.vid-section-title::before{content:'';width:3px;height:14px;border-radius:2px;background:linear-gradient(#0d7a5f,#06d48a);}
+
+/* ── Shell ── */
 .nova-player{
   position:relative;width:100%;aspect-ratio:16/9;
-  background:#000;border-radius:18px;overflow:hidden;
-  box-shadow:0 0 0 1px rgba(255,255,255,.05),0 32px 80px rgba(0,0,0,.65);
-  user-select:none;-webkit-user-select:none;cursor:none;
+  background:#080808;
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 100px -20px rgba(0,0,0,.8),0 20px 40px -10px rgba(0,0,0,.5);
+  user-select:none;-webkit-user-select:none;
 }
 .nova-player:fullscreen,.nova-player:-webkit-full-screen{border-radius:0;}
-.nova-player::after{content:'';position:absolute;top:0;inset-x:0;height:1px;z-index:90;pointer-events:none;background:linear-gradient(90deg,transparent 10%,rgba(255,255,255,.12) 50%,transparent 90%);}
 
-/* iframe layer */
-.nova-iframe-box{position:absolute;inset:0;background:#000;overflow:hidden;}
+/* ── Video iframe ── */
+.nova-iframe-box{position:absolute;inset:0;overflow:hidden;}
 .nova-iframe-box iframe{position:absolute;inset:0;width:100%;height:100%;border:none;pointer-events:none;}
-
-/* Blinders */
-.nova-blinder{position:absolute;z-index:20;background:#000;pointer-events:none;}
+.nova-blinder{position:absolute;z-index:20;background:#080808;pointer-events:none;}
 .nova-blinder-l{top:0;left:0;bottom:0;width:2px;}
 .nova-blinder-r{top:0;right:0;bottom:0;width:2px;}
 
-/* Overlay */
-.nova-overlay{position:absolute;inset:0;z-index:30;cursor:pointer;}
+/* ── Click overlay ── */
+.nova-overlay{position:absolute;inset:0;z-index:30;}
 
-/* Cover */
-.nova-cover{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;transition:opacity .45s cubic-bezier(.4,0,.2,1);}
+/* ── Thumbnail cover ── */
+.nova-cover{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;}
 .nova-cover.gone{opacity:0;pointer-events:none;}
-.nova-cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 5s ease;}
-.nova-cover:hover .nova-cover-bg{transform:scale(1.03);}
-.nova-cover-shade{position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 50%,rgba(0,0,0,.15) 0%,rgba(0,0,0,.65) 100%),linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 45%);}
-.nova-play-ring{position:relative;z-index:2;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:all .22s cubic-bezier(.34,1.56,.64,1);}
-.nova-play-ring::before{content:'';position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(255,255,255,.15);animation:novaPulse 2.6s ease-in-out infinite;}
-@keyframes novaPulse{0%,100%{opacity:0;transform:scale(.88);}50%{opacity:1;transform:scale(1);}}
-.nova-cover:hover .nova-play-ring{background:rgba(13,122,95,.75);border-color:var(--teal);transform:scale(1.1);box-shadow:0 0 0 8px rgba(13,122,95,.18),0 12px 40px rgba(13,122,95,.4);}
-.nova-play-ring svg{width:26px;height:26px;fill:#fff;margin-left:3px;}
+.nova-cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.75);}
+.nova-cover-shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,.1) 40%,transparent 60%);}
 
-/* Spinner */
-.nova-spin{position:absolute;inset:0;z-index:35;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s;}
-.nova-spin.on{opacity:1;}
-.nova-spin-ring{width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,.08);border-top-color:#0d7a5f;animation:novaRotate .7s linear infinite;box-shadow:0 0 16px rgba(13,122,95,.3);}
-@keyframes novaRotate{to{transform:rotate(360deg)}}
-
-/* Watermark */
-.nova-wm{position:absolute;inset:0;z-index:22;pointer-events:none;overflow:hidden;}
-.nova-wm span{position:absolute;font-family:var(--mono);font-size:.8rem;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,.1);animation:novaWm 30s linear infinite alternate;white-space:nowrap;}
-@keyframes novaWm{0%{top:8%;left:5%;}33%{top:60%;left:15%;}66%{top:22%;left:70%;}100%{top:70%;left:60%;}}
-
-/* Ripple */
-.nova-ripple{position:absolute;border-radius:50%;pointer-events:none;z-index:31;background:rgba(255,255,255,.18);animation:novaRipple .55s ease-out forwards;}
-@keyframes novaRipple{to{transform:scale(5);opacity:0;}}
-
-/* Skip flash */
-.nova-skip-toast{position:absolute;top:50%;transform:translateY(-50%);z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0;transition:opacity .1s;}
-.nova-skip-toast.show{opacity:1;}
-.nova-skip-toast.left{left:16%;}
-.nova-skip-toast.right{right:16%;}
-.nova-skip-toast svg{width:34px;height:34px;fill:rgba(255,255,255,.9);}
-.nova-skip-toast span{font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,.9);font-weight:700;}
-
-/* CONTROLS BAR — overflow:visible so menus can escape */
-.nova-controls{
-  position:absolute;bottom:0;left:0;right:0;z-index:60;
-  overflow:visible;
-  background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.55) 55%,transparent 100%);
-  padding-top:60px;
-  transition:opacity .35s ease;
+/* big play btn on cover */
+.nova-play-ring{
+  position:relative;z-index:2;
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.15);
+  border:2px solid rgba(255,255,255,.5);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  cursor:pointer;
+  transition:background .2s,border-color .2s,transform .2s,box-shadow .2s;
 }
-.nova-controls.hidden{opacity:0;pointer-events:none;}
+.nova-cover:hover .nova-play-ring{
+  background:rgba(255,255,255,.25);
+  border-color:#fff;
+  transform:scale(1.08);
+  box-shadow:0 0 0 12px rgba(255,255,255,.08),0 16px 48px rgba(0,0,0,.5);
+}
+.nova-play-ring svg{width:28px;height:28px;fill:#fff;margin-left:4px;}
 
-/* Seekbar */
-.nova-seek{position:relative;height:18px;display:flex;align-items:center;padding:0 16px;cursor:pointer;margin-bottom:2px;}
-.nova-seek-track{position:relative;width:100%;height:3px;border-radius:99px;background:rgba(255,255,255,.15);transition:height .18s ease;}
-.nova-seek:hover .nova-seek-track{height:5px;}
-.nova-seek-buf{position:absolute;top:0;left:0;height:100%;border-radius:99px;background:rgba(255,255,255,.2);pointer-events:none;}
-.nova-seek-fill{position:absolute;top:0;left:0;height:100%;border-radius:99px;pointer-events:none;background:linear-gradient(90deg,#0d7a5f,#06d48a);transition:width .1s linear;}
-.nova-seek-thumb{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;background:#fff;pointer-events:none;transform:translate(-50%,-50%) scale(0);transition:transform .18s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 10px rgba(0,0,0,.5),0 0 0 2px rgba(6,212,138,.4);}
-.nova-seek:hover .nova-seek-thumb{transform:translate(-50%,-50%) scale(1);}
-.nova-seek-inp{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;-webkit-appearance:none;appearance:none;}
-.nova-seek-tip{position:absolute;bottom:calc(100% + 8px);background:rgba(5,8,18,.92);color:#fff;border:1px solid rgba(255,255,255,.08);font-family:var(--mono);font-size:.68rem;font-weight:700;padding:4px 9px;border-radius:7px;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap;}
-.nova-seek:hover .nova-seek-tip{opacity:1;}
+/* ── Spinner ── */
+.nova-spin{position:absolute;inset:0;z-index:38;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .2s;}
+.nova-spin.on{opacity:1;}
+.nova-spin-ring{
+  width:36px;height:36px;border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.1);
+  border-top-color:rgba(255,255,255,.8);
+  animation:novaRot .65s linear infinite;
+}
+@keyframes novaRot{to{transform:rotate(360deg)}}
 
-/* Bottom bar */
-.nova-bar{display:flex;align-items:center;justify-content:space-between;padding:4px 12px 10px;}
-.nova-bar-l,.nova-bar-r{display:flex;align-items:center;gap:3px;}
+/* ── Watermark ── */
+.nova-wm{position:absolute;inset:0;z-index:22;pointer-events:none;overflow:hidden;}
+.nova-wm span{position:absolute;font-family:var(--mono);font-size:.75rem;font-weight:500;letter-spacing:.5px;color:rgba(255,255,255,.08);animation:novaWmDrift 35s linear infinite alternate;white-space:nowrap;}
+@keyframes novaWmDrift{0%{top:6%;left:4%;}33%{top:58%;left:12%;}66%{top:20%;left:68%;}100%{top:72%;left:58%;}}
 
-/* Icon buttons */
-.nova-btn{background:none;border:none;color:rgba(255,255,255,.78);cursor:pointer;padding:6px;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:color .15s,background .15s,transform .15s;flex-shrink:0;}
-.nova-btn:hover{color:#fff;background:rgba(255,255,255,.1);transform:scale(1.12);}
-.nova-btn:active{transform:scale(.92);}
-.nova-btn svg{display:block;width:19px;height:19px;fill:currentColor;}
-.nova-btn.lg svg{width:22px;height:22px;}
-.nova-btn.sm svg{width:15px;height:15px;}
-#novaPlay{padding:7px 9px;border-radius:10px;background:rgba(13,122,95,.35);border:1px solid rgba(13,212,150,.25);}
-#novaPlay:hover{background:rgba(13,122,95,.7);border-color:rgba(13,212,150,.5);box-shadow:0 4px 18px rgba(13,122,95,.4);}
+/* ── Click ripple ── */
+.nova-ripple{position:absolute;border-radius:50%;pointer-events:none;z-index:31;width:40px;height:40px;background:rgba(255,255,255,.2);animation:novaRippleAnim .6s ease-out forwards;}
+@keyframes novaRippleAnim{to{transform:scale(6);opacity:0;}}
 
-/* Volume */
-.nova-vol-wrap{display:flex;align-items:center;gap:3px;}
-.nova-vol-slide{width:0;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;}
+/* ── Skip toast ── */
+.nova-skip-toast{position:absolute;top:50%;transform:translateY(-50%);z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0;transition:opacity .08s;}
+.nova-skip-toast.show{opacity:1;}
+.nova-skip-toast.left{left:12%;}
+.nova-skip-toast.right{right:12%;}
+.nova-skip-toast svg{width:32px;height:32px;fill:#fff;}
+.nova-skip-toast span{font-family:var(--mono);font-size:.55rem;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.5px;}
+
+/* ════════════════════════════════════════
+   CONTROLS — Floating bottom bar
+   KEY: overflow:visible so popup menus escape
+════════════════════════════════════════ */
+.nova-controls{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  z-index:60;
+  overflow:visible;
+  /* two gradients: tall ambient fade + solid bottom strip */
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.88) 0%,
+    rgba(0,0,0,.6)  38%,
+    rgba(0,0,0,.0)  100%
+  );
+  padding-top:80px;
+  transition:opacity .3s ease,transform .3s ease;
+}
+.nova-controls.hidden{opacity:0;pointer-events:none;transform:translateY(6px);}
+
+/* ── Progress / seekbar ── */
+.nova-progress{
+  position:relative;
+  height:24px;
+  display:flex;align-items:center;
+  padding:0 20px;
+  cursor:pointer;
+  margin-bottom:6px;
+}
+.nova-progress-track{
+  position:relative;width:100%;
+  height:3px;border-radius:99px;
+  background:rgba(255,255,255,.2);
+  transition:height .15s ease,transform .15s ease;
+}
+.nova-progress:hover .nova-progress-track{height:5px;}
+.nova-progress-buf{position:absolute;top:0;left:0;height:100%;border-radius:99px;background:rgba(255,255,255,.25);pointer-events:none;}
+.nova-progress-fill{
+  position:absolute;top:0;left:0;height:100%;
+  border-radius:99px;pointer-events:none;
+  background:#fff;
+  transition:width .1s linear;
+}
+/* glowing end dot */
+.nova-progress-dot{
+  position:absolute;top:50%;right:-1px;
+  width:12px;height:12px;border-radius:50%;
+  background:#fff;
+  transform:translateY(-50%) scale(0);
+  pointer-events:none;
+  transition:transform .15s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 8px 2px rgba(255,255,255,.5);
+}
+.nova-progress:hover .nova-progress-dot{transform:translateY(-50%) scale(1);}
+/* hover time tooltip */
+.nova-progress-tip{
+  position:absolute;
+  bottom:calc(100% + 10px);
+  background:rgba(10,10,10,.95);color:#fff;
+  font-family:var(--mono);font-size:.67rem;font-weight:700;
+  padding:4px 9px;border-radius:6px;
+  transform:translateX(-50%);pointer-events:none;
+  opacity:0;transition:opacity .1s;white-space:nowrap;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.08);
+}
+.nova-progress:hover .nova-progress-tip{opacity:1;}
+/* invisible drag input */
+.nova-progress-inp{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;-webkit-appearance:none;appearance:none;}
+
+/* ── Bottom controls row ── */
+.nova-bar{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 14px 14px;
+  gap:4px;
+}
+.nova-bar-l,.nova-bar-r{display:flex;align-items:center;gap:2px;}
+
+/* ── Icon buttons ── */
+.nova-btn{
+  position:relative;
+  background:none;border:none;
+  color:rgba(255,255,255,.75);
+  cursor:pointer;
+  width:36px;height:36px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .15s,background .15s,transform .12s;
+  flex-shrink:0;
+}
+.nova-btn:hover{color:#fff;background:rgba(255,255,255,.12);transform:scale(1.1);}
+.nova-btn:active{transform:scale(.9);}
+.nova-btn svg{display:block;width:20px;height:20px;fill:currentColor;pointer-events:none;}
+.nova-btn.lg svg{width:24px;height:24px;}
+.nova-btn.sm svg{width:16px;height:16px;}
+
+/* play button — accent */
+#novaPlay{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  border:1.5px solid rgba(255,255,255,.3);
+}
+#novaPlay:hover{
+  background:rgba(255,255,255,.25);
+  border-color:rgba(255,255,255,.6);
+  transform:scale(1.1);
+  box-shadow:0 0 0 8px rgba(255,255,255,.06);
+}
+
+/* ── Volume control ── */
+.nova-vol-wrap{display:flex;align-items:center;gap:0;}
+.nova-vol-slide{
+  width:0;overflow:hidden;
+  transition:width .25s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:center;
+  padding-left:4px;
+}
 .nova-vol-wrap:hover .nova-vol-slide,
-.nova-vol-wrap:focus-within .nova-vol-slide{width:70px;}
-.nova-vol-inp{-webkit-appearance:none;appearance:none;width:66px;height:3px;border-radius:99px;outline:none;cursor:pointer;background:rgba(255,255,255,.22);}
-.nova-vol-inp::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.4);}
+.nova-vol-wrap:focus-within .nova-vol-slide{width:72px;}
+.nova-vol-inp{
+  -webkit-appearance:none;appearance:none;
+  width:68px;height:3px;border-radius:99px;
+  outline:none;cursor:pointer;
+  background:rgba(255,255,255,.25);
+  transition:height .12s;
+}
+.nova-vol-inp:hover{height:5px;}
+.nova-vol-inp::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:12px;height:12px;border-radius:50%;
+  background:#fff;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);
+  transition:transform .12s;
+}
+.nova-vol-inp:hover::-webkit-slider-thumb{transform:scale(1.25);}
 .nova-vol-inp::-moz-range-thumb{width:12px;height:12px;border-radius:50%;border:none;background:#fff;cursor:pointer;}
 
-/* Time */
-.nova-time{font-family:var(--mono);font-size:.7rem;color:rgba(255,255,255,.65);padding:0 5px;white-space:nowrap;letter-spacing:.3px;}
-.nova-time b{color:#fff;font-weight:700;}
+/* ── Time display ── */
+.nova-time{
+  font-family:var(--mono);font-size:.7rem;
+  color:rgba(255,255,255,.6);
+  padding:0 6px;white-space:nowrap;letter-spacing:.2px;
+}
+.nova-time b{color:#fff;font-weight:700;font-size:.72rem;}
 
-/* Popup menus — KEY: z-index:200, position escapes overflow */
+/* ── Pill divider ── */
+.nova-div{width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 4px;flex-shrink:0;}
+
+/* ════════════════════════════
+   POPUP MENUS
+   position:absolute upward, z-index high
+════════════════════════════ */
 .nova-pop-wrap{position:relative;}
-.nova-pop-btn{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);cursor:pointer;font-family:var(--mono);font-size:.7rem;font-weight:700;padding:5px 8px;border-radius:8px;transition:all .15s;white-space:nowrap;}
-.nova-pop-btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);color:#fff;transform:scale(1.04);}
-.nova-pop-btn svg{width:11px;height:11px;fill:currentColor;}
-.nova-pop-menu{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);min-width:96px;background:rgba(6,8,18,.96);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:5px;display:none;z-index:200;box-shadow:0 20px 60px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.03);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
-.nova-pop-menu.on{display:block;animation:novaPop .16s cubic-bezier(.34,1.56,.64,1);}
-@keyframes novaPop{from{opacity:0;transform:translateX(-50%) translateY(6px) scale(.93);}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}}
-.nova-pop-item{display:block;width:100%;padding:7px 12px;text-align:center;font-family:var(--mono);font-size:.72rem;font-weight:700;color:rgba(255,255,255,.6);background:none;border:none;cursor:pointer;border-radius:8px;transition:background .1s,color .1s;}
+
+.nova-pop-btn{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.14);
+  color:rgba(255,255,255,.8);cursor:pointer;
+  font-family:var(--mono);font-size:.68rem;font-weight:700;
+  padding:5px 9px;border-radius:8px;
+  transition:all .14s;white-space:nowrap;height:30px;
+}
+.nova-pop-btn:hover{
+  background:rgba(255,255,255,.16);
+  border-color:rgba(255,255,255,.28);
+  color:#fff;transform:scale(1.04);
+}
+.nova-pop-btn svg{width:11px;height:11px;fill:currentColor;flex-shrink:0;}
+
+.nova-pop-menu{
+  position:absolute;
+  bottom:calc(100% + 10px);left:50%;
+  transform:translateX(-50%);
+  min-width:100px;
+  background:rgba(12,13,20,.97);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:5px;
+  display:none;z-index:500;
+  box-shadow:0 24px 64px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.04);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.nova-pop-menu.on{
+  display:block;
+  animation:novaMenuIn .18s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes novaMenuIn{
+  from{opacity:0;transform:translateX(-50%) translateY(8px) scale(.9);}
+  to{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+}
+.nova-pop-sep{
+  display:block;padding:4px 10px 6px;
+  font-family:var(--mono);font-size:.52rem;font-weight:700;
+  color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:2.5px;
+  border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:3px;
+}
+.nova-pop-item{
+  display:block;width:100%;padding:7px 14px;
+  text-align:center;font-family:var(--mono);
+  font-size:.72rem;font-weight:700;
+  color:rgba(255,255,255,.55);
+  background:none;border:none;cursor:pointer;
+  border-radius:8px;transition:all .1s;
+}
 .nova-pop-item:hover{background:rgba(255,255,255,.08);color:#fff;}
-.nova-pop-item.on{background:linear-gradient(135deg,rgba(13,122,95,.65),rgba(6,212,138,.25));color:#fff;border:1px solid rgba(6,212,138,.2);}
-.nova-pop-sep{display:block;font-family:var(--mono);font-size:.52rem;color:rgba(255,255,255,.22);text-transform:uppercase;letter-spacing:2px;padding:4px 10px 5px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:3px;}
+.nova-pop-item.on{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  position:relative;
+}
+.nova-pop-item.on::before{
+  content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);
+  width:4px;height:4px;border-radius:50%;background:#0d7a5f;
+}
 
-/* Custom cursor */
-.nova-cursor{position:absolute;z-index:80;pointer-events:none;width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s,border-color .2s,background .2s;opacity:0;}
+/* ── Custom cursor ── */
+.nova-cursor{
+  position:absolute;z-index:80;pointer-events:none;
+  width:24px;height:24px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.4);
+  transform:translate(-50%,-50%);
+  transition:width .18s,height .18s,opacity .18s,background .18s,border-color .18s;
+  opacity:0;
+}
 .nova-player.active .nova-cursor{opacity:1;}
-.nova-player.playing .nova-cursor{width:7px;height:7px;background:var(--teal);border-color:var(--teal);box-shadow:0 0 10px rgba(13,122,95,.7);}
+.nova-player.playing .nova-cursor{
+  width:6px;height:6px;
+  background:rgba(255,255,255,.9);
+  border-color:rgba(255,255,255,.9);
+}
 
-/* Fullscreen */
+/* ── Fullscreen ── */
 .nova-player:fullscreen .nova-controls,
 .nova-player:-webkit-full-screen .nova-controls{z-index:9999;}
 
+/* ── Responsive ── */
 @media(max-width:640px){
   :root{--nav-h:56px;}
   main{padding:18px 14px 70px;}
@@ -314,11 +495,14 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:26px 20px
   .access-pill .lbl{display:none;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
-  .nova-player{border-radius:12px;}
-  .nova-bar{padding:2px 8px 8px;}
-  .nova-btn svg,.nova-btn.lg svg{width:18px;height:18px;}
+  .nova-player{border-radius:10px;}
+  .nova-bar{padding:0 10px 10px;}
+  .nova-btn{width:32px;height:32px;}
+  .nova-btn svg{width:17px;height:17px;}
+  #novaPlay{width:36px;height:36px;}
   .nova-time{font-size:.62rem;}
-  .nova-pop-btn{font-size:.62rem;padding:4px 6px;}
+  .nova-pop-btn{font-size:.62rem;padding:4px 7px;height:26px;}
+  .nova-div{display:none;}
 }
 
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -730,35 +914,33 @@ function buildNovaPlayerHTML(type, embedSrc, videoId, thumbUrl){
   <!-- Controls -->
   <div class="nova-controls hidden" id="novaControls">
 
-    <!-- Seekbar -->
-    <div class="nova-seek" id="novaSeek">
-      <div class="nova-seek-track">
-        <div class="nova-seek-buf" id="novaSeekBuf" style="width:0%"></div>
-        <div class="nova-seek-fill" id="novaSeekFill" style="width:0%"></div>
-        <div class="nova-seek-thumb" id="novaSeekThumb" style="left:0%"></div>
+    <!-- Progress / Seekbar -->
+    <div class="nova-progress" id="novaSeek">
+      <div class="nova-progress-track">
+        <div class="nova-progress-buf" id="novaSeekBuf" style="width:0%"></div>
+        <div class="nova-progress-fill" id="novaSeekFill" style="width:0%"></div>
+        <div class="nova-progress-dot" id="novaSeekThumb"></div>
       </div>
-      <div class="nova-seek-tip" id="novaSeekTip">0:00</div>
-      <input type="range" class="nova-seek-inp" id="novaSeekInp" min="0" max="1000" step="1" value="0">
+      <div class="nova-progress-tip" id="novaSeekTip">0:00</div>
+      <input type="range" class="nova-progress-inp" id="novaSeekInp" min="0" max="1000" step="1" value="0">
     </div>
 
     <!-- Controls bar -->
     <div class="nova-bar">
-
-      <!-- Left side -->
+      <!-- Left -->
       <div class="nova-bar-l">
-        <!-- Play/Pause -->
-        <button class="nova-btn lg" id="novaPlay" onclick="novaTogglePlay()">
+        <!-- Play -->
+        <button class="nova-btn" id="novaPlay" onclick="novaTogglePlay()">
           <svg id="novaPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
 
-        <!-- Seek back -->
-        <button class="nova-btn" onclick="novaSeekBy(-10)">
-          <svg viewBox="0 0 24 24"><path d="M12.5 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7V3z"/><path d="M12.5 3V7l-3.5-3.5 3.5-3.5v3z"/><text x="12" y="17" text-anchor="middle" font-size="5.5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
+        <!-- −10 -->
+        <button class="nova-btn" onclick="novaSeekBy(-10)" title="−10 ثانية">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 3a9 9 0 1 0 8.88 10.5h-2.04A7 7 0 1 1 12.5 5V3z"/><path d="M12.5 1v5.5l-4-2.75 4-2.75z"/><text x="12" y="17" text-anchor="middle" font-size="5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
         </button>
-
-        <!-- Seek forward -->
-        <button class="nova-btn" onclick="novaSeekBy(10)">
-          <svg viewBox="0 0 24 24"><path d="M11.5 3a9 9 0 1 1 9 9h-2a7 7 0 1 0-7-7V3z"/><path d="M11.5 3V7l3.5-3.5-3.5-3.5v3z"/><text x="12" y="17" text-anchor="middle" font-size="5.5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
+        <!-- +10 -->
+        <button class="nova-btn" onclick="novaSeekBy(10)" title="+10 ثانية">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 3a9 9 0 1 1-8.88 10.5h2.04A7 7 0 1 0 11.5 5V3z"/><path d="M11.5 1v5.5l4-2.75-4-2.75z"/><text x="12" y="17" text-anchor="middle" font-size="5" font-weight="900" font-family="monospace" fill="currentColor">10</text></svg>
         </button>
 
         <!-- Volume -->
@@ -771,21 +953,21 @@ function buildNovaPlayerHTML(type, embedSrc, videoId, thumbUrl){
           </div>
         </div>
 
+        <div class="nova-div"></div>
         <!-- Time -->
         <div class="nova-time">
           <b id="novaCurTime">0:00</b>
-          <span style="opacity:.35;margin:0 3px">/</span>
+          <span style="opacity:.25;margin:0 4px">/</span>
           <span id="novaDurTime">0:00</span>
         </div>
       </div>
 
-      <!-- Right side -->
+      <!-- Right -->
       <div class="nova-bar-r">
 
         <!-- Speed -->
         <div class="nova-pop-wrap" id="novaSpeedWrap">
           <button class="nova-pop-btn" onclick="novaToggleMenu('speed',event)">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z"/><path d="M10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/></svg>
             <span id="novaSpeedLbl">1×</span>
           </button>
           <div class="nova-pop-menu" id="novaSpeedMenu">
@@ -797,7 +979,6 @@ function buildNovaPlayerHTML(type, embedSrc, videoId, thumbUrl){
         <!-- Quality (YouTube only) -->
         <div class="nova-pop-wrap" id="novaQualWrap" style="${type==='youtube'?'':'display:none'}">
           <button class="nova-pop-btn" onclick="novaToggleMenu('qual',event)">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 3H9v2H7v2H5v2H3v2h2v2h2v2h2v2h6v-2h2v-2h2v-2h2V9h-2V7h-2V5h-2V3zm0 2v2h2v2h2v2h-2v2h-2v2H9v-2H7v-2H5v-2h2V7h2V5h6z"/></svg>
             <span id="novaQualLbl">HD</span>
           </button>
           <div class="nova-pop-menu" id="novaQualMenu">
