@@ -517,11 +517,17 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
       <div class="sp-student-info">
         <div class="sp-avatar">👤</div>
         <div>
-          <div class="sp-name" id="spName">اسم الطالب</div>
+          <div class="sp-name">
+              <span id="spName">اسم الطالب</span>
+              <span id="spBlockedBadge" class="badge badge-expired hidden" style="margin-right:8px;">محظور 🚫</span>
+          </div>
           <div class="sp-email" id="spEmail">email@student.com</div>
         </div>
       </div>
-      <button class="sp-close" onclick="closeStudentProfile()">✖</button>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button id="spBlockBtn" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem;">حظر الطالب 🚫</button>
+        <button class="sp-close" onclick="closeStudentProfile()">✖</button>
+      </div>
     </div>
     <div class="sp-body">
       <div class="sp-stats">
@@ -607,19 +613,19 @@ async function loadResults(){
   const ovBody=document.getElementById("overviewResultsBody");
   try{
     const[{data:usersData}, {data:resData}, {data:hwData}]=await Promise.all([
-      supabaseClient.from('users').select('email,name'),
+      supabaseClient.from('users').select('email,name,is_blocked'),
       supabaseClient.from('results').select('*').order('date',{ascending:false}),
       supabaseClient.from('hw_results').select('*').order('created_at',{ascending:false})
     ]);
     const usersMap={};
-    if(usersData) usersData.forEach(u=>{if(u.email)usersMap[u.email]=u.name;});
+    if(usersData) usersData.forEach(u=>{if(u.email)usersMap[u.email]={ name: u.name, isBlocked: u.is_blocked };});
     
-    examResultsData = (resData || []).map(r => ({...r, type: 'exam', sName: usersMap[r.email]||'—', lessonName: r.lesson}));
+    examResultsData = (resData || []).map(r => ({...r, type: 'exam', sName: usersMap[r.email]?.name||'—', isBlocked: usersMap[r.email]?.isBlocked||false, lessonName: r.lesson}));
     
     hwResultsData = (hwData || []).map(r => {
         let title = 'واجب محذوف';
         if(r.hw_id && allHwData[r.hw_id]) title = allHwData[r.hw_id].title;
-        return {...r, type: 'hw', sName: usersMap[r.email]||'—', date: r.created_at, lessonName: title};
+        return {...r, type: 'hw', sName: usersMap[r.email]?.name||'—', isBlocked: usersMap[r.email]?.isBlocked||false, date: r.created_at, lessonName: title};
     });
 
     renderResultsTable();
@@ -632,7 +638,7 @@ async function loadResults(){
       allRes.slice(0,8).forEach(r => {
         const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
         const typeLbl = r.type==='exam' ? '📝 امتحان' : '📋 واجب';
-        ovRows+=`<tr><td class="td-name">${r.sName}</td><td class="td-lesson">${r.lessonName||'—'} <br><span style="font-size:0.6rem;color:var(--text3);">${typeLbl}</span></td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
+        ovRows+=`<tr><td class="td-name">${r.sName} ${r.isBlocked?'<span style="font-size:0.6rem;color:red;">(محظور)</span>':''}</td><td class="td-lesson">${r.lessonName||'—'} <br><span style="font-size:0.6rem;color:var(--text3);">${typeLbl}</span></td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
       });
       ovBody.innerHTML=ovRows;
     }
@@ -662,12 +668,12 @@ function renderResultsTable() {
     let rows='';
     data.forEach((r)=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
-      // صف الطالب قابل للضغط لفتح البروفايل
-      rows+=`<tr class="student-row" style="cursor:pointer;" onclick="openStudentProfile('${r.email}', '${r.sName}')" title="اضغط لرؤية تفاصيل الطالب">
+      // صف الطالب قابل للضغط لفتح البروفايل مع تمرير حالة الحظر
+      rows+=`<tr class="student-row" style="cursor:pointer;" onclick="openStudentProfile('${r.email}', '${r.sName}', ${r.isBlocked})" title="اضغط لرؤية تفاصيل الطالب">
         <td class="td-name">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="width:28px;height:28px;background:var(--teal3);color:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">👤</div>
-            ${r.sName}
+            ${r.sName} ${r.isBlocked ? '<span style="font-size:0.6rem;color:red;font-weight:bold;">(محظور)</span>' : ''}
           </div>
         </td>
         <td class="td-email">${r.email||'—'}</td>
@@ -686,10 +692,25 @@ window.searchTable=()=>{
 };
 
 /* ── دوال نافذة الطالب (Student Profile) ── */
-async function openStudentProfile(email, name) {
+async function openStudentProfile(email, name, isBlocked) {
     document.getElementById('spName').textContent = name;
     document.getElementById('spEmail').textContent = email;
     document.getElementById('studentProfileModal').classList.add('show');
+    
+    const blockBtn = document.getElementById('spBlockBtn');
+    const blockedBadge = document.getElementById('spBlockedBadge');
+    
+    if(isBlocked) {
+        blockedBadge.classList.remove('hidden');
+        blockBtn.textContent = "إلغاء الحظر 🔓";
+        blockBtn.className = "btn btn-ghost";
+        blockBtn.onclick = () => toggleBlockStudent(email, true);
+    } else {
+        blockedBadge.classList.add('hidden');
+        blockBtn.textContent = "حظر الطالب 🚫";
+        blockBtn.className = "btn btn-danger";
+        blockBtn.onclick = () => toggleBlockStudent(email, false);
+    }
     
     document.getElementById('spLessonsCount').textContent = "...";
     document.getElementById('spExamsCount').textContent = "...";
@@ -1202,6 +1223,34 @@ async function sendNotif(){
     document.getElementById('notifMessage').value='';
   }catch(e){alert("خطأ: "+e.message);}
   btn.textContent="إرسال لجميع الطلاب فوراً 🚀"; btn.disabled=false;
+}
+
+/* ── BLOCK STUDENT ── */
+async function toggleBlockStudent(email, currentlyBlocked) {
+    const newStatus = !currentlyBlocked;
+    const msg = newStatus ? "هل أنت متأكد من حظر هذا الطالب؟ لن يتمكن من فتح حسابه." : "هل تريد رفع الحظر عن هذا الطالب؟";
+    
+    if(!confirm(msg)) return;
+    
+    const btn = document.getElementById('spBlockBtn');
+    btn.textContent = "جاري التنفيذ..."; 
+    btn.disabled = true;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('users')
+            .update({ is_blocked: newStatus })
+            .eq('email', email);
+            
+        if(error) throw error;
+        
+        alert(newStatus ? "تم حظر الطالب بنجاح! 🚫" : "تم إلغاء الحظر بنجاح! ✅");
+        closeStudentProfile();
+        loadResults(); // إعادة تحميل البيانات لتحديث الجداول
+    } catch(e) {
+        alert("حدث خطأ: " + e.message);
+        btn.disabled = false;
+    }
 }
 
 /* ── LOGOUT ── */
