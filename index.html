@@ -384,6 +384,25 @@ footer {
     </div>
 </div>
 
+<div id="otpResetPopupOverlay" class="custom-popup-overlay">
+    <div class="custom-popup-card">
+        <div class="popup-icon">📧</div>
+        <h3 class="popup-title">أدخل كود التحقق</h3>
+        <p class="popup-sub">تم إرسال كود مكون من 6 أرقام إلى بريدك الإلكتروني. الرجاء إدخاله هنا مع كلمة المرور الجديدة.</p>
+        
+        <div class="popup-input-wrap">
+            <span class="flbl">كود التحقق (6 أرقام)</span>
+            <input type="text" id="otpCodeInput" class="inp" placeholder="123456" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 1.2rem; font-weight: 700;" maxlength="6">
+            
+            <span class="flbl">كلمة المرور الجديدة</span>
+            <input type="password" id="otpNewPasswordInput" class="inp" placeholder="••••••••">
+        </div>
+        
+        <button id="verifyOtpBtn" class="cta-btn">تأكيد وتغيير كلمة المرور</button>
+        <button id="cancelOtpBtn" class="popup-cancel-btn">إلغاء</button>
+    </div>
+</div>
+
 <div id="googleProfilePopup" class="custom-popup-overlay">
     <div class="custom-popup-card">
         <div class="popup-icon">📱</div>
@@ -655,6 +674,7 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(255,255,255,
     
     checkSessionOnLoad();
 
+    // دالة لاستقبال طلب الـ Magic Link القديم في حال تم استخدامه
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
             const popup = document.getElementById('resetPopupOverlay');
@@ -782,21 +802,81 @@ card.addEventListener('mouseleave',()=>{card.style.background='rgba(255,255,255,
         } catch(e) { alert(e.message); }
     };
 
+    // 🔥 التعديل الجديد: إرسال الكود وإظهار نافذة إدخال الـ OTP 🔥
     document.getElementById("forgotBtn").onclick = async () => {
-        const v = document.getElementById("email").value;
-        if(!v) return alert("اكتب إيميلك أولاً في خانة البريد الإلكتروني بالأعلى");
+        const emailValue = document.getElementById("email").value;
+        if(!emailValue) return alert("اكتب إيميلك أولاً في خانة البريد الإلكتروني بالأعلى");
         
         document.getElementById("forgotBtn").textContent = "جاري الإرسال...";
         try {
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(v, {
-                redirectTo: window.location.origin + window.location.pathname,
-            });
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(emailValue);
             if (error) throw error;
-            alert("تم إرسال رابط الاستعادة لإيميلك! تفقد صندوق الوارد (أو مجلد Spam).");
+            
+            // فتح نافذة الـ OTP
+            document.getElementById('otpResetPopupOverlay').classList.add('show');
+            
         } catch(e) { 
             alert("خطأ: " + e.message);
         }
         document.getElementById("forgotBtn").textContent = "نسيت كلمة المرور؟";
+    };
+
+    // 🔥 دوال التحقق من الكود وتغيير الباسورد 🔥
+    const otpVerifyBtn = document.getElementById("verifyOtpBtn");
+    const otpCancelBtn = document.getElementById("cancelOtpBtn");
+    const otpPopup = document.getElementById("otpResetPopupOverlay");
+
+    otpCancelBtn.onclick = () => {
+        otpPopup.classList.remove('show');
+    };
+
+    otpVerifyBtn.onclick = async () => {
+        const emailValue = document.getElementById("email").value;
+        const codeValue = document.getElementById("otpCodeInput").value.trim();
+        const newPassValue = document.getElementById("otpNewPasswordInput").value;
+
+        if(!codeValue || codeValue.length !== 6) return alert("الرجاء إدخال الكود المكون من 6 أرقام بشكل صحيح.");
+        if(newPassValue.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف أو أكثر.");
+
+        otpVerifyBtn.textContent = "جاري التحقق والتحديث...";
+
+        try {
+            // 1. التأكد من صحة الـ OTP
+            const { data: verifyData, error: verifyError } = await supabaseClient.auth.verifyOtp({
+                email: emailValue,
+                token: codeValue,
+                type: 'recovery'
+            });
+
+            if (verifyError) throw verifyError;
+
+            // 2. تحديث الباسورد بعد التحقق بنجاح
+            const { data: updateData, error: updateError } = await supabaseClient.auth.updateUser({
+                password: newPassValue
+            });
+
+            if (updateError) throw updateError;
+
+            // نجاح العملية
+            otpVerifyBtn.style.background = "#22c55e";
+            otpVerifyBtn.textContent = "تم التغيير بنجاح! ✅";
+
+            setTimeout(() => {
+                otpPopup.classList.remove('show');
+                otpVerifyBtn.style.background = "";
+                otpVerifyBtn.textContent = "تأكيد وتغيير كلمة المرور";
+                document.getElementById("otpCodeInput").value = "";
+                document.getElementById("otpNewPasswordInput").value = "";
+                
+                // يمكنك إجبار المستخدم على تسجيل الدخول بالباسورد الجديد أو تركه مسجل الدخول
+                supabaseClient.auth.signOut();
+                alert("تم تحديث كلمة المرور. يمكنك الآن تسجيل الدخول.");
+            }, 2000);
+
+        } catch(e) {
+            alert("خطأ: " + e.message);
+            otpVerifyBtn.textContent = "تأكيد وتغيير كلمة المرور";
+        }
     };
 </script>
 </body>
