@@ -558,6 +558,18 @@ const ADMIN="kevin.hany.08@proton.me";
 let editingLessonId=null, editingHwId=null, allLessonsData={}, allHwData={};
 let examResultsData = [], hwResultsData = [], currentResTab = 'exam';
 
+/* ── دالة استخراج اسم الطالب من أي عمود ── */
+function getStudentName(userObj) {
+  if (!userObj) return null;
+  // جرب كل الأسماء الممكنة للعمود
+  return userObj.name 
+      || userObj.full_name 
+      || userObj.username 
+      || userObj.display_name 
+      || userObj.student_name
+      || null;
+}
+
 /* ── AUTH ── */
 async function checkAdminAuth(){
   const{data:{session}}=await supabaseClient.auth.getSession();
@@ -613,19 +625,45 @@ async function loadResults(){
   const ovBody=document.getElementById("overviewResultsBody");
   try{
     const[{data:usersData}, {data:resData}, {data:hwData}]=await Promise.all([
-      supabaseClient.from('users').select('email,name,is_blocked'),
+      supabaseClient.from('users').select('*'),
       supabaseClient.from('results').select('*').order('date',{ascending:false}),
       supabaseClient.from('hw_results').select('*').order('created_at',{ascending:false})
     ]);
+
+    // ── بناء خريطة المستخدمين مع دعم أي اسم عمود ──
     const usersMap={};
-    if(usersData) usersData.forEach(u=>{if(u.email)usersMap[u.email]={ name: u.name, isBlocked: u.is_blocked };});
+    if(usersData) {
+      usersData.forEach(u => {
+        if(u.email) {
+          const resolvedName = getStudentName(u);
+          usersMap[u.email] = {
+            name: resolvedName || u.email.split('@')[0], // fallback للإيميل لو مفيش اسم
+            isBlocked: u.is_blocked || false,
+            rawData: u // نحتفظ بالبيانات الكاملة
+          };
+        }
+      });
+    }
     
-    examResultsData = (resData || []).map(r => ({...r, type: 'exam', sName: usersMap[r.email]?.name||'—', isBlocked: usersMap[r.email]?.isBlocked||false, lessonName: r.lesson}));
+    examResultsData = (resData || []).map(r => ({
+      ...r, 
+      type: 'exam', 
+      sName: usersMap[r.email]?.name || r.email?.split('@')[0] || '—',
+      isBlocked: usersMap[r.email]?.isBlocked || false, 
+      lessonName: r.lesson
+    }));
     
     hwResultsData = (hwData || []).map(r => {
         let title = 'واجب محذوف';
         if(r.hw_id && allHwData[r.hw_id]) title = allHwData[r.hw_id].title;
-        return {...r, type: 'hw', sName: usersMap[r.email]?.name||'—', isBlocked: usersMap[r.email]?.isBlocked||false, date: r.created_at, lessonName: title};
+        return {
+          ...r, 
+          type: 'hw', 
+          sName: usersMap[r.email]?.name || r.email?.split('@')[0] || '—',
+          isBlocked: usersMap[r.email]?.isBlocked || false,
+          date: r.created_at, 
+          lessonName: title
+        };
     });
 
     renderResultsTable();
@@ -638,11 +676,19 @@ async function loadResults(){
       allRes.slice(0,8).forEach(r => {
         const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
         const typeLbl = r.type==='exam' ? '📝 امتحان' : '📋 واجب';
-        ovRows+=`<tr><td class="td-name">${r.sName} ${r.isBlocked?'<span style="font-size:0.6rem;color:red;">(محظور)</span>':''}</td><td class="td-lesson">${r.lessonName||'—'} <br><span style="font-size:0.6rem;color:var(--text3);">${typeLbl}</span></td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
+        ovRows+=`<tr>
+          <td class="td-name">${r.sName} ${r.isBlocked?'<span style="font-size:0.6rem;color:red;">(محظور)</span>':''}</td>
+          <td class="td-lesson">${r.lessonName||'—'} <br><span style="font-size:0.6rem;color:var(--text3);">${typeLbl}</span></td>
+          <td><span class="td-score">${r.score}/${r.total}</span></td>
+          <td class="td-date">${dt}</td>
+        </tr>`;
       });
       ovBody.innerHTML=ovRows;
     }
-  }catch(e){console.log(e); ovBody.innerHTML=`<tr><td colspan="4" class="td-empty" style="color:var(--red);">خطأ في التحميل</td></tr>`;}
+  }catch(e){
+    console.error('loadResults error:', e);
+    ovBody.innerHTML=`<tr><td colspan="4" class="td-empty" style="color:var(--red);">خطأ في التحميل</td></tr>`;
+  }
 }
 
 window.switchResTab = (tab) => {
@@ -657,7 +703,6 @@ window.switchResTab = (tab) => {
     renderResultsTable();
 };
 
-/* ── دالة إظهار جدول النتائج (معدلة للضغط) ── */
 function renderResultsTable() {
     const tbody=document.getElementById("resultsTable");
     const data = currentResTab === 'exam' ? examResultsData : hwResultsData;
@@ -668,8 +713,7 @@ function renderResultsTable() {
     let rows='';
     data.forEach((r)=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}):'—';
-      // صف الطالب قابل للضغط لفتح البروفايل مع تمرير حالة الحظر
-      rows+=`<tr class="student-row" style="cursor:pointer;" onclick="openStudentProfile('${r.email}', '${r.sName}', ${r.isBlocked})" title="اضغط لرؤية تفاصيل الطالب">
+      rows+=`<tr class="student-row" style="cursor:pointer;" onclick="openStudentProfile('${r.email}', '${(r.sName||'').replace(/'/g,"\\'")}', ${r.isBlocked})" title="اضغط لرؤية تفاصيل الطالب">
         <td class="td-name">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="width:28px;height:28px;background:var(--teal3);color:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;">👤</div>
@@ -691,7 +735,7 @@ window.searchTable=()=>{
   document.querySelectorAll(".student-row").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
 };
 
-/* ── دوال نافذة الطالب (Student Profile) ── */
+/* ── دوال نافذة الطالب ── */
 async function openStudentProfile(email, name, isBlocked) {
     document.getElementById('spName').textContent = name;
     document.getElementById('spEmail').textContent = email;
@@ -704,11 +748,15 @@ async function openStudentProfile(email, name, isBlocked) {
         blockedBadge.classList.remove('hidden');
         blockBtn.textContent = "إلغاء الحظر 🔓";
         blockBtn.className = "btn btn-ghost";
+        blockBtn.style.padding = "6px 12px";
+        blockBtn.style.fontSize = "0.75rem";
         blockBtn.onclick = () => toggleBlockStudent(email, true);
     } else {
         blockedBadge.classList.add('hidden');
         blockBtn.textContent = "حظر الطالب 🚫";
         blockBtn.className = "btn btn-danger";
+        blockBtn.style.padding = "6px 12px";
+        blockBtn.style.fontSize = "0.75rem";
         blockBtn.onclick = () => toggleBlockStudent(email, false);
     }
     
@@ -1103,13 +1151,9 @@ window.addQuestion=function(containerId, data=null){
   }
 };
 
-/* ── DRAG & DROP HANDLERS ── */
-function handleDragOver(e, zone){
-  e.preventDefault(); zone.classList.add('drag-over');
-}
-function handleDragLeave(e, zone){
-  zone.classList.remove('drag-over');
-}
+/* ── DRAG & DROP ── */
+function handleDragOver(e, zone){ e.preventDefault(); zone.classList.add('drag-over'); }
+function handleDragLeave(e, zone){ zone.classList.remove('drag-over'); }
 function handleDrop(e, zone){
   e.preventDefault(); zone.classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
@@ -1123,9 +1167,7 @@ function handleFileSelect(e, zone){
 function processImageFile(file, zone){
   if(!file.type.startsWith('image/')){alert('الملف ليس صورة!'); return;}
   if(file.size > 2*1024*1024){alert('حجم الصورة أكبر من 2MB — اختار صورة أصغر'); return;}
-
   zone.innerHTML=`<div class="img-uploading"><div class="mini-spin"></div><span>جاري معالجة الصورة...</span></div>`;
-
   const reader = new FileReader();
   reader.onload = (ev) => {
     const base64 = ev.target.result;
@@ -1228,15 +1270,32 @@ async function sendNotif(){
 /* ── BLOCK STUDENT ── */
 async function toggleBlockStudent(email, currentlyBlocked) {
     const newStatus = !currentlyBlocked;
-    const msg = newStatus ? "هل أنت متأكد من حظر هذا الطالب؟ لن يتمكن من فتح حسابه." : "هل تريد رفع الحظر عن هذا الطالب؟";
+    const msg = newStatus 
+        ? "هل أنت متأكد من حظر هذا الطالب؟ لن يتمكن من فتح حسابه." 
+        : "هل تريد رفع الحظر عن هذا الطالب؟";
     
     if(!confirm(msg)) return;
     
     const btn = document.getElementById('spBlockBtn');
+    const originalText = btn.textContent;
     btn.textContent = "جاري التنفيذ..."; 
     btn.disabled = true;
     
     try {
+        // أولاً: تحقق من وجود العمود
+        const { data: checkData, error: checkError } = await supabaseClient
+            .from('users')
+            .select('is_blocked')
+            .eq('email', email)
+            .single();
+
+        if (checkError && checkError.message && checkError.message.includes('is_blocked')) {
+            alert("⚠️ عمود is_blocked غير موجود في قاعدة البيانات.\n\nالرجاء تشغيل هذا الأمر في Supabase SQL Editor:\n\nALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT false;");
+            btn.textContent = originalText;
+            btn.disabled = false;
+            return;
+        }
+
         const { error } = await supabaseClient
             .from('users')
             .update({ is_blocked: newStatus })
@@ -1246,9 +1305,14 @@ async function toggleBlockStudent(email, currentlyBlocked) {
         
         alert(newStatus ? "تم حظر الطالب بنجاح! 🚫" : "تم إلغاء الحظر بنجاح! ✅");
         closeStudentProfile();
-        loadResults(); // إعادة تحميل البيانات لتحديث الجداول
+        await loadResults();
     } catch(e) {
-        alert("حدث خطأ: " + e.message);
+        if(e.message && e.message.includes('is_blocked')) {
+            alert("⚠️ عمود is_blocked غير موجود!\n\nشغّل في Supabase SQL Editor:\n\nALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT false;");
+        } else {
+            alert("حدث خطأ: " + e.message);
+        }
+        btn.textContent = originalText;
         btn.disabled = false;
     }
 }
