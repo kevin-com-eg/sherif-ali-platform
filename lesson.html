@@ -316,6 +316,66 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   background: #000;
 }
+.player-frame{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+}
+.player-frame iframe,
+.player-frame .plyr,
+.player-frame video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
+.player-wrapper .plyr{
+  --plyr-control-radius: 10px;
+  --plyr-control-spacing: 10px;
+}
+.player-wrapper .plyr__controls{
+  direction:ltr;
+}
+.player-wrapper .plyr__menu__container,
+.player-wrapper .plyr__tooltip{
+  direction:ltr;
+}
+.player-stealth-mask{
+  position:absolute;
+  z-index:4;
+  pointer-events:none;
+  background:rgba(0,0,0,.94);
+}
+.player-stealth-mask.top{
+  top:0;left:0;right:0;height:38px;
+}
+.player-stealth-mask.corner{
+  top:0;right:0;width:140px;height:62px;
+  background:linear-gradient(225deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.94) 55%,rgba(0,0,0,0) 100%);
+}
+.player-stealth-mask.bottom-right{
+  right:0;bottom:52px;width:125px;height:42px;
+  background:linear-gradient(315deg,rgba(0,0,0,.96) 0%,rgba(0,0,0,.9) 55%,rgba(0,0,0,0) 100%);
+}
+.player-mini-badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:5;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:.68rem;
+  backdrop-filter:blur(8px);
+}
 
 /* Watermark floating over the player */
 .player-wm {
@@ -533,49 +593,129 @@ window.switchTab=(tab)=>{
   },400);
 };
 
-/* ── VIDEO PLAYER INITIALIZATION (DAILYMOTION ONLY) ── */
+/* ── PLYR VIDEO PLAYER INITIALIZATION ── */
 function detectVideoType(url){
-  if(!url) return null;
-  if(/dailymotion\.com|dai\.ly/.test(url)) return 'dailymotion';
+  if(!url)return null;
+  if(/youtube\.com|youtu\.be/.test(url))return 'youtube';
+  if(/dailymotion\.com|dai\.ly/.test(url))return 'dailymotion';
+  if(/\.(mp4|webm|ogg|m3u8)(\?|#|$)/i.test(url))return 'direct';
   return null;
 }
-function extractDailymotionId(url){
-  const m=url.match(/(?:dailymotion\.com\/(?:video\/|embed\/video\/)|dai\.ly\/)([a-zA-Z0-9]+)/);
-  return m?m[1]:null;
+function extractYouTubeId(url){
+  if(!url)return null;
+  const patterns=[
+    /(?:youtu\.be\/)([^#&?]{11})/,
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([^#&?]{11})/
+  ];
+  for(const p of patterns){const m=url.match(p);if(m)return m[1];}
+  return null;
+}
+function extractDailymotionId(url){const m=url.match(/(?:dailymotion\.com\/(?:video\/|embed\/video\/)|dai\.ly\/)([a-zA-Z0-9]+)/);return m?m[1]:null;}
+function buildPlayerOptions(extra={}){
+  return {
+    controls:['play-large','restart','rewind','play','fast-forward','progress','current-time','duration','mute','volume','settings','pip','airplay','fullscreen'],
+    settings:['speed','quality'],
+    speed:{selected:1,options:[0.5,0.75,1,1.25,1.5,1.75,2]},
+    seekTime:10,
+    tooltips:{controls:true,seek:true},
+    invertTime:false,
+    keyboard:{focused:true,global:true},
+    ratio:'16:9',
+    ...extra
+  };
 }
 
 function initStealthPlayer(){
   if(vidPlayerInited||!lessonData?.video)return;
   vidPlayerInited=true;
-
   const url=lessonData.video;
   const type=detectVideoType(url);
   const vc=document.getElementById('tab-video');
 
-  if(type!=='dailymotion'){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ هذا المشغل يدعم Dailymotion فقط</div>`;
+  if(!type){
+    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير مدعوم</div>`;
     return;
   }
 
-  const videoId=extractDailymotionId(url);
-  if(!videoId){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط Dailymotion غير صحيح</div>`;
-    return;
-  }
+  if(type==='youtube'){
+    const videoId=extractYouTubeId(url);
+    if(!videoId){
+      vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير صحيح</div>`;
+      return;
+    }
 
-  vc.innerHTML=`
-    <div class="vid-section-title">فيديو الشرح</div>
-    <div class="player-wrapper" style="aspect-ratio:16/9;">
-      <iframe
-        id="dm-player"
-        style="width:100%;height:100%;border:none;"
-        src="https://www.dailymotion.com/embed/video/${videoId}?autoplay=0&ui-logo=0&sharing-enable=0&queue-enable=0"
-        allowfullscreen
-        allow="autoplay; fullscreen; picture-in-picture">
-      </iframe>
-      <div class="player-wm"><span>ID: ${myStudentId}</span></div>
-    </div>
-  `;
+    vc.innerHTML=`
+      <div class="vid-section-title">فيديو الشرح</div>
+      <div class="player-wrapper">
+        <div class="player-frame">
+          <div class="plyr__video-embed" id="player">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&controls=0&fs=0&disablekb=1&enablejsapi=1"
+              allowfullscreen
+              allowtransparency
+              referrerpolicy="strict-origin-when-cross-origin"
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen">
+            </iframe>
+          </div>
+          <div class="player-stealth-mask top"></div>
+          <div class="player-stealth-mask corner"></div>
+          <div class="player-stealth-mask bottom-right"></div>
+          <div class="player-mini-badge">PLAYER</div>
+          <div class="player-wm"><span>ID: ${myStudentId}</span></div>
+        </div>
+      </div>
+    `;
+
+    plyrInstance = new Plyr('#player', buildPlayerOptions({
+      youtube:{
+        noCookie:true,
+        rel:0,
+        modestbranding:1,
+        iv_load_policy:3,
+        playsinline:1,
+        controls:0,
+        fs:0,
+        disablekb:1
+      }
+    }));
+  } else if(type==='dailymotion'){
+    const videoId=extractDailymotionId(url);
+    if(!videoId){
+      vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير صحيح</div>`;
+      return;
+    }
+    vc.innerHTML=`
+      <div class="vid-section-title">فيديو الشرح</div>
+      <div class="player-wrapper">
+        <div class="player-frame">
+          <div class="plyr__video-embed" id="player">
+            <iframe
+              src="https://www.dailymotion.com/embed/video/${videoId}?autoplay=0&ui-logo=0&sharing-enable=0&queue-enable=0"
+              allowfullscreen
+              allow="autoplay; fullscreen; picture-in-picture">
+            </iframe>
+          </div>
+          <div class="player-mini-badge">PLAYER</div>
+          <div class="player-wm"><span>ID: ${myStudentId}</span></div>
+        </div>
+      </div>
+    `;
+    plyrInstance = new Plyr('#player', buildPlayerOptions());
+  } else if(type==='direct'){
+    vc.innerHTML=`
+      <div class="vid-section-title">فيديو الشرح</div>
+      <div class="player-wrapper">
+        <div class="player-frame">
+          <video id="player" playsinline controls crossorigin="anonymous">
+            <source src="${url}">
+          </video>
+          <div class="player-mini-badge">PLAYER</div>
+          <div class="player-wm"><span>ID: ${myStudentId}</span></div>
+        </div>
+      </div>
+    `;
+    plyrInstance = new Plyr('#player', buildPlayerOptions());
+  }
 }
 
 async function initLessonPage(){
