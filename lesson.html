@@ -337,6 +337,8 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
 }
 .player-wrapper .plyr__controls{
   direction:ltr;
+  position:relative;
+  z-index:6;
 }
 .player-wrapper .plyr__menu__container,
 .player-wrapper .plyr__tooltip{
@@ -344,20 +346,28 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
 }
 .player-stealth-mask{
   position:absolute;
-  z-index:4;
+  z-index:5;
   pointer-events:none;
-  background:rgba(0,0,0,.94);
 }
 .player-stealth-mask.top{
-  top:0;left:0;right:0;height:38px;
+  top:0;left:0;right:0;height:56px;
+  background:rgba(0,0,0,.97);
+}
+.player-stealth-mask.left-top{
+  top:0;left:0;width:430px;max-width:70%;height:78px;
+  background:linear-gradient(135deg,rgba(0,0,0,.99) 0%,rgba(0,0,0,.96) 68%,rgba(0,0,0,0) 100%);
 }
 .player-stealth-mask.corner{
-  top:0;right:0;width:140px;height:62px;
-  background:linear-gradient(225deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.94) 55%,rgba(0,0,0,0) 100%);
+  top:0;right:0;width:190px;height:84px;
+  background:linear-gradient(225deg,rgba(0,0,0,.99) 0%,rgba(0,0,0,.96) 58%,rgba(0,0,0,0) 100%);
 }
 .player-stealth-mask.bottom-right{
-  right:0;bottom:52px;width:125px;height:42px;
-  background:linear-gradient(315deg,rgba(0,0,0,.96) 0%,rgba(0,0,0,.9) 55%,rgba(0,0,0,0) 100%);
+  right:0;bottom:54px;width:220px;height:72px;
+  background:linear-gradient(315deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.95) 58%,rgba(0,0,0,0) 100%);
+}
+.player-stealth-mask.bottom-right-edge{
+  right:0;bottom:92px;width:108px;height:108px;
+  background:radial-gradient(circle at bottom right,rgba(0,0,0,.99) 0%,rgba(0,0,0,.96) 48%,rgba(0,0,0,0) 100%);
 }
 .player-mini-badge{
   position:absolute;
@@ -646,7 +656,7 @@ function initStealthPlayer(){
       <div class="player-frame">
         <div class="plyr__video-embed" id="player">
           <iframe
-            src="https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&controls=0&fs=0&disablekb=1&enablejsapi=1"
+            src="https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&controls=0&fs=0&disablekb=1&cc_load_policy=0&enablejsapi=1"
             allowfullscreen
             allowtransparency
             referrerpolicy="strict-origin-when-cross-origin"
@@ -654,8 +664,10 @@ function initStealthPlayer(){
           </iframe>
         </div>
         <div class="player-stealth-mask top"></div>
+        <div class="player-stealth-mask left-top"></div>
         <div class="player-stealth-mask corner"></div>
         <div class="player-stealth-mask bottom-right"></div>
+        <div class="player-stealth-mask bottom-right-edge"></div>
         <div class="player-mini-badge">PLAYER</div>
         <div class="player-wm"><span>ID: ${myStudentId}</span></div>
       </div>
