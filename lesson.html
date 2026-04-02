@@ -533,59 +533,62 @@ window.switchTab=(tab)=>{
   },400);
 };
 
-/* ── PLYR VIDEO PLAYER INITIALIZATION ── */
-function detectVideoType(url){if(!url)return null;if(/youtube\.com|youtu\.be/.test(url))return 'youtube';if(/dailymotion\.com|dai\.ly/.test(url))return 'dailymotion';return null;}
-function extractYouTubeId(url){const m=url.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=)([^#&?]{11})/);return m?m[1]:null;}
-function extractDailymotionId(url){const m=url.match(/(?:dailymotion\.com\/(?:video\/|embed\/video\/)|dai\.ly\/)([a-zA-Z0-9]+)/);return m?m[1]:null;}
+/* ── STEALTH HTML5 PLAYER INITIALIZATION ── */
+function detectVideoType(url){
+  if(!url)return null;
+  const clean=url.split('?')[0].toLowerCase();
+  if(/\.(mp4|webm|ogg|m4v|mov)$/.test(clean))return 'direct';
+  return null;
+}
+function escapeHtml(str=''){
+  return String(str).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
 function initStealthPlayer(){
   if(vidPlayerInited||!lessonData?.video)return;
   vidPlayerInited=true;
-  const url=lessonData.video;
+
+  const url=String(lessonData.video||'').trim();
   const type=detectVideoType(url);
   const vc=document.getElementById('tab-video');
 
-  if(!type){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير مدعوم</div>`;
+  if(type!=='direct'){
+    vc.innerHTML=`
+      <div style="text-align:center;padding:60px 20px;color:var(--text2);line-height:1.9;">
+        ⚠️ رابط الفيديو الحالي غير مدعوم داخل المشغل الخفي.<br>
+        استخدم رابط فيديو مباشر مثل MP4 / WEBM / OGG من CDN أو Supabase Storage.
+      </div>
+    `;
     return;
   }
 
-  if(type === 'youtube'){
-    const videoId = extractYouTubeId(url);
-    if(!videoId) return;
-    
-    vc.innerHTML = `
-      <div class="vid-section-title">فيديو الشرح</div>
-      <div class="player-wrapper">
-        <div class="plyr__video-embed" id="player">
-          <iframe 
-            src="https://www.youtube.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1" 
-            allowfullscreen 
-            allowtransparency 
-            allow="autoplay">
-          </iframe>
-        </div>
-        <div class="player-wm"><span>ID: ${myStudentId}</span></div>
-      </div>
-    `;
+  const safeUrl=escapeHtml(url);
 
-    // إعداد مشغل Plyr
-    plyrInstance = new Plyr('#player', {
-      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
-      settings: ['quality', 'speed', 'loop'],
-      youtube: { noCookie: false, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
-    });
+  vc.innerHTML = `
+    <div class="vid-section-title">فيديو الشرح</div>
+    <div class="player-wrapper" style="aspect-ratio:16/9;">
+      <video
+        id="stealthPlayer"
+        playsinline
+        controls
+        preload="metadata"
+        controlsList="nodownload noplaybackrate"
+        disablePictureInPicture
+        style="width:100%;height:100%;display:block;background:#000;"
+      >
+        <source src="${safeUrl}">
+        المتصفح لا يدعم تشغيل الفيديو.
+      </video>
+      <div class="player-wm"><span>ID: ${myStudentId}</span></div>
+    </div>
+  `;
 
-  } else if (type === 'dailymotion'){
-    const videoId = extractDailymotionId(url);
-    vc.innerHTML = `
-      <div class="vid-section-title">فيديو الشرح</div>
-      <div class="player-wrapper" style="aspect-ratio: 16/9;">
-        <iframe style="width:100%; height:100%; border:none;" src="https://www.dailymotion.com/embed/video/${videoId}?autoplay=0&ui-logo=0&sharing-enable=0" allowfullscreen allow="autoplay"></iframe>
-        <div class="player-wm"><span>ID: ${myStudentId}</span></div>
-      </div>
-    `;
-  }
+  plyrInstance = new Plyr('#stealthPlayer', {
+    controls: ['play-large','play','progress','current-time','mute','volume','fullscreen'],
+    settings: [],
+    disableContextMenu: true,
+    keyboard: { focused: true, global: false }
+  });
 }
 
 async function initLessonPage(){
