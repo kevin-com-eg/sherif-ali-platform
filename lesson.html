@@ -597,8 +597,6 @@ window.switchTab=(tab)=>{
 function detectVideoType(url){
   if(!url)return null;
   if(/youtube\.com|youtu\.be/.test(url))return 'youtube';
-  if(/dailymotion\.com|dai\.ly/.test(url))return 'dailymotion';
-  if(/\.(mp4|webm|ogg|m3u8)(\?|#|$)/i.test(url))return 'direct';
   return null;
 }
 function extractYouTubeId(url){
@@ -610,7 +608,6 @@ function extractYouTubeId(url){
   for(const p of patterns){const m=url.match(p);if(m)return m[1];}
   return null;
 }
-function extractDailymotionId(url){const m=url.match(/(?:dailymotion\.com\/(?:video\/|embed\/video\/)|dai\.ly\/)([a-zA-Z0-9]+)/);return m?m[1]:null;}
 function buildPlayerOptions(extra={}){
   return {
     controls:['play-large','restart','rewind','play','fast-forward','progress','current-time','duration','mute','volume','settings','pip','airplay','fullscreen'],
@@ -632,90 +629,51 @@ function initStealthPlayer(){
   const type=detectVideoType(url);
   const vc=document.getElementById('tab-video');
 
-  if(!type){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير مدعوم</div>`;
+  if(type!=='youtube'){
+    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ هذا المشغل يدعم روابط يوتيوب فقط</div>`;
     return;
   }
 
-  if(type==='youtube'){
-    const videoId=extractYouTubeId(url);
-    if(!videoId){
-      vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير صحيح</div>`;
-      return;
-    }
-
-    vc.innerHTML=`
-      <div class="vid-section-title">فيديو الشرح</div>
-      <div class="player-wrapper">
-        <div class="player-frame">
-          <div class="plyr__video-embed" id="player">
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&controls=0&fs=0&disablekb=1&enablejsapi=1"
-              allowfullscreen
-              allowtransparency
-              referrerpolicy="strict-origin-when-cross-origin"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen">
-            </iframe>
-          </div>
-          <div class="player-stealth-mask top"></div>
-          <div class="player-stealth-mask corner"></div>
-          <div class="player-stealth-mask bottom-right"></div>
-          <div class="player-mini-badge">PLAYER</div>
-          <div class="player-wm"><span>ID: ${myStudentId}</span></div>
-        </div>
-      </div>
-    `;
-
-    plyrInstance = new Plyr('#player', buildPlayerOptions({
-      youtube:{
-        noCookie:true,
-        rel:0,
-        modestbranding:1,
-        iv_load_policy:3,
-        playsinline:1,
-        controls:0,
-        fs:0,
-        disablekb:1
-      }
-    }));
-  } else if(type==='dailymotion'){
-    const videoId=extractDailymotionId(url);
-    if(!videoId){
-      vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط الفيديو غير صحيح</div>`;
-      return;
-    }
-    vc.innerHTML=`
-      <div class="vid-section-title">فيديو الشرح</div>
-      <div class="player-wrapper">
-        <div class="player-frame">
-          <div class="plyr__video-embed" id="player">
-            <iframe
-              src="https://www.dailymotion.com/embed/video/${videoId}?autoplay=0&ui-logo=0&sharing-enable=0&queue-enable=0"
-              allowfullscreen
-              allow="autoplay; fullscreen; picture-in-picture">
-            </iframe>
-          </div>
-          <div class="player-mini-badge">PLAYER</div>
-          <div class="player-wm"><span>ID: ${myStudentId}</span></div>
-        </div>
-      </div>
-    `;
-    plyrInstance = new Plyr('#player', buildPlayerOptions());
-  } else if(type==='direct'){
-    vc.innerHTML=`
-      <div class="vid-section-title">فيديو الشرح</div>
-      <div class="player-wrapper">
-        <div class="player-frame">
-          <video id="player" playsinline controls crossorigin="anonymous">
-            <source src="${url}">
-          </video>
-          <div class="player-mini-badge">PLAYER</div>
-          <div class="player-wm"><span>ID: ${myStudentId}</span></div>
-        </div>
-      </div>
-    `;
-    plyrInstance = new Plyr('#player', buildPlayerOptions());
+  const videoId=extractYouTubeId(url);
+  if(!videoId){
+    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط يوتيوب غير صحيح</div>`;
+    return;
   }
+
+  vc.innerHTML=`
+    <div class="vid-section-title">فيديو الشرح</div>
+    <div class="player-wrapper">
+      <div class="player-frame">
+        <div class="plyr__video-embed" id="player">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&controls=0&fs=0&disablekb=1&enablejsapi=1"
+            allowfullscreen
+            allowtransparency
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen">
+          </iframe>
+        </div>
+        <div class="player-stealth-mask top"></div>
+        <div class="player-stealth-mask corner"></div>
+        <div class="player-stealth-mask bottom-right"></div>
+        <div class="player-mini-badge">PLAYER</div>
+        <div class="player-wm"><span>ID: ${myStudentId}</span></div>
+      </div>
+    </div>
+  `;
+
+  plyrInstance = new Plyr('#player', buildPlayerOptions({
+    youtube:{
+      noCookie:true,
+      rel:0,
+      modestbranding:1,
+      iv_load_policy:3,
+      playsinline:1,
+      controls:0,
+      fs:0,
+      disablekb:1
+    }
+  }));
 }
 
 async function initLessonPage(){
