@@ -308,39 +308,15 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  background: #000;
+  background: var(--accent); /* تم التغيير للأخضر بدل الأسود */
 }
 .player-frame{
   position:relative;
   width:100%;
   aspect-ratio:16/9;
-  background:#000;
+  background: var(--accent); /* تم التغيير للأخضر بدل الأسود */
 }
-.player-stealth-mask{
-  position:absolute;
-  z-index:5;
-  pointer-events:none;
-}
-.player-stealth-mask.top{
-  top:0;left:0;right:0;height:56px;
-  background:rgba(0,0,0,.97);
-}
-.player-stealth-mask.left-top{
-  top:0;left:0;width:430px;max-width:70%;height:78px;
-  background:linear-gradient(135deg,rgba(0,0,0,.99) 0%,rgba(0,0,0,.96) 68%,rgba(0,0,0,0) 100%);
-}
-.player-stealth-mask.corner{
-  top:0;right:0;width:190px;height:84px;
-  background:linear-gradient(225deg,rgba(0,0,0,.99) 0%,rgba(0,0,0,.96) 58%,rgba(0,0,0,0) 100%);
-}
-.player-stealth-mask.bottom-right{
-  right:0;bottom:54px;width:220px;height:72px;
-  background:linear-gradient(315deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.95) 58%,rgba(0,0,0,0) 100%);
-}
-.player-stealth-mask.bottom-right-edge{
-  right:0;bottom:92px;width:108px;height:108px;
-  background:radial-gradient(circle at bottom right,rgba(0,0,0,.99) 0%,rgba(0,0,0,.96) 48%,rgba(0,0,0,0) 100%);
-}
+
 .player-mini-badge{
   position:absolute;
   top:12px;
@@ -351,12 +327,11 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
   gap:6px;
   padding:7px 10px;
   border-radius:999px;
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.14);
+  background: var(--accent2); /* تم التغيير للأخضر بدل الأسود الشفاف */
+  border:1px solid rgba(255,255,255,.3);
   color:#fff;
   font-family:var(--mono);
   font-size:.68rem;
-  backdrop-filter:blur(8px);
 }
 
 /* Watermark floating over the player */
@@ -531,8 +506,8 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
   const detect=()=>{if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){alert("⚠️ غير مسموح بفتح أدوات المطور.");window.location.reload();}};
   setInterval(detect,1000);
   setInterval(function(){(function(a){return(function(a){return(Function('Function(arguments[0].constructor(\'debugger\')())')(a));})(a);})(window);},100);
-  window.addEventListener('blur',()=>{document.body.style.filter='blur(15px)';document.body.style.opacity='0.4';});
-  window.addEventListener('focus',()=>{document.body.style.filter='none';document.body.style.opacity='1';});
+  
+  // تم إزالة أكواد الـ blur اللي كانت بتشتغل لما الصفحة تفقد التركيز (Focus)
 })();
 
 /* ── SUPABASE ── */
@@ -544,7 +519,7 @@ const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
 let examTimer,myStudentId="000000",vidPlayerInited=false;
 let hwData=null,hwUserAns={},hwCurIdx=0,hwDone=false,hwQuestions=[],hwStarted=false;
-let plyrInstance = null; // مبقتش مستخدمة بس سيبتها عشان مفيش حاجة تضرب
+let plyrInstance = null;
 
 /* ═══════════════════════════════════════════════
    ── MAIN INIT & UI LOGIC
@@ -567,7 +542,6 @@ window.switchTab=(tab)=>{
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
     
-    // إيقاف الفيديو عند تغيير التبويب (لو كنت مستخدم حاجة تانية)
     if(tab!=='video' && plyrInstance){
       try{ plyrInstance.pause(); }catch(e){}
     }
@@ -578,14 +552,12 @@ window.switchTab=(tab)=>{
 /* ── GOOGLE DRIVE VIDEO PLAYER INITIALIZATION ── */
 function detectVideoType(url){
   if(!url)return null;
-  // التعرف على روابط جوجل درايف
   if(/drive\.google\.com/.test(url))return 'drive';
   return null;
 }
 
 function extractDriveId(url){
   if(!url)return null;
-  // استخراج الـ ID من أشكال روابط درايف المختلفة
   const patterns=[
     /\/file\/d\/([a-zA-Z0-9_-]+)/,
     /id=([a-zA-Z0-9_-]+)/
@@ -625,11 +597,6 @@ function initStealthPlayer(){
             style="width: 100%; height: 100%; border: none;">
           </iframe>
         </div>
-        <div class="player-stealth-mask top"></div>
-        <div class="player-stealth-mask left-top"></div>
-        <div class="player-stealth-mask corner"></div>
-        <div class="player-stealth-mask bottom-right"></div>
-        <div class="player-stealth-mask bottom-right-edge"></div>
         <div class="player-mini-badge">PLAYER</div>
         <div class="player-wm"><span>ID: ${myStudentId}</span></div>
       </div>
