@@ -567,6 +567,192 @@ footer {
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--muted);border-radius:2px;}
+
+
+/* ===== Calm redesign + better form UX ===== */
+:root {
+    --bg: #f3f7fb;
+    --bg2: #ffffff;
+    --card: rgba(255,255,255,0.82);
+    --border: rgba(148,163,184,0.22);
+    --g1: #2563eb;
+    --g2: #0f766e;
+    --g3: #1e293b;
+    --glow: rgba(37,99,235,0.12);
+    --muted: #64748b;
+    --text: #0f172a;
+    --text2: #334155;
+}
+body {
+    background:
+        radial-gradient(circle at top right, rgba(37,99,235,0.08), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(15,118,110,0.08), transparent 32%),
+        linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+    cursor: auto;
+}
+#cur-dot, #cur-ring, #cvs { display: none !important; }
+body::after { display: none; }
+nav {
+    background: rgba(248,250,252,0.82);
+    border-bottom: 1px solid rgba(148,163,184,0.18);
+    box-shadow: 0 10px 35px rgba(15,23,42,0.05);
+}
+.nav-w { height: 72px; }
+.logo-chip {
+    color: var(--g1);
+    background: rgba(37,99,235,0.08);
+    border-color: rgba(37,99,235,0.14);
+}
+.nav-btn,
+.cta-btn {
+    background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    box-shadow: 0 14px 32px rgba(37,99,235,0.16);
+}
+main {
+    padding-top: 58px;
+    gap: 54px;
+}
+.hero { padding-left: 0; }
+.teacher-profile {
+    width: fit-content;
+    background: rgba(255,255,255,0.62);
+    border: 1px solid rgba(148,163,184,0.18);
+    padding: 14px 18px;
+    border-radius: 24px;
+    box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+}
+.teacher-profile img {
+    border-color: rgba(255,255,255,0.95);
+    box-shadow: 0 14px 30px rgba(37,99,235,0.15);
+}
+.eyebrow {
+    background: rgba(255,255,255,0.75);
+    border: 1px solid rgba(148,163,184,0.16);
+    padding: 10px 14px;
+    border-radius: 999px;
+}
+.eyebrow-line {
+    width: 22px;
+    background: linear-gradient(to left, var(--g1), transparent);
+}
+.hero-title {
+    font-size: clamp(2.7rem, 5vw, 4.7rem);
+    letter-spacing: -1.8px;
+    max-width: 650px;
+}
+.hero-desc {
+    max-width: 540px;
+    font-size: 1.02rem;
+    line-height: 1.95;
+}
+.hero-stats,
+.feature-card,
+.auth-card,
+.custom-popup-card,
+.teacher-profile,
+.pill {
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+.hero-stats {
+    background: rgba(255,255,255,0.72);
+    border-color: rgba(148,163,184,0.16);
+    border-radius: 24px;
+    box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+}
+.stat-item { padding: 22px 20px; }
+.pill {
+    background: rgba(255,255,255,0.72);
+    border-color: rgba(148,163,184,0.16);
+    padding: 10px 16px;
+}
+.auth-card {
+    background: rgba(255,255,255,0.76);
+    border-radius: 32px;
+    border-color: rgba(148,163,184,0.16);
+    box-shadow: 0 28px 70px rgba(15,23,42,0.08);
+    padding: 34px 34px 28px;
+}
+.card-head { margin-bottom: 26px; }
+.card-title { font-size: 1.45rem; }
+.card-sub { font-size: 0.82rem; }
+.tabs {
+    background: rgba(241,245,249,0.95);
+    border-color: rgba(148,163,184,0.16);
+    padding: 5px;
+    border-radius: 14px;
+}
+.tab {
+    color: var(--text2);
+    border-radius: 11px;
+}
+.tab.on {
+    background: #ffffff;
+    color: var(--g1);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+}
+.flbl {
+    color: var(--text2);
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+}
+input.inp, select.inp {
+    background: rgba(255,255,255,0.95) !important;
+    border: 1px solid rgba(148,163,184,0.22) !important;
+    border-radius: 14px;
+    min-height: 50px;
+    box-shadow: inset 0 1px 2px rgba(15,23,42,0.02);
+}
+input.inp:focus, select.inp:focus {
+    border-color: rgba(37,99,235,0.55) !important;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+.pass-row input { padding-left: 46px; }
+.eye-btn:hover,
+.forgot button,
+.popup-cancel-btn:hover,
+.footer-col a:hover,
+.social-btn:hover { color: var(--g1); }
+.g-btn {
+    background: rgba(255,255,255,0.9);
+    border-color: rgba(148,163,184,0.22);
+    border-radius: 14px;
+}
+.why-title {
+    font-size: 2rem;
+    margin-bottom: 34px;
+}
+.feature-card {
+    background: rgba(255,255,255,0.74);
+    border-color: rgba(148,163,184,0.16);
+    border-radius: 24px;
+    box-shadow: 0 18px 45px rgba(15,23,42,0.05);
+}
+.feature-icon {
+    background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(15,118,110,0.12));
+    color: var(--g1);
+}
+footer {
+    background: #0f172a;
+    border-top: none;
+    margin-top: 30px;
+}
+.floating-wa {
+    box-shadow: 0 14px 30px rgba(37, 211, 102, 0.28);
+}
+.custom-popup-card {
+    background: rgba(255,255,255,0.84);
+    border-radius: 30px;
+}
+@media (max-width: 960px) {
+    .teacher-profile,
+    .hero-stats,
+    .feat-row {
+        margin-right: auto;
+    }
+    .auth-card { padding: 28px 22px 22px; }
+}
+
 </style>
 </head>
 <body>
@@ -581,10 +767,10 @@ footer {
         <p class="popup-sub">أهلاً بك مجدداً! قم بتعيين كلمة مرور جديدة لحسابك تتكون من 6 أحرف أو أرقام على الأقل.</p>
         <div class="popup-input-wrap">
             <span class="flbl">كلمة المرور الجديدة</span>
-            <input type="password" id="newPasswordInput" class="inp" placeholder="••••••••">
+            <input type="password" id="newPasswordInput" name="new-password" class="inp" placeholder="••••••••" autocomplete="new-password" minlength="6" dir="ltr">
         </div>
-        <button id="confirmResetBtn" class="cta-btn">حفظ وتأكيد الدخول</button>
-        <button id="cancelResetBtn" class="popup-cancel-btn">إلغاء التحديث</button>
+        <button type="button" id="confirmResetBtn" class="cta-btn">حفظ وتأكيد الدخول</button>
+        <button type="button" id="cancelResetBtn" class="popup-cancel-btn">إلغاء التحديث</button>
     </div>
 </div>
 
@@ -595,12 +781,12 @@ footer {
         <p class="popup-sub">تم إرسال كود مكون من 6 أرقام إلى بريدك الإلكتروني. الرجاء إدخاله هنا مع كلمة المرور الجديدة.</p>
         <div class="popup-input-wrap">
            <span class="flbl">كود التحقق (8 أرقام)</span>
-           <input type="text" id="otpCodeInput" class="inp" placeholder="12345678" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 1.2rem; font-weight: 700;" maxlength="8">
+           <input type="text" id="otpCodeInput" name="one-time-code" class="inp" placeholder="12345678" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 1.2rem; font-weight: 700;" maxlength="8" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" dir="ltr">
             <span class="flbl">كلمة المرور الجديدة</span>
-            <input type="password" id="otpNewPasswordInput" class="inp" placeholder="••••••••">
+            <input type="password" id="otpNewPasswordInput" name="otp-new-password" class="inp" placeholder="••••••••" autocomplete="new-password" minlength="8" dir="ltr">
         </div>
-        <button id="verifyOtpBtn" class="cta-btn">تأكيد وتغيير كلمة المرور</button>
-        <button id="cancelOtpBtn" class="popup-cancel-btn">إلغاء</button>
+        <button type="button" id="verifyOtpBtn" class="cta-btn">تأكيد وتغيير كلمة المرور</button>
+        <button type="button" id="cancelOtpBtn" class="popup-cancel-btn">إلغاء</button>
     </div>
 </div>
 
@@ -618,11 +804,11 @@ footer {
                 <option value="3">الصف الثالث الثانوي</option>
             </select>
             <span class="flbl">رقم تليفونك</span>
-            <input type="text" id="googlePhone" class="inp" placeholder="01xxxxxxxxx" style="margin-bottom: 12px;">
+            <input type="text" id="googlePhone" name="googlePhone" class="inp" placeholder="01xxxxxxxxx" style="margin-bottom: 12px;" autocomplete="tel" inputmode="tel" dir="ltr">
             <span class="flbl">رقم ولي الأمر</span>
-            <input type="text" id="googleParentPhone" class="inp" placeholder="01xxxxxxxxx">
+            <input type="text" id="googleParentPhone" name="googleParentPhone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr">
         </div>
-        <button id="saveGoogleProfileBtn" class="cta-btn">حفظ ودخول المنصة 🚀</button>
+        <button type="button" id="saveGoogleProfileBtn" class="cta-btn">حفظ ودخول المنصة 🚀</button>
     </div>
 </div>
 
@@ -679,14 +865,15 @@ footer {
             </div>
 
             <div class="tabs">
-                <button class="tab on" id="loginTab">دخول</button>
-                <button class="tab" id="signupTab">حساب جديد</button>
+                <button type="button" class="tab on" id="loginTab">دخول</button>
+                <button type="button" class="tab" id="signupTab">حساب جديد</button>
             </div>
 
+            <form id="authForm" autocomplete="on">
             <div id="extraFields" class="hidden fields" style="margin-bottom:11px;">
                 <div class="fw">
                     <span class="flbl">الاسم الرباعي</span>
-                    <input id="userName" class="inp" placeholder="اكتب اسمك كاملاً...">
+                    <input id="userName" name="name" class="inp" placeholder="اكتب اسمك كاملاً..." autocomplete="name">
                 </div>
 
                 <div class="fw">
@@ -700,21 +887,21 @@ footer {
                 </div>
                 
                 <div class="f2col">
-                    <div class="fw"><span class="flbl">رقم الطالب</span><input id="userPhone" class="inp" placeholder="01xxxxxxxxx"></div>
-                    <div class="fw"><span class="flbl">رقم ولي الأمر</span><input id="parentPhone" class="inp" placeholder="01xxxxxxxxx"></div>
+                    <div class="fw"><span class="flbl">رقم الطالب</span><input id="userPhone" name="phone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr"></div>
+                    <div class="fw"><span class="flbl">رقم ولي الأمر</span><input id="parentPhone" name="parentPhone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr"></div>
                 </div>
             </div>
 
             <div class="fields">
                 <div class="fw">
                     <span class="flbl">البريد الإلكتروني</span>
-                    <input id="email" type="email" class="inp" placeholder="example@email.com">
+                    <input id="email" name="email" type="email" class="inp" placeholder="example@email.com" autocomplete="email" autocapitalize="off" spellcheck="false" inputmode="email" dir="ltr">
                 </div>
                 <div class="fw">
                     <span class="flbl">كلمة المرور</span>
                     <div class="pass-row">
-                        <input id="password" type="password" class="inp" placeholder="••••••••">
-                        <button class="eye-btn" id="eyeBtn">
+                        <input id="password" name="password" type="password" class="inp" placeholder="••••••••" autocomplete="current-password" minlength="6" dir="ltr">
+                        <button type="button" class="eye-btn" id="eyeBtn">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                     </div>
@@ -722,10 +909,10 @@ footer {
             </div>
 
             <div id="forgotArea" class="forgot">
-                <button id="forgotBtn">نسيت كلمة المرور؟</button>
+                <button type="button" id="forgotBtn">نسيت كلمة المرور؟</button>
             </div>
 
-            <button class="cta-btn" id="actionBtn">دخول ←</button>
+            <button type="submit" class="cta-btn" id="actionBtn">دخول ←</button>
 
             <div class="or-line">
                 <div class="or-bar"></div>
@@ -733,7 +920,7 @@ footer {
                 <div class="or-bar"></div>
             </div>
 
-            <button class="g-btn" id="googleBtn">
+            <button type="button" class="g-btn" id="googleBtn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                 المتابعة مع Google
             </button>
@@ -743,6 +930,7 @@ footer {
                 <span class="trust-txt">بياناتك محمية · تشفير SSL</span>
                 <div class="trust-dot"></div>
             </div>
+            </form>
         </div>
     </div>
 </main>
@@ -829,73 +1017,135 @@ footer {
         return did;
     }
 
+    function rememberLastEmail(email) {
+        if (email) localStorage.setItem('mp_last_email', email.trim());
+    }
+
+    function preloadLastEmail() {
+        const savedEmail = localStorage.getItem('mp_last_email');
+        const emailInput = document.getElementById('email');
+        if (savedEmail && emailInput && !emailInput.value) {
+            emailInput.value = savedEmail;
+        }
+    }
+
+    function isUserBlocked(userRecord = {}) {
+        if (!userRecord || typeof userRecord !== 'object') return false;
+
+        const directFlags = [
+            userRecord.blocked,
+            userRecord.is_blocked,
+            userRecord.isblocked,
+            userRecord.banned,
+            userRecord.is_banned,
+            userRecord.disabled,
+            userRecord.suspended
+        ];
+        if (directFlags.some(value => value === true)) return true;
+
+        const statuses = [
+            userRecord.status,
+            userRecord.account_status,
+            userRecord.access_status,
+            userRecord.user_status
+        ]
+            .filter(value => typeof value === 'string')
+            .map(value => value.trim().toLowerCase());
+
+        if (statuses.some(value => ['blocked', 'block', 'banned', 'disabled', 'suspended', 'inactive'].includes(value))) {
+            return true;
+        }
+
+        if (userRecord.blocked_until) {
+            const untilDate = new Date(userRecord.blocked_until);
+            if (!Number.isNaN(untilDate.getTime()) && untilDate.getTime() > Date.now()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    async function handleBlockedUser(userRecord, message = "⛔ هذا الحساب محظور حالياً من لوحة المدرس. تواصل مع الإدارة لاستعادة الوصول.") {
+        if (!isUserBlocked(userRecord)) return false;
+        await supabaseClient.auth.signOut();
+        alert(message);
+        return true;
+    }
+
     async function checkSessionOnLoad() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-            const user = session.user;
-            if (user.email === adminEmail) {
-                window.location.href = "teacher-dashboard.html";
+        if (!session) return;
+
+        const user = session.user;
+        rememberLastEmail(user.email || '');
+
+        if (user.email === adminEmail) {
+            window.location.href = "teacher-dashboard.html";
+            return;
+        }
+
+        const { data: dbUser } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
+
+        if (await handleBlockedUser(dbUser)) {
+            return;
+        }
+
+        const deviceId = getLocalDeviceId();
+        let userDevices = Array.isArray(dbUser?.devices) ? dbUser.devices : [];
+
+        if (!userDevices.includes(deviceId)) {
+            if (userDevices.length >= 2) {
+                await supabaseClient.auth.signOut();
+                alert("⚠️ عذراً، لا يمكنك الدخول من أكثر من جهازين. هذا الحساب مسجل على الحد الأقصى للأجهزة.");
                 return;
             }
 
-            const { data: dbUser } = await supabaseClient.from('users').select('*').eq('id', user.id).single();
-            
-            const deviceId = getLocalDeviceId();
-            let userDevices = [];
-            if (dbUser && dbUser.devices) userDevices = dbUser.devices;
-            
-            if (!userDevices.includes(deviceId)) {
-                if (userDevices.length >= 2) {
-                    await supabaseClient.auth.signOut();
-                    alert("⚠️ عذراً، لا يمكنك الدخول من أكثر من جهازين. هذا الحساب مسجل على الحد الأقصى للأجهزة.");
-                    return;
-                } else {
-                    userDevices.push(deviceId);
-                    if (dbUser) { 
-                        await supabaseClient.from('users').update({ devices: userDevices }).eq('id', user.id);
-                    }
-                }
-            }
-
-            if (!dbUser || !dbUser.phone || !dbUser.parentphone) {
-                document.getElementById('googleProfilePopup').classList.add('show');
-                
-                document.getElementById('saveGoogleProfileBtn').onclick = async () => {
-                    const grade = document.getElementById('googleGrade').value;
-                    const phone = document.getElementById('googlePhone').value;
-                    const parentPhone = document.getElementById('googleParentPhone').value;
-                    const btn = document.getElementById('saveGoogleProfileBtn');
-                    
-                    if (!grade || !phone || !parentPhone) return alert("من فضلك أكمل جميع البيانات!");
-
-                    btn.textContent = "جاري الحفظ...";
-                    const name = user.user_metadata?.full_name || "طالب جديد";
-
-                    const { error } = await supabaseClient.from('users').upsert({
-                        id: user.id,
-                        email: user.email,
-                        name: name,
-                        grade: grade,
-                        phone: phone,
-                        parentphone: parentPhone,
-                        studentid: Math.floor(100000 + Math.random() * 900000).toString(),
-                        role: 'student',
-                        devices: userDevices 
-                    });
-                    
-                    if (error) {
-                        alert("خطأ: " + error.message);
-                        btn.textContent = "حفظ ودخول المنصة 🚀";
-                    } else {
-                        window.location.href = "dashboard.html";
-                    }
-                };
-            } else {
-                window.location.href = "dashboard.html";
+            userDevices.push(deviceId);
+            if (dbUser) {
+                await supabaseClient.from('users').update({ devices: userDevices }).eq('id', user.id);
             }
         }
+
+        if (!dbUser || !dbUser.phone || !dbUser.parentphone) {
+            document.getElementById('googleProfilePopup').classList.add('show');
+
+            document.getElementById('saveGoogleProfileBtn').onclick = async () => {
+                const grade = document.getElementById('googleGrade').value;
+                const phone = document.getElementById('googlePhone').value;
+                const parentPhone = document.getElementById('googleParentPhone').value;
+                const btn = document.getElementById('saveGoogleProfileBtn');
+
+                if (!grade || !phone || !parentPhone) return alert("من فضلك أكمل جميع البيانات!");
+
+                btn.textContent = "جاري الحفظ...";
+                const name = user.user_metadata?.full_name || "طالب جديد";
+
+                const { error } = await supabaseClient.from('users').upsert({
+                    id: user.id,
+                    email: user.email,
+                    name: name,
+                    grade: grade,
+                    phone: phone,
+                    parentphone: parentPhone,
+                    studentid: Math.floor(100000 + Math.random() * 900000).toString(),
+                    role: 'student',
+                    devices: userDevices
+                });
+
+                if (error) {
+                    alert("خطأ: " + error.message);
+                    btn.textContent = "حفظ ودخول المنصة 🚀";
+                } else {
+                    window.location.href = "dashboard.html";
+                }
+            };
+        } else {
+            window.location.href = "dashboard.html";
+        }
     }
-    
+
+    preloadLastEmail();
     checkSessionOnLoad();
 
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -943,42 +1193,60 @@ footer {
     const extra = document.getElementById("extraFields");
     const btn = document.getElementById("actionBtn");
     const fa = document.getElementById("forgotArea");
+    const authForm = document.getElementById("authForm");
+    const passwordInput = document.getElementById("password");
 
-    sTab.onclick = () => { 
-        mode="signup"; 
+    function syncAuthModeUI() {
+        passwordInput.setAttribute('autocomplete', mode === 'login' ? 'current-password' : 'new-password');
+        passwordInput.setAttribute('aria-label', mode === 'login' ? 'كلمة المرور الحالية' : 'كلمة المرور الجديدة');
+    }
+
+    sTab.onclick = () => {
+        mode = "signup";
         extra.classList.remove("hidden");
-        btn.textContent="إنشاء حساب جديد ←"; 
-        fa.classList.add("hidden"); 
-        sTab.classList.add("on"); 
-        lTab.classList.remove("on"); 
+        btn.textContent = "إنشاء حساب جديد ←";
+        fa.classList.add("hidden");
+        sTab.classList.add("on");
+        lTab.classList.remove("on");
+        syncAuthModeUI();
     };
-    lTab.onclick = () => { 
-        mode="login"; 
-        extra.classList.add("hidden"); 
-        btn.textContent="دخول ←"; 
-        fa.classList.remove("hidden"); 
-        lTab.classList.add("on"); 
+    lTab.onclick = () => {
+        mode = "login";
+        extra.classList.add("hidden");
+        btn.textContent = "دخول ←";
+        fa.classList.remove("hidden");
+        lTab.classList.add("on");
         sTab.classList.remove("on");
+        syncAuthModeUI();
     };
+    syncAuthModeUI();
 
     // 3. التسجيل والدخول
-    btn.onclick = async () => {
-        const e = document.getElementById("email").value;
+    authForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const e = document.getElementById("email").value.trim();
         const p = document.getElementById("password").value;
-        
+
         try {
             if (mode === "signup") {
-                const n = document.getElementById("userName").value;
+                const n = document.getElementById("userName").value.trim();
                 const g = document.getElementById("userGrade").value;
-                const ph = document.getElementById("userPhone").value;
-                const pp = document.getElementById("parentPhone").value;
+                const ph = document.getElementById("userPhone").value.trim();
+                const pp = document.getElementById("parentPhone").value.trim();
 
-                if(!n || !g || !ph || !pp || !e || !p) return alert("من فضلك أكمل جميع البيانات أولاً");
+                if (!n || !g || !ph || !pp || !e || !p) return alert("من فضلك أكمل جميع البيانات أولاً");
 
                 btn.textContent = "جاري الإنشاء...";
-                const { data, error } = await supabaseClient.auth.signUp({ email: e, password: p });
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: e,
+                    password: p,
+                    options: {
+                        data: { full_name: n }
+                    }
+                });
                 if (error) throw error;
-                
+
                 if (data.user) {
                     const deviceId = getLocalDeviceId();
                     const { error: insertError } = await supabaseClient.from('users').insert([{
@@ -990,25 +1258,34 @@ footer {
                         parentphone: pp,
                         studentid: Math.floor(100000 + Math.random() * 900000).toString(),
                         role: "student",
-                        devices: [deviceId] 
+                        devices: [deviceId]
                     }]);
                     if (insertError) throw insertError;
                 }
+
+                rememberLastEmail(e);
                 window.location.href = "dashboard.html";
             } else {
                 btn.textContent = "جاري الدخول...";
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email: e, password: p });
                 if (error) throw error;
-                
+
+                rememberLastEmail(e);
+
                 if (e === adminEmail) {
                     window.location.href = "teacher-dashboard.html";
                     return;
                 }
 
+                const { data: dbUser } = await supabaseClient.from('users').select('*').eq('id', data.user.id).single();
+
+                if (await handleBlockedUser(dbUser)) {
+                    btn.textContent = "دخول ←";
+                    return;
+                }
+
                 const deviceId = getLocalDeviceId();
-                const { data: dbUser } = await supabaseClient.from('users').select('devices').eq('id', data.user.id).single();
-                
-                let userDevices = dbUser?.devices || [];
+                let userDevices = Array.isArray(dbUser?.devices) ? dbUser.devices : [];
                 if (!userDevices.includes(deviceId)) {
                     if (userDevices.length >= 2) {
                         await supabaseClient.auth.signOut();
@@ -1023,11 +1300,11 @@ footer {
 
                 window.location.href = "dashboard.html";
             }
-        } catch(err) {
+        } catch (err) {
             alert("خطأ: " + err.message);
             btn.textContent = mode === "login" ? "دخول ←" : "إنشاء حساب جديد ←";
         }
-    };
+    });
 
     // 4. تسجيل الدخول بجوجل
     document.getElementById("googleBtn").onclick = async () => {
@@ -1042,15 +1319,18 @@ footer {
 
     // 5. نسيت كلمة المرور (OTP)
     document.getElementById("forgotBtn").onclick = async () => {
-        const emailValue = document.getElementById("email").value;
+        const emailValue = document.getElementById("email").value.trim();
         if(!emailValue) return alert("اكتب إيميلك أولاً في خانة البريد الإلكتروني بالأعلى");
-        
+
+        rememberLastEmail(emailValue);
         document.getElementById("forgotBtn").textContent = "جاري الإرسال...";
         try {
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(emailValue);
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(emailValue, {
+                redirectTo: window.location.origin + window.location.pathname
+            });
             if (error) throw error;
             document.getElementById('otpResetPopupOverlay').classList.add('show');
-        } catch(e) { 
+        } catch(e) {
             alert("خطأ: " + e.message);
         }
         document.getElementById("forgotBtn").textContent = "نسيت كلمة المرور؟";
@@ -1109,40 +1389,32 @@ footer {
         }
     };
 
-    // 6. المؤثرات البصرية (الماوس، الخلفية، وإظهار الباسورد)
-    const dot=document.getElementById('cur-dot'), ring=document.getElementById('cur-ring');
-    let mx=0,my=0,rx=0,ry=0;
-    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
-    (function ar(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ar);})();
-
-    const c=document.getElementById('cvs'),cx=c.getContext('2d');
-    let W,H,pts=[];
-    function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
-    resize();window.addEventListener('resize',resize);
-    class P{
-        constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.r=Math.random()*1.5+.5;}
-        update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1;}
-        draw(){cx.beginPath();cx.arc(this.x,this.y,this.r,0,Math.PI*2);cx.fillStyle='rgba(0,181,120,.4)';cx.fill();}
-    }
-    for(let i=0;i<80;i++)pts.push(new P());
-    (function anim(){
-        cx.clearRect(0,0,W,H);
-        pts.forEach(p=>{p.update();p.draw();});
-        for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
-            const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
-            if(d<130){cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.strokeStyle=`rgba(0,181,120,${(1-d/130)*.1})`;cx.lineWidth=.7;cx.stroke();}
-        }
-        requestAnimationFrame(anim);
-    })();
-
+    // 6. مؤثرات خفيفة ومريحة للعين + إظهار الباسورد
     function countUp(el,t){let v=0,s=Math.ceil(t/60);const id=setInterval(()=>{v=Math.min(v+s,t);el.textContent=(v===t&&t>=100)?'+'+v:v;if(v>=t)clearInterval(id);},22);}
-    new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('[data-count]').forEach(el=>countUp(el,+el.dataset.count));}});},{threshold:.3}).observe(document.querySelector('.hero-stats'));
+    const statsSection = document.querySelector('.hero-stats');
+    if (statsSection) {
+        new IntersectionObserver(es=>{
+            es.forEach(e=>{
+                if(e.isIntersecting){
+                    document.querySelectorAll('[data-count]').forEach(el=>countUp(el,+el.dataset.count));
+                }
+            });
+        },{threshold:.3}).observe(statsSection);
+    }
 
-    document.getElementById('eyeBtn').onclick=()=>{const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';};
+    document.getElementById('eyeBtn').onclick=()=>{
+        const p=document.getElementById('password');
+        p.type=p.type==='password'?'text':'password';
+    };
 
     const card=document.getElementById('authCard');
-    card.addEventListener('mousemove',e=>{const r=card.getBoundingClientRect();card.style.background=`radial-gradient(380px circle at ${e.clientX-r.left}px ${e.clientY-r.top}px,rgba(0,181,120,.03),transparent 55%),rgba(255,255,255,.9)`;});
-    card.addEventListener('mouseleave',()=>{card.style.background='rgba(255,255,255,.9)';});
+    card.addEventListener('mousemove',e=>{
+        const r=card.getBoundingClientRect();
+        card.style.background=`radial-gradient(420px circle at ${e.clientX-r.left}px ${e.clientY-r.top}px, rgba(37,99,235,.05), transparent 55%), rgba(255,255,255,.76)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+        card.style.background='rgba(255,255,255,.76)';
+    });
 </script>
 </body>
 </html>
