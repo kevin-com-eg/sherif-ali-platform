@@ -6,8 +6,6 @@
 <title>MathPro | منطقة الحصة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -53,10 +51,6 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --shadow: 0 4px 24px rgba(0,0,0,.06);
   --shadow2: 0 12px 48px rgba(0,0,0,.12);
   --nav-h: 68px;
-
-  /* تخصيص ألوان مشغل Plyr لتناسب اللون الأخضر */
-  --plyr-color-main: var(--accent);
-  --plyr-video-background: #000;
 }
 
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:filter .2s,opacity .2s;}
@@ -295,7 +289,7 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
 .pdf-dl-btn:hover{box-shadow:0 12px 28px rgba(22, 163, 74,.45);transform:translateY(-2px);}
 
 /* ═══════════════════════════════════════════════
-   ── NEW VIDEO PLAYER (PLYR) WRAPPER ──
+   ── NEW VIDEO PLAYER (DRIVE) WRAPPER ──
    ═══════════════════════════════════════════════ */
 
 .vid-section-title{
@@ -321,28 +315,6 @@ main{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 20px
   width:100%;
   aspect-ratio:16/9;
   background:#000;
-}
-.player-frame iframe,
-.player-frame .plyr,
-.player-frame video{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-}
-.player-wrapper .plyr{
-  --plyr-control-radius: 10px;
-  --plyr-control-spacing: 10px;
-}
-.player-wrapper .plyr__controls{
-  direction:ltr;
-  position:relative;
-  z-index:6;
-}
-.player-wrapper .plyr__menu__container,
-.player-wrapper .plyr__tooltip{
-  direction:ltr;
 }
 .player-stealth-mask{
   position:absolute;
@@ -572,7 +544,7 @@ const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
 let examTimer,myStudentId="000000",vidPlayerInited=false;
 let hwData=null,hwUserAns={},hwCurIdx=0,hwDone=false,hwQuestions=[],hwStarted=false;
-let plyrInstance = null;
+let plyrInstance = null; // مبقتش مستخدمة بس سيبتها عشان مفيش حاجة تضرب
 
 /* ═══════════════════════════════════════════════
    ── MAIN INIT & UI LOGIC
@@ -595,7 +567,7 @@ window.switchTab=(tab)=>{
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
     
-    // إيقاف الفيديو عند تغيير التبويب
+    // إيقاف الفيديو عند تغيير التبويب (لو كنت مستخدم حاجة تانية)
     if(tab!=='video' && plyrInstance){
       try{ plyrInstance.pause(); }catch(e){}
     }
@@ -603,33 +575,23 @@ window.switchTab=(tab)=>{
   },400);
 };
 
-/* ── PLYR VIDEO PLAYER INITIALIZATION ── */
+/* ── GOOGLE DRIVE VIDEO PLAYER INITIALIZATION ── */
 function detectVideoType(url){
   if(!url)return null;
-  if(/youtube\.com|youtu\.be/.test(url))return 'youtube';
+  // التعرف على روابط جوجل درايف
+  if(/drive\.google\.com/.test(url))return 'drive';
   return null;
 }
-function extractYouTubeId(url){
+
+function extractDriveId(url){
   if(!url)return null;
+  // استخراج الـ ID من أشكال روابط درايف المختلفة
   const patterns=[
-    /(?:youtu\.be\/)([^#&?]{11})/,
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/))([^#&?]{11})/
+    /\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /id=([a-zA-Z0-9_-]+)/
   ];
   for(const p of patterns){const m=url.match(p);if(m)return m[1];}
   return null;
-}
-function buildPlayerOptions(extra={}){
-  return {
-    controls:['play-large','restart','rewind','play','fast-forward','progress','current-time','duration','mute','volume','settings','pip','airplay','fullscreen'],
-    settings:['speed','quality'],
-    speed:{selected:1,options:[0.5,0.75,1,1.25,1.5,1.75,2]},
-    seekTime:10,
-    tooltips:{controls:true,seek:true},
-    invertTime:false,
-    keyboard:{focused:true,global:true},
-    ratio:'16:9',
-    ...extra
-  };
 }
 
 function initStealthPlayer(){
@@ -639,14 +601,14 @@ function initStealthPlayer(){
   const type=detectVideoType(url);
   const vc=document.getElementById('tab-video');
 
-  if(type!=='youtube'){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ هذا المشغل يدعم روابط يوتيوب فقط</div>`;
+  if(type!=='drive'){
+    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ هذا المشغل يدعم روابط جوجل درايف فقط</div>`;
     return;
   }
 
-  const videoId=extractYouTubeId(url);
+  const videoId=extractDriveId(url);
   if(!videoId){
-    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط يوتيوب غير صحيح</div>`;
+    vc.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text2);">⚠️ رابط جوجل درايف غير صحيح</div>`;
     return;
   }
 
@@ -654,13 +616,13 @@ function initStealthPlayer(){
     <div class="vid-section-title">فيديو الشرح</div>
     <div class="player-wrapper">
       <div class="player-frame">
-        <div class="plyr__video-embed" id="player">
+        <div id="player" style="position: absolute; inset: 0; width: 100%; height: 100%;">
           <iframe
-            src="https://www.youtube-nocookie.com/embed/${videoId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&controls=0&fs=0&disablekb=1&cc_load_policy=0&enablejsapi=1"
+            src="https://drive.google.com/file/d/${videoId}/preview"
             allowfullscreen
             allowtransparency
-            referrerpolicy="strict-origin-when-cross-origin"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen">
+            allow="autoplay; fullscreen"
+            style="width: 100%; height: 100%; border: none;">
           </iframe>
         </div>
         <div class="player-stealth-mask top"></div>
@@ -673,19 +635,6 @@ function initStealthPlayer(){
       </div>
     </div>
   `;
-
-  plyrInstance = new Plyr('#player', buildPlayerOptions({
-    youtube:{
-      noCookie:true,
-      rel:0,
-      modestbranding:1,
-      iv_load_policy:3,
-      playsinline:1,
-      controls:0,
-      fs:0,
-      disablekb:1
-    }
-  }));
 }
 
 async function initLessonPage(){
