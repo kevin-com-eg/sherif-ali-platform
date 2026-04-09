@@ -248,6 +248,21 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
 .sp-item-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
 .sp-item-score { font-family: var(--mono); font-size: 0.8rem; font-weight: 900; color: var(--teal); background: var(--teal3); padding: 4px 10px; border-radius: 6px; }
 .sp-item-date { font-family: var(--mono); font-size: 0.7rem; color: var(--text3); }
+.sp-meta-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:18px; }
+.sp-meta-card { background:var(--bg); border:1px solid var(--border2); border-radius:12px; padding:12px 14px; }
+.sp-meta-label { font-size:0.65rem; color:var(--text3); font-family:var(--mono); margin-bottom:5px; }
+.sp-meta-value { font-size:0.88rem; color:var(--text); font-weight:800; word-break:break-word; }
+.sp-actions-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.wa-btn { background:#25D366; color:#fff; box-shadow:0 4px 14px rgba(37,211,102,.22); }
+.wa-btn:hover { background:#1ebe5d; box-shadow:0 6px 20px rgba(37,211,102,.30); transform:translateY(-1px); }
+.wa-btn[disabled], .wa-btn.is-disabled { background:#cbd5e1; color:#475569; box-shadow:none; cursor:not-allowed; }
+.sent-chip { display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#166534; border:1px solid #bbf7d0; padding:5px 10px; border-radius:999px; font-size:0.68rem; font-weight:900; }
+.sp-note { background:var(--bg); border:1px solid var(--border); color:var(--text2); padding:12px 14px; border-radius:12px; font-size:0.8rem; line-height:1.7; margin-bottom:14px; }
+.sp-item-main { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.sp-item-side { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.sp-item-sub { font-size:0.72rem; color:var(--text3); }
+.sp-action-btn { padding:7px 12px; font-size:0.72rem; }
+.sp-empty-note { text-align:center; padding:24px; color:var(--text3); background:var(--bg); border-radius:12px; }
 
 /* ── MOBILE ── */
 .mob-toggle{display:none;position:fixed;bottom:16px;right:16px;z-index:200;width:48px;height:48px;background:var(--teal);border-radius:50%;border:none;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(13,122,95,.4);align-items:center;justify-content:center;}
@@ -524,7 +539,9 @@ tbody td{padding:12px 16px;font-size:.875rem;vertical-align:middle;}
           <div class="sp-email" id="spEmail">email@student.com</div>
         </div>
       </div>
-      <div style="display:flex; gap:10px; align-items:center;">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+        <span id="spSummarySentBadge" class="sent-chip hidden">تم الإرسال ✅</span>
+        <button id="spSendSummaryBtn" class="btn wa-btn" style="padding: 6px 12px; font-size: 0.75rem;">إرسال تقرير ولي الأمر</button>
         <button id="spBlockBtn" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.75rem;">حظر الطالب 🚫</button>
         <button class="sp-close" onclick="closeStudentProfile()">✖</button>
       </div>
@@ -557,6 +574,8 @@ const ADMIN="kevin.hany.08@proton.me";
 
 let editingLessonId=null, editingHwId=null, allLessonsData={}, allHwData={};
 let examResultsData = [], hwResultsData = [], currentResTab = 'exam';
+let studentsByEmail = {}, currentStudentProfileState = null, whatsappPayloads = {};
+const GRADE_MAP={"1":"أولى ثانوي","2":"تانية ثانوي","3":"تالتة ثانوي"};
 
 /* ── دالة استخراج اسم الطالب من أي عمود ── */
 function getStudentName(userObj) {
@@ -637,13 +656,14 @@ async function loadResults(){
         if(u.email) {
           const resolvedName = getStudentName(u);
           usersMap[u.email] = {
-            name: resolvedName || u.email.split('@')[0], // fallback للإيميل لو مفيش اسم
+            name: resolvedName || u.email.split('@')[0],
             isBlocked: u.is_blocked || false,
-            rawData: u // نحتفظ بالبيانات الكاملة
+            rawData: u
           };
         }
       });
     }
+    studentsByEmail = usersMap;
     
     examResultsData = (resData || []).map(r => ({
       ...r, 
@@ -736,33 +756,257 @@ window.searchTable=()=>{
 };
 
 /* ── دوال نافذة الطالب ── */
+function getParentPhone(user){
+    return user?.parentphone || user?.parent_phone || user?.parentPhone || user?.parentwhatsapp || user?.parent_whatsapp || '';
+}
+function getStudentPhone(user){
+    return user?.phone || user?.studentphone || user?.student_phone || '';
+}
+function getStudentCode(user){
+    return user?.studentid || user?.student_id || user?.id || '—';
+}
+function normalizeWhatsAppNumber(phone){
+    if(!phone) return '';
+    let digits = String(phone).replace(/\D/g,'');
+    if(!digits) return '';
+    if(digits.startsWith('00')) digits = digits.slice(2);
+    if(digits.startsWith('0') && digits.length===11) digits = '2' + digits;
+    if(digits.startsWith('20') && digits.length===12) return digits;
+    if(digits.length >= 10 && !digits.startsWith('20')) return digits;
+    return digits;
+}
+function getWhatsAppSentStore(){
+    try{return JSON.parse(localStorage.getItem('mathpro_whatsapp_sent_v1')||'{}');}
+    catch(e){return {};}
+}
+function setWhatsAppSentFlag(key){
+    const store = getWhatsAppSentStore();
+    store[key] = new Date().toISOString();
+    localStorage.setItem('mathpro_whatsapp_sent_v1', JSON.stringify(store));
+}
+function hasWhatsAppSentFlag(key){
+    return !!getWhatsAppSentStore()[key];
+}
+function formatProfileDate(value){
+    if(!value) return '—';
+    try{return new Date(value).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'});}catch(e){return '—';}
+}
+function buildWhatsAppUrl(phone, text){
+    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+}
+function buildGradeMessage({studentName, itemName, score, total, itemType, gradeLabel, when}){
+    return [
+        'السلام عليكم ورحمة الله وبركاته',
+        '',
+        `متابعة ${itemType==='exam' ? 'امتحان' : 'واجب'} الطالب: ${studentName}`,
+        `الصف: ${gradeLabel || 'غير محدد'}`,
+        `${itemType==='exam' ? 'الحصة' : 'الواجب'}: ${itemName}`,
+        `الدرجة: ${score}/${total}`,
+        `التاريخ: ${when || '—'}`,
+        '',
+        'مع تحيات MathPro 🌟'
+    ].join('\n');
+}
+function buildSummaryMessage(state){
+    const user = state.user || {};
+    const gradeLabel = GRADE_MAP[String(user.grade||'')] || 'غير محدد';
+    const lines = [
+        'السلام عليكم ورحمة الله وبركاته',
+        '',
+        `تقرير مختصر للطالب: ${state.name}`,
+        `الصف: ${gradeLabel}`,
+        `عدد الحصص المفعلة: ${state.purchasedLessons.length}`,
+        `عدد الامتحانات: ${state.studentExams.length}`,
+        `عدد الواجبات: ${state.studentHws.length}`,
+        ''
+    ];
+    if(state.studentExams.length){
+        lines.push('درجات الامتحانات:');
+        state.studentExams.forEach(ex => lines.push(`- ${ex.lessonName}: ${ex.score}/${ex.total}`));
+        lines.push('');
+    }
+    if(state.studentHws.length){
+        lines.push('درجات الواجبات:');
+        state.studentHws.forEach(hw => lines.push(`- ${hw.lessonName}: ${hw.score}/${hw.total}`));
+        lines.push('');
+    }
+    lines.push('مع تحيات MathPro 🌟');
+    return lines.join('\n');
+}
+function renderWhatsAppAction({viewKey, sentId, enabled=true, label='إرسال واتساب'}){
+    const sent = hasWhatsAppSentFlag(sentId);
+    const statusHtml = sent ? `<span class="sent-chip">تم الإرسال ✅</span>` : '';
+    const btnHtml = enabled
+        ? `<button class="btn wa-btn sp-action-btn" onclick="sendWhatsAppMessage('${viewKey}')">${label}</button>`
+        : `<button class="btn wa-btn sp-action-btn is-disabled" disabled>لا يوجد رقم ولي أمر</button>`;
+    return `${statusHtml}${btnHtml}`;
+}
+function renderStudentProfileState(){
+    const state = currentStudentProfileState;
+    if(!state) return;
+
+    const user = state.user || {};
+    const gradeLabel = GRADE_MAP[String(user.grade||'')] || 'غير محدد';
+    const parentPhoneRaw = getParentPhone(user);
+    const parentPhone = normalizeWhatsAppNumber(parentPhoneRaw);
+    const studentPhone = getStudentPhone(user);
+    const studentCode = getStudentCode(user);
+    const detailsArea = document.getElementById('spDetailsArea');
+    const summaryBtn = document.getElementById('spSendSummaryBtn');
+    const summaryBadge = document.getElementById('spSummarySentBadge');
+
+    whatsappPayloads = {};
+    const summarySentId = `summary|${state.email}|${state.studentExams.length}|${state.studentHws.length}|${state.purchasedLessons.length}`;
+    whatsappPayloads.summary = {
+        phone: parentPhone,
+        text: buildSummaryMessage(state),
+        sentId: summarySentId
+    };
+
+    summaryBtn.disabled = !parentPhone;
+    summaryBtn.className = parentPhone ? 'btn wa-btn' : 'btn wa-btn is-disabled';
+    summaryBtn.textContent = parentPhone ? 'إرسال تقرير ولي الأمر' : 'لا يوجد رقم ولي أمر';
+    summaryBtn.onclick = parentPhone ? (() => sendWhatsAppMessage('summary')) : null;
+    summaryBadge.classList.toggle('hidden', !hasWhatsAppSentFlag(summarySentId));
+
+    let html = `
+        <div class="sp-section-title">🪪 بيانات الطالب</div>
+        <div class="sp-meta-grid">
+            <div class="sp-meta-card"><div class="sp-meta-label">الاسم</div><div class="sp-meta-value">${state.name || '—'}</div></div>
+            <div class="sp-meta-card"><div class="sp-meta-label">البريد</div><div class="sp-meta-value">${state.email || '—'}</div></div>
+            <div class="sp-meta-card"><div class="sp-meta-label">رقم الطالب</div><div class="sp-meta-value">${studentCode || '—'}</div></div>
+            <div class="sp-meta-card"><div class="sp-meta-label">الصف</div><div class="sp-meta-value">${gradeLabel}</div></div>
+            <div class="sp-meta-card"><div class="sp-meta-label">موبايل الطالب</div><div class="sp-meta-value">${studentPhone || '—'}</div></div>
+            <div class="sp-meta-card"><div class="sp-meta-label">واتساب ولي الأمر</div><div class="sp-meta-value">${parentPhoneRaw || 'غير موجود'}</div></div>
+        </div>
+        <div class="sp-note">زر واتساب يفتح رسالة جاهزة لولي الأمر. بعد الضغط يتم تعليم العنصر على أنه <strong>تم الإرسال</strong> داخل اللوحة، لكن هذا لا يؤكد التسليم الفعلي من واتساب.</div>
+    `;
+
+    if(state.purchasedLessons.length > 0) {
+        html += `<div class="sp-section-title">🎫 الحصص المشترك بها</div><div class="sp-list">`;
+        state.purchasedLessons.forEach(l => {
+            const expired = l.expiry && l.expiry < new Date();
+            html += `<div class="sp-item">
+                <div class="sp-item-main">
+                    <span class="sp-item-name">${l.name} ${expired ? '<span style="color:var(--red);font-size:0.7rem;">(منتهية)</span>' : '<span style="color:var(--teal);font-size:0.7rem;">(سارية)</span>'}</span>
+                    <span class="sp-item-sub">تنتهي: ${formatProfileDate(l.expiry)}</span>
+                </div>
+                <span class="sp-item-date">${l.usedDate ? 'تفعيل: ' + formatProfileDate(l.usedDate) : ''}</span>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    if(state.studentExams.length > 0) {
+        html += `<div class="sp-section-title">📝 درجات الحصص / الامتحانات</div><div class="sp-list">`;
+        state.studentExams.forEach((ex, i) => {
+            const viewKey = `exam_${i}`;
+            const when = formatProfileDate(ex.date);
+            const sentId = `exam|${state.email}|${ex.lessonName}|${ex.score}|${ex.total}|${ex.date||''}`;
+            whatsappPayloads[viewKey] = {
+                phone: parentPhone,
+                text: buildGradeMessage({
+                    studentName: state.name,
+                    itemName: ex.lessonName || 'حصة',
+                    score: ex.score,
+                    total: ex.total,
+                    itemType: 'exam',
+                    gradeLabel,
+                    when
+                }),
+                sentId
+            };
+            html += `<div class="sp-item">
+                <div class="sp-item-main">
+                    <span class="sp-item-name">${ex.lessonName || '—'}</span>
+                    <span class="sp-item-sub">تاريخ الأداء: ${when}</span>
+                </div>
+                <div class="sp-item-side">
+                    <span class="sp-item-score">${ex.score}/${ex.total}</span>
+                    ${renderWhatsAppAction({viewKey, sentId, enabled: !!parentPhone, label: 'إرسال الدرجة'})}
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    if(state.studentHws.length > 0) {
+        html += `<div class="sp-section-title">📋 درجات الواجبات</div><div class="sp-list">`;
+        state.studentHws.forEach((hw, i) => {
+            const viewKey = `hw_${i}`;
+            const when = formatProfileDate(hw.date || hw.created_at);
+            const sentId = `hw|${state.email}|${hw.lessonName}|${hw.score}|${hw.total}|${hw.date||hw.created_at||''}`;
+            whatsappPayloads[viewKey] = {
+                phone: parentPhone,
+                text: buildGradeMessage({
+                    studentName: state.name,
+                    itemName: hw.lessonName || 'واجب',
+                    score: hw.score,
+                    total: hw.total,
+                    itemType: 'hw',
+                    gradeLabel,
+                    when
+                }),
+                sentId
+            };
+            html += `<div class="sp-item">
+                <div class="sp-item-main">
+                    <span class="sp-item-name">${hw.lessonName || '—'}</span>
+                    <span class="sp-item-sub">تاريخ التسليم: ${when}</span>
+                </div>
+                <div class="sp-item-side">
+                    <span class="sp-item-score">${hw.score}/${hw.total}</span>
+                    ${renderWhatsAppAction({viewKey, sentId, enabled: !!parentPhone, label: 'إرسال الدرجة'})}
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    if(!state.purchasedLessons.length && !state.studentExams.length && !state.studentHws.length) {
+        html += `<div class="sp-empty-note">هذا الطالب لم يشترك في حصص ولم يسلّم واجبات أو امتحانات بعد.</div>`;
+    }
+
+    detailsArea.innerHTML = html;
+}
+
+window.sendWhatsAppMessage = function(viewKey){
+    const payload = whatsappPayloads[viewKey];
+    if(!payload) return alert('تعذر تجهيز الرسالة.');
+    if(!payload.phone) return alert('رقم ولي الأمر غير موجود لهذا الطالب.');
+
+    window.open(buildWhatsAppUrl(payload.phone, payload.text), '_blank');
+    setWhatsAppSentFlag(payload.sentId);
+    renderStudentProfileState();
+};
+
 async function openStudentProfile(email, name, isBlocked) {
     document.getElementById('spName').textContent = name;
     document.getElementById('spEmail').textContent = email;
     document.getElementById('studentProfileModal').classList.add('show');
-    
+
     const blockBtn = document.getElementById('spBlockBtn');
     const blockedBadge = document.getElementById('spBlockedBadge');
-    
+
     if(isBlocked) {
         blockedBadge.classList.remove('hidden');
-        blockBtn.textContent = "إلغاء الحظر 🔓";
-        blockBtn.className = "btn btn-ghost";
-        blockBtn.style.padding = "6px 12px";
-        blockBtn.style.fontSize = "0.75rem";
+        blockBtn.textContent = 'إلغاء الحظر 🔓';
+        blockBtn.className = 'btn btn-ghost';
+        blockBtn.style.padding = '6px 12px';
+        blockBtn.style.fontSize = '0.75rem';
         blockBtn.onclick = () => toggleBlockStudent(email, true);
     } else {
         blockedBadge.classList.add('hidden');
-        blockBtn.textContent = "حظر الطالب 🚫";
-        blockBtn.className = "btn btn-danger";
-        blockBtn.style.padding = "6px 12px";
-        blockBtn.style.fontSize = "0.75rem";
+        blockBtn.textContent = 'حظر الطالب 🚫';
+        blockBtn.className = 'btn btn-danger';
+        blockBtn.style.padding = '6px 12px';
+        blockBtn.style.fontSize = '0.75rem';
         blockBtn.onclick = () => toggleBlockStudent(email, false);
     }
-    
-    document.getElementById('spLessonsCount').textContent = "...";
-    document.getElementById('spExamsCount').textContent = "...";
-    document.getElementById('spHwsCount').textContent = "...";
+
+    document.getElementById('spLessonsCount').textContent = '...';
+    document.getElementById('spExamsCount').textContent = '...';
+    document.getElementById('spHwsCount').textContent = '...';
     const detailsArea = document.getElementById('spDetailsArea');
     detailsArea.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text3);">جاري جلب بيانات الطالب... ⏳</div>`;
 
@@ -770,74 +1014,46 @@ async function openStudentProfile(email, name, isBlocked) {
         const studentExams = examResultsData.filter(r => r.email === email);
         const studentHws = hwResultsData.filter(r => r.email === email);
 
-        let purchasedLessons = [];
-        const { data: codes } = await supabaseClient
-            .from('codes')
-            .select('lessonid, expiryat')
-            .eq('usedby', email)
-            .eq('used', true);
+        const [{ data: codes }, { data: userRow }] = await Promise.all([
+            supabaseClient.from('codes').select('lessonid, expiryat, used_at, created_at').eq('usedby', email).eq('used', true),
+            supabaseClient.from('users').select('*').eq('email', email).maybeSingle()
+        ]);
 
+        let purchasedLessons = [];
         if (codes) {
             purchasedLessons = codes.map(c => ({
                 name: allLessonsData[c.lessonid]?.name || 'حصة محذوفة',
-                expiry: new Date(c.expiryat)
+                expiry: c.expiryat ? new Date(c.expiryat) : null,
+                usedDate: c.used_at || c.created_at || null
             }));
         }
+
+        const studentUser = userRow || studentsByEmail[email]?.rawData || {};
+        currentStudentProfileState = {
+            email,
+            name,
+            isBlocked,
+            user: studentUser,
+            purchasedLessons,
+            studentExams,
+            studentHws
+        };
 
         document.getElementById('spLessonsCount').textContent = purchasedLessons.length;
         document.getElementById('spExamsCount').textContent = studentExams.length;
         document.getElementById('spHwsCount').textContent = studentHws.length;
 
-        let html = "";
-
-        if(purchasedLessons.length > 0) {
-            html += `<div class="sp-section-title">🎫 الحصص المشترك بها</div><div class="sp-list">`;
-            purchasedLessons.forEach(l => {
-                const isExpired = l.expiry < new Date() ? '<span style="color:var(--red);font-size:0.7rem;">(منتهية)</span>' : '<span style="color:var(--teal);font-size:0.7rem;">(سارية)</span>';
-                html += `<div class="sp-item">
-                    <span class="sp-item-name">${l.name} ${isExpired}</span>
-                    <span class="sp-item-date">تنتهي: ${l.expiry.toLocaleDateString('ar-EG')}</span>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-
-        if(studentExams.length > 0) {
-            html += `<div class="sp-section-title">📝 الامتحانات التي أداها</div><div class="sp-list">`;
-            studentExams.forEach(ex => {
-                html += `<div class="sp-item">
-                    <span class="sp-item-name">${ex.lessonName}</span>
-                    <span class="sp-item-score">${ex.score}/${ex.total}</span>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-
-        if(studentHws.length > 0) {
-            html += `<div class="sp-section-title">📋 الواجبات المسلمة</div><div class="sp-list">`;
-            studentHws.forEach(hw => {
-                html += `<div class="sp-item">
-                    <span class="sp-item-name">${hw.lessonName}</span>
-                    <span class="sp-item-score">${hw.score}/${hw.total}</span>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-
-        if(html === "") {
-            html = `<div style="text-align:center; padding:30px; color:var(--text3); background:var(--bg); border-radius:12px;">هذا الطالب لم يشترك في حصص ولم يحل أي واجبات أو امتحانات بعد.</div>`;
-        }
-
-        detailsArea.innerHTML = html;
-
+        renderStudentProfileState();
     } catch (error) {
-        console.error("Error fetching student profile:", error);
+        console.error('Error fetching student profile:', error);
         detailsArea.innerHTML = `<div style="text-align:center; padding:30px; color:var(--red);">حدث خطأ أثناء جلب البيانات.</div>`;
     }
 }
 
 function closeStudentProfile() {
     document.getElementById('studentProfileModal').classList.remove('show');
+    currentStudentProfileState = null;
+    whatsappPayloads = {};
 }
 
 /* ── LESSONS ── */
