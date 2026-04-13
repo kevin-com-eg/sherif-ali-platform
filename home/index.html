@@ -600,7 +600,7 @@ footer{
 <!-- Nav -->
 <nav>
   <div class="nav-w">
-    <a class="logo" href="#">
+    <a class="logo" href="/home">
       <div class="logo-mark">MP</div>
       <span class="logo-name">Math<em>Pro</em></span>
       <span class="live-badge">LIVE</span>
@@ -830,7 +830,7 @@ footer{
     <div class="footer-col">
       <h4>Quick Links</h4>
       <ul>
-        <li><a href="#">Home</a></li>
+        <li><a href="/home">Home</a></li>
         <li><a href="#why">Why Us</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="#">My Courses</a></li>
@@ -934,7 +934,7 @@ async function checkSessionOnLoad(){
   if(!session)return;
   const user=session.user;
   rememberLastEmail(user.email||'');
-  if(user.email===adminEmail){window.location.href="teacher-dashboard.html";return;}
+  if(user.email===adminEmail){window.location.href="/teacher-dashboard";return;}
   const{data:dbUser}=await supabaseClient.from('users').select('*').eq('id',user.id).single();
   if(await handleBlockedUser(dbUser))return;
   const deviceId=getLocalDeviceId();
@@ -956,10 +956,10 @@ async function checkSessionOnLoad(){
       const name=user.user_metadata?.full_name||"New Student";
       const{error}=await supabaseClient.from('users').upsert({id:user.id,email:user.email,name,grade,phone,parentphone:parentPhone,studentid:Math.floor(100000+Math.random()*900000).toString(),role:'student',devices:userDevices});
       if(error){showToast('error','Error',error.message);btn.textContent="Save & Enter Platform →";}
-      else window.location.href="dashboard.html";
+      else window.location.href="/dashboard";
     };
   } else {
-    window.location.href="dashboard.html";
+    window.location.href="/dashboard";
   }
 }
 
@@ -1017,13 +1017,13 @@ authForm.addEventListener("submit",async(e)=>{
       }
       rememberLastEmail(email);
       showToast('success','Welcome!','Your account has been created successfully 🎉');
-      setTimeout(()=>{window.location.href="dashboard.html";},1200);
+      setTimeout(()=>{window.location.href="/dashboard";},1200);
     } else {
       btn.textContent="Signing in...";
       const{data,error}=await supabaseClient.auth.signInWithPassword({email,password:pass});
       if(error)throw error;
       rememberLastEmail(email);
-      if(email===adminEmail){window.location.href="teacher-dashboard.html";return;}
+      if(email===adminEmail){window.location.href="/teacher-dashboard";return;}
       const{data:dbUser}=await supabaseClient.from('users').select('*').eq('id',data.user.id).single();
       if(await handleBlockedUser(dbUser)){btn.textContent="Sign In →";return;}
       const deviceId=getLocalDeviceId();
@@ -1034,7 +1034,7 @@ authForm.addEventListener("submit",async(e)=>{
         await supabaseClient.from('users').update({devices:userDevices}).eq('id',data.user.id);
       }
       showToast('success','Welcome back!','Loading your dashboard...');
-      setTimeout(()=>{window.location.href="dashboard.html";},1000);
+      setTimeout(()=>{window.location.href="/dashboard";},1000);
     }
   } catch(err){
     showToast('error','Error',err.message);
