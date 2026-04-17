@@ -45,7 +45,6 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
 .hidden{display:none!important;}
 
-/* ── BG PATTERN ── */
 body::before{
   content:'';position:fixed;inset:0;z-index:0;
   background-image:radial-gradient(circle at 20% 20%, rgba(34,197,94,.06) 0%, transparent 50%),
@@ -240,90 +239,244 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:28px 20p
 .review-ans span{color:var(--text);font-weight:700;}
 .review-correct-ans{font-size:.82rem;color:var(--green);font-weight:700;margin-top:5px;}
 
-/* ── VIDEOS TAB ── */
-.videos-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start;}
-.video-list{display:flex;flex-direction:column;gap:8px;}
-.video-list-title{font-family:var(--mono);font-size:.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;}
-.vid-item{
-  display:flex;align-items:center;gap:12px;
-  background:var(--surface);border:1.5px solid var(--border);
-  border-radius:12px;padding:13px 14px;cursor:pointer;transition:all .22s;
+/* ══════════════════════════════════════════════
+   ── VIDEOS TAB — New Design matching screenshot
+   ══════════════════════════════════════════════ */
+.video-page-card{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:var(--shadow2);
+  animation:riseIn .4s ease;
 }
-.vid-item:hover{border-color:var(--green);background:var(--green-light);}
-.vid-item.active{border-color:var(--green);background:var(--green-light2);box-shadow:0 2px 12px rgba(22,163,74,.15);}
-.vid-item.locked-item{opacity:.6;cursor:not-allowed;}
-.vid-item.locked-item:hover{border-color:var(--border);background:var(--surface);}
-.vid-item-num{
-  width:34px;height:34px;border-radius:9px;
-  background:var(--bg2);border:1px solid var(--border);
+
+/* Header bar — matches screenshot layout */
+.video-header-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 22px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  gap:16px;
+}
+.video-header-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex:1;
+  justify-content:flex-end;
+}
+.video-header-label{
+  font-family:var(--display);
+  font-size:.95rem;
+  font-weight:800;
+  color:var(--navy);
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.video-play-icon{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--muted);flex-shrink:0;
+  flex-shrink:0;
+  box-shadow:0 4px 14px rgba(59,130,246,.35);
+  transition:all .25s;
 }
-.vid-item.active .vid-item-num{background:var(--green);border-color:var(--green);color:#fff;}
-.vid-item-info{flex:1;min-width:0;}
-.vid-item-name{font-size:.84rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.vid-item-status{font-size:.68rem;color:var(--muted);margin-top:2px;font-family:var(--mono);}
-.vid-item-status.done{color:var(--green);}
-.vid-item-lock-icon{font-size:.85rem;flex-shrink:0;}
+.video-play-icon:hover{
+  transform:scale(1.08);
+  box-shadow:0 6px 20px rgba(59,130,246,.45);
+}
+.video-play-icon svg{margin-left:2px;}
 
-/* ── PLAYER ── */
-.player-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:var(--shadow2);}
-.player-title-bar{
-  padding:16px 20px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:10px;
-  background:var(--bg2);
+.video-next-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  padding:12px 22px;
+  border-radius:12px;
+  font-family:var(--sans);
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .25s;
+  white-space:nowrap;
+  box-shadow:0 4px 14px rgba(13,31,20,.2);
+  flex-shrink:0;
 }
-.player-title-bar-dot{width:8px;height:8px;background:var(--green3);border-radius:50%;animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.player-title-name{font-family:var(--display);font-size:.9rem;font-weight:700;color:var(--text);}
-.player-frame-wrap{
+.video-next-btn:hover{
+  background:var(--navy2);
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(13,31,20,.3);
+}
+.video-next-btn:disabled{
+  opacity:.4;cursor:not-allowed;transform:none;
+  box-shadow:none;
+}
+
+/* Player area */
+.video-player-area{
   position:relative;
-  width:100%;aspect-ratio:16/9;
-  background:#000;overflow:hidden;
-}
-/* Stealth overlay - blocks right click, hides branding area */
-.player-stealth-overlay{
-  position:absolute;
-  top:0;left:0;right:0;
-  height:40px;/* cover top bar */
-  z-index:5;
-  pointer-events:none;
-  background:transparent;
-}
-.player-stealth-bottom{
-  position:absolute;
-  bottom:40px;right:0;
-  width:120px;height:30px;/* cover YT logo */
-  z-index:5;
+  width:100%;
+  aspect-ratio:16/9;
   background:#000;
-  opacity:.01;/* nearly invisible but covers */
-  pointer-events:none;
 }
-.player-wm{
-  position:absolute;inset:0;z-index:4;
-  pointer-events:none;overflow:hidden;
-}
-.player-wm span{
+.video-player-area iframe{
   position:absolute;
-  font-family:var(--mono);font-size:1rem;font-weight:900;
-  color:rgba(255,255,255,.18);white-space:nowrap;
-  text-shadow:0 2px 6px rgba(0,0,0,.8);
-  animation:wmDrift 45s linear infinite alternate;
-  letter-spacing:2px;
+  top:0;left:0;
+  width:100%;height:100%;
+  border:none;
 }
-@keyframes wmDrift{0%{top:15%;left:8%}25%{top:65%;left:20%}50%{top:25%;left:72%}75%{top:78%;left:58%}100%{top:48%;left:88%}}
 
-.player-iframe{position:absolute;inset:0;width:100%;height:100%;border:none;z-index:1;}
-
-.video-locked-card{
-  padding:60px 32px;text-align:center;
-  background:var(--surface);border:1px solid var(--border2);border-radius:20px;
+/* Subtle watermark — non-blocking */
+.video-wm{
+  position:absolute;
+  bottom:10px;left:12px;
+  z-index:2;
+  pointer-events:none;
+  font-family:var(--mono);
+  font-size:.65rem;
+  font-weight:700;
+  color:rgba(255,255,255,.2);
+  letter-spacing:1px;
 }
-.video-locked-icon{font-size:3rem;margin-bottom:16px;}
-.video-locked-title{font-family:var(--display);font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:8px;}
-.video-locked-sub{font-size:.87rem;color:var(--muted);line-height:1.7;max-width:380px;margin:0 auto 24px;}
-.go-hw-btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;padding:13px 30px;border-radius:12px;font-family:var(--sans);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 6px 18px rgba(22,163,74,.3);}
-.go-hw-btn:hover{background:var(--green2);transform:translateY(-1px);}
+
+/* Video locked state */
+.video-locked-overlay{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  background:rgba(13,31,20,.85);
+  backdrop-filter:blur(6px);
+}
+.video-locked-overlay .lock-emoji{font-size:3rem;}
+.video-locked-overlay .lock-title{
+  font-family:var(--display);
+  font-size:1.2rem;
+  font-weight:800;
+  color:#fff;
+}
+.video-locked-overlay .lock-sub{
+  font-size:.82rem;
+  color:rgba(255,255,255,.65);
+  max-width:300px;
+  text-align:center;
+  line-height:1.6;
+}
+.video-locked-overlay .lock-go-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green);color:#fff;border:none;
+  padding:11px 26px;border-radius:11px;
+  font-family:var(--sans);font-size:.85rem;font-weight:700;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 4px 14px rgba(22,163,74,.35);
+  margin-top:4px;
+}
+.video-locked-overlay .lock-go-btn:hover{
+  background:var(--green2);transform:translateY(-1px);
+}
+
+/* Footer — video pills + pagination */
+.video-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 22px;
+  border-top:1px solid var(--border);
+  background:var(--bg2);
+  gap:12px;
+  flex-wrap:wrap;
+}
+.video-pills{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.video-pill{
+  width:36px;height:36px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .2s;
+}
+.video-pill:hover{
+  border-color:var(--green);color:var(--green);
+  background:var(--green-light);
+}
+.video-pill.active{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+  box-shadow:0 3px 10px rgba(22,163,74,.3);
+}
+.video-pill.locked-pill{
+  opacity:.35;cursor:not-allowed;
+  position:relative;
+}
+.video-pill.locked-pill::after{
+  content:'🔒';font-size:.45rem;
+  position:absolute;bottom:-1px;right:-1px;
+}
+.video-pill.locked-pill:hover{
+  border-color:var(--border);color:var(--muted);
+  background:var(--surface);
+}
+
+.video-page-nav{
+  display:flex;align-items:center;gap:8px;
+}
+.video-page-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 18px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:var(--surface);
+  font-family:var(--sans);font-size:.8rem;font-weight:700;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .2s;
+}
+.video-page-btn:hover{
+  border-color:var(--green);color:var(--green);
+  background:var(--green-light);
+}
+.video-page-btn:disabled{
+  opacity:.35;cursor:not-allowed;
+}
+.video-page-btn:disabled:hover{
+  border-color:var(--border);color:var(--muted);
+  background:var(--surface);
+}
+.video-page-indicator{
+  font-family:var(--mono);
+  font-size:.75rem;
+  font-weight:700;
+  color:var(--text);
+  padding:0 6px;
+  white-space:nowrap;
+}
+
+/* No videos state */
+.video-empty-card{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:24px;padding:56px 28px;text-align:center;
+  box-shadow:var(--shadow);
+}
+.video-empty-card .empty-icon{font-size:3rem;margin-bottom:14px;}
+.video-empty-card .empty-title{font-family:var(--display);font-size:1.4rem;font-weight:800;}
+.video-empty-card .empty-sub{font-size:.88rem;color:var(--muted);margin-top:8px;}
 
 /* ── HOMEWORK ── */
 .hw-locked-card{background:var(--surface);border:1.5px solid var(--border);border-radius:24px;padding:52px 32px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow);}
@@ -345,19 +498,21 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:28px 20p
 /* ── ANIMATIONS ── */
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-@media(max-width:900px){
-  .videos-layout{grid-template-columns:1fr;}
-  .video-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-}
 @media(max-width:680px){
   :root{--nav-h:58px;}
   main{padding:20px 14px 80px;}
   .back-btn span{display:none;}
   .tab-btn{padding:7px 10px;font-size:.76rem;}
   .q-card{padding:20px 16px;}
-  .video-list{grid-template-columns:1fr;}
   .quiz-nav{flex-wrap:wrap;}
   .q-btn.finish{width:100%;justify-content:center;}
+
+  .video-header-bar{flex-direction:column;align-items:stretch;padding:14px 16px;gap:12px;}
+  .video-header-right{justify-content:space-between;}
+  .video-next-btn{width:100%;justify-content:center;}
+  .video-footer{flex-direction:column;align-items:stretch;padding:12px 16px;}
+  .video-pills{justify-content:center;}
+  .video-page-nav{justify-content:center;}
 }
 </style>
 </head>
@@ -446,13 +601,7 @@ main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:28px 20p
 
     <!-- Videos Tab -->
     <div id="tab-videos" class="hidden">
-      <div class="videos-layout" id="videosLayout">
-        <div>
-          <div class="video-list-title">📺 Video Lessons</div>
-          <div class="video-list" id="videoList"></div>
-        </div>
-        <div id="playerArea"></div>
-      </div>
+      <div id="videosContainer"></div>
     </div>
 
     <!-- PDF Tab -->
@@ -503,87 +652,136 @@ window.switchTab=(tab)=>{
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`btn-${tab}-tab`).classList.add('active');
+    if(tab==='videos') renderVideoPage();
     hideLoader();
   },300);
 };
 
-/* ── STEALTH YOUTUBE PLAYER ── */
+/* ── YOUTUBE HELPERS ── */
 function extractYTId(url){
   if(!url)return null;
   const m=url.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);
   return m?m[1]:null;
 }
 
-function buildStealthPlayer(videoUrl,studentId){
-  const vid=extractYTId(videoUrl);
-  if(!vid)return`<div style="text-align:center;padding:60px;color:var(--muted)">⚠️ Invalid video link</div>`;
-  const encoded=btoa(vid);
-  // Using nocookie domain + aggressive params to hide branding
-  const src=`https://www.youtube-nocookie.com/embed/${atob(encoded)}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&controls=1&color=white&hl=ar`;
-  return`
-    <div class="player-card">
-      <div class="player-frame-wrap">
-        <iframe class="player-iframe" src="${src}"
-          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-          allowfullscreen>
-        </iframe>
-        <div class="player-wm"><span>ID: ${studentId}</span></div>
-        <div class="player-stealth-overlay"></div>
+/* ══════════════════════════════════════
+   ── VIDEO PAGE — New paginated design
+   ══════════════════════════════════════ */
+function renderVideoPage(){
+  const container=document.getElementById('videosContainer');
+
+  if(!videosData||videosData.length===0){
+    container.innerHTML=`
+      <div class="video-empty-card">
+        <div class="empty-icon">📺</div>
+        <div class="empty-title">No Videos Yet</div>
+        <div class="empty-sub">Video lessons will appear here once added.</div>
+      </div>`;
+    return;
+  }
+
+  // Clamp index
+  if(currentVideoIdx>=videosData.length) currentVideoIdx=videosData.length-1;
+  if(currentVideoIdx<0) currentVideoIdx=0;
+
+  const v=videosData[currentVideoIdx];
+  const isLocked=v.requireHw && !hwResultsMap[v.hwId];
+  const ytId=extractYTId(v.url);
+  const isLast=currentVideoIdx>=videosData.length-1;
+  const isFirst=currentVideoIdx===0;
+
+  let pillsHtml='';
+  videosData.forEach((vid,i)=>{
+    const locked=vid.requireHw&&!hwResultsMap[vid.hwId];
+    const active=i===currentVideoIdx&&!locked;
+    pillsHtml+=`<div class="video-pill ${active?'active':''} ${locked?'locked-pill':''}" 
+      onclick="${locked?'':`goToVideo(${i})`}" title="${vid.name||'Video '+(i+1)}">${i+1}</div>`;
+  });
+
+  let playerHtml='';
+  if(isLocked){
+    playerHtml=`
+      <div class="video-locked-overlay">
+        <div class="lock-emoji">🔒</div>
+        <div class="lock-title">Video Locked</div>
+        <div class="lock-sub">Complete the homework assignment first to unlock this video.</div>
+        <button class="lock-go-btn" onclick="switchTab('homework')">Go to Homework →</button>
+      </div>`;
+  } else if(ytId){
+    playerHtml=`
+      <iframe 
+        src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&controls=1&color=white&hl=ar&autoplay=0"
+        allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen"
+        allowfullscreen>
+      </iframe>
+      <div class="video-wm">ID: ${myStudentId}</div>`;
+  } else {
+    playerHtml=`
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;">
+        ⚠️ Invalid video link
+      </div>`;
+  }
+
+  container.innerHTML=`
+    <div class="video-page-card">
+      <!-- Header — matches screenshot -->
+      <div class="video-header-bar">
+        <button class="video-next-btn" onclick="videoNext()" ${isLast?'disabled':''}>
+          Next Page
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="video-header-right">
+          <span class="video-header-label">Explanation Video</span>
+          <div class="video-play-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><polygon points="8,5 20,12 8,19"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player -->
+      <div class="video-player-area">
+        ${playerHtml}
+      </div>
+
+      <!-- Footer -->
+      <div class="video-footer">
+        <div class="video-pills">${pillsHtml}</div>
+        <div class="video-page-nav">
+          <button class="video-page-btn" onclick="videoPrev()" ${isFirst?'disabled':''}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Prev
+          </button>
+          <span class="video-page-indicator">${currentVideoIdx+1} / ${videosData.length}</span>
+          <button class="video-page-btn" onclick="videoNext()" ${isLast?'disabled':''}>
+            Next
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
       </div>
     </div>`;
 }
 
-/* ── RENDER VIDEO LIST ── */
-function renderVideos(){
-  const list=document.getElementById('videoList');
-  list.innerHTML='';
-  videosData.forEach((v,i)=>{
-    const locked=v.requireHw&&!hwResultsMap[v.hwId];
-    const item=document.createElement('div');
-    item.className=`vid-item${locked?' locked-item':''}${i===currentVideoIdx&&!locked?' active':''}`;
-    item.onclick=()=>{if(!locked)selectVideo(i);};
-    item.innerHTML=`
-      <div class="vid-item-num">${i+1}</div>
-      <div class="vid-item-info">
-        <div class="vid-item-name">${v.name||`Video ${i+1}`}</div>
-        <div class="vid-item-status ${locked?'':'done'}">${locked?'Complete homework first':'▶ Available'}</div>
-      </div>
-      <div class="vid-item-lock-icon">${locked?'🔒':'▶'}</div>`;
-    list.appendChild(item);
-  });
-  renderPlayerArea();
-}
-
-function selectVideo(idx){
+window.goToVideo=function(idx){
   currentVideoIdx=idx;
-  document.querySelectorAll('.vid-item').forEach((el,i)=>{
-    el.classList.toggle('active',i===idx);
-  });
-  renderPlayerArea();
-}
+  renderVideoPage();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
 
-function renderPlayerArea(){
-  const area=document.getElementById('playerArea');
-  const v=videosData[currentVideoIdx];
-  if(!v){area.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Select a video</div>';return;}
-  const locked=v.requireHw&&!hwResultsMap[v.hwId];
-  if(locked){
-    area.innerHTML=`
-      <div class="video-locked-card">
-        <div class="video-locked-icon">🔒</div>
-        <div class="video-locked-title">Video Locked</div>
-        <div class="video-locked-sub">Complete the homework assignment first to unlock <strong>${v.name}</strong>.</div>
-        <button class="go-hw-btn" onclick="switchTab('homework')">Go to Homework →</button>
-      </div>`;
-  } else {
-    area.innerHTML=`
-      <div class="player-title-bar">
-        <div class="player-title-bar-dot"></div>
-        <div class="player-title-name">${v.name||`Video ${currentVideoIdx+1}`}</div>
-      </div>
-      ${buildStealthPlayer(v.url,myStudentId)}`;
+window.videoNext=function(){
+  if(currentVideoIdx<videosData.length-1){
+    currentVideoIdx++;
+    renderVideoPage();
+    window.scrollTo({top:0,behavior:'smooth'});
   }
-}
+};
+
+window.videoPrev=function(){
+  if(currentVideoIdx>0){
+    currentVideoIdx--;
+    renderVideoPage();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+};
 
 /* ── INIT ── */
 async function init(){
@@ -593,7 +791,6 @@ async function init(){
   if(!session){hideLoader();location.href='/home';return;}
   currentUser=session.user;
 
-  // Check cache
   const cached=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
   if(cached){
     try{
@@ -606,7 +803,6 @@ async function init(){
     }catch(e){}
   }
 
-  // Verify access
   try{
     const[{data:u},{data:codes}]=await Promise.all([
       db.from('users').select('studentid').eq('id',currentUser.id).single(),
@@ -665,7 +861,6 @@ async function loadLesson(id){
     if(hwRes){hwDone=true;hwResultsMap[hwData.id]=hwRes;renderHomeworkDone(hwRes);}
     else{hwDone=false;renderHomeworkStart();}
     document.getElementById('btn-homework-tab').classList.remove('locked-dim');
-    document.getElementById('btn-homework-tab').classList.add('unlocked');
   }else{
     renderNoHomework();
     document.getElementById('btn-homework-tab').classList.remove('locked-dim');
@@ -681,7 +876,6 @@ async function loadLesson(id){
     return;
   }
 
-  // Check previous result
   const prev=res?.find(r=>r.lesson===lessonData.name);
   if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(true,buildMsg(prev.score,questions.length,true));}
   else{
@@ -772,7 +966,6 @@ async function submitHw(){
   await db.from('hw_results').insert([res]).catch(()=>{});
   hwDone=true;hwResultsMap[hwData.id]={...res};
   renderHomeworkDone(res);
-  renderVideos();// refresh video locks
   hideLoader();
 }
 
@@ -826,7 +1019,7 @@ function generateReview(){
     const al=userAns[i];
     const ans=al?(q[al]?`${al.toUpperCase()} — ${q[al]}`:al.toUpperCase()):'—';
     const corr=q.correct?(q[q.correct]?`${q.correct.toUpperCase()} — ${q[q.correct]}`:q.correct.toUpperCase()):'—';
-    list.innerHTML+=`<div class="review-item ${ok?'correct':'wrong'}" style="animation-delay:${i*.04}s"><div class="review-meta"><span class="review-q-label">Q${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ Correct':'✗ Wrong'}</span></div>${q.image?`<img src="${q.image}" style="max-height:160px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2);">`:''}<div class="review-q-text">${q.text||'Choose:'}</div><div class="review-ans">Your answer: <span>${ans}</span></div>${!ok?`<div class="review-correct-ans">✓ Correct: ${corr}</div>`:''}</div>`;
+    list.innerHTML+=`<div class="review-item ${ok?'correct':'wrong'}" style="animation:riseIn .35s ease ${i*.04}s both"><div class="review-meta"><span class="review-q-label">Q${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ Correct':'✗ Wrong'}</span></div>${q.image?`<img src="${q.image}" style="max-height:160px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2);">`:''}<div class="review-q-text">${q.text||'Choose:'}</div><div class="review-ans">Your answer: <span>${ans}</span></div>${!ok?`<div class="review-correct-ans">✓ Correct: ${corr}</div>`:''}</div>`;
   });
 }
 function unlockPostExam(skipAnim=false,msgObj=null){
@@ -851,13 +1044,10 @@ function unlockPostExam(skipAnim=false,msgObj=null){
       <div class="score-msg">${prev?'✦ You already took this exam':'✦ Score recorded!'}</div>
       <div class="score-unlock">✅ Videos & PDF Unlocked</div>`;
   }
-  // Unlock tabs
   ['videos','pdf'].forEach(t=>{
     const btn=document.getElementById(`btn-${t}-tab`);
-    btn.classList.remove('locked-dim');btn.classList.add('unlocked');
+    btn.classList.remove('locked-dim');
   });
-  // Render videos
-  renderVideos();
 }
 function startTimer(){
   examTimer=setInterval(()=>{
