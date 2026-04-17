@@ -62,26 +62,9 @@ nav.no-notif{top:0}
 .avatar-name{font-size:.78rem;font-weight:600;color:var(--text);line-height:1}
 .avatar-grade{font-size:.68rem;color:var(--accent);line-height:1}
 
-/* ── Cart Button in Nav ── */
-.cart-nav-btn{
-  position:relative;
-  width:36px;height:36px;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);color:var(--muted2);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
-}
+.cart-nav-btn{position:relative;width:36px;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .cart-nav-btn:hover{color:var(--text);border-color:var(--border2);background:var(--amber-bg)}
-.cart-badge{
-  position:absolute;top:-5px;right:-5px;
-  min-width:18px;height:18px;
-  background:var(--amber);color:#fff;
-  border-radius:50%;font-size:.65rem;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  padding:0 4px;
-  transform:scale(0);transition:transform .25s cubic-bezier(.175,.885,.32,1.275);
-  box-shadow:0 2px 6px rgba(196,101,74,.4);
-}
+.cart-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;background:var(--amber);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;transform:scale(0);transition:transform .25s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 2px 6px rgba(196,101,74,.4);}
 .cart-badge.show{transform:scale(1)}
 .cart-badge.pop{animation:badgePop .4s ease}
 @keyframes badgePop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
@@ -163,7 +146,7 @@ nav.no-notif{top:0}
 .lc-date{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--muted)}
 .lc-status{font-size:.78rem;font-weight:700}
 .lc-status.ready{color:var(--green)}
-.lc-status.activate{color:var(--amber)}
+.lc-status.locked{color:var(--amber)}
 .lc-btns{display:flex;flex-direction:column;gap:8px}
 .lc-btn{width:100%;padding:11px;border-radius:var(--radius-sm);border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
 .lc-btn.enter{background:var(--green-bg);color:var(--accent);border:1px solid var(--border)}
@@ -172,8 +155,6 @@ nav.no-notif{top:0}
 .lc-btn.cart:hover{background:rgba(196,101,74,.14);border-color:var(--amber);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,101,74,.15)}
 .lc-btn.cart.in-cart{background:var(--accent-glow);color:var(--accent);border-color:rgba(45,90,61,.3)}
 .lc-btn.cart.in-cart:hover{background:var(--green-bg)}
-.lc-btn.unlock{background:var(--surface2);color:var(--muted2);border:1px solid var(--border)}
-.lc-btn.unlock:hover{border-color:var(--border2);color:var(--text)}
 .empty-state{grid-column:1/-1;text-align:center;padding:60px 20px}
 .empty-icon{font-size:3rem;margin-bottom:12px;display:block}
 .empty-txt{color:var(--muted);font-size:.9rem}
@@ -191,14 +172,6 @@ nav.no-notif{top:0}
 .form-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
 .form-input:focus{border-color:var(--accent)}
 .form-input::placeholder{color:var(--muted)}
-.activate-form{display:flex;flex-direction:column;gap:16px}
-.lesson-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:4px}
-.lesson-preview img{width:56px;height:40px;border-radius:6px;object-fit:cover}
-.lesson-preview-name{font-weight:600;font-size:.9rem}
-.lesson-preview-price{font-size:.8rem;color:var(--gold);margin-top:2px}
-.btn-activate{background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;padding:13px;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;box-shadow:0 2px 12px var(--accent-glow)}
-.btn-activate:hover{background:var(--accent2);transform:translateY(-1px)}
-.btn-activate:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
 .prof-fields{display:flex;flex-direction:column;gap:14px}
 .prof-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -263,27 +236,10 @@ nav.no-notif{top:0}
 .cart-empty{text-align:center;padding:36px 20px;color:var(--muted);font-size:.88rem}
 .cart-empty-icon{font-size:2.5rem;margin-bottom:10px;display:block}
 
-.co-coupon{margin:16px 0}
-.co-coupon-row{display:flex;gap:8px}
-.co-coupon-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;letter-spacing:1.5px;text-align:center;outline:none;transition:all .25s;color:var(--text)}
-.co-coupon-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-.co-coupon-input::placeholder{color:var(--muted);letter-spacing:.5px;font-size:.8rem}
-.co-coupon-input.error{border-color:var(--red);background:var(--red-bg);animation:shake .4s ease}
-.co-coupon-input.success{border-color:var(--accent);background:var(--green-bg)}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
-.co-coupon-btn{padding:10px 16px;border-radius:var(--radius-sm);border:none;background:var(--text);color:var(--surface);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
-.co-coupon-btn:hover{opacity:.85}
-.co-coupon-btn:disabled{opacity:.4;cursor:not-allowed}
-.co-coupon-btn.remove{background:var(--red-bg);color:var(--red);border:1px solid rgba(163,59,46,.15)}
-.co-coupon-msg{font-size:.73rem;margin-top:6px;font-weight:600;min-height:16px;transition:all .2s}
-.co-coupon-msg.ok{color:var(--accent)}
-.co-coupon-msg.err{color:var(--red)}
-
 .co-breakdown{border-top:1.5px solid var(--border);padding-top:14px;margin-bottom:16px}
 .co-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.85rem}
 .co-row .co-lbl{color:var(--muted)}
 .co-row .co-val{font-family:'Cormorant Garamond',serif;font-weight:700}
-.co-row.disc .co-val{color:var(--accent)}
 .co-row.total{border-top:1.5px solid var(--border);margin-top:8px;padding-top:12px}
 .co-row.total .co-val{color:var(--accent);font-size:1.3rem}
 
@@ -314,6 +270,23 @@ nav.no-notif{top:0}
 .co-go-btn{display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:var(--accent);color:#fff;border:none;padding:12px 32px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px var(--accent-glow)}
 .co-go-btn:hover{background:var(--accent2);transform:translateY(-1px)}
 
+.co-divider-or{display:flex;align-items:center;gap:10px;margin:16px 0 12px;color:var(--muted);font-size:.75rem}
+.co-divider-or::before,.co-divider-or::after{content:'';flex:1;height:1px;background:var(--border)}
+.co-activate-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.co-activate-label{font-size:.78rem;font-weight:600;color:var(--muted2);margin-bottom:10px}
+.co-activate-row{display:flex;gap:8px}
+.co-activate-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;letter-spacing:1px;outline:none;transition:all .25s;color:var(--text)}
+.co-activate-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.co-activate-input::placeholder{color:var(--muted);letter-spacing:.5px;font-size:.8rem}
+.co-activate-input.error{border-color:var(--red);background:var(--red-bg);animation:shake .4s ease}
+.co-activate-input.success{border-color:var(--accent);background:var(--green-bg)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.co-activate-btn{padding:10px 16px;border-radius:var(--radius-sm);border:none;background:var(--text);color:var(--surface);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.co-activate-btn:hover{opacity:.85}
+.co-activate-btn:disabled{opacity:.4;cursor:not-allowed}
+.co-activate-msg{font-size:.73rem;margin-top:6px;font-weight:600;min-height:16px}
+.co-activate-msg.ok{color:var(--accent)}
+.co-activate-msg.err{color:var(--red)}
 .co-error-icon{width:64px;height:64px;margin:0 auto 14px;background:var(--red-bg);border:2px solid rgba(163,59,46,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem}
 .co-error-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--red)}
 .co-error-sub{font-size:.85rem;color:var(--muted);line-height:1.6;margin-top:6px}
@@ -408,17 +381,6 @@ nav.no-notif{top:0}
   <span class="wa-float-btn"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.132 6.742 3.054 9.378L1.054 31.29l6.118-1.958A15.9 15.9 0 0 0 16.004 32C24.826 32 32 24.822 32 16S24.826 0 16.004 0zm9.35 22.614c-.39 1.1-1.932 2.014-3.17 2.28-.846.178-1.954.32-5.678-1.22-4.764-1.974-7.826-6.81-8.064-7.126-.23-.316-1.934-2.576-1.934-4.916s1.226-3.488 1.662-3.964c.39-.432.924-.542 1.234-.542.31 0 .62.002.89.016.286.016.668-.108 1.046.798.39.932 1.33 3.248 1.446 3.48.118.234.196.508.04.818-.158.316-.236.512-.47.788-.234.278-.492.62-.702.832-.234.234-.478.488-.204.956.272.468 1.214 2.004 2.606 3.246 1.79 1.598 3.298 2.092 3.766 2.326.468.234.742.196 1.014-.118.278-.316 1.19-1.388 1.508-1.864.316-.478.632-.39 1.066-.234.438.158 2.774 1.31 3.25 1.548.478.234.794.352.912.546.118.194.118 1.13-.272 2.23z"/></svg></span>
 </a>
 
-<!-- ── ACTIVATE MODAL ── -->
-<div class="overlay" id="activateOverlay">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-head"><div class="modal-title">🔑 Activate with Code</div><button class="modal-close" onclick="closeActivate()">✕</button></div>
-    <div class="modal-body">
-      <div id="activateLessonPreview" class="lesson-preview" style="display:none"><img id="previewImg" src="" alt=""><div><div class="lesson-preview-name" id="previewName"></div><div class="lesson-preview-price" id="previewPrice"></div></div></div>
-      <div class="activate-form"><div><div class="form-lbl">Activation Code</div><input class="form-input" id="codeInput" placeholder="Enter your code here…" autocomplete="off"></div><button class="btn-activate" id="activateBtn" onclick="submitCode()">✓ Activate Lesson</button></div>
-    </div>
-  </div>
-</div>
-
 <!-- ── CART / CHECKOUT MODAL ── -->
 <div class="overlay" id="cartOverlay">
   <div class="modal" style="max-width:460px">
@@ -459,8 +421,7 @@ const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
 let currentUser=null,myActiveLessons=[],lessonsMap={},currentFilter='all';
-let activatingLessonId=null;
-let cart=[],cartCoupon=null,cartOrderId=null,cartPoll=null;
+let cart=[],cartOrderId=null,cartPoll=null;
 
 function showToast(type,title,msg,dur=4500){
   const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
@@ -479,34 +440,14 @@ window.openReports=()=>document.getElementById('reportsOverlay').classList.add('
 window.closeReports=()=>document.getElementById('reportsOverlay').classList.remove('open');
 window.openProfile=()=>document.getElementById('profileOverlay').classList.add('open');
 window.closeProfile=()=>document.getElementById('profileOverlay').classList.remove('open');
-window.closeActivate=()=>{document.getElementById('activateOverlay').classList.remove('open');document.getElementById('codeInput').value='';activatingLessonId=null;};
 window.closeCart=()=>{document.getElementById('cartOverlay').classList.remove('open');if(cartPoll){clearInterval(cartPoll);cartPoll=null;}};
 
-['reportsOverlay','profileOverlay','activateOverlay','cartOverlay'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});});
+['reportsOverlay','profileOverlay','cartOverlay'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open');});});
 
 function setFilter(btn,f){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyFilter();}
 function applyFilter(){document.querySelectorAll('.lesson-card').forEach(c=>{const owned=c.dataset.owned==='true',free=c.dataset.free==='true';let show=currentFilter==='all'||(currentFilter==='owned'&&owned)||(currentFilter==='free'&&free);c.style.display=show?'':'none';});}
 
 window.openLesson=(e,id)=>{e.preventDefault();showLoader("Opening lesson…");setTimeout(()=>{window.location.href=`/lesson?id=${id}`;},340);};
-
-window.openActivate=(lessonId)=>{
-  activatingLessonId=lessonId;const lesson=lessonsMap[lessonId];
-  if(lesson){const p=document.getElementById('activateLessonPreview');document.getElementById('previewImg').src=lesson.image||'';document.getElementById('previewName').textContent=lesson.name;document.getElementById('previewPrice').textContent=lesson.price?`${lesson.price} EGP`:'Free';p.style.display='flex';}
-  document.getElementById('codeInput').value='';document.getElementById('activateOverlay').classList.add('open');setTimeout(()=>document.getElementById('codeInput').focus(),300);
-};
-
-window.submitCode=async()=>{
-  const code=document.getElementById('codeInput').value.trim();
-  if(!code){showToast('warning','Missing Code','Please enter your activation code.');return;}
-  const btn=document.getElementById('activateBtn');btn.disabled=true;btn.textContent='Checking code…';
-  try{
-    const{data:codeRow}=await db.from('codes').select('*').eq('code',code).single();
-    if(!codeRow){showToast('error','Invalid Code','This code does not exist.');btn.disabled=false;btn.textContent='✓ Activate Lesson';return;}
-    if(codeRow.usedby&&codeRow.usedby!==currentUser.email){showToast('error','Code Used','Already activated by another student.');btn.disabled=false;btn.textContent='✓ Activate Lesson';return;}
-    await db.from('codes').update({usedby:currentUser.email,lessonid:activatingLessonId||codeRow.lessonid,expiryat:Date.now()+90*24*60*60*1000}).eq('code',code);
-    showToast('success','Activated! 🎉','Your lesson has been unlocked.');closeActivate();setTimeout(()=>location.reload(),1500);
-  }catch(err){showToast('error','Error',err.message);btn.disabled=false;btn.textContent='✓ Activate Lesson';}
-};
 
 /* ══════════ CART SYSTEM ══════════ */
 function updateCartBadge(){
@@ -523,7 +464,6 @@ window.addToCart=(lessonId)=>{
   cart.push(lessonId);
   updateCartBadge();
   showToast('success','Added to Cart ✓','Course added to your shopping cart.');
-  // Update button states on cards
   document.querySelectorAll(`.lc-btn.cart[data-lid="${lessonId}"]`).forEach(btn=>{btn.classList.add('in-cart');btn.innerHTML='✓ Added to Cart';});
 };
 
@@ -531,12 +471,10 @@ window.removeFromCart=(lessonId)=>{
   cart=cart.filter(id=>id!==lessonId);
   updateCartBadge();
   renderCartModal();
-  // Update button states
   document.querySelectorAll(`.lc-btn.cart[data-lid="${lessonId}"]`).forEach(btn=>{btn.classList.remove('in-cart');btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart`;});
 };
 
 window.openCart=()=>{
-  cartCoupon=null;
   renderCartModal();
   document.getElementById('cartOverlay').classList.add('open');
 };
@@ -566,78 +504,71 @@ function renderCartModal(){
       </div>`;
   });
 
-  const disc=cartCoupon?cartCoupon.discount:0;
-  const final=Math.max(0,subtotal-disc);
-
   title.textContent=`🛒 Cart (${cart.length})`;
 
   body.innerHTML=`
     ${itemsHtml}
-    <div class="co-coupon">
-      <div class="form-lbl">كود الخصم</div>
-      <div class="co-coupon-row">
-        <input id="coCouponInput" class="co-coupon-input ${cartCoupon?'success':''}" placeholder="أدخل كود الخصم" value="${cartCoupon?cartCoupon.code:''}" ${cartCoupon?'disabled':''}>
-        <button id="coCouponBtn" class="co-coupon-btn ${cartCoupon?'remove':''}" onclick="applyCartCoupon()">${cartCoupon?'إزالة':'تطبيق'}</button>
-      </div>
-      <div id="coCouponMsg" class="co-coupon-msg ${cartCoupon?'ok':''}">${cartCoupon?'✓ تم تطبيق الكود — وفرت '+cartCoupon.discount+' ج.م':''}</div>
-    </div>
     <div class="co-breakdown">
-      <div class="co-row"><span class="co-lbl">المجموع الفرعي</span><span class="co-val">${subtotal} ج.م</span></div>
-      ${disc>0?`<div class="co-row disc"><span class="co-lbl">الخصم${cartCoupon?.discountPercent?' ('+cartCoupon.discountPercent+'%)':''}</span><span class="co-val">- ${disc} ج.م</span></div>`:''}
-      <div class="co-row total"><span class="co-lbl">الإجمالي</span><span class="co-val">${final} ج.م</span></div>
+      <div class="co-row total"><span class="co-lbl">الإجمالي</span><span class="co-val">${subtotal} ج.م</span></div>
     </div>
     <button class="co-pay-btn" onclick="startCartPayment()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-      ${final<=0?'تأكيد مجاناً':'تأكيد الدفع — '+final+' ج.م'}
+      ${subtotal<=0?'تأكيد مجاناً':'تأكيد الدفع — '+subtotal+' ج.م'}
     </button>
-    <div class="co-secure"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>دفع آمن ومشفر</div>`;
+    <div class="co-secure"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>دفع آمن ومشفر</div>
+    <div class="co-divider-or"><span>أو</span></div>
+    <div class="co-activate-box">
+      <div class="co-activate-label">🔑 عندك كود تفعيل؟</div>
+      <div class="co-activate-row">
+        <input id="cartCodeInput" class="co-activate-input" placeholder="أدخل كود التفعيل…" autocomplete="off">
+        <button id="cartCodeBtn" class="co-activate-btn" onclick="submitCartCode()">تفعيل</button>
+      </div>
+      <div id="cartCodeMsg" class="co-activate-msg"></div>
+    </div>`;
 }
 
-window.applyCartCoupon=async()=>{
-  const input=document.getElementById('coCouponInput');
-  const btn=document.getElementById('coCouponBtn');
-  const msg=document.getElementById('coCouponMsg');
-  const code=input.value.trim().toUpperCase();
+window.submitCartCode=async()=>{
+  const input=document.getElementById('cartCodeInput');
+  const btn=document.getElementById('cartCodeBtn');
+  const msg=document.getElementById('cartCodeMsg');
+  const code=input.value.trim();
+  if(!code){input.classList.add('error');msg.className='co-activate-msg err';msg.textContent='أدخل الكود أولاً';return;}
 
-  if(cartCoupon){cartCoupon=null;input.classList.remove('success','error');input.disabled=false;msg.className='co-coupon-msg';msg.textContent='';btn.textContent='تطبيق';btn.classList.remove('remove');renderCartModal();return;}
-  if(!code){input.classList.add('error');msg.className='co-coupon-msg err';msg.textContent='أدخل كود الخصم';return;}
-
-  btn.disabled=true;btn.textContent='جاري التحقق…';input.classList.remove('error','success');msg.className='co-coupon-msg';msg.textContent='';
+  btn.disabled=true;btn.textContent='جاري التحقق…';
+  input.classList.remove('error','success');msg.className='co-activate-msg';msg.textContent='';
 
   try{
-    const{data:coupon}=await db.from('coupons').select('*').eq('code',code).single();
-    if(!coupon)throw new Error('كود غير صالح');
-    if(!coupon.is_active)throw new Error('هذا الكود غير مفعل');
-    if(coupon.expires_at&&new Date(coupon.expires_at)<new Date())throw new Error('هذا الكود منتهي الصلاحية');
-    if(coupon.max_uses!==null&&coupon.used_count>=coupon.max_uses)throw new Error('تم استنفاد عدد مرات الاستخدام');
-    if(coupon.lesson_id&&!cart.includes(coupon.lesson_id))throw new Error('هذا الكود لا ينطبق على كورس في السلة');
+    const{data:codeRow}=await db.from('codes').select('*').eq('code',code).single();
+    if(!codeRow)throw new Error('الكود غير موجود');
+    if(codeRow.usedby&&codeRow.usedby!==currentUser.email)throw new Error('تم استخدام الكود من قبل');
+    if(codeRow.lessonid&&!cart.includes(codeRow.lessonid))throw new Error('هذا الكود لا ينطبق على كورس في السلة');
 
-    let subtotal=0;cart.forEach(lid=>{subtotal+=Number(lessonsMap[lid]?.price)||0;});
-    let discount=0,discountPercent=0;
-    if(coupon.discount_percent>0){discountPercent=coupon.discount_percent;discount=Math.round(subtotal*discountPercent/100*100)/100;}
-    if(coupon.discount_amount>0)discount+=coupon.discount_amount;
-    discount=Math.min(discount,subtotal);
-    if(discount<=0)throw new Error('لا يوجد خصم applicable');
+    const expiry=codeRow.expiryat||Date.now()+90*24*60*60*1000;
+    const targetId=codeRow.lessonid||cart[0];
+    await db.from('codes').update({usedby:currentUser.email,lessonid:targetId,expiryat:expiry}).eq('code',code);
 
-    cartCoupon={id:coupon.id,code,discount,discountPercent};
-    input.classList.add('success');input.disabled=true;
-    msg.className='co-coupon-msg ok';msg.textContent=`✓ تم تطبيق الكود — وفرت ${discount} ج.م`;
-    btn.textContent='إزالة';btn.classList.add('remove');
-    renderCartModal();
+    input.classList.add('success');
+    msg.className='co-activate-msg ok';
+    msg.textContent='✓ تم التفعيل بنجاح! جاري التحديث…';
+
+    cart=cart.filter(id=>id!==targetId);
+    updateCartBadge();
+    setTimeout(()=>{closeCart();location.reload();},1500);
   }catch(e){
-    input.classList.add('error');msg.className='co-coupon-msg err';msg.textContent='✗ '+e.message;btn.textContent='تطبيق';
+    input.classList.add('error');
+    msg.className='co-activate-msg err';
+    msg.textContent='✗ '+e.message;
+    btn.disabled=false;
+    btn.textContent='تفعيل';
   }
-  btn.disabled=false;
 };
 
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement?.id==='coCouponInput')applyCartCoupon();});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement?.id==='cartCodeInput')window.submitCartCode();});
 
 window.startCartPayment=async()=>{
   let subtotal=0;cart.forEach(lid=>{subtotal+=Number(lessonsMap[lid]?.price)||0;});
-  const disc=cartCoupon?cartCoupon.discount:0;
-  const finalAmount=Math.max(0,subtotal-disc);
 
-  if(finalAmount<=0){await completeCartPurchase(null);return;}
+  if(subtotal<=0){await completeCartPurchase(null);return;}
 
   const payBtn=document.querySelector('.co-pay-btn');
   payBtn.disabled=true;
@@ -646,17 +577,15 @@ window.startCartPayment=async()=>{
   try{
     const{data:order}=await db.from('orders').insert([{
       email:currentUser.email,lesson_id:cart[0],amount:subtotal,
-      discount_amount:disc,coupon_code:cartCoupon?.code||null,
-      final_amount:finalAmount,status:'pending',payment_method:'card',
+      discount_amount:0,coupon_code:null,
+      final_amount:subtotal,status:'pending',payment_method:'card',
       cart_items:cart
     }]).select().single();
     if(!order)throw new Error('فشل إنشاء الطلب');
     cartOrderId=order.id;
 
-    if(cartCoupon)await db.from('coupons').update({used_count:db.raw('used_count + 1')}).eq('id',cartCoupon.id);
-
     document.getElementById('cartModalTitle').textContent='جاري الدفع…';
-    document.getElementById('cartBody').innerHTML=`<div class="co-processing"><div class="co-spinner"></div><div class="co-proc-title">جاري معالجة الدفع…</div><div class="co-proc-sub">يرجى الانتظار ولا تغلق هذه الصفحة.<br>سيتم التحقق تلقائيًا من حالة الدفع.</div><div class="co-proc-ref">طلب # ${order.id.substring(0,8)} — ${finalAmount} ج.م</div></div>`;
+    document.getElementById('cartBody').innerHTML=`<div class="co-processing"><div class="co-spinner"></div><div class="co-proc-title">جاري معالجة الدفع…</div><div class="co-proc-sub">يرجى الانتظار ولا تغلق هذه الصفحة.<br>سيتم التحقق تلقائيًا من حالة الدفع.</div><div class="co-proc-ref">طلب # ${order.id.substring(0,8)} — ${subtotal} ج.م</div></div>`;
 
     // 🧪 TEST MODE
     setTimeout(async()=>{try{await db.from('orders').update({status:'paid',paid_at:new Date().toISOString(),payment_ref:'test_'+Date.now()}).eq('id',cartOrderId);}catch(e){}},5000);
@@ -689,7 +618,6 @@ async function completeCartPurchase(order){
     cart.forEach(lid=>{localStorage.setItem(`access_${currentUser.id}_${lid}`,JSON.stringify({expiry,studentId:sid}));});
   }catch(e){console.error('Access error:',e);}
 
-  const disc=cartCoupon?cartCoupon.discount:0;
   const final=order?order.final_amount:0;
 
   document.getElementById('cartModalTitle').textContent='تم الدفع بنجاح!';
@@ -702,7 +630,6 @@ async function completeCartPurchase(order){
       <div class="co-success-details">
         <div class="co-success-row"><span class="csr-l">رقم الطلب</span><span class="csr-v"># ${(order?.id||'').substring(0,8)}</span></div>
         <div class="co-success-row"><span class="csr-l">عدد الكورسات</span><span class="csr-v">${cart.length}</span></div>
-        ${disc>0?`<div class="co-success-row"><span class="csr-l">الخصم</span><span class="csr-v" style="color:var(--accent)">- ${disc} ج.م</span></div>`:''}
         <div class="co-success-row"><span class="csr-l">الحالة</span><span class="csr-v" style="color:var(--accent)">مدفوع ✓</span></div>
       </div>
       <button class="co-go-btn" onclick="window.location.href='/lesson?id=${cart[0]}'">ابدأ الكورس الآن <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -734,25 +661,25 @@ function renderLessons(lessons){
     const gradeText=gradeLabels[data.grade]||'';
     const dateStr=data.created_at?new Date(data.created_at).toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'}):'';
     const inCart=cart.includes(id);
+    const accessible=owned||isFree;
 
     let buttonsHtml='';
-    if(owned){
+    if(accessible){
+      // Owned courses AND free courses → direct enter
       buttonsHtml=`<a href="/lesson?id=${id}" onclick="openLesson(event,'${id}')" class="lc-btn enter">▶ Enter Lesson</a>`;
-    }else if(isFree){
-      buttonsHtml=`<button class="lc-btn unlock" onclick="openActivate('${id}')">🔑 Activate with Code</button>`;
     }else{
+      // Paid & not owned → add to cart only
       buttonsHtml=`
         <button class="lc-btn cart ${inCart?'in-cart':''}" data-lid="${id}" onclick="addToCart('${id}')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           ${inCart?'✓ Added to Cart':'Add to Cart'}
-        </button>
-        <button class="lc-btn unlock" onclick="openActivate('${id}')">or activate with code</button>`;
+        </button>`;
     }
 
     const card=document.createElement('div');card.className='lesson-card';
-    card.dataset.owned=owned?'true':'false';card.dataset.free=isFree?'true':'false';
+    card.dataset.owned=accessible?'true':'false';card.dataset.free=isFree?'true':'false';
     card.style.animationDelay=(i*0.05)+'s';
-    card.innerHTML=`<div class="lc-thumb"><img src="${img}" alt="${data.name}" loading="lazy"><div class="lc-thumb-overlay"></div><div class="lc-badges"><div class="badge-lock ${owned?'unlocked':'locked'}">${owned?'✓ Unlocked':'🔒 Locked'}</div><div class="badge-price ${isFree?'free':''}">${price}</div></div></div><div class="lc-body"><div class="lc-tags"><span class="lc-tag grade">${gradeText}</span><span class="lc-tag teacher">Mr. Sherif Ali</span></div><div class="lc-title">${data.name}</div><div class="lc-divider"></div><div class="lc-meta"><div class="lc-date"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${dateStr||'Now'}</div><div class="lc-status ${owned?'ready':'activate'}">${owned?'▶ Ready':'🔑 Activate'}</div></div><div class="lc-btns">${buttonsHtml}</div></div>`;
+    card.innerHTML=`<div class="lc-thumb"><img src="${img}" alt="${data.name}" loading="lazy"><div class="lc-thumb-overlay"></div><div class="lc-badges"><div class="badge-lock ${accessible?'unlocked':'locked'}">${accessible?'✓ Unlocked':'🔒 Locked'}</div><div class="badge-price ${isFree?'free':''}">${price}</div></div></div><div class="lc-body"><div class="lc-tags"><span class="lc-tag grade">${gradeText}</span><span class="lc-tag teacher">Mr. Sherif Ali</span></div><div class="lc-title">${data.name}</div><div class="lc-divider"></div><div class="lc-meta"><div class="lc-date"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${dateStr||'Now'}</div><div class="lc-status ${accessible?'ready':'locked'}">${accessible?'▶ Ready':'🔒 Purchase'}</div></div><div class="lc-btns">${buttonsHtml}</div></div>`;
     grid.appendChild(card);
   });
   applyFilter();
