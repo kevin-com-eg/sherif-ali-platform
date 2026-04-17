@@ -207,9 +207,10 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 .sp-card{background:var(--surface);width:100%;max-width:640px;border:1px solid var(--border2);border-radius:22px;box-shadow:var(--shadow2);display:flex;flex-direction:column;max-height:88vh;transform:translateY(16px);transition:transform .3s;}
 .sp-overlay.show .sp-card{transform:translateY(0);}
 .sp-card::before{content:'';display:block;height:3px;background:linear-gradient(90deg,transparent,var(--green),transparent);border-radius:22px 22px 0 0;}
-.sp-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-radius:0;}
+.sp-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;background:var(--bg2);border-radius:0;}
 .sp-name{font-family:var(--display);font-size:1.05rem;font-weight:800;}
 .sp-email{font-size:.75rem;color:var(--muted);font-family:var(--mono);margin-top:3px;}
+.sp-actions{margin-top:10px;display:flex;gap:8px;}
 .sp-close{width:32px;height:32px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
 .sp-close:hover{background:var(--red-bg);color:var(--red);}
 .sp-body{padding:24px;overflow-y:auto;flex:1;}
@@ -246,7 +247,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
   <div class="secure-txt">Verifying admin access…</div>
 </div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebarEl">
   <div class="sb-logo">
     <div class="sb-logo-mark">MP</div>
@@ -291,7 +291,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
 
-<!-- MAIN -->
 <div class="main-area">
   <div class="topbar">
     <div class="topbar-title" id="topbarTitle">Overview</div>
@@ -300,7 +299,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 
   <div class="content">
 
-    <!-- OVERVIEW -->
     <div class="section-page active" id="sec-overview">
       <div class="stats-row">
         <div class="stat-c"><div class="stat-icon">👥</div><div><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">Students</div></div></div>
@@ -318,7 +316,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- LESSONS -->
     <div class="section-page" id="sec-lessons">
       <div class="card">
         <div class="card-head">
@@ -356,7 +353,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 
           <div class="divider"></div>
 
-          <!-- MULTI VIDEO SECTION -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div>
               <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">📺 Video Lessons</div>
@@ -368,7 +364,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 
           <div class="divider"></div>
 
-          <!-- EXAM QUESTIONS -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">📝 Exam Questions</div>
             <button class="btn btn-ghost" style="font-size:.78rem;padding:8px 14px" onclick="addQuestion('questionsContainer')">+ Add Question</button>
@@ -384,7 +379,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- HOMEWORK -->
     <div class="section-page" id="sec-homework">
       <div class="card">
         <div class="card-head">
@@ -430,7 +424,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
-    <!-- RESULTS -->
     <div class="section-page" id="sec-results">
       <div class="card">
         <div class="card-head">
@@ -442,36 +435,47 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
         </div>
         <div style="padding:4px">
           <div class="table-wrap" style="max-height:520px;overflow-y:auto">
-            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th></tr></thead>
-            <tbody id="resultsBody"><tr><td colspan="5" class="td-empty">Loading…</td></tr></tbody></table>
+            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th><th style="text-align:center">Action</th></tr></thead>
+            <tbody id="resultsBody"><tr><td colspan="6" class="td-empty">Loading…</td></tr></tbody></table>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CODES -->
     <div class="section-page" id="sec-codes">
       <div class="card">
         <div class="card-head">
           <div class="card-title">🎫 Subscription Codes</div>
-          <button class="btn btn-primary" onclick="generateCodes()">Generate 50 Codes</button>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" onclick="loadAllCodes()">🔄 Refresh List</button>
+            <button class="btn btn-primary" onclick="generateCodes()">+ Generate 50 Codes</button>
+          </div>
         </div>
         <div class="card-body">
-          <div id="codesPlaceholder" style="text-align:center;padding:40px;color:var(--muted);background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;">
+          <div id="codesPlaceholder" class="hidden" style="text-align:center;padding:40px;color:var(--muted);background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;">
             Click the button above to generate 50 new subscription codes 🎯
           </div>
-          <div id="codesResultArea" class="hidden">
+          
+          <div id="codesResultArea" class="hidden" style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
-              <span style="font-size:.82rem;color:var(--muted);font-weight:700">Generated — distribute these to students.</span>
+              <span style="font-size:.82rem;color:var(--green);font-weight:700">Newly Generated Codes — distribute these to students.</span>
               <button class="btn btn-ghost" style="font-size:.78rem;padding:7px 14px" onclick="copyCodes()">Copy All 📋</button>
             </div>
             <div class="codes-grid" id="codesGrid"></div>
           </div>
+
+          <div style="font-family:var(--display);font-size:.95rem;font-weight:700;margin-bottom:14px;">📋 All Codes List</div>
+          <div class="table-wrap" style="max-height:400px;overflow-y:auto">
+            <table>
+              <thead><tr><th>Code</th><th>Status</th><th>Used By</th><th>Lesson</th></tr></thead>
+              <tbody id="codesListBody"><tr><td colspan="4" class="td-empty">Loading codes...</td></tr></tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- NOTIF -->
     <div class="section-page" id="sec-notif">
       <div class="card">
         <div class="card-head"><div class="card-title">📢 Broadcast Announcement</div></div>
@@ -488,13 +492,16 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
   </div>
 </div>
 
-<!-- Student Modal -->
 <div id="studentModal" class="sp-overlay">
   <div class="sp-card">
     <div class="sp-head">
       <div>
         <div class="sp-name" id="spName">Student</div>
         <div class="sp-email" id="spEmail">email</div>
+        <div class="sp-actions">
+          <button class="btn btn-danger" id="btnBlockStudent" style="padding:5px 12px; font-size:.7rem;" onclick="toggleBlockStudent()">🚫 Block Student</button>
+          <button class="btn btn-ghost" style="padding:5px 12px; font-size:.7rem;" onclick="resetStudentDevice()">💻 Reset Device</button>
+        </div>
       </div>
       <button class="sp-close" onclick="closeStudent()">✕</button>
     </div>
@@ -517,6 +524,7 @@ const ADMIN="kevin.hany.08@proton.me";
 
 let editingLessonId=null,editingHwId=null,allLessons={},allHw={};
 let examResults=[],studentsByEmail={};
+let currentOpenStudentEmail=null;
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
 
@@ -538,7 +546,7 @@ async function checkAuth(){
 }
 checkAuth();
 
-async function loadAll(){await loadStats();await loadLessons();await loadHw();await loadResults();}
+async function loadAll(){await loadStats();await loadLessons();await loadHw();await loadResults();await loadAllCodes();}
 
 /* ── SIDEBAR ── */
 const TITLES={overview:'Overview',lessons:'Courses & Lessons',homework:'Assignments',results:'Student Results',codes:'Subscription Codes',notif:'Broadcast'};
@@ -594,18 +602,27 @@ async function loadResults(){
 
 function renderResultsTable(){
   const students=Object.entries(studentsByEmail).filter(([e])=>e!==ADMIN);
-  if(!students.length){document.getElementById('resultsBody').innerHTML=`<tr><td colspan="5" class="td-empty">No students yet</td></tr>`;return;}
+  if(!students.length){document.getElementById('resultsBody').innerHTML=`<tr><td colspan="6" class="td-empty">No students yet</td></tr>`;return;}
   let rows='';
   students.sort((a,b)=>String(a[1].name).localeCompare(String(b[1].name))).forEach(([email,s])=>{
     const sRes=examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date));
     const latest=sRes[0];
     const dt=latest?.date?new Date(latest.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
+    
+    // WhatsApp Msg prep
+    let waLink = '—';
+    if(latest){
+      const whatsappMsg = encodeURIComponent(`أهلاً، درجة الطالب ${s.name} في امتحان ${latest.lesson} هي: ${latest.score}/${latest.total}`);
+      waLink = `<a href="https://api.whatsapp.com/send?text=${whatsappMsg}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none; font-size:1.1rem; filter: grayscale(0%); transition: transform 0.2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Send WhatsApp">💬</a>`;
+    }
+
     rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\\'")}')">
       <td class="td-name"><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;background:var(--green-light);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0">👤</div><div>${s.name}<div style="font-size:.68rem;color:var(--muted)">${sRes.length} exams</div></div></div></td>
       <td class="td-email">${email}</td>
       <td class="td-green">${latest?.lesson||'—'}</td>
       <td>${latest?`<span class="td-score">${latest.score}/${latest.total}</span>`:'—'}</td>
       <td class="td-date">${dt}</td>
+      <td style="text-align:center">${waLink}</td>
     </tr>`;
   });
   document.getElementById('resultsBody').innerHTML=rows;
@@ -616,11 +633,24 @@ function searchTable(){
   document.querySelectorAll('#resultsBody tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
 }
 
-/* ── STUDENT MODAL ── */
+/* ── STUDENT MODAL & ADMIN ACTIONS ── */
 async function openStudent(email,name){
+  currentOpenStudentEmail=email;
   document.getElementById('spName').textContent=name;
   document.getElementById('spEmail').textContent=email;
   document.getElementById('studentModal').classList.add('show');
+  
+  // Set block button status based on current raw data
+  const sData = studentsByEmail[email]?.raw;
+  const btnBlock = document.getElementById('btnBlockStudent');
+  if(sData?.is_blocked){
+    btnBlock.innerHTML = '✅ Unblock Student';
+    btnBlock.classList.replace('btn-danger', 'btn-primary');
+  } else {
+    btnBlock.innerHTML = '🚫 Block Student';
+    btnBlock.classList.replace('btn-primary', 'btn-danger');
+  }
+
   document.getElementById('spDetails').innerHTML='<div style="text-align:center;padding:28px;color:var(--muted)">Loading…</div>';
   try{
     const[{data:codes},{data:hwRes}]=await Promise.all([
@@ -652,7 +682,34 @@ async function openStudent(email,name){
     document.getElementById('spDetails').innerHTML=html;
   }catch(e){document.getElementById('spDetails').innerHTML=`<div style="color:var(--red);text-align:center;padding:24px">Error loading data</div>`;}
 }
-function closeStudent(){document.getElementById('studentModal').classList.remove('show');}
+
+function closeStudent(){document.getElementById('studentModal').classList.remove('show');currentOpenStudentEmail=null;}
+
+window.toggleBlockStudent = async () => {
+  if(!currentOpenStudentEmail) return;
+  const sData = studentsByEmail[currentOpenStudentEmail]?.raw;
+  const isBlocked = sData?.is_blocked || false;
+  const newStatus = !isBlocked;
+
+  if(!confirm(newStatus ? "Are you sure you want to block this student from accessing the platform?" : "Unblock this student?")) return;
+  
+  try {
+    await db.from('users').update({ is_blocked: newStatus }).eq('email', currentOpenStudentEmail);
+    showToast('success', 'Success', newStatus ? 'Student blocked.' : 'Student unblocked.');
+    if(studentsByEmail[currentOpenStudentEmail]) studentsByEmail[currentOpenStudentEmail].raw.is_blocked = newStatus;
+    openStudent(currentOpenStudentEmail, studentsByEmail[currentOpenStudentEmail].name); // Refresh UI
+  } catch(e) { showToast('error', 'Error', e.message); }
+};
+
+window.resetStudentDevice = async () => {
+  if(!currentOpenStudentEmail) return;
+  if(!confirm("Are you sure you want to reset the device limit for this student? They will be asked to log in again.")) return;
+  
+  try {
+    await db.from('users').update({ device_id: null }).eq('email', currentOpenStudentEmail);
+    showToast('success', 'Success', 'Device limit reset successfully.');
+  } catch(e) { showToast('error', 'Error', e.message); }
+};
 
 /* ── LESSONS ── */
 async function loadLessons(){
@@ -762,7 +819,6 @@ window.toggleHwSelect=function(sel){
   const wrap=sel.closest('.video-block').querySelector('.vid-hw-select-wrap');
   wrap.style.display=sel.value==='1'?'':'none';
 };
-
 function getVideosFromForm(){
   const videos=[];
   document.querySelectorAll('#videosContainer .video-block').forEach(b=>{
@@ -949,6 +1005,33 @@ function getQuestionsFrom(cid){
 }
 
 /* ── CODES ── */
+async function loadAllCodes() {
+  const tbody = document.getElementById('codesListBody');
+  tbody.innerHTML = '<tr><td colspan="4" class="td-empty">Loading codes...</td></tr>';
+  try {
+    const {data} = await db.from('codes').select('*').order('created_at', {ascending:false});
+    if(!data || !data.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="td-empty">No codes generated yet.</td></tr>';
+      return;
+    }
+    let rows = '';
+    data.forEach(c => {
+       const status = c.used ? '<span style="color:var(--red);font-weight:bold;font-size:0.75rem">Used</span>' : '<span style="color:var(--green);font-weight:bold;font-size:0.75rem">Available</span>';
+       const user = c.usedby || '<span style="color:var(--muted)">—</span>';
+       const lesson = allLessons[c.lessonid]?.name || '<span style="color:var(--muted)">Any</span>';
+       rows += `<tr>
+         <td class="td-name" style="font-family:var(--mono); font-size:0.78rem;">${c.code}</td>
+         <td>${status}</td>
+         <td style="font-size:0.75rem; font-family:var(--mono);">${user}</td>
+         <td style="font-size:0.75rem; color:var(--muted)">${lesson}</td>
+       </tr>`;
+    });
+    tbody.innerHTML = rows;
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="4" class="td-empty" style="color:red">Error loading codes</td></tr>`;
+  }
+}
+
 async function generateCodes(){
   if(!confirm("Generate 50 new codes?"))return;
   document.getElementById('codesResultArea').classList.remove('hidden');
@@ -960,7 +1043,10 @@ async function generateCodes(){
     codes.push({code:c,used:false});
     const el=document.createElement('div');el.className='code-pill';el.textContent=c;grid.appendChild(el);
   }
-  try{await db.from('codes').insert(codes);}catch(e){showToast('error','Save Error',e.message);}
+  try{
+    await db.from('codes').insert(codes);
+    loadAllCodes(); // Refresh list after generation
+  }catch(e){showToast('error','Save Error',e.message);}
 }
 function copyCodes(){
   const codes=Array.from(document.getElementById('codesGrid').children).map(d=>d.textContent).join('\n');
