@@ -526,7 +526,98 @@ let editingLessonId=null,editingHwId=null,allLessons={},allHw={};
 let examResults=[],studentsByEmail={};
 let currentOpenStudentEmail=null;
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
+
 const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
+
+function isMissingColumnError(error){
+  const msg=String(error?.message||error||'');
+  return /column .* does not exist|Could not find the .* column|schema cache/i.test(msg);
+}
+function normalizeVideoItem(item,index=0,fallbackName=''){
+  if(!item) return null;
+  if(typeof item==='string'){
+    const url=item.trim();
+    if(!url) return null;
+    return {name:fallbackName||`Video ${index+1}`,url,requireHw:false,hwId:''};
+  }
+  const url=String(item.url||item.video||item.link||'').trim();
+  if(!url) return null;
+  return {
+    name:String(item.name||item.title||fallbackName||`Video ${index+1}`).trim(),
+    url,
+    requireHw:Boolean(item.requireHw),
+    hwId:String(item.hwId||item.homeworkId||item.homework_id||'').trim()
+  };
+}
+function parseVideoArray(raw,fallbackName=''){
+  if(Array.isArray(raw)) return raw.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);
+  if(typeof raw==='string'){
+    const trimmed=raw.trim();
+    if(!trimmed) return [];
+    try{
+      const parsed=JSON.parse(trimmed);
+      if(Array.isArray(parsed)) return parsed.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);
+      const one=normalizeVideoItem(parsed,0,fallbackName);
+      return one?[one]:[];
+    }catch(_){}
+    const one=normalizeVideoItem(trimmed,0,fallbackName);
+    return one?[one]:[];
+  }
+  if(raw&&typeof raw==='object'){
+    const one=normalizeVideoItem(raw,0,fallbackName);
+    return one?[one]:[];
+  }
+  return [];
+}
+function normalizeLessonVideos(lesson){
+  const videosFromVideos=parseVideoArray(lesson?.videos,lesson?.name||'Video');
+  if(videosFromVideos.length) return videosFromVideos;
+  const videosFromVideo=parseVideoArray(lesson?.video,lesson?.name||'Video');
+  if(videosFromVideo.length) return videosFromVideo;
+  return [];
+}
+function normalizeQuestions(raw){
+  if(Array.isArray(raw)) return raw;
+  if(typeof raw==='string'){
+    try{
+      const parsed=JSON.parse(raw);
+      return Array.isArray(parsed)?parsed:[];
+    }catch(_){}
+  }
+  return [];
+}
+async function saveLessonWithFallback(payload){
+  const basePayload={
+    name:payload.name,
+    grade:payload.grade,
+    price:payload.price,
+    validitydays:payload.validitydays,
+    image:payload.image,
+    pdf:payload.pdf,
+    video:payload.video||''
+  };
+  const candidates=[
+    {...basePayload,videos:payload.videos,questions:payload.questions},
+    {...basePayload,questions:payload.questions},
+    {...basePayload,videos:payload.videos},
+    {...basePayload}
+  ];
+  const tried=new Set();
+  let lastError=null;
+  for(const candidate of candidates){
+    const key=Object.keys(candidate).sort().join('|');
+    if(tried.has(key)) continue;
+    tried.add(key);
+    const req=editingLessonId
+      ? db.from('lessons').update(candidate).eq('id',editingLessonId)
+      : db.from('lessons').insert([candidate]);
+    const {error}=await req;
+    if(!error) return candidate;
+    lastError=error;
+    if(!isMissingColumnError(error)) throw error;
+  }
+  throw lastError||new Error('Failed to save lesson.');
+}
 
 /* ── TOAST ── */
 function showToast(type,title,msg,dur=4500){
@@ -704,11 +795,25 @@ window.toggleBlockStudent = async () => {
 window.resetStudentDevice = async () => {
   if(!currentOpenStudentEmail) return;
   if(!confirm("Are you sure you want to reset the device limit for this student? They will be asked to log in again.")) return;
-  
-  try {
-    await db.from('users').update({ device_id: null }).eq('email', currentOpenStudentEmail);
-    showToast('success', 'Success', 'Device limit reset successfully.');
-  } catch(e) { showToast('error', 'Error', e.message); }
+
+  const attempts=[
+    {device_id:null},
+    {deviceId:null},
+    {device_id:null,device_token:null},
+    {device_id:null,device_fingerprint:null},
+    {device_id:null,last_device_id:null}
+  ];
+
+  let success=false,lastError=null;
+  for(const updates of attempts){
+    const {error}=await db.from('users').update(updates).eq('email',currentOpenStudentEmail);
+    if(!error){success=true;break;}
+    lastError=error;
+    if(!isMissingColumnError(error)) break;
+  }
+
+  if(success) showToast('success','Success','Device limit reset successfully. Ask the student to log out, then sign in again.');
+  else showToast('error','Error',lastError?.message||'Could not reset device.');
 };
 
 /* ── LESSONS ── */
@@ -722,7 +827,8 @@ async function loadLessons(){
     data.forEach(d=>{
       allLessons[d.id]=d;
       opts+=`<option value="${d.id}">${d.name}</option>`;
-      const vids=(d.videos||[]).length;
+      const normalizedVideos=normalizeLessonVideos(d);
+      const vids=normalizedVideos.length;
       rows+=`<tr>
         <td class="td-name">${d.name}</td>
         <td style="color:var(--muted);font-size:.8rem">${GRADE_MAP[d.grade]||'—'}</td>
@@ -762,8 +868,10 @@ function editLesson(id){
   document.getElementById('lessonPdf').value=d.pdf||'';
   document.getElementById('videosContainer').innerHTML='';
   document.getElementById('questionsContainer').innerHTML='';
-  (d.videos||[]).forEach(v=>addVideoBlock(v));
-  (d.questions||[]).forEach(q=>addQuestion('questionsContainer',q));
+  const normalizedVideos=normalizeLessonVideos(d);
+  if(normalizedVideos.length) normalizedVideos.forEach(v=>addVideoBlock(v));
+  else if(d.video) addVideoBlock({name:d.name||'Main Video',url:d.video,requireHw:false,hwId:''});
+  normalizeQuestions(d.questions).forEach(q=>addQuestion('questionsContainer',q));
   document.getElementById('lessonFormTitle').textContent='✏️ Edit Course';
   document.getElementById('saveLessonBtn').textContent='Update Course 🔄';
   document.getElementById('cancelLessonBtn').classList.remove('hidden');
@@ -821,12 +929,15 @@ window.toggleHwSelect=function(sel){
 };
 function getVideosFromForm(){
   const videos=[];
-  document.querySelectorAll('#videosContainer .video-block').forEach(b=>{
+  document.querySelectorAll('#videosContainer .video-block').forEach((b,index)=>{
     const req=b.querySelector('.vid-require-hw').value==='1';
     const hwId=b.querySelector('.vid-hw-id')?.value||'';
+    const url=b.querySelector('.vid-url').value.trim();
+    const name=b.querySelector('.vid-name').value.trim();
+    if(!url) return;
     videos.push({
-      name:b.querySelector('.vid-name').value.trim(),
-      url:b.querySelector('.vid-url').value.trim(),
+      name:name||`Video ${index+1}`,
+      url,
       requireHw:req,
       hwId:req?hwId:''
     });
@@ -835,10 +946,10 @@ function getVideosFromForm(){
 }
 
 async function saveLesson(){
-  const name=document.getElementById('lessonName').value;
-  const video_url=document.getElementById('lessonPdf').value;// reused
+  const name=document.getElementById('lessonName').value.trim();
   if(!name)return showToast('warning','Missing','Course title is required!');
   const videos=getVideosFromForm();
+  if(!videos.length)return showToast('warning','Missing','Add at least one video URL.');
   const questions=getQuestionsFrom('questionsContainer');
   const btn=document.getElementById('saveLessonBtn');
   btn.textContent='Saving…';btn.disabled=true;
@@ -846,19 +957,20 @@ async function saveLesson(){
     const payload={
       name,
       grade:document.getElementById('lessonGrade').value,
-      price:document.getElementById('lessonPrice').value||0,
+      price:Number(document.getElementById('lessonPrice').value)||0,
       validitydays:Number(document.getElementById('lessonValidity').value)||90,
-      image:document.getElementById('lessonImage').value,
-      pdf:document.getElementById('lessonPdf').value,
+      image:document.getElementById('lessonImage').value.trim(),
+      pdf:document.getElementById('lessonPdf').value.trim(),
+      video:videos[0]?.url||'',
       videos,
       questions
     };
+    const savedPayload=await saveLessonWithFallback(payload);
+    const legacyOnly=!Object.prototype.hasOwnProperty.call(savedPayload,'videos');
     if(editingLessonId){
-      await db.from('lessons').update(payload).eq('id',editingLessonId);
-      showToast('success','Updated ✅','Course updated!');
+      showToast('success','Updated ✅',legacyOnly?'Course updated. Legacy lessons table detected, so only the first video was saved.':'Course updated!');
     }else{
-      await db.from('lessons').insert([payload]);
-      showToast('success','Published ✅','Course published!');
+      showToast('success','Published ✅',legacyOnly?'Course published. Legacy lessons table detected, so only the first video was saved.':'Course published!');
     }
     resetLessonForm();loadLessons();loadStats();
   }catch(e){showToast('error','Error',e.message);}
