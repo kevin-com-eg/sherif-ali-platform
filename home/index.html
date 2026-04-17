@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathPro | Mr. Sherif Ali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700&family=PT+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23111111'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='900' font-size='28' fill='white'>MP</text></svg>">
+<link rel="stylesheet" href="../assets/css/shared.css">
+</head>
+<body class="page-home">
+
+<div id="toast-container"></div>
+
+<!-- Reset Password Popup -->
+<div id="resetPopupOverlay" class="popup-overlay">
+  <div class="popup-card">
+    <div class="popup-icon">🔐</div>
+    <h3 class="popup-title">Set New Password</h3>
+    <p class="popup-sub">Welcome back! Set a new password with at least 6 characters.</p>
+    <div class="popup-input-wrap">
+      <span class="flbl">New Password</span>
+      <input type="password" id="newPasswordInput" name="new-password" class="inp" placeholder="••••••••" autocomplete="new-password" minlength="6" dir="ltr">
+    </div>
+    <button type="button" id="confirmResetBtn" class="cta-btn">Save & Sign In</button>
+    <button type="button" id="cancelResetBtn" class="popup-cancel-btn">Cancel</button>
+  </div>
+</div>
+
+<!-- OTP Reset Popup -->
+<div id="otpResetPopupOverlay" class="popup-overlay">
+  <div class="popup-card">
+    <div class="popup-icon">📧</div>
+    <h3 class="popup-title">Enter Verification Code</h3>
+    <p class="popup-sub">We sent an 8-digit code to your email. Enter it below along with your new password.</p>
+    <div class="popup-input-wrap">
+      <span class="flbl">Verification Code</span>
+      <input type="text" id="otpCodeInput" name="one-time-code" class="inp" placeholder="12345678" style="margin-bottom:12px;letter-spacing:6px;text-align:center;font-size:1.3rem;font-weight:700;font-family:var(--mono);" maxlength="8" autocomplete="one-time-code" inputmode="numeric" dir="ltr">
+      <span class="flbl">New Password</span>
+      <input type="password" id="otpNewPasswordInput" name="otp-new-password" class="inp" placeholder="••••••••" autocomplete="new-password" minlength="8" dir="ltr">
+    </div>
+    <button type="button" id="verifyOtpBtn" class="cta-btn">Confirm & Change Password</button>
+    <button type="button" id="cancelOtpBtn" class="popup-cancel-btn">Cancel</button>
+  </div>
+</div>
+
+<!-- Google Profile Popup -->
+<div id="googleProfilePopup" class="popup-overlay">
+  <div class="popup-card">
+    <div class="popup-icon">📱</div>
+    <h3 class="popup-title">One Last Step!</h3>
+    <p class="popup-sub">To complete your profile and show you the right courses, we need a few more details.</p>
+    <div class="popup-input-wrap">
+      <span class="flbl">School Grade</span>
+      <select id="googleGrade" class="inp" style="margin-bottom:10px;" onchange="this.classList.add('filled')">
+        <option value="" disabled selected>Select grade...</option>
+        <option value="1">1st Year Secondary</option>
+        <option value="2">2nd Year Secondary</option>
+        <option value="3">3rd Year Secondary</option>
+      </select>
+      <span class="flbl">Your Phone Number</span>
+      <input type="text" id="googlePhone" name="googlePhone" class="inp" placeholder="01xxxxxxxxx" style="margin-bottom:10px;" autocomplete="tel" inputmode="tel" dir="ltr">
+      <span class="flbl">Parent's Phone Number</span>
+      <input type="text" id="googleParentPhone" name="googleParentPhone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr">
+    </div>
+    <button type="button" id="saveGoogleProfileBtn" class="cta-btn">Save & Enter Platform →</button>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-w">
+    <a class="logo" href="/home">
+      <div class="logo-mark">MP</div>
+      <span class="logo-name">Math<em>Pro</em></span>
+      <span class="live-badge">LIVE</span>
+    </a>
+    <div class="nav-right">
+      <a href="#contact" class="nav-link">Contact</a>
+      <a href="#why" class="nav-link">Why Us</a>
+      <button class="nav-btn" onclick="document.querySelector('.card-col').scrollIntoView({behavior:'smooth'})">Enter Platform →</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero-section">
+  <div class="hero-left">
+    <div class="teacher-card">
+      <div class="teacher-avatar-wrap">
+        <img src="https://scontent.fcai19-1.fna.fbcdn.net/v/t39.30808-6/527835463_605155572653026_4006013051839682878_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=1d70fc&_nc_eui2=AeGwWcE3K3r8RERxzBIQVXSiMDwdD_8AWXUwPB0P_wBZdTTOGFAr_oSkOywhpYyBBb2-qtbp3a6u7oEE6wBFi8Sd&_nc_ohc=nxatvHgibB0Q7kNvwHHTYPt&_nc_oc=AdoUhjsgg9s53OLVb8oYNdlq3sAp2aPPs5Nmz-KsUYKpYMguqSttLL9mzNWji1TxOhk&_nc_zt=23&_nc_ht=scontent.fcai19-1.fna&_nc_gid=KX_rM8McC-qZBnryVCqjmQ&_nc_ss=7a3a8&oh=00_Af1FP7BKGHnDmfyDOmy1_eNzYSFDHxFeKewqZhRgVH6GwQ&oe=69DD4AE5" alt="Mr. Sherif Ali">
+        <div class="teacher-badge">✓ VERIFIED</div>
+      </div>
+      <div class="teacher-info">
+        <h2>Mr. Sherif Ali</h2>
+        <p>Mathematics Expert · Secondary School</p>
+        <div class="teacher-stats">
+          <div class="tst"><div class="tst-n">500+</div><div class="tst-l">Students</div></div>
+          <div class="tst"><div class="tst-n">120+</div><div class="tst-l">Lessons</div></div>
+          <div class="tst"><div class="tst-n">98%</div><div class="tst-l">Satisfaction</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eyebrow-pill">Advanced Learning System · Secondary School</div>
+
+    <h1 class="hero-h1">
+      Learn Mathematics
+      <span class="line2">A Different Way</span>
+    </h1>
+
+    <p class="hero-p">Mr. Sherif Ali's platform — professional explanations for every topic in the curriculum, with interactive exams that track your progress and build your confidence step by step.</p>
+
+    <div class="stats-strip">
+      <div class="sitem"><div class="snum" data-count="500">0</div><div class="slbl">Students</div></div>
+      <div class="sitem"><div class="snum" data-count="120">0</div><div class="slbl">Lessons</div></div>
+      <div class="sitem"><div class="snum" data-count="98">0</div><div class="slbl">% Satisfaction</div></div>
+    </div>
+
+    <div class="chips">
+      <div class="chip">📐 Interactive Lessons</div>
+      <div class="chip">🏆 Instant Exams</div>
+      <div class="chip">📊 Progress Tracking</div>
+      <div class="chip">🔔 Parent Updates</div>
+    </div>
+  </div>
+
+  <div class="card-col">
+    <div class="auth-card" id="authCard">
+      <div class="card-head">
+        <div class="card-title">Welcome 👋</div>
+        <div class="card-sub">Sign in or create a new account to get started</div>
+      </div>
+
+      <div class="tabs">
+        <button type="button" class="tab on" id="loginTab">Sign In</button>
+        <button type="button" class="tab" id="signupTab">Register</button>
+      </div>
+
+      <form id="authForm" autocomplete="on">
+        <div id="extraFields" class="hidden fields" style="margin-bottom:10px;">
+          <div class="fw">
+            <span class="flbl">Full Name</span>
+            <input id="userName" name="name" class="inp" placeholder="Enter your full name..." autocomplete="name">
+          </div>
+          <div class="fw">
+            <span class="flbl">School Grade</span>
+            <select id="userGrade" class="inp" onchange="this.classList.add('filled')">
+              <option value="" disabled selected>Select grade...</option>
+              <option value="1">1st Year Secondary</option>
+              <option value="2">2nd Year Secondary</option>
+              <option value="3">3rd Year Secondary</option>
+            </select>
+          </div>
+          <div class="f2col">
+            <div class="fw"><span class="flbl">Student Phone</span><input id="userPhone" name="phone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr"></div>
+            <div class="fw"><span class="flbl">Parent Phone</span><input id="parentPhone" name="parentPhone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr"></div>
+          </div>
+        </div>
+
+        <div class="fields">
+          <div class="fw">
+            <span class="flbl">Email Address</span>
+            <input id="email" name="email" type="email" class="inp" placeholder="example@email.com" autocomplete="email" autocapitalize="off" spellcheck="false" inputmode="email" dir="ltr">
+          </div>
+          <div class="fw">
+            <span class="flbl">Password</span>
+            <div class="pass-row">
+              <input id="password" name="password" type="password" class="inp" placeholder="••••••••" autocomplete="current-password" minlength="6" dir="ltr">
+              <button type="button" class="eye-btn" id="eyeBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="forgotArea" class="forgot">
+          <button type="button" id="forgotBtn">Forgot your password?</button>
+        </div>
+
+        <button type="submit" class="cta-btn" id="actionBtn">Sign In →</button>
+
+        <div class="or-line">
+          <div class="or-bar"></div>
+          <span class="or-txt">OR CONTINUE WITH</span>
+          <div class="or-bar"></div>
+        </div>
+
+        <button type="button" class="g-btn" id="googleBtn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+          Continue with Google
+        </button>
+
+        <div class="trust">
+          <span style="color:#16a34a;font-size:11px;">🔒</span>
+          <span class="trust-txt">Your data is fully protected · SSL Encrypted</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<hr class="section-rule">
+<section id="why" class="features-section">
+  <div class="section-head">
+    <div class="section-label">◆ Why Choose Us</div>
+    <h2>Everything You Need to Excel</h2>
+    <p>All the tools and resources to master mathematics in one place</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon-box">🎥</div>
+      <h3>Premium Video Lessons</h3>
+      <p>High-quality recorded videos using the latest techniques to simplify even the most complex math problems, delivered straight to your screen.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-box">📝</div>
+      <h3>Comprehensive Question Bank</h3>
+      <p>Regular exams and intensive drills covering all thinking levels on the new tablet system, fully preparing you for your final exam.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-box">🤝</div>
+      <h3>Ongoing Support & Tracking</h3>
+      <p>Continuous level monitoring with regular reports for parents, keeping you on the right track and ensuring your academic success.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<hr class="section-rule">
+<section id="contact" class="contact-section">
+  <div class="contact-inner">
+    <div class="contact-left">
+      <div class="section-label" style="margin-bottom:14px;">◆ Contact Us</div>
+      <h2>Get in Touch</h2>
+      <p>Have a question or need help? Reach out to us through any of the channels below and we'll get back to you as soon as possible.</p>
+      <div class="contact-links">
+        <a href="mailto:kevin.hany.08@hotmail.com" class="contact-link">
+          <div class="cl-icon">✉️</div>
+          <div>
+            <div class="cl-label">Email</div>
+            <div class="cl-val">kevin.hany.08@hotmail.com</div>
+          </div>
+        </a>
+        <a href="https://wa.me/201064233004" target="_blank" class="contact-link">
+          <div class="cl-icon">💬</div>
+          <div>
+            <div class="cl-label">WhatsApp</div>
+            <div class="cl-val">+20 106 423 3004</div>
+          </div>
+        </a>
+        <a href="https://www.facebook.com" target="_blank" class="contact-link">
+          <div class="cl-icon">📘</div>
+          <div>
+            <div class="cl-label">Facebook</div>
+            <div class="cl-val">MathPro — Mr. Sherif Ali</div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form-side">
+      <div class="section-label" style="margin-bottom:6px;">◆ Send a Message</div>
+      <input type="text" id="contactName" placeholder="Your full name" />
+      <input type="email" id="contactEmail" placeholder="Your email address" />
+      <textarea id="contactMsg" placeholder="Your message..." rows="5"></textarea>
+      <button class="contact-send-btn" onclick="handleContactSend()">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- WhatsApp Float -->
+<a href="https://wa.me/201064233004" class="floating-wa" target="_blank" title="Contact us on WhatsApp">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+  </svg>
+</a>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand-col">
+      <div class="footer-logo-row">
+        <div class="footer-logo-box">MP</div>
+        <div class="footer-brand-name">Math<em>Pro</em></div>
+      </div>
+      <p class="footer-desc">A complete educational platform for secondary school students — interactive content, exams, and professional video explanations by Mr. Sherif Ali.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Facebook
+        </a>
+        <a href="https://wa.me/201064233004" target="_blank" class="social-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#">My Courses</a></li>
+        <li><a href="#">My Account</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Video Lessons</a></li>
+        <li><a href="#">Question Bank</a></li>
+        <li><a href="#">Exam Center</a></li>
+        <li><a href="#">Progress Reports</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact Info</h4>
+      <p>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        kevin.hany.08@hotmail.com
+      </p>
+      <p>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        +20 106 423 3004
+      </p>
+      <p>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Sun – Thu · 9am – 9pm
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>MathPro © 2025 · All rights reserved</span>
+    <div class="powered">
+      <span>Powered by</span>
+      <a href="https://wa.me/201064233004" target="_blank">Kevin</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Toast */
+function showToast(type,title,msg,duration=4500){
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<div class="toast-icon">${icons[type]||'💬'}</div><div class="toast-body"><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div><button class="toast-close" onclick="dismissToast(this.parentElement)">×</button>`;
+  c.appendChild(t);
+  setTimeout(()=>dismissToast(t),duration);
+}
+function dismissToast(el){
+  if(!el||el.classList.contains('toast-exit'))return;
+  el.classList.add('toast-exit');
+  setTimeout(()=>el.remove(),260);
+}
+
+/* Contact Form */
+function handleContactSend(){
+  const name=document.getElementById('contactName').value.trim();
+  const email=document.getElementById('contactEmail').value.trim();
+  const msg=document.getElementById('contactMsg').value.trim();
+  if(!name||!email||!msg)return showToast('warning','Missing Fields','Please fill in all fields before sending.');
+  const waText=encodeURIComponent(`New message from MathPro website:\nName: ${name}\nEmail: ${email}\nMessage: ${msg}`);
+  window.open(`https://wa.me/201064233004?text=${waText}`,'_blank');
+  document.getElementById('contactName').value='';
+  document.getElementById('contactEmail').value='';
+  document.getElementById('contactMsg').value='';
+  showToast('success','Message Sent!','We\'ll get back to you as soon as possible.');
+}
+
+/* Supabase */
+const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const adminEmail="kevin.hany.08@proton.me";
+
+function getLocalDeviceId(){let did=localStorage.getItem('mp_device_id');if(!did){did='dev_'+Math.random().toString(36).substr(2,9)+'_'+Date.now();localStorage.setItem('mp_device_id',did);}return did;}
+function rememberLastEmail(email){if(email)localStorage.setItem('mp_last_email',email.trim());}
+function preloadLastEmail(){const saved=localStorage.getItem('mp_last_email');const el=document.getElementById('email');if(saved&&el&&!el.value)el.value=saved;}
+function isUserBlocked(u={}){
+  if(!u||typeof u!=='object')return false;
+  if([u.blocked,u.is_blocked,u.isblocked,u.banned,u.is_banned,u.disabled,u.suspended].some(v=>v===true))return true;
+  const statuses=[u.status,u.account_status,u.access_status,u.user_status].filter(v=>typeof v==='string').map(v=>v.trim().toLowerCase());
+  if(statuses.some(v=>['blocked','block','banned','disabled','suspended','inactive'].includes(v)))return true;
+  if(u.blocked_until){const d=new Date(u.blocked_until);if(!isNaN(d)&&d>Date.now())return true;}
+  return false;
+}
+async function handleBlockedUser(u){
+  if(!isUserBlocked(u))return false;
+  await supabaseClient.auth.signOut();
+  showToast('error','Account Blocked','This account has been blocked. Contact support to restore access.');
+  return true;
+}
+
+async function checkSessionOnLoad(){
+  const{data:{session}}=await supabaseClient.auth.getSession();
+  if(!session)return;
+  const user=session.user;
+  rememberLastEmail(user.email||'');
+  if(user.email===adminEmail){window.location.href="/teacher-dashboard";return;}
+  const{data:dbUser}=await supabaseClient.from('users').select('*').eq('id',user.id).single();
+  if(await handleBlockedUser(dbUser))return;
+  const deviceId=getLocalDeviceId();
+  let userDevices=Array.isArray(dbUser?.devices)?dbUser.devices:[];
+  if(!userDevices.includes(deviceId)){
+    if(userDevices.length>=2){await supabaseClient.auth.signOut();showToast('warning','Device Limit Reached','You cannot sign in from more than 2 devices. Contact support.');return;}
+    userDevices.push(deviceId);
+    if(dbUser)await supabaseClient.from('users').update({devices:userDevices}).eq('id',user.id);
+  }
+  if(!dbUser||!dbUser.phone||!dbUser.parentphone){
+    document.getElementById('googleProfilePopup').classList.add('show');
+    document.getElementById('saveGoogleProfileBtn').onclick=async()=>{
+      const grade=document.getElementById('googleGrade').value;
+      const phone=document.getElementById('googlePhone').value;
+      const parentPhone=document.getElementById('googleParentPhone').value;
+      const btn=document.getElementById('saveGoogleProfileBtn');
+      if(!grade||!phone||!parentPhone)return showToast('warning','Missing Data','Please complete all fields!');
+      btn.textContent="Saving...";
+      const name=user.user_metadata?.full_name||"New Student";
+      const{error}=await supabaseClient.from('users').upsert({id:user.id,email:user.email,name,grade,phone,parentphone:parentPhone,studentid:Math.floor(100000+Math.random()*900000).toString(),role:'student',devices:userDevices});
+      if(error){showToast('error','Error',error.message);btn.textContent="Save & Enter Platform →";}
+      else window.location.href="/dashboard";
+    };
+  } else {
+    window.location.href="/dashboard";
+  }
+}
+
+preloadLastEmail();
+checkSessionOnLoad();
+
+supabaseClient.auth.onAuthStateChange(async(event,session)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    const popup=document.getElementById('resetPopupOverlay');
+    const passInput=document.getElementById('newPasswordInput');
+    const confirmBtn=document.getElementById('confirmResetBtn');
+    const cancelBtn=document.getElementById('cancelResetBtn');
+    popup.classList.add('show');
+    confirmBtn.onclick=async()=>{
+      if(passInput.value.length<6)return showToast('warning','Password Too Short','Must be at least 6 characters');
+      confirmBtn.textContent="Saving...";
+      const{error}=await supabaseClient.auth.updateUser({password:passInput.value});
+      if(error){showToast('error','Error',error.message);confirmBtn.textContent="Save & Sign In";}
+      else{showToast('success','Updated!','Password changed successfully.');setTimeout(()=>{supabaseClient.auth.signOut();popup.classList.remove('show');passInput.value="";confirmBtn.textContent="Save & Sign In";},2000);}
+    };
+    cancelBtn.onclick=()=>{popup.classList.remove('show');supabaseClient.auth.signOut();};
+  }
+});
+
+/* Tabs */
+let mode="login";
+const lTab=document.getElementById("loginTab"),sTab=document.getElementById("signupTab");
+const extra=document.getElementById("extraFields"),btn=document.getElementById("actionBtn");
+const fa=document.getElementById("forgotArea"),authForm=document.getElementById("authForm");
+const passwordInput=document.getElementById("password");
+function syncUI(){passwordInput.setAttribute('autocomplete',mode==='login'?'current-password':'new-password');}
+sTab.onclick=()=>{mode="signup";extra.classList.remove("hidden");btn.textContent="Create Account →";fa.classList.add("hidden");sTab.classList.add("on");lTab.classList.remove("on");syncUI();};
+lTab.onclick=()=>{mode="login";extra.classList.add("hidden");btn.textContent="Sign In →";fa.classList.remove("hidden");lTab.classList.add("on");sTab.classList.remove("on");syncUI();};
+syncUI();
+
+/* Auth Submit */
+authForm.addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const email=document.getElementById("email").value.trim();
+  const pass=document.getElementById("password").value;
+  try{
+    if(mode==="signup"){
+      const n=document.getElementById("userName").value.trim();
+      const g=document.getElementById("userGrade").value;
+      const ph=document.getElementById("userPhone").value.trim();
+      const pp=document.getElementById("parentPhone").value.trim();
+      if(!n||!g||!ph||!pp||!email||!pass)return showToast('warning','Missing Fields','Please fill in all fields first');
+      btn.textContent="Creating account...";
+      const{data,error}=await supabaseClient.auth.signUp({email,password:pass,options:{data:{full_name:n}}});
+      if(error)throw error;
+      if(data.user){
+        const deviceId=getLocalDeviceId();
+        const{error:ie}=await supabaseClient.from('users').insert([{id:data.user.id,name:n,email,grade:g,phone:ph,parentphone:pp,studentid:Math.floor(100000+Math.random()*900000).toString(),role:"student",devices:[deviceId]}]);
+        if(ie)throw ie;
+      }
+      rememberLastEmail(email);
+      showToast('success','Welcome!','Your account has been created successfully 🎉');
+      setTimeout(()=>{window.location.href="/dashboard";},1200);
+    } else {
+      btn.textContent="Signing in...";
+      const{data,error}=await supabaseClient.auth.signInWithPassword({email,password:pass});
+      if(error)throw error;
+      rememberLastEmail(email);
+      if(email===adminEmail){window.location.href="/teacher-dashboard";return;}
+      const{data:dbUser}=await supabaseClient.from('users').select('*').eq('id',data.user.id).single();
+      if(await handleBlockedUser(dbUser)){btn.textContent="Sign In →";return;}
+      const deviceId=getLocalDeviceId();
+      let userDevices=Array.isArray(dbUser?.devices)?dbUser.devices:[];
+      if(!userDevices.includes(deviceId)){
+        if(userDevices.length>=2){await supabaseClient.auth.signOut();showToast('error','Device Limit','You\'ve reached the maximum (2 devices). Contact support.');btn.textContent="Sign In →";return;}
+        userDevices.push(deviceId);
+        await supabaseClient.from('users').update({devices:userDevices}).eq('id',data.user.id);
+      }
+      showToast('success','Welcome back!','Loading your dashboard...');
+      setTimeout(()=>{window.location.href="/dashboard";},1000);
+    }
+  } catch(err){
+    showToast('error','Error',err.message);
+    btn.textContent=mode==="login"?"Sign In →":"Create Account →";
+  }
+});
+
+/* Google */
+document.getElementById("googleBtn").onclick=async()=>{
+  try{const{error}=await supabaseClient.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+window.location.pathname}});if(error)throw error;}catch(e){showToast('error','Error',e.message);}
+};
+
+/* Forgot Password */
+document.getElementById("forgotBtn").onclick=async()=>{
+  const emailValue=document.getElementById("email").value.trim();
+  if(!emailValue)return showToast('warning','Email Required','Enter your email address first');
+  rememberLastEmail(emailValue);
+  document.getElementById("forgotBtn").textContent="Sending...";
+  try{
+    const{error}=await supabaseClient.auth.resetPasswordForEmail(emailValue,{redirectTo:window.location.origin+window.location.pathname});
+    if(error)throw error;
+    showToast('info','Email Sent','Check your email for the verification code');
+    document.getElementById('otpResetPopupOverlay').classList.add('show');
+  }catch(e){showToast('error','Error',e.message);}
+  document.getElementById("forgotBtn").textContent="Forgot your password?";
+};
+
+document.getElementById("cancelOtpBtn").onclick=()=>{document.getElementById("otpResetPopupOverlay").classList.remove('show');};
+document.getElementById("verifyOtpBtn").onclick=async()=>{
+  const emailValue=document.getElementById("email").value;
+  const codeValue=document.getElementById("otpCodeInput").value.trim();
+  const newPassValue=document.getElementById("otpNewPasswordInput").value;
+  if(!codeValue||codeValue.length!==8)return showToast('warning','Invalid Code','Please enter the 8-digit code');
+  if(newPassValue.length<8)return showToast('warning','Password Too Short','Must be at least 8 characters');
+  const vBtn=document.getElementById("verifyOtpBtn");
+  vBtn.textContent="Verifying...";
+  try{
+    const{error:ve}=await supabaseClient.auth.verifyOtp({email:emailValue,token:codeValue,type:'recovery'});
+    if(ve)throw ve;
+    const{error:ue}=await supabaseClient.auth.updateUser({password:newPassValue});
+    if(ue)throw ue;
+    showToast('success','Password Changed!','Your password has been updated successfully ✅');
+    setTimeout(()=>{document.getElementById('otpResetPopupOverlay').classList.remove('show');document.getElementById("otpCodeInput").value="";document.getElementById("otpNewPasswordInput").value="";supabaseClient.auth.signOut();},2000);
+  }catch(e){showToast('error','Error',e.message);vBtn.textContent="Confirm & Change Password";}
+};
+
+/* Counter Animation */
+function countUp(el,t){let v=0,s=Math.ceil(t/60);const id=setInterval(()=>{v=Math.min(v+s,t);el.textContent=(v===t&&t>=100)?'+'+v:v;if(v>=t)clearInterval(id);},22);}
+const statsEl=document.querySelector('.stats-strip');
+if(statsEl){new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)document.querySelectorAll('[data-count]').forEach(el=>countUp(el,+el.dataset.count));});},{threshold:.3}).observe(statsEl);}
+
+/* Eye Toggle */
+document.getElementById('eyeBtn').onclick=()=>{const p=document.getElementById('password');p.type=p.type==='password'?'text':'password';};
+</script>
+</body>
+</html>
