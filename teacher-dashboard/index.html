@@ -586,7 +586,14 @@ function normalizeQuestions(raw){
   }
   return [];
 }
+function serializeLegacyVideoValue(videos,fallbackVideo=''){
+  const normalized=parseVideoArray(videos,'Video');
+  if(!normalized.length) return String(fallbackVideo||'').trim();
+  if(normalized.length===1 && !normalized[0].requireHw && !normalized[0].hwId) return normalized[0].url;
+  return JSON.stringify(normalized);
+}
 async function saveLessonWithFallback(payload){
+  const legacyVideoValue=serializeLegacyVideoValue(payload.videos,payload.video||'');
   const basePayload={
     name:payload.name,
     grade:payload.grade,
@@ -594,23 +601,23 @@ async function saveLessonWithFallback(payload){
     validitydays:payload.validitydays,
     image:payload.image,
     pdf:payload.pdf,
-    video:payload.video||''
+    video:legacyVideoValue
   };
   const candidates=[
-    {...basePayload,videos:payload.videos,questions:payload.questions},
-    {...basePayload,questions:payload.questions},
-    {...basePayload,videos:payload.videos},
-    {...basePayload}
+    {mode:'modern-all',data:{...basePayload,videos:payload.videos,questions:payload.questions}},
+    {mode:'legacy-video+questions',data:{...basePayload,questions:payload.questions}},
+    {mode:'modern-videos-only',data:{...basePayload,videos:payload.videos}},
+    {mode:'legacy-video-only',data:{...basePayload}}
   ];
   const tried=new Set();
   let lastError=null;
   for(const candidate of candidates){
-    const key=Object.keys(candidate).sort().join('|');
+    const key=Object.keys(candidate.data).sort().join('|');
     if(tried.has(key)) continue;
     tried.add(key);
     const req=editingLessonId
-      ? db.from('lessons').update(candidate).eq('id',editingLessonId)
-      : db.from('lessons').insert([candidate]);
+      ? db.from('lessons').update(candidate.data).eq('id',editingLessonId)
+      : db.from('lessons').insert([candidate.data]);
     const {error}=await req;
     if(!error) return candidate;
     lastError=error;
@@ -757,8 +764,9 @@ async function openStudent(email,name){
     if(courses.length){
       html+=`<div class="sp-section-title">🎫 Courses</div>`;
       courses.forEach(c=>{
-        const exp=c.exp?new Date(c.exp).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
-        const active=c.exp>Date.now();
+        const expTs=c.exp?new Date(c.exp).getTime():NaN;
+        const exp=Number.isFinite(expTs)?new Date(expTs).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
+        const active=Number.isFinite(expTs)?expTs>Date.now():false;
         html+=`<div class="sp-item"><span class="sp-item-name">${c.name}</span><span class="badge ${active?'badge-active':'badge-expired'}">${active?'Active':'Expired'}</span></div>`;
       });
     }
@@ -797,6 +805,9 @@ window.resetStudentDevice = async () => {
   if(!confirm("Are you sure you want to reset the device limit for this student? They will be asked to log in again.")) return;
 
   const attempts=[
+    {devices:[]},
+    {devices:'[]'},
+    {devices:null},
     {device_id:null},
     {deviceId:null},
     {device_id:null,device_token:null},
@@ -812,8 +823,13 @@ window.resetStudentDevice = async () => {
     if(!isMissingColumnError(error)) break;
   }
 
-  if(success) showToast('success','Success','Device limit reset successfully. Ask the student to log out, then sign in again.');
-  else showToast('error','Error',lastError?.message||'Could not reset device.');
+  if(success){
+    const rawUser=studentsByEmail[currentOpenStudentEmail]?.raw;
+    if(rawUser) rawUser.devices=[];
+    showToast('success','Success','Devices reset successfully. Ask the student to log out, then sign in again.');
+  }else{
+    showToast('error','Error',lastError?.message||'Could not reset devices.');
+  }
 };
 
 /* ── LESSONS ── */
@@ -965,13 +981,13 @@ async function saveLesson(){
       videos,
       questions
     };
-    const savedPayload=await saveLessonWithFallback(payload);
-    const legacyOnly=!Object.prototype.hasOwnProperty.call(savedPayload,'videos');
-    if(editingLessonId){
-      showToast('success','Updated ✅',legacyOnly?'Course updated. Legacy lessons table detected, so only the first video was saved.':'Course updated!');
-    }else{
-      showToast('success','Published ✅',legacyOnly?'Course published. Legacy lessons table detected, so only the first video was saved.':'Course published!');
-    }
+    const saveResult=await saveLessonWithFallback(payload);
+    let successMsg='Course published!';
+    if(saveResult.mode==='modern-all') successMsg=editingLessonId?'Course updated!':'Course published!';
+    if(saveResult.mode==='modern-videos-only') successMsg=editingLessonId?'Course updated. Videos were saved, but questions column is missing.':'Course published. Videos were saved, but questions column is missing.';
+    if(saveResult.mode==='legacy-video+questions') successMsg=editingLessonId?'Course updated. Videos were saved inside the legacy video field.':'Course published. Videos were saved inside the legacy video field.';
+    if(saveResult.mode==='legacy-video-only') successMsg=editingLessonId?'Course updated. Videos were saved inside the legacy video field, but questions column is missing.':'Course published. Videos were saved inside the legacy video field, but questions column is missing.';
+    showToast('success',editingLessonId?'Updated ✅':'Published ✅',successMsg);
     resetLessonForm();loadLessons();loadStats();
   }catch(e){showToast('error','Error',e.message);}
   btn.textContent=editingLessonId?'Update Course 🔄':'Publish Course 🚀';btn.disabled=false;
@@ -988,7 +1004,7 @@ async function loadHw(){
       allHw[d.id]=d;
       const linked=allLessons[d.lessonid]?.name||'—';
       rows+=`<tr>
-        <td class="td-name">${d.title||d.name||'—'}<div style="font-size:.7rem;color:var(--muted)">${(d.questions||[]).length} questions</div></td>
+        <td class="td-name">${d.title||d.name||'—'}<div style="font-size:.7rem;color:var(--muted)">${normalizeQuestions(d.questions).length} questions</div></td>
         <td style="color:var(--muted);font-size:.8rem">${GRADE_MAP[d.grade]||'—'}</td>
         <td class="td-green">${linked}</td>
         <td style="text-align:center"><div style="display:flex;gap:6px;justify-content:center">
