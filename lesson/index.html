@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MathPro | Course Zone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&family=Material+Icons&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="../assets/css/shared.css">
+</head>
+<body class="page-lesson">
+
+<div id="loadingScreen">
+  <div class="ld-logo">MP</div>
+  <div class="ld-bar"><div class="ld-bar-fill"></div></div>
+  <div class="ld-txt" id="ldText">Verifying access…</div>
+</div>
+
+<div id="codeLockScreen" class="hidden">
+  <div class="lock-card">
+    <button class="lock-back" onclick="window.history.back()">↩ Back</button>
+    <div class="lock-icon">🎫</div>
+    <div class="lock-title">Activate Course</div>
+    <div class="lock-sub">Enter the code provided by your teacher to unlock this content.</div>
+    <input id="accessCodeInput" class="lock-input" placeholder="Enter code here" autocomplete="off" spellcheck="false">
+    <button id="verifyBtn" class="lock-btn">Activate Course →</button>
+  </div>
+</div>
+
+<div id="lessonContent" class="hidden ed-watch-page">
+  <nav class="watch-topbar">
+    <div class="nav-inner watch-topbar-inner">
+      <div class="watch-brand" onclick="location.href='/home'">
+        <span class="watch-brand-mark"></span>
+        <span class="watch-brand-text">EDNUVA</span>
+      </div>
+      <div class="watch-title-wrap">
+        <div class="watch-title" id="watchHeaderTitle">Course Watch</div>
+      </div>
+      <div class="watch-top-actions">
+        <button class="top-pill-btn" onclick="window.history.back()">back</button>
+        <button class="top-pill-btn" onclick="location.href='/home'">Dashboard</button>
+      </div>
+    </div>
+    <div class="watch-subbar">
+      <div class="watch-subbar-inner">
+        <div class="tabs watch-tabs">
+          <button id="btn-quiz-tab"     class="tab-btn active"     onclick="switchTab('quiz')">Exam</button>
+          <button id="btn-homework-tab" class="tab-btn locked-dim" onclick="switchTab('homework')">Homework</button>
+          <button id="btn-videos-tab"   class="tab-btn locked-dim" onclick="switchTab('videos')">Videos</button>
+          <button id="btn-pdf-tab"      class="tab-btn locked-dim" onclick="switchTab('pdf')">PDF</button>
+        </div>
+        <div class="watch-status-row">
+          <div id="accessTimerBox" class="access-pill hidden">Expires: <span id="accessCountdown">—</span></div>
+          <div id="timerBox" class="hidden">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="timerVal">40:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="watch-main">
+    <div id="tab-quiz">
+      <div id="startScreen">
+        <span class="start-emoji">🚀</span>
+        <div class="start-title">Ready to start the <span>Exam?</span></div>
+        <p class="start-sub">Complete the exam first — then the Videos and PDF will unlock automatically. Watch the timer!</p>
+        <div class="start-warn">⏱ Time Limit: 40 Minutes</div>
+        <button id="startBtn" class="start-btn">Start Exam <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+      <div id="quizApp" class="hidden quiz-wrap">
+        <div class="progress-row"><span id="qCount" class="q-count">1 / 10</span><div class="prog-track"><div class="prog-fill" id="progFill" style="width:10%"></div></div></div>
+        <div class="q-card" id="qDisplay"></div>
+        <div class="quiz-nav">
+          <button id="prevBtn" class="q-btn ghost hidden">← Previous</button>
+          <button id="nextBtn" class="q-btn primary">Next →</button>
+          <button id="finishBtn" class="q-btn finish hidden">✓ Submit Exam</button>
+        </div>
+      </div>
+      <div id="reviewArea" class="hidden">
+        <div class="score-card" id="scoreBanner"></div>
+        <div class="review-section-title">Answers Review</div>
+        <div id="reviewList"></div>
+      </div>
+    </div>
+    <div id="tab-homework" class="hidden"></div>
+    <div id="tab-videos" class="hidden"><div id="videosContainer"></div></div>
+    <div id="tab-pdf" class="hidden">
+      <div class="pdf-card">
+        <div class="pdf-icon">📚</div>
+        <div class="pdf-title">Course Notes</div>
+        <p class="pdf-sub">Download the PDF notes for studying and review.</p>
+        <a id="pdfLink" href="#" target="_blank" class="pdf-dl-btn">↓ Download PDF</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ── SECURITY ── */
+(function(){
+  document.addEventListener('contextmenu',e=>e.preventDefault());
+  document.addEventListener('copy',e=>{e.clipboardData.setData('text/plain','⚠️ Disabled');e.preventDefault();});
+  window.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){e.preventDefault();return false;}});
+  const kill=()=>{if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){document.body.innerHTML='<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:#f0faf4;font-family:sans-serif;text-align:center"><div><div style="font-size:3rem">🔒</div><h2>Access Blocked</h2><p style="color:#4b7a5e">Close developer tools to continue.</p></div></div>';}};
+  setInterval(kill,1000);
+})();
+
+/* ── SUPABASE ── */
+const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
+const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+
+const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
+let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null,timeLeft=40*60;
+let examTimer,myStudentId="000000";
+let hwData=null,hwUserAns={},hwCurIdx=0,hwDone=false,hwQuestions=[];
+let videosData=[],hwResultsMap={},currentVideoIdx=0;
+let _debugLines=[];
+
+function dbg(msg,type=''){_debugLines.push({msg,type});console.log((type==='err'?'❌':type==='ok'?'✅':'🔍')+' '+msg);}
+function showLoader(t="Loading…"){const s=document.getElementById('loadingScreen');document.getElementById('ldText').textContent=t;s.style.display='flex';void s.offsetWidth;s.style.opacity='1';}
+function hideLoader(){const s=document.getElementById('loadingScreen');s.style.opacity='0';setTimeout(()=>s.style.display='none',300);}
+
+window.switchTab=(tab)=>{
+  showLoader("Loading…");
+  setTimeout(()=>{
+    document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.remove('hidden');
+    document.getElementById(`btn-${tab}-tab`).classList.add('active');
+    if(tab==='videos') renderVideoPage();
+    hideLoader();
+  },300);
+};
+
+function extractYTId(url){
+  if(!url)return null;
+  const m=url.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);
+  return m?m[1]:null;
+}
+function isDirectVideo(url){
+  if(!url)return false;
+  return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)||(!url.includes('youtu')&&!url.includes('youtube')&&url.startsWith('http'));
+}
+
+/* ══════════════════════════════════════
+   ── CUSTOM MP4 PLAYER INIT
+   ══════════════════════════════════════ */
+function initMP4Player(wrapper,videoUrl,studentId){
+  const SPEEDS=[0.5,0.75,1,1.25,1.5,1.75,2];
+
+  wrapper.innerHTML=`
+    <div class="mp4-player-wrap" id="mpWrap_${Date.now()}">
+      <div class="loader"></div>
+      <p class="caption_text"></p>
+      <div class="progressAreaTime">0:00</div>
+      <video class="main-video" preload="metadata">
+        <source src="${videoUrl}" type="video/mp4">
+      </video>
+      <div class="vp-watermark">ID: ${studentId}</div>
+      <div class="vp-controls">
+        <div class="vp-progress">
+          <canvas class="bufferedBar" width="1000" height="5"></canvas>
+          <div class="vp-bar" style="width:0%"></div>
+        </div>
+        <div class="vp-row">
+          <div class="vp-left">
+            <div class="vp-icon" title="Rewind 10s"><i class="material-icons">replay_10</i></div>
+            <div class="vp-icon vp-pp" title="Play"><i class="material-icons">play_arrow</i></div>
+            <div class="vp-icon" title="Forward 10s"><i class="material-icons">forward_10</i></div>
+            <div class="vp-vol-wrap">
+              <div class="vp-icon vp-vol" title="Mute"><i class="material-icons">volume_up</i></div>
+              <input type="range" min="0" max="100" value="80" class="vol-slider">
+            </div>
+            <div class="vp-time"><span class="vp-cur">0:00</span> / <span class="vp-dur">0:00</span></div>
+          </div>
+          <div class="vp-right">
+            <div class="vp-speed-pill vp-speed-btn" title="Playback Speed">1×</div>
+            <div class="vp-icon vp-cc-btn" title="Captions"><i class="material-icons">closed_caption_disabled</i></div>
+            <div class="vp-icon vp-settings-btn" title="Settings"><i class="material-icons">settings</i></div>
+            <div class="vp-icon vp-pip-btn" title="Picture in Picture"><i class="material-icons">picture_in_picture_alt</i></div>
+            <div class="vp-icon vp-fs-btn" title="Fullscreen"><i class="material-icons">fullscreen</i></div>
+          </div>
+        </div>
+      </div>
+      <div class="vp-popup" id="vpSettingsPopup">
+        <div class="vp-popup-section">
+          <div class="vp-popup-title">Speed</div>
+          <ul id="vpSpeedList">
+            ${SPEEDS.map(s=>`<li data-speed="${s}" class="${s===1?'active':''}">${s===1?'Normal':s+'×'}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+      <div class="vp-captions-popup" id="vpCaptionsPopup">
+        <ul id="vpCaptionList"><li class="active" data-track="off">Off</li></ul>
+      </div>
+    </div>`;
+
+  // wait for DOM
+  requestAnimationFrame(()=>{
+    const pw=wrapper.querySelector('.mp4-player-wrap');
+    const vid=pw.querySelector('.main-video');
+    const loader=pw.querySelector('.loader');
+    const capText=pw.querySelector('.caption_text');
+    const progAreaTime=pw.querySelector('.progressAreaTime');
+    const controls=pw.querySelector('.vp-controls');
+    const progress=pw.querySelector('.vp-progress');
+    const bufferedBar=pw.querySelector('.bufferedBar');
+    const bar=pw.querySelector('.vp-bar');
+    const pp=pw.querySelector('.vp-pp');
+    const volIcon=pw.querySelector('.vp-vol i');
+    const volSlider=pw.querySelector('.vol-slider');
+    const curEl=pw.querySelector('.vp-cur');
+    const durEl=pw.querySelector('.vp-dur');
+    const speedPill=pw.querySelector('.vp-speed-btn');
+    const settingsBtn=pw.querySelector('.vp-settings-btn');
+    const ccBtn=pw.querySelector('.vp-cc-btn');
+    const pipBtn=pw.querySelector('.vp-pip-btn');
+    const fsBtn=pw.querySelector('.vp-fs-btn');
+    const settingsPopup=pw.querySelector('#vpSettingsPopup');
+    const captionsPopup=pw.querySelector('#vpCaptionsPopup');
+    const speedList=pw.querySelectorAll('#vpSpeedList li');
+
+    // Blob URL for basic protection
+    (async()=>{
+      try{
+        const r=await fetch(videoUrl);
+        const blob=await r.blob();
+        const burl=URL.createObjectURL(blob);
+        vid.querySelector('source').src=burl;
+        vid.load();
+      }catch(e){/* use original src */}
+    })();
+
+    function fmt(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return`${m}:${sec<10?'0'+sec:sec}`;}
+
+    function playV(){vid.play();pp.querySelector('i').textContent='pause';}
+    function pauseV(){vid.pause();pp.querySelector('i').textContent='play_arrow';}
+
+    pp.addEventListener('click',()=>vid.paused?playV():pauseV());
+    pw.addEventListener('click',e=>{if(e.target===pw||e.target===vid){vid.paused?playV():pauseV();}});
+
+    vid.addEventListener('waiting',()=>{loader.style.display='block';});
+    vid.addEventListener('canplay',()=>{loader.style.display='none';});
+    vid.addEventListener('ended',()=>{pp.querySelector('i').textContent='replay';});
+
+    vid.addEventListener('loadeddata',()=>{
+      durEl.textContent=fmt(vid.duration);
+      // Build buffered canvas size
+      bufferedBar.width=progress.clientWidth||800;
+    });
+
+    vid.addEventListener('timeupdate',()=>{
+      if(!vid.duration)return;
+      const pct=(vid.currentTime/vid.duration)*100;
+      bar.style.width=pct+'%';
+      curEl.textContent=fmt(vid.currentTime);
+    });
+
+    vid.addEventListener('progress',()=>{
+      if(!vid.duration)return;
+      const ctx=bufferedBar.getContext('2d');
+      ctx.clearRect(0,0,bufferedBar.width,bufferedBar.height);
+      ctx.fillStyle='rgba(255,255,255,.3)';
+      for(let i=0;i<vid.buffered.length;i++){
+        const s=vid.buffered.start(i)/vid.duration*bufferedBar.width;
+        const e=vid.buffered.end(i)/vid.duration*bufferedBar.width;
+        ctx.fillRect(s,0,e-s,bufferedBar.height);
+      }
+    });
+
+    // Progress click / drag
+    let dragging=false;
+    function seekTo(e){
+      const rect=progress.getBoundingClientRect();
+      const x=Math.max(0,Math.min(e.clientX-rect.left,rect.width));
+      vid.currentTime=(x/rect.width)*vid.duration;
+    }
+    progress.addEventListener('pointerdown',e=>{dragging=true;progress.setPointerCapture(e.pointerId);seekTo(e);});
+    progress.addEventListener('pointermove',e=>{
+      if(dragging)seekTo(e);
+      // Time tooltip
+      const rect=progress.getBoundingClientRect();
+      const x=Math.max(0,Math.min(e.clientX-rect.left,rect.width));
+      progAreaTime.style.setProperty('--x',x+'px');
+      progAreaTime.style.display='block';
+      if(vid.duration)progAreaTime.textContent=fmt((x/rect.width)*vid.duration);
+    });
+    progress.addEventListener('pointerup',()=>{dragging=false;});
+    progress.addEventListener('mouseleave',()=>{progAreaTime.style.display='none';});
+
+    // Volume
+    volSlider.value=80;vid.volume=0.8;
+    function updateVolUI(){
+      const v=vid.volume;
+      volIcon.textContent=v===0?'volume_off':v<0.4?'volume_down':'volume_up';
+      volSlider.style.setProperty('--pct',(v*100)+'%');
+    }
+    volSlider.addEventListener('input',()=>{vid.volume=volSlider.value/100;updateVolUI();});
+    pw.querySelector('.vp-vol').addEventListener('click',()=>{
+      vid.volume=vid.volume>0?0:0.8;volSlider.value=vid.volume*100;updateVolUI();
+    });
+
+    // Auto-hide controls
+    let hideTimer;
+    function showControls(){controls.classList.add('show');clearTimeout(hideTimer);hideTimer=setTimeout(()=>{if(!vid.paused&&!settingsPopup.classList.contains('show'))controls.classList.remove('show');},3000);}
+    pw.addEventListener('mousemove',showControls);
+    pw.addEventListener('touchstart',showControls,{passive:true});
+    controls.classList.add('show');
+
+    // Speed
+    speedList.forEach(li=>{
+      li.addEventListener('click',()=>{
+        speedList.forEach(x=>x.classList.remove('active'));
+        li.classList.add('active');
+        const s=parseFloat(li.dataset.speed);
+        vid.playbackRate=s;
+        speedPill.textContent=s===1?'1×':s+'×';
+        settingsPopup.classList.remove('show');
+      });
+    });
+    speedPill.addEventListener('click',e=>{e.stopPropagation();settingsPopup.classList.toggle('show');captionsPopup.classList.remove('show');});
+    settingsBtn.addEventListener('click',e=>{e.stopPropagation();settingsPopup.classList.toggle('show');captionsPopup.classList.remove('show');});
+
+    // Captions
+    const tracks=vid.querySelectorAll('track');
+    if(tracks.length===0){
+      ccBtn.style.opacity='.35';ccBtn.style.cursor='default';
+    }else{
+      const captionList=pw.querySelector('#vpCaptionList');
+      tracks.forEach(t=>{
+        const li=document.createElement('li');li.dataset.track=t.label;li.textContent=t.label;captionList.appendChild(li);
+      });
+      pw.querySelectorAll('#vpCaptionList li').forEach(li=>{
+        li.addEventListener('click',()=>{
+          pw.querySelectorAll('#vpCaptionList li').forEach(x=>x.classList.remove('active'));
+          li.classList.add('active');
+          for(let i=0;i<vid.textTracks.length;i++){
+            vid.textTracks[i].mode=vid.textTracks[i].label===li.dataset.track?'showing':'disabled';
+          }
+          captionsPopup.classList.remove('show');
+          ccBtn.querySelector('i').textContent=li.dataset.track==='off'?'closed_caption_disabled':'closed_caption';
+        });
+      });
+      vid.textTracks&&Array.from(vid.textTracks).forEach(t=>{
+        t.addEventListener('cuechange',()=>{
+          if(t.mode==='showing'&&t.activeCues[0]){capText.innerHTML=`<mark>${t.activeCues[0].text}</mark>`;}
+          else{capText.innerHTML='';}
+        });
+      });
+      ccBtn.addEventListener('click',e=>{e.stopPropagation();captionsPopup.classList.toggle('show');settingsPopup.classList.remove('show');});
+    }
+
+    // Close popups on outside click
+    document.addEventListener('click',e=>{
+      if(!settingsPopup.contains(e.target)&&e.target!==settingsBtn&&e.target!==speedPill)settingsPopup.classList.remove('show');
+      if(!captionsPopup.contains(e.target)&&e.target!==ccBtn)captionsPopup.classList.remove('show');
+    });
+
+    // PiP
+    pipBtn.addEventListener('click',()=>{if(document.pictureInPictureEnabled)vid.requestPictureInPicture().catch(()=>{});});
+
+    // Fullscreen
+    fsBtn.addEventListener('click',()=>{
+      if(!document.fullscreenElement){
+        pw.requestFullscreen();fsBtn.querySelector('i').textContent='fullscreen_exit';
+      }else{
+        document.exitFullscreen();fsBtn.querySelector('i').textContent='fullscreen';
+      }
+    });
+
+    // Keyboard shortcuts (when player is focused)
+    pw.setAttribute('tabindex','0');
+    pw.addEventListener('keydown',e=>{
+      if(e.code==='Space'){e.preventDefault();vid.paused?playV():pauseV();}
+      if(e.code==='ArrowRight'){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);}
+      if(e.code==='ArrowLeft'){vid.currentTime=Math.max(0,vid.currentTime-10);}
+      if(e.code==='ArrowUp'){vid.volume=Math.min(1,vid.volume+0.1);volSlider.value=vid.volume*100;updateVolUI();}
+      if(e.code==='ArrowDown'){vid.volume=Math.max(0,vid.volume-0.1);volSlider.value=vid.volume*100;updateVolUI();}
+      if(e.code==='KeyF'){fsBtn.click();}
+    });
+
+    // Context menu block on video
+    vid.addEventListener('contextmenu',e=>e.preventDefault());
+
+    updateVolUI();
+  });
+}
+
+/* ══════════════════════════════════════
+   ── SMART VIDEO DATA EXTRACTOR
+   ══════════════════════════════════════ */
+function extractVideos(snap){
+  _debugLines=[];
+  const possibleNames=['videos','video','video_links','videoLinks','video_urls','videoUrls','videoData','video_data','links','media'];
+  for(const name of possibleNames){
+    if(snap[name]!==undefined&&snap[name]!==null){
+      let parsed=snap[name];
+      if(typeof parsed==='string'){try{parsed=JSON.parse(parsed);}catch(e){continue;}}
+      if(Array.isArray(parsed)&&parsed.length>0) return normalizeVideos(parsed,name);
+      if(typeof parsed==='object'&&!Array.isArray(parsed)){
+        if(parsed.url||parsed.name||parsed.link) return normalizeVideos([parsed],name);
+        const vals=Object.values(parsed).filter(v=>v&&typeof v==='object');
+        if(vals.length>0&&(vals[0].url||vals[0].name||vals[0].link)) return normalizeVideos(vals,name);
+      }
+    }
+  }
+  for(const[key,val] of Object.entries(snap)){
+    if(['id','name','questions','pdf','created_at','validitydays'].includes(key))continue;
+    const str=typeof val==='string'?val:JSON.stringify(val);
+    if(str&&str.includes('youtu')){
+      let parsed=val;
+      if(typeof parsed==='string'){try{parsed=JSON.parse(parsed);}catch(e){}}
+      if(Array.isArray(parsed)) return normalizeVideos(parsed,key);
+      if(typeof parsed==='object'&&parsed.url) return normalizeVideos([parsed],key);
+      if(typeof val==='string'&&extractYTId(val)) return normalizeVideos([{url:val,name:'Video 1'}],key);
+    }
+  }
+  return null;
+}
+
+function normalizeVideos(raw,sourceField){
+  return raw.map((v,i)=>({
+    url:v.url||v.link||v.video_url||v.videoUrl||v.src||'',
+    name:v.name||v.title||v.label||`Video ${i+1}`,
+    requireHw:!!(v.requireHw||v.require_hw||v.hw_required||false),
+    hwId:v.hwId||v.hw_id||'',
+    optionsCount:v.optionsCount||v.options_count||0
+  }));
+}
+
+/* ── VIDEO PAGE RENDERER ── */
+function renderVideoPage(){
+  const container=document.getElementById('videosContainer');
+  updateWatchHeaderTitle(getWatchHeaderTitle());
+  if(!videosData||videosData.length===0){
+    container.innerHTML=`<div class="video-empty-card"><div class="empty-icon">📺</div><div class="empty-title">No Videos Yet</div><div class="empty-sub">Video lessons will appear here once added.</div></div>`;
+    return;
+  }
+  if(currentVideoIdx>=videosData.length) currentVideoIdx=videosData.length-1;
+  if(currentVideoIdx<0) currentVideoIdx=0;
+
+  const v=videosData[currentVideoIdx];
+  const isLocked=v.requireHw&&!hwResultsMap[v.hwId];
+  const ytId=extractYTId(v.url);
+  const isDirect=isDirectVideo(v.url);
+  const isLast=currentVideoIdx>=videosData.length-1;
+  const isFirst=currentVideoIdx===0;
+
+  let lessonItems='';
+  videosData.forEach((vid,i)=>{
+    const locked=vid.requireHw&&!hwResultsMap[vid.hwId];
+    lessonItems+=`
+      <div class="watch-side-item ${i===currentVideoIdx?'active':''} ${locked?'is-locked':''}">
+        <div class="watch-side-item-head">
+          <span class="watch-side-dot">▷</span>
+          <div class="watch-side-copy">
+            <div class="watch-side-title">${vid.name||`Lecture ${i+1}`}</div>
+            <button class="watch-side-link" ${locked?'disabled':''} onclick="${locked?'':`goToVideo(${i})`}">Play Video</button>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  let playerHtml='';
+  if(isLocked){
+    playerHtml=`<div class="video-locked-overlay"><div class="lock-emoji">🔒</div><div class="lock-title">Video Locked</div><div class="lock-sub">Complete the homework assignment first to unlock this video.</div><button class="lock-go-btn" onclick="switchTab('homework')">Go to Homework →</button></div>`;
+  }else if(ytId){
+    playerHtml=`<iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&iv_load_policy=3&controls=1&color=white&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen" allowfullscreen></iframe><div class="video-wm ed-video-watermark">${myStudentId}</div>`;
+  }else if(isDirect){
+    playerHtml=`<div id="mp4PlayerSlot" style="width:100%;height:100%"></div>`;
+  }else{
+    playerHtml=`<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);background:var(--bg2)"><div style="font-size:2.5rem">⚠️</div><div>Could not load video</div><div style="font-size:.75rem;font-family:var(--mono);color:var(--muted2)">${v.url||'(empty)'}</div></div>`;
+  }
+
+  container.innerHTML=`
+    <div class="watch-layout-shell">
+      <aside class="watch-sidebar-card">
+        <div class="watch-sidebar-head">
+          <span class="watch-sidebar-caret">⌃</span>
+          <span>Course Content</span>
+        </div>
+        <div class="watch-sidebar-scroll">${lessonItems}</div>
+      </aside>
+
+      <section class="watch-stage-area">
+        <div class="watch-stage-card">
+          <div class="watch-stage-player">${playerHtml}</div>
+        </div>
+
+        <div class="watch-validity-block">
+          <h3>Validity Information</h3>
+          <div class="watch-validity-grid">
+            <div class="watch-info-chip"><span>Current Lesson</span><strong>${v.name||`Lecture ${currentVideoIdx+1}`}</strong></div>
+            <div class="watch-info-chip"><span>Videos Count</span><strong>${videosData.length}</strong></div>
+            <div class="watch-info-chip"><span>Current Position</span><strong>${currentVideoIdx+1} / ${videosData.length}</strong></div>
+            <div class="watch-info-chip"><span>Access</span><strong>${isLocked?'Locked':'Unlocked'}</strong></div>
+          </div>
+        </div>
+
+        <div class="watch-bottom-nav">
+          <button class="video-page-btn" onclick="videoPrev()" ${isFirst?'disabled':''}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Prev
+          </button>
+          <span class="video-page-indicator">${currentVideoIdx+1} / ${videosData.length}</span>
+          <button class="video-page-btn" onclick="videoNext()" ${isLast?'disabled':''}>
+            Next <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>`;
+
+  if(isDirect&&!isLocked){
+    const slot=document.getElementById('mp4PlayerSlot');
+    if(slot) initMP4Player(slot,v.url,myStudentId);
+  }
+}
+
+window.goToVideo=function(idx){currentVideoIdx=idx;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});};
+window.videoNext=function(){if(currentVideoIdx<videosData.length-1){currentVideoIdx++;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});}};
+window.videoPrev=function(){if(currentVideoIdx>0){currentVideoIdx--;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});}};
+
+
+function getWatchHeaderTitle(){
+  return lessonData?.name || lessonData?.title || 'Chapter Lecture 1';
+}
+function updateWatchHeaderTitle(title){
+  const el=document.getElementById('watchHeaderTitle');
+  if(el) el.textContent=title||'Course Watch';
+}
+const __baseSwitchTab=window.switchTab;
+window.switchTab=(tab)=>{
+  __baseSwitchTab(tab);
+  setTimeout(()=>{
+    if(tab==='videos') updateWatchHeaderTitle(getWatchHeaderTitle());
+    else if(tab==='quiz') updateWatchHeaderTitle((lessonData?.name||'Course Watch')+' · Exam');
+    else if(tab==='homework') updateWatchHeaderTitle((lessonData?.name||'Course Watch')+' · Homework');
+    else if(tab==='pdf') updateWatchHeaderTitle((lessonData?.name||'Course Watch')+' · PDF');
+  },330);
+};
+
+/* ── INIT ── */
+async function init(){
+  const lessonId=new URLSearchParams(location.search).get('id');
+  if(!lessonId){hideLoader();return;}
+  const{data:{session}}=await db.auth.getSession();
+  if(!session){hideLoader();location.href='/home';return;}
+  currentUser=session.user;
+
+  const cached=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
+  if(cached){
+    try{
+      const p=JSON.parse(cached);
+      if(p.expiry>Date.now()){
+        myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
+        await loadLesson(lessonId);startAccessTimer(p.expiry);
+        verifyBg(lessonId);hideLoader();return;
+      }
+    }catch(e){}
+  }
+
+  try{
+    const[{data:u},{data:codes}]=await Promise.all([
+      db.from('users').select('studentid').eq('id',currentUser.id).single(),
+      db.from('codes').select('*').eq('usedby',currentUser.email)
+    ]);
+    if(u)myStudentId=u.studentid||currentUser.id.substring(0,6).toUpperCase();
+    let ok=false,exp=null;const now=Date.now();
+    if(codes)codes.forEach(c=>{if(c.lessonid===lessonId&&c.expiryat>now){ok=true;exp=c.expiryat;}});
+    if(ok){localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));await loadLesson(lessonId);startAccessTimer(exp);hideLoader();}
+    else{hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
+  }catch(e){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
+}
+
+async function verifyBg(lessonId){
+  try{
+    const{data:codes}=await db.from('codes').select('expiryat,lessonid').eq('usedby',currentUser.email);
+    if(!codes)return;const now=Date.now();let ok=false;
+    codes.forEach(c=>{if(c.lessonid===lessonId&&c.expiryat>now)ok=true;});
+    if(!ok)localStorage.removeItem(`access_${currentUser.id}_${lessonId}`);
+  }catch(e){}
+}
+
+function startAccessTimer(expiry){
+  document.getElementById('accessTimerBox').classList.remove('hidden');
+  const tick=()=>{
+    const d=expiry-Date.now();if(d<=0){clearInterval(iv);alert("Access expired.");location.reload();return;}
+    const days=Math.floor(d/86400000),h=Math.floor((d%86400000)/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
+    document.getElementById('accessCountdown').textContent=days>0?`${days}d ${h}h`:`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  };
+  tick();const iv=setInterval(tick,1000);
+}
+
+/* ── LOAD LESSON ── */
+async function loadLesson(id){
+  document.getElementById('codeLockScreen').classList.add('hidden');
+  document.getElementById('lessonContent').classList.remove('hidden');
+
+  const[{data:snap},{data:res},{data:hwList}]=await Promise.all([
+    db.from('lessons').select('*').eq('id',id).single(),
+    db.from('results').select('*').eq('email',currentUser.email).order('date',{ascending:false}),
+    db.from('homework').select('*').eq('lessonid',id)
+  ]);
+  if(!snap)return;
+  lessonData=snap;questions=lessonData.questions||[];
+  updateWatchHeaderTitle(getWatchHeaderTitle());
+
+  // Videos
+  videosData=[];
+  const extracted=extractVideos(snap);
+  if(extracted){
+    videosData=extracted;
+  }else{
+    try{
+      const{data:vidRows}=await db.from('lesson_videos').select('*').eq('lessonid',id);
+      if(vidRows&&vidRows.length>0) videosData=normalizeVideos(vidRows,'lesson_videos');
+    }catch(e){}
+    if(videosData.length===0){
+      try{
+        const{data:vidRows2}=await db.from('videos').select('*').eq('lesson_id',id);
+        if(vidRows2&&vidRows2.length>0) videosData=normalizeVideos(vidRows2,'videos');
+      }catch(e){}
+    }
+  }
+
+  // Homework
+  if(hwList&&hwList.length>0){
+    hwData=hwList[0];hwQuestions=hwData.questions||[];
+    const{data:hwRes}=await db.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',hwData.id).single().catch(()=>({data:null}));
+    if(hwRes){hwDone=true;hwResultsMap[hwData.id]=hwRes;renderHomeworkDone(hwRes);}
+    else{hwDone=false;renderHomeworkStart();}
+    document.getElementById('btn-homework-tab').classList.remove('locked-dim');
+  }else{renderNoHomework();document.getElementById('btn-homework-tab').classList.remove('locked-dim');}
+
+  if(lessonData.pdf) document.getElementById('pdfLink').href=lessonData.pdf;
+
+  if(questions.length===0){
+    document.getElementById('tab-quiz').innerHTML=`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:22px;padding:56px 28px;text-align:center;box-shadow:var(--shadow);"><div style="font-size:3rem;margin-bottom:14px">🎓</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:800;">No Exam For This Course</div><div style="font-size:.88rem;color:var(--muted);margin-top:8px">Videos and PDF are unlocked automatically.</div></div>`;
+    unlockPostExam(true);return;
+  }
+
+  const prev=res?.find(r=>r.lesson===lessonData.name);
+  if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(true,buildMsg(prev.score,questions.length,true));}
+  else{
+    const saved=localStorage.getItem(`exam_${currentUser.id}_${id}`);
+    if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockPostExam(true,buildMsg(pd.score,questions.length,true));}catch(e){}}
+  }
+}
+
+/* ── VERIFY CODE ── */
+document.getElementById('verifyBtn').onclick=async()=>{
+  const code=document.getElementById('accessCodeInput').value.trim();
+  const lessonId=new URLSearchParams(location.search).get('id');
+  if(!code)return alert("Please enter the code");
+  showLoader("Verifying…");
+  try{
+    if(!currentUser){const{data:{session}}=await db.auth.getSession();if(!session){location.href='/home';return;}currentUser=session.user;}
+    const{data:rows}=await db.from('codes').select('*').eq('code',code);
+    if(rows&&rows.length>0){
+      const cd=rows[0],now=Date.now();
+      const{data:ls}=await db.from('lessons').select('validitydays').eq('id',lessonId).single();
+      const days=ls?.validitydays||90;
+      if(!cd.used){const exp=now+days*24*60*60*1000;await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code);localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));location.reload();}
+      else if(cd.usedby===currentUser.email&&cd.lessonid===lessonId&&cd.expiryat>now){localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:cd.expiryat,studentId:myStudentId}));location.reload();}
+      else if(cd.expiryat&&cd.expiryat<=now){alert("This code has expired!");}
+      else{alert("This code is already used by another account!");}
+    }else{alert("Invalid code!");}
+  }catch(e){alert("Error: "+e.message);}
+  hideLoader();
+};
+
+/* ── HOMEWORK ── */
+function renderNoHomework(){document.getElementById('tab-homework').innerHTML=`<div class="hw-locked-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-locked-title">No Assignment</div><div class="hw-locked-sub">There is no assignment for this course.</div></div>`;}
+function renderHomeworkStart(){document.getElementById('tab-homework').innerHTML=`<div class="hw-locked-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-locked-title">Assignment: ${hwData.title||'Homework'}</div><div class="hw-locked-sub">Answer ${hwQuestions.length} questions. Complete this to unlock gated videos!</div><button class="hw-start-btn" onclick="startHw()">Start Assignment →</button></div>`;}
+function renderHomeworkDone(result){
+  const pct=result.total>0?Math.round(result.score/result.total*100):0;
+  const clr=pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+  let rev='<div style="margin-top:28px;"><div class="review-section-title">Assignment Review</div>';
+  hwQuestions.forEach((q,i)=>{
+    const ok=result.userans?.[i]===q.correct;const al=result.userans?.[i];
+    const ans=al?(q[al]?`${al.toUpperCase()} — ${q[al]}`:al.toUpperCase()):'—';
+    const corr=q.correct?(q[q.correct]?`${q.correct.toUpperCase()} — ${q[q.correct]}`:q.correct.toUpperCase()):'—';
+    rev+=`<div class="review-item ${ok?'correct':'wrong'}"><div class="review-meta"><span class="review-q-label">Q${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ Correct':'✗ Wrong'}</span></div><div class="review-q-text">${q.text||'Choose:'}</div><div class="review-ans">Your answer: <span>${ans}</span></div>${!ok?`<div class="review-correct-ans">✓ Correct: ${corr}</div>`:''}</div>`;
+  });
+  rev+='</div>';
+  document.getElementById('tab-homework').innerHTML=`<div class="hw-locked-card"><div style="font-size:3rem;margin-bottom:12px">✅</div><div class="hw-locked-title" style="color:var(--green)">Assignment Done!</div><div style="font-family:var(--mono);font-size:2.6rem;font-weight:700;color:${clr};margin:14px 0 6px">${result.score}<span style="font-size:1.2rem;color:var(--muted)">/${result.total}</span></div><div style="font-size:.82rem;color:var(--muted)">${pct}% — ${pct>=70?'Excellent!':pct>=50?'Good job!':'Keep practicing!'}</div></div>${rev}`;
+}
+window.startHw=function(){showLoader("Preparing assignment…");setTimeout(()=>{hwCurIdx=0;hwUserAns={};renderHwQ();hideLoader();},300);};
+function renderHwQ(){
+  const q=hwQuestions[hwCurIdx];if(!q)return;
+  const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);const count=q.optionsCount||4;
+  document.getElementById('tab-homework').innerHTML=`<div class="quiz-wrap"><div class="progress-row"><span class="q-count">${hwCurIdx+1}/${hwQuestions.length}</span><div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="q-card"><div class="q-label">Assignment · Question ${hwCurIdx+1}</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'Choose:'}</div><div class="options">${OPT_LETTERS.slice(0,count).map(opt=>`<label class="opt-label"><input type="radio" name="hw" value="${opt}" ${hwUserAns[hwCurIdx]===opt?'checked':''}><span class="opt-key">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}</div></div><div class="quiz-nav"><button class="q-btn ghost ${hwCurIdx===0?'hidden':''}" onclick="saveHwAns();hwCurIdx--;renderHwQ()">← Previous</button>${hwCurIdx<hwQuestions.length-1?`<button class="q-btn primary" onclick="saveHwAns();hwCurIdx++;renderHwQ()">Next →</button>`:`<button class="q-btn primary" onclick="saveHwAns();submitHw()">Submit Assignment ✓</button>`}</div></div>`;
+}
+function saveHwAns(){const s=document.querySelector('input[name="hw"]:checked');if(s)hwUserAns[hwCurIdx]=s.value;}
+async function submitHw(){
+  saveHwAns();showLoader("Submitting…");
+  let score=0;hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
+  const res={email:currentUser.email,hw_id:hwData.id,lesson:lessonData?.name||'',score,total:hwQuestions.length,userans:hwUserAns};
+  await db.from('hw_results').insert([res]).catch(()=>{});
+  hwDone=true;hwResultsMap[hwData.id]={...res};renderHomeworkDone(res);hideLoader();
+}
+
+/* ── QUIZ ── */
+function buildMsg(score,total,prev){const pct=total>0?Math.round(score/total*100):0;return{score,total,pct,prev};}
+document.getElementById('startBtn').onclick=()=>{
+  if(!questions.length)return alert("No exam questions yet.");
+  showLoader("Preparing exam…");
+  setTimeout(()=>{document.getElementById('startScreen').classList.add('hidden');document.getElementById('quizApp').classList.remove('hidden');document.getElementById('timerBox').classList.remove('hidden');renderQ();startTimer();hideLoader();},300);
+};
+function renderQ(){
+  const q=questions[curIdx];if(!q)return;const pct=Math.round((curIdx+1)/questions.length*100);const count=q.optionsCount||4;
+  document.getElementById('qCount').textContent=`${curIdx+1} / ${questions.length}`;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('qDisplay').innerHTML=`<div class="q-label">Question ${curIdx+1}</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'Choose:'}</div><div class="options">${OPT_LETTERS.slice(0,count).map(opt=>`<label class="opt-label"><input type="radio" name="exam" value="${opt}" ${userAns[curIdx]===opt?'checked':''}><span class="opt-key">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}</div>`;
+  document.getElementById('prevBtn').classList.toggle('hidden',curIdx===0);
+  document.getElementById('nextBtn').classList.toggle('hidden',curIdx===questions.length-1);
+  document.getElementById('finishBtn').classList.toggle('hidden',curIdx!==questions.length-1);
+}
+function saveAns(){const s=document.querySelector('input[name="exam"]:checked');if(s)userAns[curIdx]=s.value;}
+document.getElementById('nextBtn').onclick=()=>{saveAns();curIdx++;renderQ();};
+document.getElementById('prevBtn').onclick=()=>{saveAns();curIdx--;renderQ();};
+document.getElementById('finishBtn').onclick=()=>{
+  saveAns();clearInterval(examTimer);showLoader("Grading…");
+  let score=0;questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
+  db.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns}]).then(()=>{}).catch(()=>{});
+  setTimeout(()=>{const id=new URLSearchParams(location.search).get('id');localStorage.setItem(`exam_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));generateReview();unlockPostExam(false,buildMsg(score,questions.length,false));scrollTo({top:0,behavior:'smooth'});hideLoader();},400);
+};
+function generateReview(){
+  const list=document.getElementById('reviewList');if(!list)return;list.innerHTML='';
+  questions.forEach((q,i)=>{
+    const ok=userAns[i]===q.correct;const al=userAns[i];
+    const ans=al?(q[al]?`${al.toUpperCase()} — ${q[al]}`:al.toUpperCase()):'—';
+    const corr=q.correct?(q[q.correct]?`${q.correct.toUpperCase()} — ${q[q.correct]}`:q.correct.toUpperCase()):'—';
+    list.innerHTML+=`<div class="review-item ${ok?'correct':'wrong'}" style="animation:riseIn .35s ease ${i*.04}s both"><div class="review-meta"><span class="review-q-label">Q${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ Correct':'✗ Wrong'}</span></div>${q.image?`<img src="${q.image}" style="max-height:160px;border-radius:12px;margin-bottom:12px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2);">`:''}<div class="review-q-text">${q.text||'Choose:'}</div><div class="review-ans">Your answer: <span>${ans}</span></div>${!ok?`<div class="review-correct-ans">✓ Correct: ${corr}</div>`:''}</div>`;
+  });
+}
+function unlockPostExam(skipAnim=false,msgObj=null){
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('quizApp').classList.add('hidden');
+  document.getElementById('timerBox').classList.add('hidden');
+  document.getElementById('reviewArea').classList.remove('hidden');
+  if(msgObj){
+    const{score,total,pct,prev}=msgObj;const clr=pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+    const r=50,circ=2*Math.PI*r,off=circ-(pct/100)*circ;
+    document.getElementById('scoreBanner').innerHTML=`<div class="score-ring"><svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="rgba(22,163,74,.15)" stroke-width="8"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${clr}" stroke-width="8" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 8px ${clr})"/></svg><div class="score-ring-num" style="color:${clr}">${score}</div><div class="score-ring-pct">${pct}%</div></div><div class="score-of">Out of ${total} questions</div><div class="score-msg">${prev?'✦ You already took this exam':'✦ Score recorded!'}</div><div class="score-unlock">✅ Videos & PDF Unlocked</div>`;
+  }
+  ['videos','pdf'].forEach(t=>{document.getElementById(`btn-${t}-tab`).classList.remove('locked-dim');});
+}
+function startTimer(){
+  examTimer=setInterval(()=>{const m=Math.floor(timeLeft/60),s=timeLeft%60;document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;if(timeLeft<=120)document.getElementById('timerBox').classList.add('urgent');if(timeLeft--<=0){clearInterval(examTimer);alert("Time is up!");document.getElementById('finishBtn').click();}},1000);
+}
+
+init();
+</script>
+</body>
+</html>
