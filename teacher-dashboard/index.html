@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathPro | Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="../assets/css/shared.css">
+</head>
+<body class="page-teacher-dashboard">
+
+<div id="toast-container"></div>
+<div id="secureLayer">
+  <div class="spin-ring"></div>
+  <div class="secure-txt">Verifying admin access…</div>
+</div>
+
+<aside class="sidebar" id="sidebarEl">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">MP</div>
+    <div>
+      <div class="sb-logo-name">Math<span>Pro</span></div>
+      <div class="sb-badge">ADMIN</div>
+    </div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Main</div>
+    <button class="sb-link active" onclick="showSection('overview',this)">
+      <div class="sb-icon">📊</div>Overview
+    </button>
+    <div class="sb-section">Content</div>
+    <button class="sb-link" onclick="showSection('lessons',this)">
+      <div class="sb-icon">📚</div>Courses & Lessons
+    </button>
+    <button class="sb-link" onclick="showSection('homework',this)">
+      <div class="sb-icon">📋</div>Assignments
+    </button>
+    <div class="sb-section">Students</div>
+    <button class="sb-link" onclick="showSection('results',this)">
+      <div class="sb-icon">📈</div>Student Results
+    </button>
+    <div class="sb-section">Tools</div>
+    <button class="sb-link" onclick="showSection('codes',this)">
+      <div class="sb-icon">🎫</div>Codes
+    </button>
+    <button class="sb-link" onclick="showSection('notif',this)">
+      <div class="sb-icon">📢</div>Broadcast
+    </button>
+  </nav>
+  <div class="sb-footer">
+    <button class="sb-logout" onclick="signOut()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </div>
+</aside>
+<div class="sb-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
+<button class="mob-toggle" onclick="toggleSidebar()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<div class="main-area">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Overview</div>
+    <div class="teacher-pill"><div class="teacher-dot"></div>Mr. Sherif Ali</div>
+  </div>
+
+  <div class="content">
+
+    <div class="section-page active" id="sec-overview">
+      <div class="stats-row">
+        <div class="stat-c"><div class="stat-icon">👥</div><div><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">Students</div></div></div>
+        <div class="stat-c"><div class="stat-icon">📝</div><div><div class="stat-val" id="statResults">—</div><div class="stat-lbl">Exam Results</div></div></div>
+        <div class="stat-c"><div class="stat-icon">📚</div><div><div class="stat-val" id="statLessons">—</div><div class="stat-lbl">Courses</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">📊 Recent Activity</div></div>
+        <div style="padding:4px">
+          <div class="table-wrap" style="max-height:340px;overflow-y:auto">
+            <table><thead><tr><th>Student</th><th>Course</th><th>Score</th><th>Date</th></tr></thead>
+            <tbody id="ovBody"><tr><td colspan="4" class="td-empty">Loading…</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-page" id="sec-lessons">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📚 Published Courses</div>
+          <button class="btn btn-primary" onclick="resetLessonForm()">+ New Course</button>
+        </div>
+        <div style="padding:4px">
+          <div class="table-wrap">
+            <table><thead><tr><th>Name</th><th>Grade</th><th>Price</th><th>Videos</th><th style="text-align:center">Actions</th></tr></thead>
+            <tbody id="lessonsBody"><tr><td colspan="5" class="td-empty">Loading…</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="lessonFormCard">
+        <div class="card-head"><div class="card-title" id="lessonFormTitle">➕ Add New Course</div></div>
+        <div class="card-body">
+          <div class="fg2">
+            <div class="fw"><label class="flbl">Course Title</label><input id="lessonName" class="finp" placeholder="e.g., Chapter 1 – Lesson 2"></div>
+            <div class="fw"><label class="flbl">School Grade</label>
+              <select id="lessonGrade" class="finp">
+                <option value="1">1st Year Secondary</option>
+                <option value="2">2nd Year Secondary</option>
+                <option value="3">3rd Year Secondary</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg2">
+            <div class="fw"><label class="flbl">Price (EGP)</label><input id="lessonPrice" type="number" class="finp" placeholder="150"></div>
+            <div class="fw"><label class="flbl">Validity (Days)</label><input id="lessonValidity" type="number" class="finp" placeholder="90" value="90"></div>
+          </div>
+          <div class="fg2">
+            <div class="fw"><label class="flbl">Cover Image URL</label><input id="lessonImage" class="finp" placeholder="https://…"></div>
+            <div class="fw"><label class="flbl">PDF Notes URL</label><input id="lessonPdf" class="finp" placeholder="https://…"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div>
+              <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">📺 Video Lessons</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:3px">Add multiple videos. Each can require a homework to unlock.</div>
+            </div>
+            <button class="btn btn-ghost" style="font-size:.78rem;padding:8px 14px" onclick="addVideoBlock()">+ Add Video</button>
+          </div>
+          <div id="videosContainer"></div>
+
+          <div class="divider"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">📝 Exam Questions</div>
+            <button class="btn btn-ghost" style="font-size:.78rem;padding:8px 14px" onclick="addQuestion('questionsContainer')">+ Add Question</button>
+          </div>
+          <div id="questionsContainer"></div>
+
+          <div class="divider"></div>
+          <div style="display:flex;gap:10px;">
+            <button id="saveLessonBtn" class="btn btn-primary btn-full btn-lg" onclick="saveLesson()">Publish Course 🚀</button>
+            <button id="cancelLessonBtn" class="btn btn-danger btn-lg hidden" onclick="resetLessonForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-page" id="sec-homework">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📋 Assignments</div>
+          <button class="btn btn-primary" onclick="resetHwForm()">+ New Assignment</button>
+        </div>
+        <div style="padding:4px">
+          <div class="table-wrap">
+            <table><thead><tr><th>Title</th><th>Grade</th><th>Linked Course</th><th style="text-align:center">Actions</th></tr></thead>
+            <tbody id="hwBody"><tr><td colspan="4" class="td-empty">Loading…</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="hwFormCard">
+        <div class="card-head"><div class="card-title" id="hwFormTitle">➕ Create Assignment</div></div>
+        <div class="card-body">
+          <div class="fg2">
+            <div class="fw"><label class="flbl">Title</label><input id="hwTitle" class="finp" placeholder="e.g., Chapter 1 Homework"></div>
+            <div class="fw"><label class="flbl">Grade</label>
+              <select id="hwGrade" class="finp">
+                <option value="1">1st Year Secondary</option>
+                <option value="2">2nd Year Secondary</option>
+                <option value="3">3rd Year Secondary</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg2">
+            <div class="fw"><label class="flbl">Parent Course (appears inside)</label><select id="hwLessonId" class="finp"><option value="">— Loading —</option></select></div>
+            <div class="fw"><label class="flbl">Unlocks Next Course (optional)</label><select id="hwNextLessonId" class="finp"><option value="">— None —</option></select></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">Questions</div>
+            <button class="btn btn-ghost" style="font-size:.78rem;padding:8px 14px" onclick="addQuestion('hwQuestionsContainer')">+ Add Question</button>
+          </div>
+          <div id="hwQuestionsContainer"></div>
+          <div class="divider"></div>
+          <div style="display:flex;gap:10px;">
+            <button id="saveHwBtn" class="btn btn-primary btn-full btn-lg" onclick="saveHw()">Publish Assignment 📤</button>
+            <button id="cancelHwBtn" class="btn btn-danger btn-lg hidden" onclick="resetHwForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-page" id="sec-results">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📈 Student Results</div>
+          <div class="search-wrap">
+            <span class="search-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+            <input placeholder="Search students…" onkeyup="searchTable()">
+          </div>
+        </div>
+        <div style="padding:4px">
+          <div class="table-wrap" style="max-height:520px;overflow-y:auto">
+            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th><th style="text-align:center">Action</th></tr></thead>
+            <tbody id="resultsBody"><tr><td colspan="6" class="td-empty">Loading…</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-page" id="sec-codes">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🎫 Subscription Codes</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" onclick="loadAllCodes()">🔄 Refresh List</button>
+            <button class="btn btn-primary" onclick="generateCodes()">+ Generate 50 Codes</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="codesPlaceholder" class="hidden" style="text-align:center;padding:40px;color:var(--muted);background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;">
+            Click the button above to generate 50 new subscription codes 🎯
+          </div>
+          
+          <div id="codesResultArea" class="hidden" style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+              <span style="font-size:.82rem;color:var(--green);font-weight:700">Newly Generated Codes — distribute these to students.</span>
+              <button class="btn btn-ghost" style="font-size:.78rem;padding:7px 14px" onclick="copyCodes()">Copy All 📋</button>
+            </div>
+            <div class="codes-grid" id="codesGrid"></div>
+          </div>
+
+          <div style="font-family:var(--display);font-size:.95rem;font-weight:700;margin-bottom:14px;">📋 All Codes List</div>
+          <div class="table-wrap" style="max-height:400px;overflow-y:auto">
+            <table>
+              <thead><tr><th>Code</th><th>Status</th><th>Used By</th><th>Lesson</th></tr></thead>
+              <tbody id="codesListBody"><tr><td colspan="4" class="td-empty">Loading codes...</td></tr></tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="section-page" id="sec-notif">
+      <div class="card">
+        <div class="card-head"><div class="card-title">📢 Broadcast Announcement</div></div>
+        <div class="card-body">
+          <div class="fw">
+            <label class="flbl">Message</label>
+            <textarea id="notifMessage" class="finp" placeholder="Type your announcement — it appears on all student dashboards…"></textarea>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="sendNotif()">Broadcast to All Students 🚀</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="studentModal" class="sp-overlay">
+  <div class="sp-card">
+    <div class="sp-head">
+      <div>
+        <div class="sp-name" id="spName">Student</div>
+        <div class="sp-email" id="spEmail">email</div>
+        <div class="sp-actions">
+          <button class="btn btn-danger" id="btnBlockStudent" style="padding:5px 12px; font-size:.7rem;" onclick="toggleBlockStudent()">🚫 Block Student</button>
+          <button class="btn btn-ghost" style="padding:5px 12px; font-size:.7rem;" onclick="resetStudentDevice()">💻 Reset Device</button>
+        </div>
+      </div>
+      <button class="sp-close" onclick="closeStudent()">✕</button>
+    </div>
+    <div class="sp-body">
+      <div class="sp-stats">
+        <div class="sp-stat"><div class="sp-stat-num" id="spCourses">0</div><div class="sp-stat-lbl">Courses</div></div>
+        <div class="sp-stat"><div class="sp-stat-num" id="spExams">0</div><div class="sp-stat-lbl">Exams</div></div>
+        <div class="sp-stat"><div class="sp-stat-num" id="spHws">0</div><div class="sp-stat-lbl">Homeworks</div></div>
+      </div>
+      <div id="spDetails"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
+const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+const ADMIN="kevin.hany.08@proton.me";
+
+let editingLessonId=null,editingHwId=null,allLessons={},allHw={};
+let examResults=[],studentsByEmail={};
+let currentOpenStudentEmail=null;
+const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
+
+const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
+
+function isMissingColumnError(error){
+  const msg=String(error?.message||error||'');
+  return /column .* does not exist|Could not find the .* column|schema cache/i.test(msg);
+}
+function normalizeVideoItem(item,index=0,fallbackName=''){
+  if(!item) return null;
+  if(typeof item==='string'){
+    const url=item.trim();
+    if(!url) return null;
+    return {name:fallbackName||`Video ${index+1}`,url,requireHw:false,hwId:''};
+  }
+  const url=String(item.url||item.video||item.link||'').trim();
+  if(!url) return null;
+  return {
+    name:String(item.name||item.title||fallbackName||`Video ${index+1}`).trim(),
+    url,
+    requireHw:Boolean(item.requireHw),
+    hwId:String(item.hwId||item.homeworkId||item.homework_id||'').trim()
+  };
+}
+function parseVideoArray(raw,fallbackName=''){
+  if(Array.isArray(raw)) return raw.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);
+  if(typeof raw==='string'){
+    const trimmed=raw.trim();
+    if(!trimmed) return [];
+    try{
+      const parsed=JSON.parse(trimmed);
+      if(Array.isArray(parsed)) return parsed.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);
+      const one=normalizeVideoItem(parsed,0,fallbackName);
+      return one?[one]:[];
+    }catch(_){}
+    const one=normalizeVideoItem(trimmed,0,fallbackName);
+    return one?[one]:[];
+  }
+  if(raw&&typeof raw==='object'){
+    const one=normalizeVideoItem(raw,0,fallbackName);
+    return one?[one]:[];
+  }
+  return [];
+}
+function normalizeLessonVideos(lesson){
+  const videosFromVideos=parseVideoArray(lesson?.videos,lesson?.name||'Video');
+  if(videosFromVideos.length) return videosFromVideos;
+  const videosFromVideo=parseVideoArray(lesson?.video,lesson?.name||'Video');
+  if(videosFromVideo.length) return videosFromVideo;
+  return [];
+}
+function normalizeQuestions(raw){
+  if(Array.isArray(raw)) return raw;
+  if(typeof raw==='string'){
+    try{
+      const parsed=JSON.parse(raw);
+      return Array.isArray(parsed)?parsed:[];
+    }catch(_){}
+  }
+  return [];
+}
+function serializeLegacyVideoValue(videos,fallbackVideo=''){
+  const normalized=parseVideoArray(videos,'Video');
+  if(!normalized.length) return String(fallbackVideo||'').trim();
+  if(normalized.length===1 && !normalized[0].requireHw && !normalized[0].hwId) return normalized[0].url;
+  return JSON.stringify(normalized);
+}
+async function saveLessonWithFallback(payload){
+  const legacyVideoValue=serializeLegacyVideoValue(payload.videos,payload.video||'');
+  const basePayload={
+    name:payload.name,
+    grade:payload.grade,
+    price:payload.price,
+    validitydays:payload.validitydays,
+    image:payload.image,
+    pdf:payload.pdf,
+    video:legacyVideoValue
+  };
+  const candidates=[
+    {mode:'modern-all',data:{...basePayload,videos:payload.videos,questions:payload.questions}},
+    {mode:'legacy-video+questions',data:{...basePayload,questions:payload.questions}},
+    {mode:'modern-videos-only',data:{...basePayload,videos:payload.videos}},
+    {mode:'legacy-video-only',data:{...basePayload}}
+  ];
+  const tried=new Set();
+  let lastError=null;
+  for(const candidate of candidates){
+    const key=Object.keys(candidate.data).sort().join('|');
+    if(tried.has(key)) continue;
+    tried.add(key);
+    const req=editingLessonId
+      ? db.from('lessons').update(candidate.data).eq('id',editingLessonId)
+      : db.from('lessons').insert([candidate.data]);
+    const {error}=await req;
+    if(!error) return candidate;
+    lastError=error;
+    if(!isMissingColumnError(error)) throw error;
+  }
+  throw lastError||new Error('Failed to save lesson.');
+}
+
+/* ── TOAST ── */
+function showToast(type,title,msg,dur=4500){
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<div class="toast-icon">${icons[type]}</div><div class="toast-body"><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+  c.appendChild(t);setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),250)},dur);
+}
+
+/* ── AUTH ── */
+async function checkAuth(){
+  const{data:{session}}=await db.auth.getSession();
+  if(session&&session.user.email===ADMIN){document.getElementById('secureLayer').classList.add('hidden');loadAll();}
+  else window.location.href='/home';
+}
+checkAuth();
+
+async function loadAll(){await loadStats();await loadLessons();await loadHw();await loadResults();await loadAllCodes();}
+
+/* ── SIDEBAR ── */
+const TITLES={overview:'Overview',lessons:'Courses & Lessons',homework:'Assignments',results:'Student Results',codes:'Subscription Codes',notif:'Broadcast'};
+function showSection(name,btn){
+  document.querySelectorAll('.section-page').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TITLES[name]||name;
+  closeSidebar();
+}
+function toggleSidebar(){document.getElementById('sidebarEl').classList.toggle('open');document.getElementById('sbBackdrop').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebarEl').classList.remove('open');document.getElementById('sbBackdrop').classList.remove('show');}
+
+/* ── STATS ── */
+async function loadStats(){
+  try{
+    const[{count:u},{count:r},{count:l}]=await Promise.all([
+      db.from('users').select('*',{count:'exact',head:true}),
+      db.from('results').select('*',{count:'exact',head:true}),
+      db.from('lessons').select('*',{count:'exact',head:true})
+    ]);
+    document.getElementById('statStudents').textContent=u||0;
+    document.getElementById('statResults').textContent=r||0;
+    document.getElementById('statLessons').textContent=l||0;
+  }catch(e){}
+}
+
+/* ── RESULTS ── */
+async function loadResults(){
+  try{
+    const[{data:users},{data:res}]=await Promise.all([
+      db.from('users').select('*'),
+      db.from('results').select('*').order('date',{ascending:false})
+    ]);
+    const uMap={};
+    if(users)users.forEach(u=>{if(u.email)uMap[u.email]={name:u.name||u.email.split('@')[0],raw:u};});
+    studentsByEmail=uMap;
+    examResults=res||[];
+
+    // Overview recent
+    const ovRows=(res||[]).slice(0,8).map(r=>{
+      const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
+      const nm=uMap[r.email]?.name||r.email?.split('@')[0]||'—';
+      return`<tr><td class="td-name">${nm}</td><td class="td-green">${r.lesson||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
+    }).join('');
+    document.getElementById('ovBody').innerHTML=ovRows||`<tr><td colspan="4" class="td-empty">No results yet</td></tr>`;
+
+    // Results table
+    renderResultsTable();
+  }catch(e){}
+}
+
+function renderResultsTable(){
+  const students=Object.entries(studentsByEmail).filter(([e])=>e!==ADMIN);
+  if(!students.length){document.getElementById('resultsBody').innerHTML=`<tr><td colspan="6" class="td-empty">No students yet</td></tr>`;return;}
+  let rows='';
+  students.sort((a,b)=>String(a[1].name).localeCompare(String(b[1].name))).forEach(([email,s])=>{
+    const sRes=examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const latest=sRes[0];
+    const dt=latest?.date?new Date(latest.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
+    
+    // WhatsApp Msg prep
+    let waLink = '—';
+    if(latest){
+      const whatsappMsg = encodeURIComponent(`أهلاً، درجة الطالب ${s.name} في امتحان ${latest.lesson} هي: ${latest.score}/${latest.total}`);
+      waLink = `<a href="https://api.whatsapp.com/send?text=${whatsappMsg}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none; font-size:1.1rem; filter: grayscale(0%); transition: transform 0.2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Send WhatsApp">💬</a>`;
+    }
+
+    rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\\'")}')">
+      <td class="td-name"><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;background:var(--green-light);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0">👤</div><div>${s.name}<div style="font-size:.68rem;color:var(--muted)">${sRes.length} exams</div></div></div></td>
+      <td class="td-email">${email}</td>
+      <td class="td-green">${latest?.lesson||'—'}</td>
+      <td>${latest?`<span class="td-score">${latest.score}/${latest.total}</span>`:'—'}</td>
+      <td class="td-date">${dt}</td>
+      <td style="text-align:center">${waLink}</td>
+    </tr>`;
+  });
+  document.getElementById('resultsBody').innerHTML=rows;
+}
+
+function searchTable(){
+  const v=document.querySelector('#sec-results input').value.toLowerCase();
+  document.querySelectorAll('#resultsBody tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
+}
+
+/* ── STUDENT MODAL & ADMIN ACTIONS ── */
+async function openStudent(email,name){
+  currentOpenStudentEmail=email;
+  document.getElementById('spName').textContent=name;
+  document.getElementById('spEmail').textContent=email;
+  document.getElementById('studentModal').classList.add('show');
+  
+  // Set block button status based on current raw data
+  const sData = studentsByEmail[email]?.raw;
+  const btnBlock = document.getElementById('btnBlockStudent');
+  if(sData?.is_blocked){
+    btnBlock.innerHTML = '✅ Unblock Student';
+    btnBlock.classList.replace('btn-danger', 'btn-primary');
+  } else {
+    btnBlock.innerHTML = '🚫 Block Student';
+    btnBlock.classList.replace('btn-primary', 'btn-danger');
+  }
+
+  document.getElementById('spDetails').innerHTML='<div style="text-align:center;padding:28px;color:var(--muted)">Loading…</div>';
+  try{
+    const[{data:codes},{data:hwRes}]=await Promise.all([
+      db.from('codes').select('lessonid,expiryat').eq('usedby',email).eq('used',true),
+      db.from('hw_results').select('*').eq('email',email)
+    ]);
+    const sExams=examResults.filter(r=>r.email===email);
+    const courses=(codes||[]).map(c=>({name:allLessons[c.lessonid]?.name||'Deleted',exp:c.expiryat}));
+    document.getElementById('spCourses').textContent=courses.length;
+    document.getElementById('spExams').textContent=sExams.length;
+    document.getElementById('spHws').textContent=(hwRes||[]).length;
+    let html='';
+    if(courses.length){
+      html+=`<div class="sp-section-title">🎫 Courses</div>`;
+      courses.forEach(c=>{
+        const expTs=c.exp?new Date(c.exp).getTime():NaN;
+        const exp=Number.isFinite(expTs)?new Date(expTs).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
+        const active=Number.isFinite(expTs)?expTs>Date.now():false;
+        html+=`<div class="sp-item"><span class="sp-item-name">${c.name}</span><span class="badge ${active?'badge-active':'badge-expired'}">${active?'Active':'Expired'}</span></div>`;
+      });
+    }
+    if(sExams.length){
+      html+=`<div class="sp-section-title">📝 Exams</div>`;
+      sExams.forEach(r=>{
+        const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';
+        html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.7rem;color:var(--muted)">${dt}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
+      });
+    }
+    if(!courses.length&&!sExams.length)html='<div style="text-align:center;padding:32px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
+    document.getElementById('spDetails').innerHTML=html;
+  }catch(e){document.getElementById('spDetails').innerHTML=`<div style="color:var(--red);text-align:center;padding:24px">Error loading data</div>`;}
+}
+
+function closeStudent(){document.getElementById('studentModal').classList.remove('show');currentOpenStudentEmail=null;}
+
+window.toggleBlockStudent = async () => {
+  if(!currentOpenStudentEmail) return;
+  const sData = studentsByEmail[currentOpenStudentEmail]?.raw;
+  const isBlocked = sData?.is_blocked || false;
+  const newStatus = !isBlocked;
+
+  if(!confirm(newStatus ? "Are you sure you want to block this student from accessing the platform?" : "Unblock this student?")) return;
+  
+  try {
+    await db.from('users').update({ is_blocked: newStatus }).eq('email', currentOpenStudentEmail);
+    showToast('success', 'Success', newStatus ? 'Student blocked.' : 'Student unblocked.');
+    if(studentsByEmail[currentOpenStudentEmail]) studentsByEmail[currentOpenStudentEmail].raw.is_blocked = newStatus;
+    openStudent(currentOpenStudentEmail, studentsByEmail[currentOpenStudentEmail].name); // Refresh UI
+  } catch(e) { showToast('error', 'Error', e.message); }
+};
+
+window.resetStudentDevice = async () => {
+  if(!currentOpenStudentEmail) return;
+  if(!confirm("Are you sure you want to reset the device limit for this student? They will be asked to log in again.")) return;
+
+  const attempts=[
+    {devices:[]},
+    {devices:'[]'},
+    {devices:null},
+    {device_id:null},
+    {deviceId:null},
+    {device_id:null,device_token:null},
+    {device_id:null,device_fingerprint:null},
+    {device_id:null,last_device_id:null}
+  ];
+
+  let success=false,lastError=null;
+  for(const updates of attempts){
+    const {error}=await db.from('users').update(updates).eq('email',currentOpenStudentEmail);
+    if(!error){success=true;break;}
+    lastError=error;
+    if(!isMissingColumnError(error)) break;
+  }
+
+  if(success){
+    const rawUser=studentsByEmail[currentOpenStudentEmail]?.raw;
+    if(rawUser) rawUser.devices=[];
+    showToast('success','Success','Devices reset successfully. Ask the student to log out, then sign in again.');
+  }else{
+    showToast('error','Error',lastError?.message||'Could not reset devices.');
+  }
+};
+
+/* ── LESSONS ── */
+async function loadLessons(){
+  try{
+    const{data}=await db.from('lessons').select('*').order('created_at',{ascending:false});
+    allLessons={};
+    let opts='<option value="">— None —</option>';
+    if(!data||!data.length){document.getElementById('lessonsBody').innerHTML=`<tr><td colspan="5" class="td-empty">No courses yet</td></tr>`;return;}
+    let rows='';
+    data.forEach(d=>{
+      allLessons[d.id]=d;
+      opts+=`<option value="${d.id}">${d.name}</option>`;
+      const normalizedVideos=normalizeLessonVideos(d);
+      const vids=normalizedVideos.length;
+      rows+=`<tr>
+        <td class="td-name">${d.name}</td>
+        <td style="color:var(--muted);font-size:.8rem">${GRADE_MAP[d.grade]||'—'}</td>
+        <td class="td-green">${d.price?d.price+' EGP':'Free'}</td>
+        <td><span style="background:var(--green-light);color:var(--green);border:1px solid var(--border2);padding:3px 10px;border-radius:6px;font-family:var(--mono);font-size:.68rem;font-weight:700">${vids} video${vids!==1?'s':''}</span></td>
+        <td style="text-align:center"><div style="display:flex;gap:6px;justify-content:center">
+          <button class="btn btn-ghost" style="padding:5px 11px;font-size:.73rem" onclick='editLesson("${d.id}")'>Edit ✏️</button>
+          <button class="btn btn-danger" style="padding:5px 11px;font-size:.73rem" onclick='delLesson("${d.id}")'>Delete 🗑️</button>
+        </div></td>
+      </tr>`;
+    });
+    document.getElementById('lessonsBody').innerHTML=rows;
+    ['hwLessonId','hwNextLessonId'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  }catch(e){}
+}
+
+function resetLessonForm(){
+  editingLessonId=null;
+  ['lessonName','lessonPrice','lessonImage','lessonPdf'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lessonGrade').value='1';
+  document.getElementById('lessonValidity').value='90';
+  document.getElementById('videosContainer').innerHTML='';
+  document.getElementById('questionsContainer').innerHTML='';
+  document.getElementById('lessonFormTitle').textContent='➕ Add New Course';
+  document.getElementById('saveLessonBtn').textContent='Publish Course 🚀';
+  document.getElementById('cancelLessonBtn').classList.add('hidden');
+}
+
+function editLesson(id){
+  const d=allLessons[id];if(!d)return;
+  editingLessonId=id;
+  document.getElementById('lessonName').value=d.name||'';
+  document.getElementById('lessonGrade').value=d.grade||'1';
+  document.getElementById('lessonPrice').value=d.price||'';
+  document.getElementById('lessonValidity').value=d.validitydays||90;
+  document.getElementById('lessonImage').value=d.image||'';
+  document.getElementById('lessonPdf').value=d.pdf||'';
+  document.getElementById('videosContainer').innerHTML='';
+  document.getElementById('questionsContainer').innerHTML='';
+  const normalizedVideos=normalizeLessonVideos(d);
+  if(normalizedVideos.length) normalizedVideos.forEach(v=>addVideoBlock(v));
+  else if(d.video) addVideoBlock({name:d.name||'Main Video',url:d.video,requireHw:false,hwId:''});
+  normalizeQuestions(d.questions).forEach(q=>addQuestion('questionsContainer',q));
+  document.getElementById('lessonFormTitle').textContent='✏️ Edit Course';
+  document.getElementById('saveLessonBtn').textContent='Update Course 🔄';
+  document.getElementById('cancelLessonBtn').classList.remove('hidden');
+  document.getElementById('lessonFormCard').scrollIntoView({behavior:'smooth'});
+}
+
+async function delLesson(id){
+  if(!confirm("Delete this course permanently?"))return;
+  try{await db.from('lessons').delete().eq('id',id);showToast('success','Deleted','Course removed.');loadLessons();loadStats();}
+  catch(e){showToast('error','Error',e.message);}
+}
+
+/* ── VIDEO BLOCKS ── */
+let hwSelectOptionsCache='';
+function getHwOptions(){
+  return Object.values(allHw).map(h=>`<option value="${h.id}">${h.title||h.name||h.id}</option>`).join('');
+}
+
+window.addVideoBlock=function(data=null){
+  const n=document.querySelectorAll('#videosContainer .video-block').length+1;
+  const div=document.createElement('div');
+  div.className='video-block';
+  const hwOpts=`<option value="">— None —</option>${getHwOptions()}`;
+  div.innerHTML=`
+    <div class="video-block-head">
+      <span class="vid-num-badge">Video ${n}</span>
+      <button class="q-del" onclick="this.closest('.video-block').remove()">✕</button>
+    </div>
+    <div class="fg2">
+      <div class="fw"><label class="flbl">Video Name</label><input class="vid-name finp" placeholder="e.g., Introduction to Chapter 1" value="${(data?.name||'').replace(/"/g,'&quot;')}"></div>
+      <div class="fw"><label class="flbl">YouTube URL</label><input class="vid-url finp" placeholder="https://youtu.be/…" value="${(data?.url||'').replace(/"/g,'&quot;')}"></div>
+    </div>
+    <div class="fg2">
+      <div class="fw">
+        <label class="flbl">Requires Homework to Unlock?</label>
+        <select class="vid-require-hw finp" onchange="toggleHwSelect(this)">
+          <option value="0" ${!data?.requireHw?'selected':''}>No — Available immediately</option>
+          <option value="1" ${data?.requireHw?'selected':''}>Yes — Student must complete homework first</option>
+        </select>
+      </div>
+      <div class="fw vid-hw-select-wrap" style="${data?.requireHw?'':'display:none'}">
+        <label class="flbl">Which Homework?</label>
+        <select class="vid-hw-id finp">${hwOpts}</select>
+      </div>
+    </div>`;
+  if(data?.requireHw&&data?.hwId){
+    setTimeout(()=>{const sel=div.querySelector('.vid-hw-id');if(sel)sel.value=data.hwId;},50);
+  }
+  document.getElementById('videosContainer').appendChild(div);
+};
+
+window.toggleHwSelect=function(sel){
+  const wrap=sel.closest('.video-block').querySelector('.vid-hw-select-wrap');
+  wrap.style.display=sel.value==='1'?'':'none';
+};
+function getVideosFromForm(){
+  const videos=[];
+  document.querySelectorAll('#videosContainer .video-block').forEach((b,index)=>{
+    const req=b.querySelector('.vid-require-hw').value==='1';
+    const hwId=b.querySelector('.vid-hw-id')?.value||'';
+    const url=b.querySelector('.vid-url').value.trim();
+    const name=b.querySelector('.vid-name').value.trim();
+    if(!url) return;
+    videos.push({
+      name:name||`Video ${index+1}`,
+      url,
+      requireHw:req,
+      hwId:req?hwId:''
+    });
+  });
+  return videos;
+}
+
+async function saveLesson(){
+  const name=document.getElementById('lessonName').value.trim();
+  if(!name)return showToast('warning','Missing','Course title is required!');
+  const videos=getVideosFromForm();
+  if(!videos.length)return showToast('warning','Missing','Add at least one video URL.');
+  const questions=getQuestionsFrom('questionsContainer');
+  const btn=document.getElementById('saveLessonBtn');
+  btn.textContent='Saving…';btn.disabled=true;
+  try{
+    const payload={
+      name,
+      grade:document.getElementById('lessonGrade').value,
+      price:Number(document.getElementById('lessonPrice').value)||0,
+      validitydays:Number(document.getElementById('lessonValidity').value)||90,
+      image:document.getElementById('lessonImage').value.trim(),
+      pdf:document.getElementById('lessonPdf').value.trim(),
+      video:videos[0]?.url||'',
+      videos,
+      questions
+    };
+    const saveResult=await saveLessonWithFallback(payload);
+    let successMsg='Course published!';
+    if(saveResult.mode==='modern-all') successMsg=editingLessonId?'Course updated!':'Course published!';
+    if(saveResult.mode==='modern-videos-only') successMsg=editingLessonId?'Course updated. Videos were saved, but questions column is missing.':'Course published. Videos were saved, but questions column is missing.';
+    if(saveResult.mode==='legacy-video+questions') successMsg=editingLessonId?'Course updated. Videos were saved inside the legacy video field.':'Course published. Videos were saved inside the legacy video field.';
+    if(saveResult.mode==='legacy-video-only') successMsg=editingLessonId?'Course updated. Videos were saved inside the legacy video field, but questions column is missing.':'Course published. Videos were saved inside the legacy video field, but questions column is missing.';
+    showToast('success',editingLessonId?'Updated ✅':'Published ✅',successMsg);
+    resetLessonForm();loadLessons();loadStats();
+  }catch(e){showToast('error','Error',e.message);}
+  btn.textContent=editingLessonId?'Update Course 🔄':'Publish Course 🚀';btn.disabled=false;
+}
+
+/* ── HOMEWORK ── */
+async function loadHw(){
+  try{
+    const{data}=await db.from('homework').select('*').order('created_at',{ascending:false});
+    allHw={};
+    if(!data||!data.length){document.getElementById('hwBody').innerHTML=`<tr><td colspan="4" class="td-empty">No assignments yet</td></tr>`;return;}
+    let rows='';
+    data.forEach(d=>{
+      allHw[d.id]=d;
+      const linked=allLessons[d.lessonid]?.name||'—';
+      rows+=`<tr>
+        <td class="td-name">${d.title||d.name||'—'}<div style="font-size:.7rem;color:var(--muted)">${normalizeQuestions(d.questions).length} questions</div></td>
+        <td style="color:var(--muted);font-size:.8rem">${GRADE_MAP[d.grade]||'—'}</td>
+        <td class="td-green">${linked}</td>
+        <td style="text-align:center"><div style="display:flex;gap:6px;justify-content:center">
+          <button class="btn btn-ghost" style="padding:5px 11px;font-size:.73rem" onclick='editHw("${d.id}")'>Edit ✏️</button>
+          <button class="btn btn-danger" style="padding:5px 11px;font-size:.73rem" onclick='delHw("${d.id}")'>Delete 🗑️</button>
+        </div></td>
+      </tr>`;
+    });
+    document.getElementById('hwBody').innerHTML=rows;
+  }catch(e){}
+}
+
+function resetHwForm(){
+  editingHwId=null;
+  document.getElementById('hwTitle').value='';
+  document.getElementById('hwGrade').value='1';
+  document.getElementById('hwLessonId').value='';
+  document.getElementById('hwNextLessonId').value='';
+  document.getElementById('hwQuestionsContainer').innerHTML='';
+  document.getElementById('hwFormTitle').textContent='➕ Create Assignment';
+  document.getElementById('saveHwBtn').textContent='Publish Assignment 📤';
+  document.getElementById('cancelHwBtn').classList.add('hidden');
+}
+
+function editHw(id){
+  const d=allHw[id];if(!d)return;
+  editingHwId=id;
+  document.getElementById('hwTitle').value=d.title||d.name||'';
+  document.getElementById('hwGrade').value=d.grade||'1';
+  document.getElementById('hwLessonId').value=d.lessonid||'';
+  document.getElementById('hwNextLessonId').value=d.next_lesson_id||'';
+  document.getElementById('hwQuestionsContainer').innerHTML='';
+  (d.questions||[]).forEach(q=>addQuestion('hwQuestionsContainer',q));
+  document.getElementById('hwFormTitle').textContent='✏️ Edit Assignment';
+  document.getElementById('saveHwBtn').textContent='Update Assignment 🔄';
+  document.getElementById('cancelHwBtn').classList.remove('hidden');
+  document.getElementById('hwFormCard').scrollIntoView({behavior:'smooth'});
+}
+
+async function delHw(id){
+  if(!confirm("Delete this assignment?"))return;
+  await db.from('homework').delete().eq('id',id).then(()=>showToast('success','Deleted','Assignment removed.')).catch(e=>showToast('error','Error',e.message));
+  loadHw();
+}
+
+async function saveHw(){
+  const title=document.getElementById('hwTitle').value;
+  if(!title)return showToast('warning','Missing','Title required!');
+  const questions=getQuestionsFrom('hwQuestionsContainer');
+  const btn=document.getElementById('saveHwBtn');
+  btn.textContent='Saving…';btn.disabled=true;
+  try{
+    const payload={
+      title,
+      grade:document.getElementById('hwGrade').value,
+      lessonid:document.getElementById('hwLessonId').value||null,
+      next_lesson_id:document.getElementById('hwNextLessonId').value||null,
+      questions
+    };
+    if(editingHwId){await db.from('homework').update(payload).eq('id',editingHwId);showToast('success','Updated ✅','Assignment updated!');}
+    else{await db.from('homework').insert([payload]);showToast('success','Published ✅','Assignment published!');}
+    resetHwForm();loadHw();
+  }catch(e){showToast('error','Error',e.message);}
+  btn.textContent=editingHwId?'Update Assignment 🔄':'Publish Assignment 📤';btn.disabled=false;
+}
+
+/* ── QUESTION HELPER ── */
+window.updateOptionsUI=function(sel){
+  const count=parseInt(sel.value);
+  const block=sel.closest('.q-block');
+  const optsC=block.querySelector('.dynamic-opts');
+  const corrS=block.querySelector('.q-correct');
+  const cur=corrS.value;
+  const vals={};
+  optsC.querySelectorAll('input').forEach(i=>vals[i.dataset.opt]=i.value);
+  let ih='',ch='';
+  for(let i=0;i<count;i++){
+    const l=OPT_LETTERS[i],v=vals[l]||'',U=l.toUpperCase();
+    ih+=`<div><div class="opt-lbl">OPTION ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="Option ${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;
+    ch+=`<option value="${l}" ${cur===l?'selected':''}>${U}</option>`;
+  }
+  optsC.innerHTML=ih;corrS.innerHTML=ch;
+};
+
+window.addQuestion=function(cid,data=null){
+  const n=document.querySelectorAll('#'+cid+' .question-block').length+1;
+  const div=document.createElement('div');div.className='q-block question-block';
+  const cnt=data?.optionsCount||4;
+  let cOpts='',iH='',chH='';
+  for(let i=2;i<=10;i++)cOpts+=`<option value="${i}" ${cnt==i?'selected':''}>${i} Options</option>`;
+  for(let i=0;i<cnt;i++){
+    const l=OPT_LETTERS[i],v=data?data[l]||'':'',U=l.toUpperCase();
+    iH+=`<div><div class="opt-lbl">OPTION ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="Option ${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;
+    chH+=`<option value="${l}" ${data?.correct===l?'selected':''}>${U}</option>`;
+  }
+  div.innerHTML=`
+    <div class="q-block-head">
+      <span class="q-num-badge">Question ${n}</span>
+      <button class="q-del" onclick="this.closest('.q-block').remove()">✕</button>
+    </div>
+    <div class="fw"><label class="flbl">Question Text</label><input class="q-text finp" placeholder="Type question…" value="${(data?.text||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fw"><label class="flbl">Question Image URL (optional)</label><input class="q-image finp" placeholder="https://…" value="${(data?.image||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fg2" style="margin-bottom:10px">
+      <div class="fw">
+        <label class="flbl">Number of Options</label>
+        <select class="q-opt-count finp" onchange="updateOptionsUI(this)">${cOpts}</select>
+      </div>
+      <div class="fw" style="margin-bottom:0">
+        <label class="flbl">Correct Answer</label>
+        <select class="q-correct finp">${chH}</select>
+      </div>
+    </div>
+    <div class="dynamic-opts">${iH}</div>`;
+  document.getElementById(cid).appendChild(div);
+};
+
+function getQuestionsFrom(cid){
+  const qs=[];
+  document.querySelectorAll('#'+cid+' .question-block').forEach(b=>{
+    const cnt=parseInt(b.querySelector('.q-opt-count').value)||4;
+    const q={text:b.querySelector('.q-text').value||'',image:b.querySelector('.q-image').value||'',correct:b.querySelector('.q-correct').value,optionsCount:cnt};
+    for(let i=0;i<cnt;i++){const l=OPT_LETTERS[i];q[l]=b.querySelector('.q-'+l)?.value||'';}
+    qs.push(q);
+  });
+  return qs;
+}
+
+/* ── CODES ── */
+async function loadAllCodes() {
+  const tbody = document.getElementById('codesListBody');
+  tbody.innerHTML = '<tr><td colspan="4" class="td-empty">Loading codes...</td></tr>';
+  try {
+    const {data} = await db.from('codes').select('*').order('created_at', {ascending:false});
+    if(!data || !data.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="td-empty">No codes generated yet.</td></tr>';
+      return;
+    }
+    let rows = '';
+    data.forEach(c => {
+       const status = c.used ? '<span style="color:var(--red);font-weight:bold;font-size:0.75rem">Used</span>' : '<span style="color:var(--green);font-weight:bold;font-size:0.75rem">Available</span>';
+       const user = c.usedby || '<span style="color:var(--muted)">—</span>';
+       const lesson = allLessons[c.lessonid]?.name || '<span style="color:var(--muted)">Any</span>';
+       rows += `<tr>
+         <td class="td-name" style="font-family:var(--mono); font-size:0.78rem;">${c.code}</td>
+         <td>${status}</td>
+         <td style="font-size:0.75rem; font-family:var(--mono);">${user}</td>
+         <td style="font-size:0.75rem; color:var(--muted)">${lesson}</td>
+       </tr>`;
+    });
+    tbody.innerHTML = rows;
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="4" class="td-empty" style="color:red">Error loading codes</td></tr>`;
+  }
+}
+
+async function generateCodes(){
+  if(!confirm("Generate 50 new codes?"))return;
+  document.getElementById('codesResultArea').classList.remove('hidden');
+  document.getElementById('codesPlaceholder').classList.add('hidden');
+  const grid=document.getElementById('codesGrid');grid.innerHTML='';
+  const codes=[];
+  for(let i=0;i<50;i++){
+    const c="MP-"+Math.floor(Math.random()*1e12);
+    codes.push({code:c,used:false});
+    const el=document.createElement('div');el.className='code-pill';el.textContent=c;grid.appendChild(el);
+  }
+  try{
+    await db.from('codes').insert(codes);
+    loadAllCodes(); // Refresh list after generation
+  }catch(e){showToast('error','Save Error',e.message);}
+}
+function copyCodes(){
+  const codes=Array.from(document.getElementById('codesGrid').children).map(d=>d.textContent).join('\n');
+  navigator.clipboard.writeText(codes).then(()=>showToast('success','Copied!','All codes copied to clipboard ✅'));
+}
+
+/* ── NOTIF ── */
+async function sendNotif(){
+  const msg=document.getElementById('notifMessage').value;
+  if(!msg)return showToast('warning','Empty','Write a message first!');
+  try{
+    await db.from('announcements').insert([{message:msg,active:true}]);
+    showToast('success','Sent! 🚀','Broadcast sent to all students.');
+    document.getElementById('notifMessage').value='';
+  }catch(e){showToast('error','Error',e.message);}
+}
+
+window.signOut=async()=>{await db.auth.signOut();window.location.href='/home';};
+</script>
+</body>
+</html>
