@@ -1,80 +1,91 @@
 /* =========================================================
-   MathPro Unified Theme Override
-   Add this file AFTER your current shared CSS file.
-   It keeps your layouts, but forces all pages to use
-   one modern visual identity.
+   MathPro Unified Theme - FIXED VERSION
+   Put this file AFTER your main CSS file.
    ========================================================= */
 
 :root{
-  --bg:#f4fbf7;
-  --bg2:#ecf8f0;
-  --bg3:#e4f3ea;
-  --surface:#ffffff;
-  --surface2:rgba(255,255,255,.78);
-  --surface3:#f7fbf8;
-  --text:#0f1f17;
-  --text-soft:#315345;
-  --muted:#5d7b6d;
-  --muted2:#87a395;
-  --accent:#148a49;
-  --accent2:#0f6d3a;
-  --accent3:#22c55e;
-  --accent-soft:rgba(20,138,73,.10);
-  --accent-soft-2:rgba(20,138,73,.16);
-  --border:rgba(20,138,73,.14);
-  --border2:rgba(20,138,73,.22);
-  --shadow:0 10px 35px rgba(12,48,28,.08);
-  --shadow2:0 18px 55px rgba(12,48,28,.12);
-  --danger:#d83a3a;
-  --danger-bg:rgba(216,58,58,.08);
-  --warning:#d97706;
-  --warning-bg:rgba(217,119,6,.1);
-  --info:#2563eb;
-  --info-bg:rgba(37,99,235,.1);
-  --radius-xs:10px;
-  --radius-sm:14px;
-  --radius:18px;
-  --radius-lg:24px;
-  --radius-xl:30px;
-  --sans:'DM Sans',sans-serif;
-  --display:'Syne',sans-serif;
-  --mono:'JetBrains Mono',monospace;
+  --u-bg:#f4fbf7;
+  --u-bg2:#ecf8f0;
+  --u-bg3:#e4f3ea;
+  --u-surface:#ffffff;
+  --u-surface2:rgba(255,255,255,.82);
+  --u-surface3:#f7fbf8;
+  --u-text:#0f1f17;
+  --u-text-soft:#315345;
+  --u-muted:#5d7b6d;
+  --u-muted2:#87a395;
+  --u-accent:#148a49;
+  --u-accent2:#0f6d3a;
+  --u-accent3:#22c55e;
+  --u-accent-soft:rgba(20,138,73,.10);
+  --u-accent-soft-2:rgba(20,138,73,.16);
+  --u-border:rgba(20,138,73,.14);
+  --u-border2:rgba(20,138,73,.22);
+  --u-shadow:0 10px 35px rgba(12,48,28,.08);
+  --u-shadow2:0 18px 55px rgba(12,48,28,.12);
+  --u-danger:#d83a3a;
+  --u-danger-bg:rgba(216,58,58,.08);
+  --u-warning:#d97706;
+  --u-warning-bg:rgba(217,119,6,.10);
+  --u-info:#2563eb;
+  --u-info-bg:rgba(37,99,235,.10);
+  --u-gold:#c18b2c;
+  --u-gold-bg:#fff3da;
+  --u-gold-border:#f2d9a5;
+  --u-navy:#0f1f17;
+  --u-navy2:#193126;
+  --u-radius-sm:14px;
+  --u-radius:18px;
+  --u-radius-lg:24px;
+  --u-sans:'DM Sans',sans-serif;
+  --u-display:'Syne',sans-serif;
+  --u-mono:'JetBrains Mono',monospace;
 }
 
 body.page-home,
 body.page-dashboard,
 body.page-checkout{
-  --bg:var(--bg);
-  --bg2:var(--bg2);
-  --surface:var(--surface);
-  --surface2:var(--surface2);
-  --surface3:var(--surface3);
-  --text:var(--text);
-  --muted:var(--muted);
-  --muted2:var(--muted2);
-  --border:var(--border);
-  --border2:var(--border2);
-  --green:var(--accent);
-  --green2:var(--accent2);
-  --green3:var(--accent3);
-  --green-light:var(--accent-soft);
-  --green-bg:var(--accent-soft);
-  --amber:var(--warning);
-  --amber-bg:var(--warning-bg);
-  --red:var(--danger);
-  --red-bg:var(--danger-bg);
-  --blue:var(--info);
-  --blue-bg:var(--info-bg);
-  --accent:var(--accent);
-  --accent2:var(--accent2);
-  --accent-glow:rgba(20,138,73,.14);
-  --navy:#0f1f17;
-  --navy2:#193126;
-  --gold:#c18b2c;
-  --gold-bg:#fff3da;
-  --gold-border:#f2d9a5;
-  font-family:var(--sans) !important;
-  color:var(--text) !important;
+  --bg:var(--u-bg) !important;
+  --bg2:var(--u-bg2) !important;
+  --surface:var(--u-surface) !important;
+  --surface2:var(--u-surface2) !important;
+  --surface3:var(--u-surface3) !important;
+  --text:var(--u-text) !important;
+  --ink:var(--u-text) !important;
+  --ink2:#1b3328 !important;
+  --ink3:#355447 !important;
+  --muted:var(--u-muted) !important;
+  --muted2:var(--u-muted2) !important;
+  --border:var(--u-border) !important;
+  --border2:var(--u-border2) !important;
+  --green:var(--u-accent) !important;
+  --green2:var(--u-accent2) !important;
+  --green3:var(--u-accent3) !important;
+  --green4:#59db8b !important;
+  --green-light:var(--u-accent-soft) !important;
+  --green-light2:var(--u-accent-soft-2) !important;
+  --green-bg:var(--u-accent-soft) !important;
+  --amber:var(--u-warning) !important;
+  --amber-bg:var(--u-warning-bg) !important;
+  --red:var(--u-danger) !important;
+  --red-bg:var(--u-danger-bg) !important;
+  --blue:var(--u-info) !important;
+  --blue-bg:var(--u-info-bg) !important;
+  --accent:var(--u-accent) !important;
+  --accent2:var(--u-accent2) !important;
+  --accent-glow:rgba(20,138,73,.14) !important;
+  --navy:var(--u-navy) !important;
+  --navy2:var(--u-navy2) !important;
+  --gold:var(--u-gold) !important;
+  --gold-bg:var(--u-gold-bg) !important;
+  --gold-border:var(--u-gold-border) !important;
+  --shadow:var(--u-shadow) !important;
+  --shadow2:var(--u-shadow2) !important;
+  --sans:var(--u-sans) !important;
+  --display:var(--u-display) !important;
+  --mono:var(--u-mono) !important;
+  color:var(--u-text) !important;
+  font-family:var(--u-sans) !important;
   background:
     radial-gradient(circle at top left, rgba(34,197,94,.09), transparent 34%),
     radial-gradient(circle at bottom right, rgba(20,138,73,.07), transparent 28%),
@@ -91,8 +102,7 @@ body.page-checkout::before{
   z-index:0;
   background:
     radial-gradient(circle at 15% 20%, rgba(255,255,255,.85), transparent 22%),
-    radial-gradient(circle at 80% 10%, rgba(255,255,255,.45), transparent 20%),
-    linear-gradient(rgba(255,255,255,.12), rgba(255,255,255,.12));
+    radial-gradient(circle at 80% 10%, rgba(255,255,255,.45), transparent 20%);
 }
 
 body.page-home *,
@@ -110,9 +120,10 @@ body.page-dashboard .pc-name,
 body.page-dashboard .lc-title,
 body.page-checkout .course-name,
 body.page-checkout .summary-header,
-body.page-checkout .proc-title{
-  font-family:var(--display) !important;
-  color:var(--text) !important;
+body.page-checkout .proc-title,
+body.page-checkout .nav-title{
+  font-family:var(--u-display) !important;
+  color:var(--u-text) !important;
 }
 
 body.page-home .hero-h1 .line2,
@@ -120,87 +131,64 @@ body.page-dashboard .hero-title span,
 body.page-home .logo-name em,
 body.page-dashboard .logo-name span,
 body.page-checkout .course-price,
-body.page-checkout .price-row.total .val{
-  color:var(--accent) !important;
+body.page-checkout .price-row.total .val,
+body.page-dashboard .co-row.total .co-val,
+body.page-dashboard .co-success-amount{
+  color:var(--u-accent) !important;
 }
 
-/* ===== Shared glass containers ===== */
-body.page-home nav,
-body.page-dashboard nav,
-body.page-checkout nav,
+/* Shared panels */
+body.page-home .teacher-card,
 body.page-dashboard .nav-inner,
-body.page-home .nav-w,
-body.page-checkout .nav-in,
 body.page-dashboard .profile-card,
 body.page-dashboard .lesson-card,
 body.page-dashboard .stat-pill,
 body.page-dashboard .modal,
 body.page-dashboard .toast,
+body.page-dashboard .rep-item,
+body.page-dashboard .pc-action,
+body.page-dashboard .cart-item-row,
+body.page-dashboard .rep-stat-card,
+body.page-dashboard .co-activate-box,
 body.page-checkout .course-card,
 body.page-checkout .summary-card,
 body.page-checkout .processing-card,
-body.page-home .teacher-card,
 body.page-home .toast{
+  background:var(--u-surface2) !important;
+  border:1px solid var(--u-border2) !important;
+  box-shadow:var(--u-shadow) !important;
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
 }
 
-body.page-home nav,
-body.page-dashboard .nav-inner,
-body.page-checkout nav,
-body.page-home .teacher-card,
-body.page-dashboard .profile-card,
-body.page-dashboard .lesson-card,
-body.page-dashboard .stat-pill,
-body.page-dashboard .modal,
-body.page-dashboard .toast,
-body.page-checkout .course-card,
-body.page-checkout .summary-card,
-body.page-checkout .processing-card,
-body.page-home .toast{
-  background:var(--surface2) !important;
-  border:1px solid var(--border2) !important;
-  box-shadow:var(--shadow) !important;
-}
-
-/* ===== Navigation ===== */
+/* Nav */
 body.page-home nav,
 body.page-checkout nav{
   background:rgba(255,255,255,.72) !important;
-  border-bottom:1px solid var(--border) !important;
+  border-bottom:1px solid var(--u-border) !important;
   box-shadow:0 8px 22px rgba(12,48,28,.05) !important;
 }
 
 body.page-home .nav-w,
 body.page-dashboard .nav-inner,
 body.page-checkout .nav-in{
-  border-radius:20px;
+  border-radius:20px !important;
 }
 
 body.page-home .logo-mark,
 body.page-dashboard .logo-mark,
 body.page-checkout .ld-logo,
-body.page-dashboard .ld-logo,
-body.page-home .logo-mark{
-  background:linear-gradient(135deg,var(--accent),var(--accent3)) !important;
+body.page-dashboard .ld-logo{
+  background:linear-gradient(135deg,var(--u-accent),var(--u-accent3)) !important;
   color:#fff !important;
-  box-shadow:0 10px 24px rgba(20,138,73,.28);
-}
-
-body.page-home .nav-link,
-body.page-dashboard .nav-link,
-body.page-home .nav-btn,
-body.page-dashboard .btn-icon,
-body.page-dashboard .cart-nav-btn,
-body.page-checkout .back-btn{
-  transition:.22s ease;
+  box-shadow:0 10px 24px rgba(20,138,73,.28) !important;
 }
 
 body.page-home .nav-link:hover,
 body.page-dashboard .nav-link:hover,
 body.page-dashboard .nav-link.active,
 body.page-checkout .back-btn:hover{
-  color:var(--accent) !important;
+  color:var(--u-accent) !important;
 }
 
 body.page-dashboard .nav-link.active,
@@ -210,10 +198,10 @@ body.page-dashboard .btn-icon,
 body.page-dashboard .cart-nav-btn,
 body.page-checkout .back-btn{
   background:rgba(255,255,255,.64) !important;
-  border:1px solid var(--border) !important;
+  border:1px solid var(--u-border) !important;
 }
 
-/* ===== Buttons ===== */
+/* Buttons */
 body.page-home .nav-btn,
 body.page-dashboard .btn-primary,
 body.page-dashboard .save-btn,
@@ -224,7 +212,7 @@ body.page-dashboard .co-pay-btn,
 body.page-dashboard .co-go-btn,
 body.page-home .cta-btn,
 body.page-dashboard .lc-btn.enter{
-  background:linear-gradient(135deg,var(--accent),var(--accent3)) !important;
+  background:linear-gradient(135deg,var(--u-accent),var(--u-accent3)) !important;
   color:#fff !important;
   border:none !important;
   box-shadow:0 12px 26px rgba(20,138,73,.24) !important;
@@ -250,8 +238,8 @@ body.page-checkout .coupon-btn,
 body.page-dashboard .co-activate-btn,
 body.page-home .g-btn{
   background:rgba(255,255,255,.72) !important;
-  color:var(--text) !important;
-  border:1px solid var(--border2) !important;
+  color:var(--u-text) !important;
+  border:1px solid var(--u-border2) !important;
   box-shadow:none !important;
 }
 
@@ -260,12 +248,12 @@ body.page-dashboard .lc-btn.cart:hover,
 body.page-checkout .coupon-btn:hover,
 body.page-dashboard .co-activate-btn:hover,
 body.page-home .g-btn:hover{
-  background:var(--surface) !important;
-  border-color:var(--accent) !important;
-  color:var(--accent) !important;
+  background:var(--u-surface) !important;
+  border-color:var(--u-accent) !important;
+  color:var(--u-accent) !important;
 }
 
-/* ===== Cards ===== */
+/* Cards */
 body.page-dashboard .lesson-card,
 body.page-checkout .course-card,
 body.page-checkout .summary-card,
@@ -284,7 +272,7 @@ body.page-checkout .course-card:hover,
 body.page-dashboard .profile-card:hover,
 body.page-home .teacher-card:hover{
   transform:translateY(-4px);
-  box-shadow:var(--shadow2) !important;
+  box-shadow:var(--u-shadow2) !important;
   border-color:rgba(20,138,73,.24) !important;
 }
 
@@ -292,10 +280,10 @@ body.page-dashboard .lc-thumb,
 body.page-checkout .course-img,
 body.page-dashboard .cart-item-img,
 body.page-home .teacher-avatar-wrap img{
-  border-radius:18px;
+  border-radius:18px !important;
 }
 
-/* ===== Pills / Badges ===== */
+/* Pills */
 body.page-home .live-badge,
 body.page-dashboard .count-pill,
 body.page-dashboard .hero-eyebrow,
@@ -303,15 +291,10 @@ body.page-checkout .course-badge,
 body.page-dashboard .lc-tag.grade,
 body.page-dashboard .badge-active,
 body.page-dashboard .filter-btn.active{
-  background:var(--accent-soft) !important;
-  color:var(--accent) !important;
-  border:1px solid var(--border2) !important;
+  background:var(--u-accent-soft) !important;
+  color:var(--u-accent) !important;
+  border:1px solid var(--u-border2) !important;
   box-shadow:none !important;
-}
-
-body.page-dashboard .badge-price,
-body.page-home .live-badge{
-  color:var(--accent) !important;
 }
 
 body.page-dashboard .filter-btn,
@@ -325,23 +308,14 @@ body.page-dashboard .badge-expired{
   border-radius:999px !important;
 }
 
-/* ===== Inputs ===== */
-body.page-dashboard .form-input,
-body.page-checkout .coupon-input,
-body.page-dashboard .co-activate-input,
-body.page-home .inp,
-body.page-home .pass-row,
-body.page-home .eye-btn{
-  border-color:var(--border2) !important;
-}
-
+/* Inputs */
 body.page-dashboard .form-input,
 body.page-checkout .coupon-input,
 body.page-dashboard .co-activate-input,
 body.page-home .inp{
   background:rgba(255,255,255,.72) !important;
-  color:var(--text) !important;
-  border:1.5px solid var(--border2) !important;
+  color:var(--u-text) !important;
+  border:1.5px solid var(--u-border2) !important;
   border-radius:16px !important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45);
 }
@@ -351,11 +325,11 @@ body.page-checkout .coupon-input:focus,
 body.page-dashboard .co-activate-input:focus,
 body.page-home .inp:focus{
   outline:none;
-  border-color:var(--accent) !important;
+  border-color:var(--u-accent) !important;
   box-shadow:0 0 0 4px rgba(20,138,73,.10) !important;
 }
 
-/* ===== Modal / overlay / toast ===== */
+/* Overlay */
 body.page-dashboard .overlay,
 body.page-checkout .processing-overlay{
   background:rgba(10,24,17,.18) !important;
@@ -371,10 +345,10 @@ body.page-checkout .processing-card{
 
 body.page-home .toast,
 body.page-dashboard .toast{
-  border-left:4px solid var(--accent) !important;
+  border-left:4px solid var(--u-accent) !important;
 }
 
-/* ===== Typography polish ===== */
+/* Text polish */
 body.page-home .hero-p,
 body.page-dashboard .hero-sub,
 body.page-checkout .course-desc,
@@ -382,8 +356,12 @@ body.page-dashboard .pc-action-sub,
 body.page-dashboard .toast-msg,
 body.page-home .toast-msg,
 body.page-checkout .proc-sub,
-body.page-dashboard .empty-txt{
-  color:var(--muted) !important;
+body.page-dashboard .empty-txt,
+body.page-dashboard .footer-txt,
+body.page-home .nav-link,
+body.page-checkout .course-feat,
+body.page-checkout .price-row .label{
+  color:var(--u-muted) !important;
 }
 
 body.page-dashboard .stat-num,
@@ -392,20 +370,23 @@ body.page-dashboard .score-val,
 body.page-checkout .success-amount,
 body.page-checkout .course-price,
 body.page-checkout .success-row .sv,
-body.page-dashboard .co-success-amount{
-  font-family:var(--mono) !important;
+body.page-dashboard .co-success-amount,
+body.page-checkout .course-price-old,
+body.page-checkout .cart-item-price,
+body.page-dashboard .co-row .co-val{
+  font-family:var(--u-mono) !important;
 }
 
-/* ===== Footer ===== */
+/* Footer */
 body.page-dashboard .footer,
 body.page-home .footer,
 body.page-dashboard .site-footer,
 body.page-home footer{
   background:rgba(255,255,255,.58) !important;
-  border-top:1px solid var(--border) !important;
+  border-top:1px solid var(--u-border) !important;
 }
 
-/* ===== Mobile polish ===== */
+/* Mobile */
 @media (max-width:900px){
   body.page-home .nav-w,
   body.page-dashboard .nav-inner,
@@ -414,7 +395,7 @@ body.page-home footer{
     margin-right:12px;
     padding-left:14px !important;
     padding-right:14px !important;
-    border-radius:18px;
+    border-radius:18px !important;
   }
 
   body.page-dashboard .profile-card,
@@ -438,7 +419,7 @@ body.page-home footer{
   body.page-checkout .pay-btn,
   body.page-dashboard .co-pay-btn,
   body.page-home .cta-btn{
-    min-height:50px;
-    border-radius:16px !important;
+    width:100%;
+    justify-content:center;
   }
 }
