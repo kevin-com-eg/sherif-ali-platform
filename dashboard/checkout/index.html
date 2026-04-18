@@ -1,845 +1,563 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-s<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MathPro | Checkout</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-:root{
-  --bg:#f0faf4;--bg2:#e8f5ee;--surface:#fff;--surface2:#f7fdf9;
-  --navy:#0d1f14;--navy2:#1a3326;
-  --green:#16a34a;--green2:#15803d;--green3:#22c55e;--green4:#4ade80;
-  --green-light:rgba(22,163,74,.1);--green-light2:rgba(22,163,74,.15);
-  --border:rgba(22,163,74,.18);--border2:rgba(22,163,74,.3);
-  --text:#0d1f14;--muted:#4b7a5e;--muted2:#7aab8a;
-  --red:#dc2626;--red-bg:rgba(220,38,38,.08);
-  --amber:#d97706;--amber-bg:rgba(217,119,6,.1);
-  --blue:#3b82f6;--blue-bg:rgba(59,130,246,.1);
-  --shadow:0 4px 24px rgba(13,31,20,.08);
-  --shadow2:0 8px 40px rgba(13,31,20,.14);
-  --sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
-}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
-.hidden{display:none!important}
-body::before{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(circle at 20% 20%,rgba(34,197,94,.06) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(22,163,74,.04) 0%,transparent 50%);pointer-events:none}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#f6f1e8;
+      --card:#fffaf3;
+      --card2:#efe7d9;
+      --text:#2c2418;
+      --muted:#7f715d;
+      --border:rgba(44,36,24,.12);
+      --accent:#2d5a3d;
+      --accent2:#3a7550;
+      --red:#a33b2e;
+      --redbg:rgba(163,59,46,.08);
+      --amber:#c4654a;
+      --amberbg:rgba(196,101,74,.08);
+      --radius:14px;
+      --shadow:0 10px 30px rgba(44,36,24,.08);
+    }
 
-#loader{position:fixed;inset:0;z-index:9999;background:rgba(240,250,244,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .3s}
-.ld-logo{width:56px;height:56px;background:linear-gradient(135deg,var(--green),var(--green3));border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:1rem;color:#fff;box-shadow:0 8px 24px rgba(22,163,74,.35);animation:bob 2s ease infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.ld-bar{width:120px;height:3px;background:var(--border);border-radius:3px;overflow:hidden}
-.ld-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green3));border-radius:3px;animation:slide 1.2s ease infinite}
-@keyframes slide{0%{width:0;margin-left:0}50%{width:80%}100%{width:0;margin-left:100%}}
-.ld-txt{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Cairo',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
 
-nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);box-shadow:0 2px 12px rgba(13,31,20,.06)}
-.nav-in{max-width:900px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between}
-.back-btn{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;font-family:var(--sans)}
-.back-btn:hover{border-color:var(--green);color:var(--green)}
-.nav-title{font-family:var(--display);font-weight:800;font-size:.95rem;color:var(--text)}
+    .wrap{
+      max-width:1100px;
+      margin:auto;
+      padding:28px 18px 60px;
+    }
 
-main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:28px 20px 80px}
-.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:24px;
+    }
 
-.course-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
-.course-img{width:100%;height:200px;object-fit:cover;background:var(--bg2);border-bottom:1px solid var(--border)}
-.course-body{padding:22px}
-.course-name{font-family:var(--display);font-size:1.3rem;font-weight:800;margin-bottom:6px}
-.course-desc{font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:16px}
-.course-price-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.course-price{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--green)}
-.course-price-old{font-family:var(--mono);font-size:.95rem;color:var(--muted2);text-decoration:line-through}
-.course-badge{background:var(--green-light);border:1px solid var(--border2);color:var(--green);font-family:var(--mono);font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:8px}
-.course-features{margin-top:16px;display:flex;flex-direction:column;gap:8px}
-.course-feat{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted)}
-.course-feat svg{flex-shrink:0;color:var(--green)}
+    .brand{
+      font-size:1.4rem;
+      font-weight:800;
+    }
 
-.summary-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:var(--shadow2);position:sticky;top:80px}
-.summary-header{padding:18px 22px;border-bottom:1px solid var(--border);font-family:var(--display);font-weight:800;font-size:.95rem;background:var(--bg2)}
-.summary-body{padding:22px}
+    .back-btn{
+      text-decoration:none;
+      color:#fff;
+      background:var(--accent);
+      padding:10px 16px;
+      border-radius:10px;
+      font-weight:700;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
 
-.cart-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
-.cart-item:last-of-type{border-bottom:none}
-.cart-item-icon{width:44px;height:44px;background:var(--green-light);border:1px solid var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
-.cart-item-info{flex:1;min-width:0}
-.cart-item-name{font-weight:700;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cart-item-type{font-size:.72rem;color:var(--muted);font-family:var(--mono)}
-.cart-item-price{font-family:var(--mono);font-weight:700;font-size:.88rem;color:var(--text);white-space:nowrap}
+    .layout{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:20px;
+    }
 
-.coupon-section{margin-top:16px;padding-top:16px;border-top:1.5px solid var(--border)}
-.coupon-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono);margin-bottom:10px}
-.coupon-row{display:flex;gap:8px}
-.coupon-input{flex:1;background:var(--bg2);border:2px solid var(--border);color:var(--text);padding:11px 14px;border-radius:10px;font-family:var(--mono);font-size:.82rem;letter-spacing:1.5px;text-align:center;outline:none;transition:all .25s}
-.coupon-input:focus{border-color:var(--green);background:var(--surface);box-shadow:0 0 0 3px rgba(22,163,74,.1)}
-.coupon-input::placeholder{color:var(--muted2);letter-spacing:.5px;font-size:.78rem}
-.coupon-input.error{border-color:var(--red);background:var(--red-bg);animation:shake .4s ease}
-.coupon-input.success{border-color:var(--green);background:var(--green-light)}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
-.coupon-btn{padding:11px 18px;border-radius:10px;border:none;background:var(--navy);color:#fff;font-family:var(--sans);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
-.coupon-btn:hover{background:var(--navy2);transform:translateY(-1px)}
-.coupon-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.coupon-btn.remove-mode{background:var(--red-bg);color:var(--red);border:1px solid rgba(220,38,38,.2)}
-.coupon-msg{font-size:.75rem;margin-top:8px;font-weight:600;min-height:18px;transition:all .2s}
-.coupon-msg.ok{color:var(--green)}
-.coupon-msg.err{color:var(--red)}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
 
-.price-breakdown{margin-top:18px;padding-top:18px;border-top:1.5px solid var(--border)}
-.price-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.88rem}
-.price-row .label{color:var(--muted)}
-.price-row .val{font-family:var(--mono);font-weight:700}
-.price-row.discount .val{color:var(--green)}
-.price-row.total{border-top:2px solid var(--border);margin-top:10px;padding-top:14px;font-size:1.05rem}
-.price-row.total .val{color:var(--green);font-size:1.2rem}
+    .title{
+      font-size:1.2rem;
+      font-weight:800;
+      margin-bottom:16px;
+    }
 
-.pay-section{margin-top:20px}
-.pay-btn{width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;font-family:var(--sans);font-size:1rem;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(22,163,74,.35);display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px}
-.pay-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(22,163,74,.45)}
-.pay-btn:active{transform:translateY(0)}
-.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-.pay-note{font-size:.7rem;color:var(--muted2);text-align:center;margin-top:10px;font-family:var(--mono)}
-.secure-badge{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:.72rem;color:var(--muted);font-family:var(--mono)}
-.secure-badge svg{flex-shrink:0}
+    .cart-item{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:var(--card2);
+      margin-bottom:12px;
+    }
 
-.processing-overlay{position:fixed;inset:0;z-index:500;background:rgba(240,250,244,.95);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px}
-.processing-card{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:48px 40px;text-align:center;max-width:420px;width:100%;box-shadow:var(--shadow2);animation:riseIn .4s ease}
-@keyframes riseIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.proc-spinner{width:60px;height:60px;margin:0 auto 20px;border:4px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.proc-title{font-family:var(--display);font-size:1.3rem;font-weight:800;margin-bottom:8px}
-.proc-sub{font-size:.85rem;color:var(--muted);line-height:1.6}
-.proc-order{font-family:var(--mono);font-size:.72rem;color:var(--muted2);margin-top:16px;background:var(--bg2);padding:8px 14px;border-radius:8px;display:inline-block}
+    .cart-item img{
+      width:74px;
+      height:54px;
+      object-fit:cover;
+      border-radius:10px;
+      background:#ddd;
+    }
 
-.success-icon{width:80px;height:80px;margin:0 auto 18px;background:var(--green-light);border:2px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
-@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
-.success-amount{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--green);margin:12px 0 4px}
-.success-label{font-size:.82rem;color:var(--muted)}
-.success-details{margin-top:20px;text-align:right}
-.success-row{display:flex;justify-content:space-between;padding:7px 0;font-size:.82rem;border-bottom:1px solid var(--border)}
-.success-row:last-child{border-bottom:none}
-.success-row .sl{color:var(--muted)}
-.success-row .sv{font-family:var(--mono);font-weight:700}
-.go-lesson-btn{display:inline-flex;align-items:center;gap:8px;margin-top:24px;background:var(--green);color:#fff;border:none;padding:14px 36px;border-radius:14px;font-family:var(--sans);font-size:.95rem;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(22,163,74,.35)}
-.go-lesson-btn:hover{background:var(--green2);transform:translateY(-2px)}
+    .cart-info{
+      flex:1;
+    }
 
-.error-icon{width:70px;height:70px;margin:0 auto 16px;background:var(--red-bg);border:2px solid rgba(220,38,38,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2rem}
-.retry-btn{display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:var(--navy);color:#fff;border:none;padding:13px 30px;border-radius:12px;font-family:var(--sans);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .25s}
-.retry-btn:hover{background:var(--navy2);transform:translateY(-1px)}
+    .cart-name{
+      font-weight:800;
+      margin-bottom:4px;
+    }
 
-@media(max-width:780px){
-  .checkout-grid{grid-template-columns:1fr}
-  .summary-card{position:static}
-  .course-img{height:160px}
-  .processing-card{padding:36px 24px}
-}
-</style>
+    .cart-sub{
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .cart-price{
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .remove-btn{
+      border:none;
+      background:var(--redbg);
+      color:var(--red);
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .total{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid var(--border);
+      font-size:1.15rem;
+      font-weight:800;
+    }
+
+    .methods{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .method{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:14px;
+      background:var(--card2);
+      cursor:pointer;
+    }
+
+    .method input{
+      margin-left:8px;
+    }
+
+    .method-title{
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .method-sub{
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .notice{
+      background:var(--amberbg);
+      color:var(--amber);
+      border:1px solid rgba(196,101,74,.18);
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+      margin-top:16px;
+    }
+
+    .box{
+      margin-top:16px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:16px;
+      background:var(--card2);
+    }
+
+    .label{
+      font-size:.95rem;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    .input,.file{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px 14px;
+      font-family:inherit;
+      font-size:1rem;
+      background:#fff;
+      margin-bottom:12px;
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:12px;
+      padding:14px;
+      font-family:inherit;
+      font-size:1rem;
+      font-weight:800;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+    }
+
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.7;
+    }
+
+    .empty{
+      text-align:center;
+      padding:40px 16px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .success{
+      margin-top:14px;
+      background:rgba(45,90,61,.08);
+      color:var(--accent);
+      border:1px solid rgba(45,90,61,.18);
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+    }
+
+    .error{
+      margin-top:14px;
+      background:var(--redbg);
+      color:var(--red);
+      border:1px solid rgba(163,59,46,.16);
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+    }
+
+    @media(max-width:900px){
+      .layout{grid-template-columns:1fr}
+      .topbar{flex-direction:column;align-items:flex-start}
+    }
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">Checkout</div>
+      <a class="back-btn" href="/dashboard">رجوع للدashboard</a>
+    </div>
 
-<div id="loader">
-  <div class="ld-logo">MP</div>
-  <div class="ld-bar"><div class="ld-fill"></div></div>
-  <div class="ld-txt" id="ldTxt">جاري التحميل…</div>
-</div>
+    <div class="layout">
+      <div class="card">
+        <div class="title">الكورسات المختارة</div>
+        <div id="cartList"></div>
+      </div>
 
-<nav>
-  <div class="nav-in">
-    <button class="back-btn" onclick="history.back()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      رجوع
-    </button>
-    <span class="nav-title">🛒 إتمام الشراء</span>
-  </div>
-</nav>
+      <div class="card">
+        <div class="title">الدفع</div>
 
-<main>
-  <div class="checkout-grid">
-    <div><div class="course-card" id="courseCard"></div></div>
-    <div>
-      <div class="summary-card">
-        <div class="summary-header">ملخص الطلب</div>
-        <div class="summary-body">
-          <div class="cart-item" id="cartItem"></div>
-          <div class="coupon-section">
-            <div class="coupon-label">كوبون خصم</div>
-            <div class="coupon-row">
-              <input id="couponInput" class="coupon-input" placeholder="أدخل كود الخصم" autocomplete="off" spellcheck="false">
-              <button id="couponBtn" class="coupon-btn" onclick="applyCoupon()">تطبيق</button>
+        <div class="row">
+          <span>عدد الكورسات</span>
+          <strong id="itemsCount">0</strong>
+        </div>
+
+        <div class="row total">
+          <span>الإجمالي</span>
+          <strong id="totalPrice">0 ج.م</strong>
+        </div>
+
+        <div class="methods">
+          <label class="method">
+            <div class="method-title">
+              <input type="radio" name="paymentMethod" value="code" checked>
+              كود تفعيل
             </div>
-            <div id="couponMsg" class="coupon-msg"></div>
-          </div>
-          <div class="price-breakdown" id="priceBreakdown"></div>
-          <div class="pay-section">
-            <button id="payBtn" class="pay-btn" onclick="startPayment()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-              تأكيد الدفع
-            </button>
-            <div class="pay-note">الدفع آمن ومشفر بالكامل</div>
-            <div class="secure-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              SSL Encrypted
+            <div class="method-sub">ادخل كود التفعيل مباشرة</div>
+          </label>
+
+          <label class="method">
+            <div class="method-title">
+              <input type="radio" name="paymentMethod" value="vodafone_cash">
+              Vodafone Cash
             </div>
+            <div class="method-sub">01064233004</div>
+          </label>
+
+          <label class="method">
+            <div class="method-title">
+              <input type="radio" name="paymentMethod" value="instapay">
+              InstaPay
+            </div>
+            <div class="method-sub">ارفع صورة التحويل بعد الدفع</div>
+          </label>
+        </div>
+
+        <div class="notice">دفع الفيزا غير شغال حالياً</div>
+
+        <div id="codeBox" class="box">
+          <div class="label">أدخل كود التفعيل</div>
+          <input id="codeInput" class="input" placeholder="اكتب الكود هنا">
+          <button id="codeBtn" class="btn">تفعيل الكود</button>
+          <div class="muted">لو الكود صحيح سيتم تفعيل الكورس مباشرة.</div>
+          <div id="codeMsg"></div>
+        </div>
+
+        <div id="manualBox" class="box" style="display:none">
+          <div class="label">رفع صورة الدفع</div>
+          <div class="muted" style="margin-bottom:10px">
+            حوّل على Vodafone Cash أو InstaPay ثم ارفع صورة التحويل.
           </div>
+          <input id="paymentFile" type="file" accept="image/*" class="file">
+          <button id="manualBtn" class="btn">إرسال صورة الدفع</button>
+          <div id="manualMsg"></div>
         </div>
       </div>
     </div>
   </div>
-</main>
 
-<div id="processingOverlay" class="processing-overlay hidden">
-  <div class="processing-card" id="processingCard"></div>
-</div>
+  <script>
+    const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
+    const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
+    const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
-<script>
-(function(){
-  document.addEventListener('contextmenu',e=>e.preventDefault());
-  document.addEventListener('copy',e=>{e.clipboardData.setData('text/plain','⚠️');e.preventDefault();});
-  window.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){e.preventDefault();return false;}});
-})();
+    let currentUser=null;
+    let cart=[];
+    let lessonsMap={};
 
-const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
-const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-
-let currentUser=null, lessonData=null, lessonId=null;
-let appliedCoupon=null, orderId=null, pollInterval=null;
-const CURRENCY='ج.م';
-
-function showLoader(t){document.getElementById('ldTxt').textContent=t;document.getElementById('loader').style.display='flex';}
-function hideLoader(){const l=document.getElementById('loader');l.style.opacity='0';setTimeout(()=>l.style.display='none',300);}
-
-async function init(){
-  lessonId=new URLSearchParams(location.search).get('lesson_id');
-  if(!lessonId){hideLoader();document.querySelector('main').innerHTML='<div style="text-align:center;padding:80px 20px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:12px">⚠️</div><div style="font-size:1.1rem;font-weight:700">لم يتم تحديد كورس</div></div>';return;}
-  const{data:{session}}=await db.auth.getSession();
-  if(!session){hideLoader();window.location.href='/home';return;}
-  currentUser=session.user;
-  try{
-    const{data:snap}=await db.from('lessons').select('*').eq('id',lessonId).single();
-    if(!snap) throw new Error('الكورس غير موجود');
-    lessonData=snap;
-    renderCourseCard();renderCartItem();renderPrices();hideLoader();
-  }catch(e){
-    hideLoader();
-    document.querySelector('main').innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--red)"><div style="font-size:3rem;margin-bottom:12px">❌</div><div style="font-size:1.1rem;font-weight:700">حدث خطأ</div><div style="font-size:.82rem;margin-top:6px">${e.message}</div></div>`;
-  }
-}
-
-function renderCourseCard(){
-  const p=lessonData.price||0;
-  const hasDiscount=appliedCoupon&&appliedCoupon.discount>0;
-  const finalPrice=hasDiscount?p-appliedCoupon.discount:p;
-  const qCount=lessonData.questions?lessonData.questions.length:0;
-  const vCount=lessonData.videos?lessonData.videos.length:0;
-
-  document.getElementById('courseCard').innerHTML=`
-    ${lessonData.image?`<img src="${lessonData.image}" class="course-img" alt="">`:`<div class="course-img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--bg2)">📚</div>`}
-    <div class="course-body">
-      <div class="course-name">${lessonData.name||'كورس'}</div>
-      <div class="course-desc">${lessonData.description||'وصف الكورس غير متاح'}</div>
-      <div class="course-features">
-        ${qCount>0?`<div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${qCount} سؤال امتحان</div>`:''}
-        ${vCount>0?`<div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${vCount} فيديو شرح</div>`:''}
-        <div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> وصول مدى الحياة</div>
-        <div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ملف PDF للمراجعة</div>
-      </div>
-      <div class="course-price-row" style="margin-top:18px">
-        <span class="course-price">${finalPrice} ${CURRENCY}</span>
-        ${hasDiscount?`<span class="course-price-old">${p} ${CURRENCY}</span>`:''}
-        ${hasDiscount?`<span class="course-badge">-${appliedCoupon.discountPercent||0}%</span>`:''}
-      </div>
-    </div>`;
-}
-
-function renderCartItem(){
-  document.getElementById('cartItem').innerHTML=`
-    <div class="cart-item-icon">📚</div>
-    <div class="cart-item-info">
-      <div class="cart-item-name">${lessonData.name||'كورس'}</div>
-      <div class="cart-item-type">دورة تعليمية × 1</div>
-    </div>
-    <div class="cart-item-price">${lessonData.price||0} ${CURRENCY}</div>`;
-}
-
-function renderPrices(){
-  const p=lessonData.price||0;
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const final=Math.max(0,p-disc);
-  let html=`<div class="price-row"><span class="label">المجموع الفرعي</span><span class="val">${p} ${CURRENCY}</span></div>`;
-  if(disc>0){
-    html+=`<div class="price-row discount"><span class="label">الخصم ${appliedCoupon.discountPercent?`(${appliedCoupon.discountPercent}%)`:''}</span><span class="val">- ${disc} ${CURRENCY}</span></div>`;
-  }
-  html+=`<div class="price-row total"><span class="label">الإجمالي</span><span class="val">${final} ${CURRENCY}</span></div>`;
-  document.getElementById('priceBreakdown').innerHTML=html;
-}
-
-/* ══════════ COUPON ══════════ */
-async function applyCoupon(){
-  const input=document.getElementById('couponInput');
-  const btn=document.getElementById('couponBtn');
-  const msg=document.getElementById('couponMsg');
-  const code=input.value.trim().toUpperCase();
-
-  if(!code){input.classList.add('error');msg.className='coupon-msg err';msg.textContent='أدخل كود الخصم';return;}
-
-  if(appliedCoupon){
-    appliedCoupon=null;
-    input.classList.remove('success','error');input.disabled=false;
-    msg.className='coupon-msg';msg.textContent='';
-    btn.textContent='تطبيق';btn.classList.remove('remove-mode');
-    renderCourseCard();renderPrices();return;
-  }
-
-  btn.disabled=true;btn.textContent='جاري التحقق…';
-  input.classList.remove('error','success');
-  msg.className='coupon-msg';msg.textContent='';
-
-  try{
-    const{data:coupon}=await db.from('coupons').select('*').eq('code',code).single();
-    if(!coupon) throw new Error('كوبون غير صالح');
-    if(!coupon.is_active) throw new Error('هذا الكوبون غير مفعل');
-    if(coupon.expires_at&&new Date(coupon.expires_at)<new Date()) throw new Error('هذا الكوبون منتهي الصلاحية');
-    if(coupon.max_uses!==null&&coupon.used_count>=coupon.max_uses) throw new Error('تم استنفاد عدد مرات استخدام هذا الكوبون');
-    if(coupon.lesson_id&&coupon.lesson_id!==lessonId) throw new Error('هذا الكوبون لا ينطبق على هذا الكورس');
-
-    const price=lessonData.price||0;
-    let discount=0,discountPercent=0;
-    if(coupon.discount_percent>0){discountPercent=coupon.discount_percent;discount=Math.round(price*discountPercent/100*100)/100;}
-    if(coupon.discount_amount>0) discount+=coupon.discount_amount;
-    discount=Math.min(discount,price);
-    if(discount<=0) throw new Error('هذا الكوبون لا يوفر خصم على هذا الكورس');
-
-    appliedCoupon={id:coupon.id,code,discount,discountPercent};
-    input.classList.add('success');input.disabled=true;
-    msg.className='coupon-msg ok';
-    msg.textContent=`✓ تم تطبيق الكوبون — وفرت ${discount} ${CURRENCY}`;
-    btn.textContent='إزالة';btn.classList.add('remove-mode');
-    renderCourseCard();renderPrices();
-  }catch(e){
-    input.classList.add('error');
-    msg.className='coupon-msg err';msg.textContent='✗ '+e.message;
-    btn.textContent='تطبيق';
-  }
-  btn.disabled=false;
-}
-
-document.getElementById('couponInput').addEventListener('keydown',e=>{if(e.key==='Enter') applyCoupon();});
-
-/* ══════════ PAYMENT ══════════ */
-async function startPayment(){
-  const price=lessonData.price||0;
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const finalAmount=Math.max(0,price-disc);
-
-  if(finalAmount<=0){await completePurchase(null);return;}
-
-  const payBtn=document.getElementById('payBtn');
-  payBtn.disabled=true;
-  payBtn.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></div> جاري إنشاء الطلب…';
-
-  try{
-    const orderData={
-      email:currentUser.email,lesson_id:lessonId,amount:price,
-      discount_amount:disc,coupon_code:appliedCoupon?appliedCoupon.code:null,
-      final_amount:finalAmount,status:'pending',payment_method:'card'
-    };
-    const{data:order}=await db.from('orders').insert([orderData]).select().single();
-    if(!order) throw new Error('فشل إنشاء الطلب');
-    orderId=order.id;
-
-    showProcessing(order.id,finalAmount);
-
-    if(appliedCoupon){
-      await db.from('coupons').update({used_count:db.raw('used_count + 1')}).eq('id',appliedCoupon.id);
+    function setMsg(id,type,text){
+      const el=document.getElementById(id);
+      el.className=type;
+      el.textContent=text;
     }
 
-    await initPayment(order.id,finalAmount);
-    startPolling(order.id);
-  }catch(e){
-    payBtn.disabled=false;
-    payBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> تأكيد الدفع';
-    alert('خطأ: '+e.message);
-  }
-}
-
-async function initPayment(orderId,amount){
-  /*
-  ══════════════════════════════════════════
-  📌 ضع كود بوابة الدفع هنا
-  ══════════════════════════════════════════
-
-  === مثال Paymob ===
-  const res = await fetch('https://accept.paymob.com/api/v1/intention/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      amount: amount*100, currency:'EGP',
-      payment_methods:['card','wallet'],
-      items:[{name:lessonData.name,amount:amount*100,quantity:1}],
-      billing_data:{first_name:currentUser.user_metadata?.name||'',last_name:'',email:currentUser.email,phone:''},
-      extras:{order_id:orderId}
-    })
-  });
-  const data=await res.json();
-  await db.from('orders').update({payment_ref:data.id}).eq('id',orderId);
-  window.location.href=`https://accept.paymob.com/api/v1/intention/${data.id}/payment`;
-
-  ══════════════════════════════════════════
-  */
-
-  // 🧪 وضع اختبار — احذف ده في الإنتاج
-  console.log('🧪 TEST: Auto-pay in 5s');
-  setTimeout(async()=>{
-    try{
-      await db.from('orders').update({status:'paid',paid_at:new Date().toISOString(),payment_ref:'test_'+Date.now()}).eq('id',orderId);
-    }catch(e){console.error(e);}
-  },5000);
-}
-
-function startPolling(oid){
-  let attempts=0;
-  pollInterval=setInterval(async()=>{
-    attempts++;
-    try{
-      const{data:order}=await db.from('orders').select('status,paid_at').eq('id',oid).single();
-      if(!order){if(attempts>=100){clearInterval(pollInterval);paymentFailed('انتهت مهلة التحقق');}return;}
-      if(order.status==='paid'){clearInterval(pollInterval);await completePurchase(order);return;}
-      if(order.status==='failed'){clearInterval(pollInterval);paymentFailed('فشلت عملية الدفع');return;}
-      if(attempts>=100){clearInterval(pollInterval);paymentFailed('انتهت مهلة التحقق');}
-    }catch(e){if(attempts>=100){clearInterval(pollInterval);paymentFailed('خطأ في التحقق');}}
-  },3000);
-}
-
-async function completePurchase(order){
-  try{
-    const validityDays=lessonData.validitydays||90;
-    const expiry=Date.now()+validityDays*24*60*60*1000;
-    const accessCode='AUTO_'+Date.now()+'_'+Math.random().toString(36).substring(2,8);
-    await db.from('codes').insert([{code:accessCode,used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:expiry}]);
-    const{data:u}=await db.from('users').select('studentid').eq('id',currentUser.id).single().catch(()=>({data:null}));
-    const sid=u?.studentid||currentUser.id.substring(0,6).toUpperCase();
-    localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
-  }catch(e){console.error(e);}
-  showSuccess(order);
-}
-
-function showProcessing(oid,amount){
-  document.getElementById('processingOverlay').classList.remove('hidden');
-  document.getElementById('processingCard').innerHTML=`
-    <div class="proc-spinner"></div>
-    <div class="proc-title">جاري معالجة الدفع…</div>
-    <div class="proc-sub">يرجى الانتظار ولا تغلق هذه الصفحة.<br>سيتم التحقق تلقائيًا من حالة الدفع.</div>
-    <div class="proc-order">طلب # ${oid.substring(0,8)} — ${amount} ${CURRENCY}</div>`;
-}
-
-function showSuccess(order){
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const final=order?order.final_amount:(lessonData.price||0)-disc;
-  document.getElementById('processingCard').innerHTML=`
-    <div class="success-icon">✓</div>
-    <div class="proc-title" style="color:var(--green)">تم الدفع بنجاح!</div>
-    <div class="success-amount">${final} ${CURRENCY}</div>
-    <div class="success-label">المبلغ المدفوع</div>
-    <div class="success-details">
-      <div class="success-row"><span class="sl">رقم الطلب</span><span class="sv"># ${(order?.id||'').substring(0,8)}</span></div>
-      <div class="success-row"><span class="sl">الكورس</span><span class="sv">${lessonData.name||'—'}</span></div>
-      ${disc>0?`<div class="success-row"><span class="sl">الخصم</span><span class="sv" style="color:var(--green)">- ${disc} ${CURRENCY}</span></div>`:''}
-      <div class="success-row"><span class="sl">الحالة</span><span class="sv" style="color:var(--green)">مدفوع ✓</span></div>
-    </div>
-    <button class="go-lesson-btn" onclick="window.location.href='/lesson?id=${lessonId}'">
-      ابدأ الكورس الآن
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>`;
-}
-
-function paymentFailed(reason){
-  document.getElementById('processingCard').innerHTML=`
-    <div class="error-icon">✗</div>
-    <div class="proc-title" style="color:var(--red)">فشلت عملية الدفع</div>
-    <div class="proc-sub">${reason}<br>يمكنك المحاولة مرة أخرى.</div>
-    <button class="retry-btn" onclick="retryPayment()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      إعادة المحاولة
-    </button>
-    <button style="display:block;margin:10px auto 0;background:none;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:var(--sans);font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer" onclick="cancelPayment()">إلغاء</button>`;
-}
-
-function retryPayment(){
-  document.getElementById('processingOverlay').classList.add('hidden');
-  const payBtn=document.getElementById('payBtn');
-  payBtn.disabled=false;
-  payBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> تأكيد الدفع';
-}
-
-function cancelPayment(){
-  if(pollInterval) clearInterval(pollInterval);
-  document.getElementById('processingOverlay').classList.add('hidden');
-  history.back();
-}
-
-init();
-</script>
-</body>
-</html>
-cale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MathPro | Checkout</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="../assets/css/shared.css">
-</head>
-<body class="page-checkout">
-
-<div id="loader">
-  <div class="ld-logo">MP</div>
-  <div class="ld-bar"><div class="ld-fill"></div></div>
-  <div class="ld-txt" id="ldTxt">جاري التحميل…</div>
-</div>
-
-<nav>
-  <div class="nav-in">
-    <button class="back-btn" onclick="history.back()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      رجوع
-    </button>
-    <span class="nav-title">🛒 إتمام الشراء</span>
-  </div>
-</nav>
-
-<main>
-  <div class="checkout-grid">
-    <div><div class="course-card" id="courseCard"></div></div>
-    <div>
-      <div class="summary-card">
-        <div class="summary-header">ملخص الطلب</div>
-        <div class="summary-body">
-          <div class="cart-item" id="cartItem"></div>
-          <div class="coupon-section">
-            <div class="coupon-label">كوبون خصم</div>
-            <div class="coupon-row">
-              <input id="couponInput" class="coupon-input" placeholder="أدخل كود الخصم" autocomplete="off" spellcheck="false">
-              <button id="couponBtn" class="coupon-btn" onclick="applyCoupon()">تطبيق</button>
-            </div>
-            <div id="couponMsg" class="coupon-msg"></div>
-          </div>
-          <div class="price-breakdown" id="priceBreakdown"></div>
-          <div class="pay-section">
-            <button id="payBtn" class="pay-btn" onclick="startPayment()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-              تأكيد الدفع
-            </button>
-            <div class="pay-note">الدفع آمن ومشفر بالكامل</div>
-            <div class="secure-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              SSL Encrypted
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
-
-<div id="processingOverlay" class="processing-overlay hidden">
-  <div class="processing-card" id="processingCard"></div>
-</div>
-
-<script>
-(function(){
-  document.addEventListener('contextmenu',e=>e.preventDefault());
-  document.addEventListener('copy',e=>{e.clipboardData.setData('text/plain','⚠️');e.preventDefault();});
-  window.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){e.preventDefault();return false;}});
-})();
-
-const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
-const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
-
-let currentUser=null, lessonData=null, lessonId=null;
-let appliedCoupon=null, orderId=null, pollInterval=null;
-const CURRENCY='ج.م';
-
-function showLoader(t){document.getElementById('ldTxt').textContent=t;document.getElementById('loader').style.display='flex';}
-function hideLoader(){const l=document.getElementById('loader');l.style.opacity='0';setTimeout(()=>l.style.display='none',300);}
-
-async function init(){
-  lessonId=new URLSearchParams(location.search).get('lesson_id');
-  if(!lessonId){hideLoader();document.querySelector('main').innerHTML='<div style="text-align:center;padding:80px 20px;color:var(--muted)"><div style="font-size:3rem;margin-bottom:12px">⚠️</div><div style="font-size:1.1rem;font-weight:700">لم يتم تحديد كورس</div></div>';return;}
-  const{data:{session}}=await db.auth.getSession();
-  if(!session){hideLoader();window.location.href='/home';return;}
-  currentUser=session.user;
-  try{
-    const{data:snap}=await db.from('lessons').select('*').eq('id',lessonId).single();
-    if(!snap) throw new Error('الكورس غير موجود');
-    lessonData=snap;
-    renderCourseCard();renderCartItem();renderPrices();hideLoader();
-  }catch(e){
-    hideLoader();
-    document.querySelector('main').innerHTML=`<div style="text-align:center;padding:80px 20px;color:var(--red)"><div style="font-size:3rem;margin-bottom:12px">❌</div><div style="font-size:1.1rem;font-weight:700">حدث خطأ</div><div style="font-size:.82rem;margin-top:6px">${e.message}</div></div>`;
-  }
-}
-
-function renderCourseCard(){
-  const p=lessonData.price||0;
-  const hasDiscount=appliedCoupon&&appliedCoupon.discount>0;
-  const finalPrice=hasDiscount?p-appliedCoupon.discount:p;
-  const qCount=lessonData.questions?lessonData.questions.length:0;
-  const vCount=lessonData.videos?lessonData.videos.length:0;
-
-  document.getElementById('courseCard').innerHTML=`
-    ${lessonData.image?`<img src="${lessonData.image}" class="course-img" alt="">`:`<div class="course-img" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--bg2)">📚</div>`}
-    <div class="course-body">
-      <div class="course-name">${lessonData.name||'كورس'}</div>
-      <div class="course-desc">${lessonData.description||'وصف الكورس غير متاح'}</div>
-      <div class="course-features">
-        ${qCount>0?`<div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${qCount} سؤال امتحان</div>`:''}
-        ${vCount>0?`<div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${vCount} فيديو شرح</div>`:''}
-        <div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> وصول مدى الحياة</div>
-        <div class="course-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ملف PDF للمراجعة</div>
-      </div>
-      <div class="course-price-row" style="margin-top:18px">
-        <span class="course-price">${finalPrice} ${CURRENCY}</span>
-        ${hasDiscount?`<span class="course-price-old">${p} ${CURRENCY}</span>`:''}
-        ${hasDiscount?`<span class="course-badge">-${appliedCoupon.discountPercent||0}%</span>`:''}
-      </div>
-    </div>`;
-}
-
-function renderCartItem(){
-  document.getElementById('cartItem').innerHTML=`
-    <div class="cart-item-icon">📚</div>
-    <div class="cart-item-info">
-      <div class="cart-item-name">${lessonData.name||'كورس'}</div>
-      <div class="cart-item-type">دورة تعليمية × 1</div>
-    </div>
-    <div class="cart-item-price">${lessonData.price||0} ${CURRENCY}</div>`;
-}
-
-function renderPrices(){
-  const p=lessonData.price||0;
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const final=Math.max(0,p-disc);
-  let html=`<div class="price-row"><span class="label">المجموع الفرعي</span><span class="val">${p} ${CURRENCY}</span></div>`;
-  if(disc>0){
-    html+=`<div class="price-row discount"><span class="label">الخصم ${appliedCoupon.discountPercent?`(${appliedCoupon.discountPercent}%)`:''}</span><span class="val">- ${disc} ${CURRENCY}</span></div>`;
-  }
-  html+=`<div class="price-row total"><span class="label">الإجمالي</span><span class="val">${final} ${CURRENCY}</span></div>`;
-  document.getElementById('priceBreakdown').innerHTML=html;
-}
-
-/* ══════════ COUPON ══════════ */
-async function applyCoupon(){
-  const input=document.getElementById('couponInput');
-  const btn=document.getElementById('couponBtn');
-  const msg=document.getElementById('couponMsg');
-  const code=input.value.trim().toUpperCase();
-
-  if(!code){input.classList.add('error');msg.className='coupon-msg err';msg.textContent='أدخل كود الخصم';return;}
-
-  if(appliedCoupon){
-    appliedCoupon=null;
-    input.classList.remove('success','error');input.disabled=false;
-    msg.className='coupon-msg';msg.textContent='';
-    btn.textContent='تطبيق';btn.classList.remove('remove-mode');
-    renderCourseCard();renderPrices();return;
-  }
-
-  btn.disabled=true;btn.textContent='جاري التحقق…';
-  input.classList.remove('error','success');
-  msg.className='coupon-msg';msg.textContent='';
-
-  try{
-    const{data:coupon}=await db.from('coupons').select('*').eq('code',code).single();
-    if(!coupon) throw new Error('كوبون غير صالح');
-    if(!coupon.is_active) throw new Error('هذا الكوبون غير مفعل');
-    if(coupon.expires_at&&new Date(coupon.expires_at)<new Date()) throw new Error('هذا الكوبون منتهي الصلاحية');
-    if(coupon.max_uses!==null&&coupon.used_count>=coupon.max_uses) throw new Error('تم استنفاد عدد مرات استخدام هذا الكوبون');
-    if(coupon.lesson_id&&coupon.lesson_id!==lessonId) throw new Error('هذا الكوبون لا ينطبق على هذا الكورس');
-
-    const price=lessonData.price||0;
-    let discount=0,discountPercent=0;
-    if(coupon.discount_percent>0){discountPercent=coupon.discount_percent;discount=Math.round(price*discountPercent/100*100)/100;}
-    if(coupon.discount_amount>0) discount+=coupon.discount_amount;
-    discount=Math.min(discount,price);
-    if(discount<=0) throw new Error('هذا الكوبون لا يوفر خصم على هذا الكورس');
-
-    appliedCoupon={id:coupon.id,code,discount,discountPercent};
-    input.classList.add('success');input.disabled=true;
-    msg.className='coupon-msg ok';
-    msg.textContent=`✓ تم تطبيق الكوبون — وفرت ${discount} ${CURRENCY}`;
-    btn.textContent='إزالة';btn.classList.add('remove-mode');
-    renderCourseCard();renderPrices();
-  }catch(e){
-    input.classList.add('error');
-    msg.className='coupon-msg err';msg.textContent='✗ '+e.message;
-    btn.textContent='تطبيق';
-  }
-  btn.disabled=false;
-}
-
-document.getElementById('couponInput').addEventListener('keydown',e=>{if(e.key==='Enter') applyCoupon();});
-
-/* ══════════ PAYMENT ══════════ */
-async function startPayment(){
-  const price=lessonData.price||0;
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const finalAmount=Math.max(0,price-disc);
-
-  if(finalAmount<=0){await completePurchase(null);return;}
-
-  const payBtn=document.getElementById('payBtn');
-  payBtn.disabled=true;
-  payBtn.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite"></div> جاري إنشاء الطلب…';
-
-  try{
-    const orderData={
-      email:currentUser.email,lesson_id:lessonId,amount:price,
-      discount_amount:disc,coupon_code:appliedCoupon?appliedCoupon.code:null,
-      final_amount:finalAmount,status:'pending',payment_method:'card'
-    };
-    const{data:order}=await db.from('orders').insert([orderData]).select().single();
-    if(!order) throw new Error('فشل إنشاء الطلب');
-    orderId=order.id;
-
-    showProcessing(order.id,finalAmount);
-
-    if(appliedCoupon){
-      await db.from('coupons').update({used_count:db.raw('used_count + 1')}).eq('id',appliedCoupon.id);
+    function getSelectedMethod(){
+      return document.querySelector('input[name="paymentMethod"]:checked')?.value || 'code';
     }
 
-    await initPayment(order.id,finalAmount);
-    startPolling(order.id);
-  }catch(e){
-    payBtn.disabled=false;
-    payBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> تأكيد الدفع';
-    alert('خطأ: '+e.message);
-  }
-}
+    function toggleBoxes(){
+      const method=getSelectedMethod();
+      document.getElementById('codeBox').style.display = method === 'code' ? 'block' : 'none';
+      document.getElementById('manualBox').style.display = method === 'code' ? 'none' : 'block';
+    }
 
-async function initPayment(orderId,amount){
-  /*
-  ══════════════════════════════════════════
-  📌 ضع كود بوابة الدفع هنا
-  ══════════════════════════════════════════
+    function loadCart(){
+      try{
+        cart = JSON.parse(localStorage.getItem('checkout_cart') || '[]');
+        if(!Array.isArray(cart)) cart = [];
+      }catch(e){
+        cart = [];
+      }
+    }
 
-  === مثال Paymob ===
-  const res = await fetch('https://accept.paymob.com/api/v1/intention/',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      amount: amount*100, currency:'EGP',
-      payment_methods:['card','wallet'],
-      items:[{name:lessonData.name,amount:amount*100,quantity:1}],
-      billing_data:{first_name:currentUser.user_metadata?.name||'',last_name:'',email:currentUser.email,phone:''},
-      extras:{order_id:orderId}
-    })
-  });
-  const data=await res.json();
-  await db.from('orders').update({payment_ref:data.id}).eq('id',orderId);
-  window.location.href=`https://accept.paymob.com/api/v1/intention/${data.id}/payment`;
+    async function getUser(){
+      const { data } = await db.auth.getUser();
+      currentUser = data?.user || null;
+    }
 
-  ══════════════════════════════════════════
-  */
+    async function loadLessons(){
+      if(!cart.length){
+        renderCart();
+        return;
+      }
 
-  // 🧪 وضع اختبار — احذف ده في الإنتاج
-  console.log('🧪 TEST: Auto-pay in 5s');
-  setTimeout(async()=>{
-    try{
-      await db.from('orders').update({status:'paid',paid_at:new Date().toISOString(),payment_ref:'test_'+Date.now()}).eq('id',orderId);
-    }catch(e){console.error(e);}
-  },5000);
-}
+      const { data, error } = await db.from('lessons').select('*').in('id', cart);
+      if(error){
+        renderCart();
+        return;
+      }
 
-function startPolling(oid){
-  let attempts=0;
-  pollInterval=setInterval(async()=>{
-    attempts++;
-    try{
-      const{data:order}=await db.from('orders').select('status,paid_at').eq('id',oid).single();
-      if(!order){if(attempts>=100){clearInterval(pollInterval);paymentFailed('انتهت مهلة التحقق');}return;}
-      if(order.status==='paid'){clearInterval(pollInterval);await completePurchase(order);return;}
-      if(order.status==='failed'){clearInterval(pollInterval);paymentFailed('فشلت عملية الدفع');return;}
-      if(attempts>=100){clearInterval(pollInterval);paymentFailed('انتهت مهلة التحقق');}
-    }catch(e){if(attempts>=100){clearInterval(pollInterval);paymentFailed('خطأ في التحقق');}}
-  },3000);
-}
+      lessonsMap = {};
+      (data || []).forEach(item => lessonsMap[item.id] = item);
+      renderCart();
+    }
 
-async function completePurchase(order){
-  try{
-    const validityDays=lessonData.validitydays||90;
-    const expiry=Date.now()+validityDays*24*60*60*1000;
-    const accessCode='AUTO_'+Date.now()+'_'+Math.random().toString(36).substring(2,8);
-    await db.from('codes').insert([{code:accessCode,used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:expiry}]);
-    const{data:u}=await db.from('users').select('studentid').eq('id',currentUser.id).single().catch(()=>({data:null}));
-    const sid=u?.studentid||currentUser.id.substring(0,6).toUpperCase();
-    localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
-  }catch(e){console.error(e);}
-  showSuccess(order);
-}
+    function renderCart(){
+      const list=document.getElementById('cartList');
 
-function showProcessing(oid,amount){
-  document.getElementById('processingOverlay').classList.remove('hidden');
-  document.getElementById('processingCard').innerHTML=`
-    <div class="proc-spinner"></div>
-    <div class="proc-title">جاري معالجة الدفع…</div>
-    <div class="proc-sub">يرجى الانتظار ولا تغلق هذه الصفحة.<br>سيتم التحقق تلقائيًا من حالة الدفع.</div>
-    <div class="proc-order">طلب # ${oid.substring(0,8)} — ${amount} ${CURRENCY}</div>`;
-}
+      if(!cart.length){
+        list.innerHTML=`<div class="empty">السلة فارغة</div>`;
+        document.getElementById('itemsCount').textContent='0';
+        document.getElementById('totalPrice').textContent='0 ج.م';
+        return;
+      }
 
-function showSuccess(order){
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const final=order?order.final_amount:(lessonData.price||0)-disc;
-  document.getElementById('processingCard').innerHTML=`
-    <div class="success-icon">✓</div>
-    <div class="proc-title" style="color:var(--green)">تم الدفع بنجاح!</div>
-    <div class="success-amount">${final} ${CURRENCY}</div>
-    <div class="success-label">المبلغ المدفوع</div>
-    <div class="success-details">
-      <div class="success-row"><span class="sl">رقم الطلب</span><span class="sv"># ${(order?.id||'').substring(0,8)}</span></div>
-      <div class="success-row"><span class="sl">الكورس</span><span class="sv">${lessonData.name||'—'}</span></div>
-      ${disc>0?`<div class="success-row"><span class="sl">الخصم</span><span class="sv" style="color:var(--green)">- ${disc} ${CURRENCY}</span></div>`:''}
-      <div class="success-row"><span class="sl">الحالة</span><span class="sv" style="color:var(--green)">مدفوع ✓</span></div>
-    </div>
-    <button class="go-lesson-btn" onclick="window.location.href='/lesson?id=${lessonId}'">
-      ابدأ الكورس الآن
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>`;
-}
+      let total=0;
+      list.innerHTML='';
 
-function paymentFailed(reason){
-  document.getElementById('processingCard').innerHTML=`
-    <div class="error-icon">✗</div>
-    <div class="proc-title" style="color:var(--red)">فشلت عملية الدفع</div>
-    <div class="proc-sub">${reason}<br>يمكنك المحاولة مرة أخرى.</div>
-    <button class="retry-btn" onclick="retryPayment()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      إعادة المحاولة
-    </button>
-    <button style="display:block;margin:10px auto 0;background:none;border:1px solid var(--border);border-radius:10px;padding:10px 20px;font-family:var(--sans);font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer" onclick="cancelPayment()">إلغاء</button>`;
-}
+      cart.forEach(id=>{
+        const item=lessonsMap[id];
+        if(!item) return;
 
-function retryPayment(){
-  document.getElementById('processingOverlay').classList.add('hidden');
-  const payBtn=document.getElementById('payBtn');
-  payBtn.disabled=false;
-  payBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> تأكيد الدفع';
-}
+        const price=Number(item.price)||0;
+        total += price;
 
-function cancelPayment(){
-  if(pollInterval) clearInterval(pollInterval);
-  document.getElementById('processingOverlay').classList.add('hidden');
-  history.back();
-}
+        const row=document.createElement('div');
+        row.className='cart-item';
+        row.innerHTML=`
+          <button class="remove-btn" onclick="removeItem('${id}')">×</button>
+          <img src="${item.image || ''}" alt="">
+          <div class="cart-info">
+            <div class="cart-name">${item.name || 'Course'}</div>
+            <div class="cart-sub">Course Access × 1</div>
+          </div>
+          <div class="cart-price">${price} ج.م</div>
+        `;
+        list.appendChild(row);
+      });
 
-init();
-</script>
+      document.getElementById('itemsCount').textContent=cart.length;
+      document.getElementById('totalPrice').textContent=`${total} ج.م`;
+    }
+
+    function removeItem(id){
+      cart = cart.filter(x=>x!==id);
+      localStorage.setItem('checkout_cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    async function submitCode(){
+      const code=document.getElementById('codeInput').value.trim();
+      if(!code){
+        setMsg('codeMsg','error','اكتب الكود الأول');
+        return;
+      }
+
+      if(!currentUser){
+        setMsg('codeMsg','error','لازم تسجل دخول الأول');
+        return;
+      }
+
+      try{
+        const { data:codeRow, error } = await db.from('codes').select('*').eq('code', code).single();
+        if(error || !codeRow) throw new Error('الكود غير موجود');
+
+        const targetId = codeRow.lessonid || cart[0];
+        if(codeRow.lessonid && !cart.includes(codeRow.lessonid)){
+          throw new Error('هذا الكود ليس للكورس الموجود في السلة');
+        }
+
+        const expiry = codeRow.expiryat || Date.now() + 90*24*60*60*1000;
+
+        await db.from('codes').update({
+          usedby: currentUser.email,
+          lessonid: targetId,
+          expiryat: expiry
+        }).eq('code', code);
+
+        localStorage.setItem(`access_${currentUser.id}_${targetId}`, JSON.stringify({
+          expiry,
+          studentId: currentUser.id.substring(0,6).toUpperCase()
+        }));
+
+        cart = cart.filter(id=>id!==targetId);
+        localStorage.setItem('checkout_cart', JSON.stringify(cart));
+
+        setMsg('codeMsg','success','تم تفعيل الكود بنجاح');
+        setTimeout(()=>location.href=`/lesson?id=${targetId}`,1200);
+      }catch(e){
+        setMsg('codeMsg','error',e.message || 'فشل التفعيل');
+      }
+    }
+
+    async function submitManualPayment(){
+      const method=getSelectedMethod();
+      const file=document.getElementById('paymentFile').files[0];
+
+      if(!currentUser){
+        setMsg('manualMsg','error','لازم تسجل دخول الأول');
+        return;
+      }
+
+      if(method !== 'vodafone_cash' && method !== 'instapay'){
+        setMsg('manualMsg','error','اختر Vodafone Cash أو InstaPay');
+        return;
+      }
+
+      if(!cart.length){
+        setMsg('manualMsg','error','السلة فارغة');
+        return;
+      }
+
+      if(!file){
+        setMsg('manualMsg','error','ارفع صورة الدفع أولاً');
+        return;
+      }
+
+      try{
+        let total = 0;
+        cart.forEach(id=>{
+          total += Number(lessonsMap[id]?.price || 0);
+        });
+
+        const ext = file.name.split('.').pop();
+        const fileName = `payment_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+        const filePath = `payment-proofs/${fileName}`;
+
+        const { error: uploadError } = await db.storage.from('payments').upload(filePath, file);
+        if(uploadError) throw uploadError;
+
+        const { data: publicData } = db.storage.from('payments').getPublicUrl(filePath);
+        const imageUrl = publicData.publicUrl;
+
+        const { error: orderError } = await db.from('orders').insert([{
+          email: currentUser.email,
+          lesson_id: cart[0],
+          amount: total,
+          final_amount: total,
+          status: 'pending_review',
+          payment_method: method,
+          payment_ref: imageUrl,
+          cart_items: cart
+        }]);
+
+        if(orderError) throw orderError;
+
+        localStorage.removeItem('checkout_cart');
+        setMsg('manualMsg','success','تم إرسال صورة الدفع بنجاح وسيتم مراجعتها وتفعيل الكورس');
+      }catch(e){
+        setMsg('manualMsg','error',e.message || 'فشل إرسال صورة الدفع');
+      }
+    }
+
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(el=>{
+      el.addEventListener('change', toggleBoxes);
+    });
+
+    document.getElementById('codeBtn').addEventListener('click', submitCode);
+    document.getElementById('manualBtn').addEventListener('click', submitManualPayment);
+
+    loadCart();
+    toggleBoxes();
+    getUser().then(loadLessons);
+  </script>
 </body>
 </html>
