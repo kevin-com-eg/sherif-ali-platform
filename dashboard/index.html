@@ -256,7 +256,7 @@ nav.no-notif{top:0}
     </div>
     <div class="nav-right">
       <!-- Cart goes to /checkout -->
-      <a class="cart-nav-btn" href="/checkout" id="cartNavBtn" title="Shopping Cart" aria-label="Cart">
+      <a class="cart-nav-btn" href="/checkout" onclick="openCartFromNav(event)" id="cartNavBtn" title="Shopping Cart" aria-label="Cart">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="cart-badge" id="cartBadge">0</span>
       </a>
@@ -309,7 +309,7 @@ nav.no-notif{top:0}
             <div><div class="pc-action-title">Account Settings</div><div class="pc-action-sub">Name, phone & parent info</div></div>
             <div class="pc-action-arr">→</div>
           </div>
-          <a class="pc-action" href="/checkout">
+          <a class="pc-action" href="/checkout" onclick="openCartFromNav(event)">
             <div class="pc-action-icon green">🛒</div>
             <div><div class="pc-action-title">My Cart</div><div class="pc-action-sub" id="sideCartCount">0 items</div></div>
             <div class="pc-action-arr">→</div>
@@ -347,7 +347,7 @@ nav.no-notif{top:0}
 <nav class="bottom-nav"><div class="bn-inner">
   <button class="bn-btn active"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
   <button class="bn-btn" onclick="openReports()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg><span>Activity</span></button>
-  <a class="bn-btn" href="/checkout" style="position:relative">
+  <a class="bn-btn" href="/checkout" onclick="openCartFromNav(event)" style="position:relative">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     <span>Cart</span>
   </a>
@@ -441,6 +441,24 @@ function loadCart(){
   try{const c=JSON.parse(localStorage.getItem('mp_cart')||'[]');return Array.isArray(c)?c:[];}catch{return [];}
 }
 function saveCart(cart){localStorage.setItem('mp_cart',JSON.stringify(cart));}
+function goToCheckout(lessonId){
+  if(!lessonId){
+    showToast('warning','Cart is Empty','Add a course first, then continue to checkout.');
+    return;
+  }
+  localStorage.setItem('checkout_lesson_id', lessonId);
+  window.location.href=`/checkout?lesson_id=${encodeURIComponent(lessonId)}`;
+}
+function openCartFromNav(e){
+  if(e)e.preventDefault();
+  const cart=loadCart();
+  const lessonId=localStorage.getItem('checkout_lesson_id')||(Array.isArray(cart)&&cart.length>0?cart[0]:null);
+  if(!lessonId){
+    showToast('warning','Cart is Empty','Add a course first, then continue to checkout.');
+    return;
+  }
+  goToCheckout(lessonId);
+}
 
 function syncCartBadge(){
   const cart=loadCart();
@@ -454,17 +472,18 @@ function syncCartBadge(){
 window.addToCart=(lessonId)=>{
   let cart=loadCart();
   if(cart.includes(lessonId)){
-    showToast('info','Already in Cart','This course is already in your cart.');return;
+    showToast('info','Already in Cart','This course is already in your cart.');
+    return;
   }
   cart.push(lessonId);
   saveCart(cart);
+  localStorage.setItem('checkout_lesson_id', lessonId);
   syncCartBadge();
   showToast('success','Added to Cart ✓','Go to cart to complete your purchase.');
-  // Update card button
   document.querySelectorAll(`.lc-btn.cart[data-lid="${lessonId}"]`).forEach(btn=>{
     btn.classList.add('in-cart');
     btn.innerHTML=`✓ In Cart · <span style="text-decoration:underline">Checkout →</span>`;
-    btn.onclick=()=>window.location.href='/checkout';
+    btn.onclick=()=>goToCheckout(lessonId);
   });
 };
 
@@ -501,7 +520,7 @@ function renderLessons(lessons){
     if(accessible){
       buttonsHtml=`<a href="/lesson?id=${id}" onclick="openLesson(event,'${id}')" class="lc-btn enter">▶ Enter Lesson</a>`;
     }else if(inCart){
-      buttonsHtml=`<button class="lc-btn cart in-cart" data-lid="${id}" onclick="window.location.href='/checkout'">✓ In Cart · <span style="text-decoration:underline">Checkout →</span></button>`;
+      buttonsHtml=`<button class="lc-btn cart in-cart" data-lid="${id}" onclick="goToCheckout('${id}')">✓ In Cart · <span style="text-decoration:underline">Checkout →</span></button>`;
     }else{
       buttonsHtml=`<button class="lc-btn cart" data-lid="${id}" onclick="addToCart('${id}')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
