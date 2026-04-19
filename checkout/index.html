@@ -1,409 +1,246 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MathPro | Checkout</title>
+<title>MathPro · Checkout</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+/* ═══════════════════════════════
+   MATHPRO UNIFIED DESIGN SYSTEM
+   ═══════════════════════════════ */
 :root{
-  --bg-1:#0a0f1e;
-  --glass:#ffffff08;
-  --glass-2:#ffffff10;
-  --border-glass:rgba(255,255,255,0.12);
-  --border-glass-2:rgba(255,255,255,0.2);
-  --green:#00e87a;
-  --green-2:#00c464;
-  --green-dim:rgba(0,232,122,0.12);
-  --green-glow:rgba(0,232,122,0.3);
-  --text:#f0f6ff;
-  --text-2:#a8c0d8;
-  --text-3:#5a7a9a;
-  --red:#ff4d6a;
-  --red-bg:rgba(255,77,106,0.1);
-  --sans:'Cairo',sans-serif;
-  --mono:'JetBrains Mono',monospace;
-  --blur:blur(24px);
-  --shadow-glass:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);
+  --bg:#F5F0E8;--bg2:#EDE7DB;--surface:#FAF7F2;--surface2:#EDE7DB;
+  --border:rgba(44,36,24,.1);--border2:rgba(44,36,24,.22);
+  --text:#2C2418;--muted:#9B8E7A;--muted2:#6B5E4E;
+  --accent:#2D5A3D;--accent2:#3A7550;--accent3:#4A9060;
+  --accent-glow:rgba(45,90,61,.12);--accent-light:rgba(45,90,61,.08);
+  --amber:#C4654A;--amber-bg:rgba(196,101,74,.08);--amber-border:rgba(196,101,74,.2);
+  --red:#A33B2E;--red-bg:rgba(163,59,46,.08);--red-border:rgba(163,59,46,.2);
+  --gold:#C4A882;--gold-bg:rgba(196,168,130,.1);
+  --mono:'JetBrains Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Cormorant Garamond',serif;
+  --radius:12px;--radius-sm:8px;--radius-lg:20px;
+  --shadow:0 2px 16px rgba(44,36,24,.07);--shadow2:0 8px 32px rgba(44,36,24,.1);
+  --nav-h:64px;
 }
-
-body{
-  font-family:var(--sans);
-  background:var(--bg-1);
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
-  -webkit-tap-highlight-color:transparent;
-}
-
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 70% 60% at 5% 5%,rgba(0,100,255,0.2) 0%,transparent 55%),
-    radial-gradient(ellipse 60% 70% at 95% 95%,rgba(0,200,120,0.14) 0%,transparent 55%),
-    radial-gradient(ellipse 50% 50% at 60% 30%,rgba(100,0,200,0.08) 0%,transparent 60%);
-  pointer-events:none;
-  animation:bgPulse 9s ease-in-out infinite alternate;
-}
-@keyframes bgPulse{0%{opacity:1}100%{opacity:.75;filter:hue-rotate(15deg)}}
-
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.014) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,0.014) 1px,transparent 1px);
-  background-size:64px 64px;
-  pointer-events:none;
-}
-
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
 .hidden{display:none!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
-/* LOADER */
-#loader{
-  position:fixed;inset:0;z-index:9999;background:var(--bg-1);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
-  transition:opacity .4s;
-}
-.ld-ring{
-  width:60px;height:60px;border-radius:50%;
-  border:2px solid transparent;
-  border-top-color:var(--green);
-  border-right-color:rgba(0,232,122,0.3);
-  animation:spin 1s linear infinite;
-  display:flex;align-items:center;justify-content:center;
-}
-.ld-ring::after{
-  content:'MP';font-weight:900;font-size:.75rem;color:var(--green);
-  font-family:var(--sans);
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ld-txt{font-size:.72rem;color:var(--text-3);font-family:var(--mono);letter-spacing:2px}
+/* ── LOADING ── */
+#loadingScreen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .35s}
+.ld-mark{width:58px;height:58px;background:var(--accent);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:1.4rem;color:#fff;animation:float 2.5s ease infinite}
+.ld-bar{width:120px;height:2px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.ld-fill{height:100%;background:var(--accent2);border-radius:2px;animation:loadAnim 1.2s ease infinite}
+.ld-txt{font-size:.78rem;color:var(--muted);font-family:var(--mono)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes loadAnim{0%{width:0;margin-left:0}50%{width:80%;margin-left:0}100%{width:0;margin-left:100%}}
 
-/* NAV */
-nav{
-  position:sticky;top:0;z-index:100;
-  background:rgba(10,15,30,0.75);
-  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  border-bottom:1px solid var(--border-glass);
-  box-shadow:0 4px 24px rgba(0,0,0,0.35);
-}
-.nav-in{
-  max-width:960px;margin:0 auto;padding:0 24px;
-  height:64px;display:flex;align-items:center;justify-content:space-between;
-}
-.back-btn{
-  display:flex;align-items:center;gap:8px;
-  background:var(--glass);border:1px solid var(--border-glass);
-  border-radius:12px;padding:9px 16px;
-  font-size:.82rem;font-weight:700;color:var(--text-2);
-  cursor:pointer;transition:all .25s;font-family:var(--sans);
-}
-.back-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-dim)}
-.nav-brand{
-  font-family:var(--sans);font-weight:900;font-size:1.05rem;
-  background:linear-gradient(135deg,var(--green),#3db5ff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.nav-tag{
-  font-size:.68rem;font-family:var(--mono);color:var(--text-3);
-  background:var(--glass);border:1px solid var(--border-glass);
-  padding:5px 12px;border-radius:20px;letter-spacing:1px;
-}
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:500;height:var(--nav-h);background:rgba(250,247,242,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);box-shadow:0 1px 12px rgba(44,36,24,.06)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:36px;height:36px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:.9rem;color:#fff}
+.logo-name{font-family:var(--display);font-weight:600;font-size:1.2rem;color:var(--text)}.logo-name em{color:var(--accent2);font-style:normal}
+.back-btn{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 16px;font-size:.82rem;font-weight:700;color:var(--muted2);cursor:pointer;transition:all .2s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-tag{font-family:var(--mono);font-size:.68rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:20px}
 
-/* MAIN */
-main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:32px 24px 100px}
-.checkout-grid{display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+/* ── MAIN ── */
+main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:36px 24px 100px}
 
-/* GLASS CARD */
-.glass-card{
-  background:var(--glass);
-  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--border-glass);
-  border-radius:24px;box-shadow:var(--shadow-glass);overflow:hidden;
-  animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+/* ── SECTION HEADER ── */
+.page-header{margin-bottom:32px}
+.page-kicker{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:4px}
+.page-title{font-family:var(--display);font-size:clamp(1.7rem,3vw,2.3rem);font-weight:600}
 
-/* COURSE CARD */
-.course-img-wrap{position:relative;height:230px;overflow:hidden}
-.course-img{width:100%;height:100%;object-fit:cover}
-.course-img-ph{
-  width:100%;height:100%;
-  background:linear-gradient(135deg,rgba(0,80,220,0.25),rgba(0,180,100,0.18));
-  display:flex;align-items:center;justify-content:center;font-size:4.5rem;
-}
-.course-img-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(10,15,30,.95) 0%,rgba(10,15,30,.2) 60%,transparent 100%);
-}
-.course-badge-discount{
-  position:absolute;top:16px;left:16px;
-  background:var(--green);color:#0a0f1e;
-  font-family:var(--mono);font-size:.65rem;font-weight:700;
-  padding:5px 12px;border-radius:20px;
-}
-.course-body{padding:24px}
-.course-name{font-size:1.3rem;font-weight:900;margin-bottom:8px;line-height:1.4}
-.course-desc{font-size:.83rem;color:var(--text-2);line-height:1.8;margin-bottom:20px}
+/* ── GRID ── */
+.checkout-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
 
-.course-feats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:22px}
-.feat-item{
-  display:flex;align-items:center;gap:9px;
-  font-size:.77rem;color:var(--text-2);
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border-glass);
-  border-radius:11px;padding:9px 12px;
-}
-.feat-ic{
-  width:26px;height:26px;border-radius:8px;flex-shrink:0;
-  background:var(--green-dim);border:1px solid rgba(0,232,122,0.18);
-  display:flex;align-items:center;justify-content:center;font-size:.8rem;
-}
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);animation:cardIn .4s both}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-.price-tag{
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:16px 20px;
-  background:linear-gradient(135deg,rgba(0,232,122,0.07),rgba(0,170,255,0.04));
-  border:1px solid rgba(0,232,122,0.18);border-radius:14px;
-}
-.price-main{font-family:var(--mono);font-size:1.9rem;font-weight:700;color:var(--green)}
-.price-old{font-family:var(--mono);font-size:.9rem;color:var(--text-3);text-decoration:line-through}
-.price-saved{
-  margin-right:auto;
-  background:var(--green);color:#0a0f1e;
-  font-family:var(--mono);font-size:.62rem;font-weight:700;
-  padding:4px 10px;border-radius:8px;
-}
+/* ── COURSE CARD ── */
+.course-img{position:relative;height:220px;overflow:hidden}
+.course-img img{width:100%;height:100%;object-fit:cover}
+.course-img-ph{width:100%;height:100%;background:linear-gradient(135deg,var(--bg2),var(--surface2));display:flex;align-items:center;justify-content:center;font-size:4rem}
+.course-img-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(44,36,24,.6))}
+.disc-badge{position:absolute;top:14px;left:14px;background:var(--accent);color:#fff;font-family:var(--mono);font-size:.62rem;font-weight:800;padding:4px 11px;border-radius:6px}
+.course-body{padding:22px}
+.course-name{font-family:var(--display);font-size:1.3rem;font-weight:700;margin-bottom:7px}
+.course-desc{font-size:.83rem;color:var(--muted2);line-height:1.75;margin-bottom:18px}
+.feats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.feat{display:flex;align-items:center;gap:8px;font-size:.77rem;color:var(--muted2);background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px}
+.feat-ic{width:26px;height:26px;border-radius:7px;flex-shrink:0;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:.82rem}
+.price-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent-light);border:1px solid rgba(45,90,61,.18);border-radius:var(--radius);padding:14px 18px}
+.price-main{font-family:var(--mono);font-size:1.9rem;font-weight:700;color:var(--accent)}
+.price-old{font-family:var(--mono);font-size:.88rem;color:var(--muted);text-decoration:line-through}
+.price-saved{background:var(--accent);color:#fff;font-family:var(--mono);font-size:.6rem;font-weight:800;padding:3px 9px;border-radius:5px;margin-left:auto}
 
-/* SUMMARY CARD */
+/* ── SUMMARY CARD ── */
 .summary-card{animation-delay:.1s;position:sticky;top:80px}
-.summary-hdr{
-  padding:20px 24px;border-bottom:1px solid var(--border-glass);
-  display:flex;align-items:center;gap:10px;
-  font-weight:800;font-size:.95rem;
-}
-.hdr-dot{
-  width:8px;height:8px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 10px var(--green);
-}
-.summary-body{padding:20px 24px}
+.card-head{display:flex;align-items:center;gap:9px;padding:18px 22px;border-bottom:1px solid var(--border)}
+.head-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.card-head-title{font-family:var(--display);font-weight:700;font-size:1rem}
+.card-body{padding:20px 22px}
 
-/* CART ITEM */
-.cart-item{
-  display:flex;align-items:center;gap:12px;
-  padding:14px;margin-bottom:18px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border-glass);border-radius:14px;
-}
-.cart-ic{
-  width:46px;height:46px;flex-shrink:0;
-  background:var(--green-dim);border:1px solid rgba(0,232,122,0.2);
-  border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;
-}
+/* Cart item */
+.cart-item{display:flex;align-items:center;gap:12px;padding:13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px}
+.cart-ico{width:44px;height:44px;border-radius:var(--radius-sm);background:var(--accent-light);border:1px solid rgba(45,90,61,.18);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
 .cart-info{flex:1;min-width:0}
-.cart-name{font-weight:700;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cart-type{font-size:.68rem;color:var(--text-3);font-family:var(--mono);margin-top:3px}
-.cart-price{font-family:var(--mono);font-weight:700;font-size:.9rem;color:var(--green);white-space:nowrap}
+.cart-name{font-weight:700;font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-type{font-size:.67rem;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.cart-price{font-family:var(--mono);font-weight:800;font-size:.9rem;color:var(--accent);white-space:nowrap}
 
-/* COUPON */
-.coupon-wrap{margin-bottom:16px}
-.coup-lbl{
-  font-size:.68rem;font-weight:700;color:var(--text-3);
-  text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:10px;
-}
-.coup-row{display:flex;gap:8px}
-.coupon-input{
-  flex:1;background:var(--glass);border:1px solid var(--border-glass);
-  color:var(--text);padding:12px 14px;border-radius:12px;
-  font-family:var(--mono);font-size:.8rem;letter-spacing:2px;text-align:center;
-  outline:none;transition:all .25s;
-}
-.coupon-input::placeholder{color:var(--text-3);letter-spacing:.5px;font-size:.73rem}
-.coupon-input:focus{border-color:rgba(0,232,122,0.4);background:var(--glass-2);box-shadow:0 0 0 3px rgba(0,232,122,0.07)}
-.coupon-input.error{border-color:var(--red);background:var(--red-bg);animation:shake .4s ease}
-.coupon-input.success{border-color:rgba(0,232,122,0.4);background:rgba(0,232,122,0.05)}
+/* Coupon */
+.field-lbl{font-size:.67rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);font-family:var(--mono);margin-bottom:8px}
+.field-row{display:flex;gap:7px}
+.code-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);color:var(--text);padding:12px 14px;border-radius:var(--radius-sm);font-family:var(--mono);font-size:.82rem;letter-spacing:2px;text-align:center;outline:none;transition:all .22s}
+.code-input::placeholder{color:var(--muted);letter-spacing:.5px;font-size:.75rem}
+.code-input:focus{border-color:var(--accent);background:var(--surface)}
+.code-input.err{border-color:var(--red);background:var(--red-bg);animation:shake .4s ease}
+.code-input.ok{border-color:rgba(45,90,61,.4);background:var(--accent-light)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.coup-btn{
-  padding:12px 18px;border-radius:12px;border:1px solid var(--border-glass);
-  background:var(--glass-2);color:var(--text);
-  font-family:var(--sans);font-size:.8rem;font-weight:700;
-  cursor:pointer;transition:all .2s;white-space:nowrap;
-}
-.coup-btn:hover{background:var(--green-dim);border-color:rgba(0,232,122,0.3);color:var(--green)}
-.coup-btn:disabled{opacity:.4;cursor:not-allowed}
-.coup-btn.remove-mode{background:var(--red-bg);color:var(--red);border-color:rgba(255,77,106,0.3)}
-.coup-msg{font-size:.72rem;margin-top:8px;font-weight:600;min-height:16px}
-.coup-msg.ok{color:var(--green)}.coup-msg.err{color:var(--red)}
+.code-btn{padding:12px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:var(--surface2);color:var(--muted2);font-family:var(--sans);font-size:.8rem;font-weight:800;cursor:pointer;transition:all .2s;white-space:nowrap}
+.code-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.code-btn:disabled{opacity:.4;cursor:not-allowed}
+.code-btn.remove{border-color:var(--red-border);color:var(--red);background:var(--red-bg)}
+.code-msg{font-size:.72rem;font-weight:700;min-height:16px;margin-top:7px}
+.code-msg.ok{color:var(--accent2)}.code-msg.err{color:var(--red)}
+.field-wrap{margin-bottom:16px}
 
-/* PRICE ROWS */
-.prices{border-top:1px solid var(--border-glass);padding-top:16px;margin-top:4px}
-.pr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:.84rem}
-.pr .l{color:var(--text-2)}.pr .v{font-family:var(--mono);font-weight:700}
-.pr.disc .v{color:var(--green)}
-.pr.total{border-top:1px solid var(--border-glass);margin-top:8px;padding-top:14px;font-size:.95rem}
-.pr.total .v{color:var(--green);font-size:1.25rem}
+/* Price rows */
+.price-rows{border-top:1px solid var(--border);padding-top:14px;margin-top:4px}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.83rem}
+.pr .l{color:var(--muted2)}.pr .v{font-family:var(--mono);font-weight:700}
+.pr.disc .v{color:var(--accent2)}
+.pr.total{border-top:1px solid var(--border);margin-top:8px;padding-top:13px;font-size:.95rem;font-weight:800}
+.pr.total .v{color:var(--accent);font-size:1.25rem}
 
-/* PAY BTN */
-.pay-sec{margin-top:20px}
-.pay-btn{
-  width:100%;padding:17px;border-radius:16px;border:none;
-  background:linear-gradient(135deg,var(--green),#00aaff);
-  color:#0a0f1e;font-family:var(--sans);font-size:1rem;font-weight:800;
-  cursor:pointer;transition:all .3s;
-  box-shadow:0 8px 32px rgba(0,232,122,0.28);
-  display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;
-}
-.pay-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(0,232,122,0.42)}
-.pay-btn:active{transform:translateY(0)}
+/* Pay section */
+.pay-section{margin-top:20px}
+.pay-btn{width:100%;padding:16px;border-radius:var(--radius);border:none;background:var(--accent);color:#fff;font-family:var(--sans);font-size:1rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 6px 20px var(--accent-glow);display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px}
+.pay-btn:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
+.pay-btn:active{transform:none}
 .pay-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.pay-note{font-size:.68rem;color:var(--text-3);text-align:center;margin-top:10px;font-family:var(--mono)}
-.secure-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px}
-.sec-chip{
-  display:flex;align-items:center;gap:5px;
-  font-size:.64rem;color:var(--text-3);font-family:var(--mono);
-  background:var(--glass);border:1px solid var(--border-glass);
-  padding:5px 10px;border-radius:20px;
-}
+.pay-note{font-size:.68rem;color:var(--muted);text-align:center;margin-top:9px;font-family:var(--mono)}
+.secure-row{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:12px;flex-wrap:wrap}
+.sec-chip{display:flex;align-items:center;gap:5px;font-size:.63rem;color:var(--muted2);font-family:var(--mono);background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:20px}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted);font-size:.72rem;font-family:var(--mono)}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* OVERLAY */
-.proc-overlay{
-  position:fixed;inset:0;z-index:500;
-  background:rgba(10,15,30,0.88);
-  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.proc-card{
-  background:rgba(12,20,40,0.95);
-  border:1px solid var(--border-glass-2);
-  border-radius:28px;padding:52px 44px;
-  text-align:center;max-width:440px;width:100%;
-  box-shadow:0 32px 80px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.07);
-  animation:riseIn .4s cubic-bezier(.16,1,.3,1);
-}
-@keyframes riseIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
-.proc-spinner{
-  width:64px;height:64px;margin:0 auto 24px;
-  border:3px solid rgba(0,232,122,0.12);border-top-color:var(--green);
-  border-radius:50%;animation:spin .7s linear infinite;
-}
-.proc-title{font-size:1.25rem;font-weight:900;margin-bottom:8px}
-.proc-sub{font-size:.82rem;color:var(--text-2);line-height:1.7}
-.proc-order{
-  font-family:var(--mono);font-size:.68rem;color:var(--text-3);
-  margin-top:18px;background:var(--glass);
-  padding:9px 16px;border-radius:10px;border:1px solid var(--border-glass);display:inline-block;
-}
-
-/* SUCCESS */
-.suc-ring{
-  width:90px;height:90px;margin:0 auto 20px;border-radius:50%;
-  border:1px solid rgba(0,232,122,0.25);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);
-}
-.suc-ring::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(0,232,122,0.1)}
-.suc-inner{
-  width:66px;height:66px;border-radius:50%;
-  background:var(--green-dim);
-  display:flex;align-items:center;justify-content:center;font-size:2rem;
-}
-@keyframes popIn{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
-.suc-amount{font-family:var(--mono);font-size:2.2rem;font-weight:700;color:var(--green);margin:12px 0 4px;text-shadow:0 0 30px rgba(0,232,122,0.35)}
-.suc-lbl{font-size:.78rem;color:var(--text-3)}
-.suc-details{margin-top:20px;text-align:right}
-.suc-row{display:flex;justify-content:space-between;padding:9px 0;font-size:.8rem;border-bottom:1px solid var(--border-glass)}
+/* ── SUCCESS / PROCESSING OVERLAY ── */
+.proc-overlay{position:fixed;inset:0;z-index:3000;background:rgba(44,36,24,.3);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px}
+.proc-card{background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--radius-lg);padding:48px 40px;text-align:center;max-width:420px;width:100%;box-shadow:0 12px 48px rgba(44,36,24,.12);animation:cardIn .4s cubic-bezier(.16,1,.3,1)}
+.proc-spinner{width:60px;height:60px;margin:0 auto 22px;border:3px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proc-title{font-family:var(--display);font-size:1.3rem;font-weight:700;margin-bottom:7px}
+.proc-sub{font-size:.82rem;color:var(--muted2);line-height:1.7}
+.suc-ring{width:80px;height:80px;margin:0 auto 18px;border-radius:50%;background:var(--accent-light);border:2px solid rgba(45,90,61,.25);display:flex;align-items:center;justify-content:center;font-size:2.2rem;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{from{transform:scale(0) rotate(-15deg)}to{transform:scale(1) rotate(0)}}
+.suc-amount{font-family:var(--mono);font-size:2.1rem;font-weight:700;color:var(--accent);margin:10px 0 3px}
+.suc-lbl{font-size:.75rem;color:var(--muted)}
+.suc-details{margin-top:18px;text-align:left}
+.suc-row{display:flex;justify-content:space-between;padding:8px 0;font-size:.8rem;border-bottom:1px solid var(--border)}
 .suc-row:last-child{border-bottom:none}
-.suc-row .sl{color:var(--text-3)}.suc-row .sv{font-family:var(--mono);font-weight:700}
-.go-btn{
-  display:inline-flex;align-items:center;gap:8px;margin-top:28px;
-  background:linear-gradient(135deg,var(--green),#00aaff);
-  color:#0a0f1e;border:none;padding:14px 40px;border-radius:16px;
-  font-family:var(--sans);font-size:.95rem;font-weight:800;cursor:pointer;
-  transition:all .3s;box-shadow:0 8px 32px rgba(0,232,122,0.28);
-}
-.go-btn:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(0,232,122,0.4)}
+.suc-row .sl{color:var(--muted)}.suc-row .sv{font-family:var(--mono);font-weight:700}
+.go-btn{display:inline-flex;align-items:center;gap:8px;margin-top:24px;background:var(--accent);color:#fff;border:none;padding:13px 36px;border-radius:var(--radius);font-family:var(--sans);font-size:.92rem;font-weight:700;cursor:pointer;transition:all .25s;box-shadow:0 6px 20px var(--accent-glow)}
+.go-btn:hover{background:var(--accent2);transform:translateY(-2px)}
+.err-ring{width:72px;height:72px;margin:0 auto 16px;background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;animation:popIn .4s ease}
+.retry-btn{display:inline-flex;align-items:center;gap:7px;margin-top:18px;background:var(--surface2);border:1.5px solid var(--border2);color:var(--text);padding:11px 24px;border-radius:var(--radius-sm);font-family:var(--sans);font-size:.86rem;font-weight:700;cursor:pointer;transition:all .2s}
+.retry-btn:hover{border-color:var(--border2);background:var(--bg2)}
 
-/* ERROR */
-.err-ring{
-  width:80px;height:80px;margin:0 auto 18px;
-  background:var(--red-bg);border:1px solid rgba(255,77,106,0.3);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:2rem;animation:popIn .4s ease;
-}
-.retry-btn{
-  display:inline-flex;align-items:center;gap:8px;margin-top:20px;
-  background:var(--glass-2);border:1px solid var(--border-glass-2);
-  color:var(--text);padding:12px 28px;border-radius:12px;
-  font-family:var(--sans);font-size:.88rem;font-weight:700;
-  cursor:pointer;transition:all .2s;
-}
-.retry-btn:hover{background:rgba(255,255,255,0.12)}
-
-@media(max-width:800px){
+@media(max-width:840px){
   .checkout-grid{grid-template-columns:1fr}
   .summary-card{position:static}
-  .course-feats{grid-template-columns:1fr}
-  .proc-card{padding:36px 24px}
+  .feats-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  main{padding:24px 14px 80px}
+  .proc-card{padding:36px 22px}
 }
 </style>
 </head>
 <body>
-
-<div id="loader">
-  <div class="ld-ring"></div>
-  <div class="ld-txt" id="ldTxt">جاري التحميل…</div>
+<div id="loadingScreen">
+  <div class="ld-mark">MP</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+  <div class="ld-txt" id="ldTxt">Loading…</div>
 </div>
 
 <nav>
-  <div class="nav-in">
+  <div class="nav-inner">
+    <a class="logo" href="/home">
+      <div class="logo-mark">MP</div>
+      <div class="logo-name">Math<em>Pro</em></div>
+    </a>
+    <span class="nav-tag">Checkout</span>
     <button class="back-btn" onclick="history.back()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      رجوع
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
     </button>
-    <span class="nav-brand">MathPro</span>
-    <span class="nav-tag">إتمام الشراء</span>
   </div>
 </nav>
 
 <main>
-  <div class="checkout-grid">
-    <div><div class="glass-card" id="courseCard"></div></div>
-    <div>
-      <div class="glass-card summary-card">
-        <div class="summary-hdr"><div class="hdr-dot"></div>ملخص الطلب</div>
-        <div class="summary-body">
-          <div class="cart-item" id="cartItem"></div>
-          <div class="coupon-wrap">
-            <div class="coup-lbl">كوبون خصم</div>
-            <div class="coup-row">
-              <input id="couponInput" class="coupon-input" placeholder="أدخل كود الخصم" autocomplete="off" spellcheck="false">
-              <button id="couponBtn" class="coup-btn" onclick="applyCoupon()">تطبيق</button>
-            </div>
-            <div id="couponMsg" class="coup-msg"></div>
-          </div>
-          <div class="prices" id="priceBreakdown"></div>
-          <div class="pay-sec">
-            <div id="codePayBox" class="coupon-wrap" style="margin-bottom:14px">
-              <div class="coup-lbl">الدفع بالكود</div>
-              <div class="coup-row">
-                <input id="accessCodeInput" class="coupon-input" placeholder="أدخل كود الدفع / التفعيل" autocomplete="off" spellcheck="false">
-                <button id="accessCodeBtn" class="coup-btn" onclick="redeemAccessCode()">دفع</button>
-              </div>
-              <div id="accessCodeMsg" class="coup-msg"></div>
-            </div>
+  <div class="page-header">
+    <div class="page-kicker">Complete Your Order</div>
+    <div class="page-title">Checkout</div>
+  </div>
 
-            <div class="pay-note">الدفع متاح بالكود فقط</div>
-            <div class="secure-row">
-              <div class="sec-chip">
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Secured
-              </div>
-              <div class="sec-chip" id="paymentMethodChip">🔑 الدفع بالكود فقط</div>
+  <div class="checkout-grid">
+    <!-- Course Details -->
+    <div class="card" id="courseCard">
+      <div style="padding:60px;text-align:center;color:var(--muted)">Loading course…</div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card summary-card">
+      <div class="card-head"><div class="head-dot"></div><div class="card-head-title">Order Summary</div></div>
+      <div class="card-body">
+        <div class="cart-item" id="cartItem">
+          <div class="cart-ico">📚</div>
+          <div class="cart-info"><div class="cart-name">Loading…</div><div class="cart-type">Online Course · One-time</div></div>
+          <div class="cart-price">—</div>
+        </div>
+
+        <!-- Discount Coupon -->
+        <div class="field-wrap">
+          <div class="field-lbl">Discount Coupon</div>
+          <div class="field-row">
+            <input id="couponInput" class="code-input" placeholder="Enter coupon code" autocomplete="off" spellcheck="false">
+            <button id="couponBtn" class="code-btn" onclick="applyCoupon()">Apply</button>
+          </div>
+          <div id="couponMsg" class="code-msg"></div>
+        </div>
+
+        <!-- Price Breakdown -->
+        <div class="price-rows" id="priceRows"></div>
+
+        <!-- Payment Code -->
+        <div class="pay-section">
+          <div class="divider">— or activate with code —</div>
+          <div class="field-wrap">
+            <div class="field-lbl">Activation / Payment Code</div>
+            <div class="field-row">
+              <input id="codeInput" class="code-input" placeholder="Enter your access code" autocomplete="off" spellcheck="false">
+              <button id="codeBtn" class="code-btn" onclick="redeemCode()">Activate</button>
             </div>
+            <div id="codeMsg" class="code-msg"></div>
+          </div>
+
+          <div class="pay-note">Payment is available via activation code from your teacher</div>
+          <div class="secure-row">
+            <div class="sec-chip">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Secured
+            </div>
+            <div class="sec-chip">🔑 Code Activation</div>
           </div>
         </div>
       </div>
@@ -411,359 +248,165 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:32px 24px
   </div>
 </main>
 
-<div id="processingOverlay" class="proc-overlay hidden">
-  <div class="proc-card" id="processingCard"></div>
+<div id="procOverlay" class="proc-overlay hidden">
+  <div class="proc-card" id="procCard"></div>
 </div>
 
 <script>
 (function(){
   document.addEventListener('contextmenu',e=>e.preventDefault());
   document.addEventListener('copy',e=>{e.clipboardData.setData('text/plain','⚠️');e.preventDefault();});
-  window.addEventListener('keydown',e=>{
-    if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){
-      e.preventDefault();return false;
-    }
-  });
+  window.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){e.preventDefault();return false;}});
 })();
 
 const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
-let currentUser=null,lessonData=null,lessonId=null;
-let appliedCoupon=null,orderId=null,pollInterval=null;
-let paymentMethod='code';
-const CURRENCY='ج.م';
+let currentUser=null,lessonData=null,lessonId=null,appliedCoupon=null;
+const CURRENCY='EGP';
 
-function hideLoader(){
-  const l=document.getElementById('loader');
-  l.style.opacity='0';setTimeout(()=>l.style.display='none',350);
-}
-
-async function init(){
-  /*
-   * ════════════════════════════════════════════
-   * FIX: lesson_id من URL أو من localStorage
-   *
-   * في صفحة الكورس، قبل الـ redirect اعمل:
-   *   localStorage.setItem('checkout_lesson_id', lessonId);
-   *   window.location.href = '/checkout';
-   * ════════════════════════════════════════════
-   */
-  lessonId = new URLSearchParams(location.search).get('lesson_id')
-           || localStorage.getItem('checkout_lesson_id');
-
-  if(!lessonId){
-    try{
-      const cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
-      if(Array.isArray(cart) && cart.length > 0){
-        lessonId = cart[0];
-        localStorage.setItem('checkout_lesson_id', lessonId);
-      }
-    }catch(e){}
-  }
-
-  if(!lessonId){
-    hideLoader();
-    document.querySelector('main').innerHTML=`
-      <div style="text-align:center;padding:100px 20px">
-        <div style="font-size:3.5rem;margin-bottom:16px">⚠️</div>
-        <div style="font-size:1.1rem;font-weight:800;margin-bottom:8px">لم يتم تحديد كورس</div>
-        <div style="font-size:.82rem;color:var(--text-3);margin-bottom:20px">يرجى الرجوع واختيار الكورس من جديد</div>
-        <button onclick="history.back()" style="background:var(--green-dim);border:1px solid rgba(0,232,122,0.3);color:var(--green);border-radius:12px;padding:10px 24px;font-family:var(--sans);font-weight:700;cursor:pointer;font-size:.85rem">رجوع</button>
-      </div>`;
-    return;
-  }
-
-  const{data:{session}}=await db.auth.getSession();
-  if(!session){hideLoader();window.location.href='/home';return;}
-  currentUser=session.user;
-
-  try{
-    const{data:snap,error}=await db.from('lessons').select('*').eq('id',lessonId).single();
-    if(error||!snap) throw new Error('الكورس غير موجود');
-    lessonData=snap;
-    localStorage.setItem('checkout_lesson_id',lessonId);
-    renderCourseCard();renderCartItem();renderPrices();hideLoader();
-  }catch(e){
-    hideLoader();
-    document.querySelector('main').innerHTML=`
-      <div style="text-align:center;padding:100px 20px;color:var(--red)">
-        <div style="font-size:3rem;margin-bottom:12px">❌</div>
-        <div style="font-size:1rem;font-weight:800">${e.message}</div>
-      </div>`;
-  }
-}
+function showLoader(t='Loading…'){const s=document.getElementById('loadingScreen');document.getElementById('ldTxt').textContent=t;s.style.display='flex';void s.offsetWidth;s.style.opacity='1';}
+function hideLoader(){const s=document.getElementById('loadingScreen');s.style.opacity='0';setTimeout(()=>s.style.display='none',320);}
 
 function renderCourseCard(){
-  const p=lessonData.price||0;
-  const hasDisc=appliedCoupon&&appliedCoupon.discount>0;
-  const final=hasDisc?p-appliedCoupon.discount:p;
-  const qCount=lessonData.questions?.length||0;
-  const vCount=lessonData.videos?.length||0;
-  const days=lessonData.validitydays||90;
-
+  const p=lessonData.price||0;const disc=appliedCoupon?appliedCoupon.discount:0;const final=Math.max(0,p-disc);
+  const qc=lessonData.questions?.length||0;const vc=(lessonData.videos||[]).length;const days=lessonData.validitydays||90;
   document.getElementById('courseCard').innerHTML=`
-    <div class="course-img-wrap">
-      ${lessonData.image?`<img src="${lessonData.image}" class="course-img" alt="">`:
-        `<div class="course-img-ph">📚</div>`}
-      <div class="course-img-overlay"></div>
-      ${hasDisc?`<div class="course-badge-discount">-${appliedCoupon.discountPercent||0}% خصم</div>`:''}
+    <div class="course-img">
+      ${lessonData.image?`<img src="${lessonData.image}" alt="">`:`<div class="course-img-ph">📚</div>`}
+      <div class="course-img-ov"></div>
+      ${disc>0?`<div class="disc-badge">-${appliedCoupon.discountPercent||0}% OFF</div>`:''}
     </div>
     <div class="course-body">
-      <div class="course-name">${lessonData.name||'كورس'}</div>
-      <div class="course-desc">${lessonData.description||'وصف الكورس غير متاح'}</div>
-      <div class="course-feats">
-        ${qCount>0?`<div class="feat-item"><div class="feat-ic">📝</div>${qCount} سؤال امتحان</div>`:''}
-        ${vCount>0?`<div class="feat-item"><div class="feat-ic">🎬</div>${vCount} فيديو شرح</div>`:''}
-        <div class="feat-item"><div class="feat-ic">♾️</div>وصول مدى الحياة</div>
-        <div class="feat-item"><div class="feat-ic">📄</div>ملف PDF مراجعة</div>
-        <div class="feat-item"><div class="feat-ic">📅</div>صالح ${days} يوم</div>
-        <div class="feat-item"><div class="feat-ic">✅</div>شهادة إتمام</div>
+      <div class="course-name">${lessonData.name||'Course'}</div>
+      <div class="course-desc">${lessonData.description||'Complete course with video lessons, exam, and PDF notes.'}</div>
+      <div class="feats-grid">
+        ${qc>0?`<div class="feat"><div class="feat-ic">📝</div>${qc} Exam Questions</div>`:''}
+        ${vc>0?`<div class="feat"><div class="feat-ic">🎬</div>${vc} Video Lessons</div>`:''}
+        <div class="feat"><div class="feat-ic">📅</div>Valid ${days} Days</div>
+        <div class="feat"><div class="feat-ic">📄</div>PDF Notes</div>
+        <div class="feat"><div class="feat-ic">✅</div>Completion Certificate</div>
+        <div class="feat"><div class="feat-ic">♾️</div>Lifetime Access</div>
       </div>
-      <div class="price-tag">
+      <div class="price-row">
         <span class="price-main">${final} ${CURRENCY}</span>
-        ${hasDisc?`<span class="price-old">${p} ${CURRENCY}</span>`:''}
-        ${hasDisc?`<span class="price-saved">وفرت ${appliedCoupon.discount} ${CURRENCY}</span>`:''}
+        ${disc>0?`<span class="price-old">${p} ${CURRENCY}</span>`:''}
+        ${disc>0?`<span class="price-saved">You save ${disc} ${CURRENCY}</span>`:''}
       </div>
     </div>`;
 }
 
 function renderCartItem(){
-  try{localStorage.setItem('checkout_lesson_id', lessonId);}catch(e){}
-  document.getElementById('cartItem').innerHTML=`
-    <div class="cart-ic">📚</div>
-    <div class="cart-info">
-      <div class="cart-name">${lessonData.name||'كورس'}</div>
-      <div class="cart-type">دورة تعليمية · مرة واحدة</div>
-    </div>
-    <div class="cart-price">${lessonData.price||0} ${CURRENCY}</div>`;
+  const p=lessonData.price||0;
+  document.getElementById('cartItem').innerHTML=`<div class="cart-ico">📚</div><div class="cart-info"><div class="cart-name">${lessonData.name||'Course'}</div><div class="cart-type">Online Course · One-time</div></div><div class="cart-price">${p} ${CURRENCY}</div>`;
 }
 
 function renderPrices(){
-  const p=lessonData.price||0;
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const final=Math.max(0,p-disc);
-  let h=`<div class="pr"><span class="l">المجموع الفرعي</span><span class="v">${p} ${CURRENCY}</span></div>`;
-  if(disc>0) h+=`<div class="pr disc"><span class="l">خصم ${appliedCoupon.discountPercent?`(${appliedCoupon.discountPercent}%)`:''}</span><span class="v">- ${disc} ${CURRENCY}</span></div>`;
-  h+=`<div class="pr total"><span class="l" style="font-weight:800">الإجمالي</span><span class="v">${final} ${CURRENCY}</span></div>`;
-  document.getElementById('priceBreakdown').innerHTML=h;
+  const p=lessonData.price||0;const disc=appliedCoupon?appliedCoupon.discount:0;const final=Math.max(0,p-disc);
+  let h=`<div class="pr"><span class="l">Subtotal</span><span class="v">${p} ${CURRENCY}</span></div>`;
+  if(disc>0)h+=`<div class="pr disc"><span class="l">Discount ${appliedCoupon.discountPercent?`(${appliedCoupon.discountPercent}%)`:''}</span><span class="v">− ${disc} ${CURRENCY}</span></div>`;
+  h+=`<div class="pr total"><span class="l">Total</span><span class="v">${final} ${CURRENCY}</span></div>`;
+  document.getElementById('priceRows').innerHTML=h;
 }
 
 async function applyCoupon(){
-  const input=document.getElementById('couponInput');
-  const btn=document.getElementById('couponBtn');
-  const msg=document.getElementById('couponMsg');
-  const code=input.value.trim().toUpperCase();
-  if(!code){input.classList.add('error');msg.className='coup-msg err';msg.textContent='أدخل كود الخصم';return;}
-  if(appliedCoupon){
-    appliedCoupon=null;
-    input.classList.remove('success','error');input.disabled=false;
-    msg.className='coup-msg';msg.textContent='';
-    btn.textContent='تطبيق';btn.classList.remove('remove-mode');
-    renderCourseCard();renderPrices();return;
-  }
-  btn.disabled=true;btn.textContent='جاري الدفع…';
-  input.classList.remove('error','success');msg.textContent='';
+  const inp=document.getElementById('couponInput'),btn=document.getElementById('couponBtn'),msg=document.getElementById('couponMsg');
+  const code=inp.value.trim().toUpperCase();
+  if(appliedCoupon){appliedCoupon=null;inp.classList.remove('ok','err');inp.disabled=false;msg.className='code-msg';msg.textContent='';btn.textContent='Apply';btn.classList.remove('remove');renderCourseCard();renderPrices();return;}
+  if(!code){inp.classList.add('err');msg.className='code-msg err';msg.textContent='Please enter a coupon code.';return;}
+  btn.disabled=true;btn.textContent='Checking…';inp.classList.remove('err','ok');msg.textContent='';
   try{
-    const{data:coupon}=await db.from('coupons').select('*').eq('code',code).single();
-    if(!coupon) throw new Error('كوبون غير صالح');
-    if(!coupon.is_active) throw new Error('هذا الكوبون غير مفعل');
-    if(coupon.expires_at&&new Date(coupon.expires_at)<new Date()) throw new Error('الكوبون منتهي الصلاحية');
-    if(coupon.max_uses!==null&&coupon.used_count>=coupon.max_uses) throw new Error('تم استنفاد هذا الكوبون');
-    if(coupon.lesson_id&&coupon.lesson_id!==lessonId) throw new Error('الكوبون لا ينطبق على هذا الكورس');
-    const price=lessonData.price||0;
-    let discount=0,discountPercent=0;
-    if(coupon.discount_percent>0){discountPercent=coupon.discount_percent;discount=Math.round(price*discountPercent/100*100)/100;}
-    if(coupon.discount_amount>0) discount+=coupon.discount_amount;
-    discount=Math.min(discount,price);
-    if(discount<=0) throw new Error('الكوبون لا يوفر خصماً على هذا الكورس');
-    appliedCoupon={id:coupon.id,code,discount,discountPercent};
-    input.classList.add('success');input.disabled=true;
-    msg.className='coup-msg ok';msg.textContent=`✓ تم التطبيق — وفرت ${discount} ${CURRENCY}`;
-    btn.textContent='إزالة';btn.classList.add('remove-mode');
-    renderCourseCard();renderPrices();
-  }catch(e){
-    input.classList.add('error');msg.className='coup-msg err';msg.textContent='✗ '+e.message;btn.textContent='تطبيق';
-  }
+    const{data:c}=await db.from('coupons').select('*').eq('code',code).single();
+    if(!c)throw new Error('Invalid coupon code');
+    if(!c.is_active)throw new Error('This coupon is not active');
+    if(c.expires_at&&new Date(c.expires_at)<new Date())throw new Error('This coupon has expired');
+    if(c.max_uses!==null&&c.used_count>=c.max_uses)throw new Error('This coupon is fully used');
+    if(c.lesson_id&&c.lesson_id!==lessonId)throw new Error('This coupon does not apply to this course');
+    const price=lessonData.price||0;let disc=0,pct=0;
+    if(c.discount_percent>0){pct=c.discount_percent;disc=Math.round(price*pct/100*100)/100;}
+    if(c.discount_amount>0)disc+=c.discount_amount;
+    disc=Math.min(disc,price);
+    if(disc<=0)throw new Error('This coupon provides no discount here');
+    appliedCoupon={id:c.id,code,discount:disc,discountPercent:pct};
+    inp.classList.add('ok');inp.disabled=true;msg.className='code-msg ok';msg.textContent=`✓ Applied — you save ${disc} ${CURRENCY}`;btn.textContent='Remove';btn.classList.add('remove');renderCourseCard();renderPrices();
+  }catch(e){inp.classList.add('err');msg.className='code-msg err';msg.textContent='✗ '+e.message;btn.textContent='Apply';}
   btn.disabled=false;
 }
-document.getElementById('couponInput').addEventListener('keydown',e=>{if(e.key==='Enter') applyCoupon();});
+document.getElementById('couponInput').addEventListener('keydown',e=>{if(e.key==='Enter')applyCoupon();});
 
-
-function setPaymentMethod(){
-  paymentMethod='code';
+async function getStudentId(){
+  try{const{data:u}=await db.from('users').select('studentid').eq('id',currentUser.id).single();return u?.studentid||currentUser.id.substring(0,6).toUpperCase();}
+  catch{return currentUser.id.substring(0,6).toUpperCase();}
 }
 
-async function getStudentIdSafe(){
+async function redeemCode(){
+  const inp=document.getElementById('codeInput'),btn=document.getElementById('codeBtn'),msg=document.getElementById('codeMsg');
+  const code=inp.value.trim().toUpperCase();
+  inp.classList.remove('err','ok');msg.className='code-msg';msg.textContent='';
+  if(!code){inp.classList.add('err');msg.className='code-msg err';msg.textContent='Please enter your activation code.';return;}
+  btn.disabled=true;btn.textContent='Verifying…';
   try{
-    const { data:u, error } = await db.from('users').select('studentid').eq('id', currentUser.id).single();
-    if(error) return currentUser.id.substring(0,6).toUpperCase();
-    return u?.studentid || currentUser.id.substring(0,6).toUpperCase();
-  }catch(e){
-    return currentUser.id.substring(0,6).toUpperCase();
-  }
-}
+    const{data:row,error}=await db.from('codes').select('*').eq('code',code).single();
+    if(error||!row)throw new Error('Invalid code. Please check and try again.');
+    if(row.used&&!(row.usedby===currentUser.email&&String(row.lessonid)===String(lessonId)))throw new Error('This code has already been used.');
+    if(row.lessonid&&String(row.lessonid)!==String(lessonId))throw new Error('This code is not valid for this course.');
 
-async function redeemAccessCode(){
-  const input=document.getElementById('accessCodeInput');
-  const btn=document.getElementById('accessCodeBtn');
-  const msg=document.getElementById('accessCodeMsg');
-  const code=input.value.trim().toUpperCase();
+    const now=Date.now(),days=lessonData.validitydays||90,expiry=now+days*24*60*60*1000;
 
-  input.classList.remove('error','success');
-  msg.className='coup-msg';
-  msg.textContent='';
+    if(!row.used){
+      const{error:upErr}=await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:expiry}).eq('code',code).eq('used',false);
+      if(upErr)throw new Error('Failed to activate code. Try again.');
+    }
 
-  if(!code){
-    input.classList.add('error');
-    msg.className='coup-msg err';
-    msg.textContent='أدخل كود التفعيل';
-    return;
-  }
-
-  btn.disabled=true;
-  btn.textContent='جاري التحقق…';
-
-  try{
-    const {data:codeRow,error} = await db.from('codes').select('*').eq('code',code).single();
-    if(error || !codeRow) throw new Error('الكود غير صحيح');
-    if(codeRow.used) throw new Error('تم استخدام هذا الكود من قبل');
-    if(codeRow.lessonid && codeRow.lessonid !== lessonId) throw new Error('هذا الكود لا يخص هذا الكورس');
-
-    const validityDays=lessonData.validitydays||90;
-    const expiry=Date.now()+validityDays*24*60*60*1000;
-
-    const {error:updateError} = await db.from('codes').update({
-      used:true,
-      usedby:currentUser.email,
-      lessonid:lessonId,
-      expiryat:expiry
-    }).eq('code',code).eq('used',false);
-
-    if(updateError) throw new Error('تعذر تفعيل الكود');
-
-    const sid = await getStudentIdSafe();
+    const sid=await getStudentId();
     localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
     localStorage.removeItem('checkout_lesson_id');
+    try{const c=JSON.parse(localStorage.getItem('mp_cart')||'[]');localStorage.setItem('mp_cart',JSON.stringify(c.filter(id=>id!==lessonId)));}catch{}
 
-    try{
-      const cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
-      if(Array.isArray(cart)){
-        localStorage.setItem('mp_cart', JSON.stringify(cart.filter(id => id !== lessonId)));
-      }
-    }catch(e){}
-
-    input.classList.add('success');
-    msg.className='coup-msg ok';
-    msg.textContent='✓ تم الدفع بالكود بنجاح';
-    showSuccess({id:code,final_amount:(lessonData.price||0)-(appliedCoupon?appliedCoupon.discount:0),isCodePayment:true});
+    inp.classList.add('ok');msg.className='code-msg ok';msg.textContent='✓ Activated successfully!';
+    const final=Math.max(0,(lessonData.price||0)-(appliedCoupon?appliedCoupon.discount:0));
+    showSuccess({final,code,lessonName:lessonData.name});
   }catch(e){
-    input.classList.add('error');
-    msg.className='coup-msg err';
-    msg.textContent='✗ ' + e.message;
+    inp.classList.add('err');msg.className='code-msg err';msg.textContent='✗ '+e.message;
   }
-
-  btn.disabled=false;
-  btn.textContent='دفع';
+  btn.disabled=false;btn.textContent='Activate';
 }
-document.addEventListener('DOMContentLoaded',()=>{const el=document.getElementById('accessCodeInput');if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter') redeemAccessCode();});});
+document.getElementById('codeInput').addEventListener('keydown',e=>{if(e.key==='Enter')redeemCode();});
 
-async function startPayment(){
-  paymentFailed('الدفع بالبطاقة / المحفظة غير متاح حالياً');
-}
-
-async function initPayment(orderId,amount){
-  /*
-  ══════════════════════════════════════════
-  📌 ضع كود بوابة الدفع هنا (Paymob مثلاً)
-
-  const res = await fetch('https://accept.paymob.com/api/v1/intention/',{...});
-  const data = await res.json();
-  await db.from('orders').update({payment_ref:data.id}).eq('id',orderId);
-  window.location.href = `https://accept.paymob.com/api/v1/intention/${data.id}/payment`;
-  ══════════════════════════════════════════
-  */
-  // 🧪 TEST MODE — احذف في الإنتاج
-  setTimeout(async()=>{
-    await db.from('orders').update({status:'paid',paid_at:new Date().toISOString(),payment_ref:'test_'+Date.now()}).eq('id',orderId);
-  },5000);
-}
-
-function startPolling(oid){
-  let attempts=0;
-  pollInterval=setInterval(async()=>{
-    attempts++;
-    try{
-      const{data:order}=await db.from('orders').select('status,paid_at,final_amount').eq('id',oid).single();
-      if(!order){if(attempts>=100){clearInterval(pollInterval);paymentFailed('انتهت مهلة التحقق');}return;}
-      if(order.status==='paid'){clearInterval(pollInterval);await completePurchase(order);return;}
-      if(order.status==='failed'){clearInterval(pollInterval);paymentFailed('فشلت عملية الدفع');return;}
-      if(attempts>=100){clearInterval(pollInterval);paymentFailed('انتهت مهلة التحقق');}
-    }catch(e){if(attempts>=100){clearInterval(pollInterval);paymentFailed('خطأ في التحقق');}}
-  },3000);
-}
-
-async function completePurchase(order){
-  paymentFailed('الدفع بالكود فقط. استخدم كود الدفع لإتمام العملية.');
-}
-
-function showProcessing(oid,amount){
-  document.getElementById('processingOverlay').classList.remove('hidden');
-  document.getElementById('processingCard').innerHTML=`
-    <div class="proc-spinner"></div>
-    <div class="proc-title">جاري معالجة الدفع</div>
-    <div class="proc-sub">يرجى الانتظار ولا تغلق الصفحة<br>سيتم التحقق تلقائياً من حالة الدفع</div>
-    <div class="proc-order">طلب #${oid.substring(0,8).toUpperCase()} · ${amount} ${CURRENCY}</div>`;
-}
-
-function showSuccess(order){
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const final=order?.final_amount??((lessonData.price||0)-disc);
-  const paidLabel = order?.isCodePayment ? 'تم الدفع بالكود بنجاح!' : 'تم الدفع بنجاح!';
-  const statusLabel = order?.isCodePayment ? 'مدفوع بالكود ✓' : 'مدفوع ✓';
-  document.getElementById('processingCard').innerHTML=`
-    <div class="suc-ring"><div class="suc-inner">✓</div></div>
-    <div class="proc-title" style="color:var(--green)">${paidLabel}</div>
+function showSuccess({final,code,lessonName}){
+  document.getElementById('procOverlay').classList.remove('hidden');
+  document.getElementById('procCard').innerHTML=`
+    <div class="suc-ring">✓</div>
+    <div class="proc-title" style="color:var(--accent)">Access Granted!</div>
     <div class="suc-amount">${final} ${CURRENCY}</div>
-    <div class="suc-lbl">إجمالي العملية</div>
+    <div class="suc-lbl">Order Total</div>
     <div class="suc-details">
-      <div class="suc-row"><span class="sl">رقم الطلب</span><span class="sv">#${(order?.id||'').substring(0,8).toUpperCase()}</span></div>
-      <div class="suc-row"><span class="sl">الكورس</span><span class="sv">${lessonData.name||'—'}</span></div>
-      ${disc>0?`<div class="suc-row"><span class="sl">الخصم</span><span class="sv" style="color:var(--green)">- ${disc} ${CURRENCY}</span></div>`:''}
-      <div class="suc-row"><span class="sl">الحالة</span><span class="sv" style="color:var(--green)">${statusLabel}</span></div>
+      <div class="suc-row"><span class="sl">Code</span><span class="sv">${code}</span></div>
+      <div class="suc-row"><span class="sl">Course</span><span class="sv">${lessonName}</span></div>
+      <div class="suc-row"><span class="sl">Status</span><span class="sv" style="color:var(--accent)">Active ✓</span></div>
     </div>
     <button class="go-btn" onclick="window.location.href='/lesson?id=${lessonId}'">
-      ابدأ الكورس الآن
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      Start Course Now →
     </button>`;
 }
 
-function paymentFailed(reason){
-  document.getElementById('processingCard').innerHTML=`
-    <div class="err-ring">✗</div>
-    <div class="proc-title" style="color:var(--red)">فشلت عملية الدفع</div>
-    <div class="proc-sub">${reason}<br>يمكنك المحاولة مرة أخرى</div>
-    <button class="retry-btn" onclick="retryPayment()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      إعادة المحاولة
-    </button>
-    <button style="display:block;margin:10px auto 0;background:none;border:1px solid var(--border-glass);border-radius:10px;padding:10px 20px;font-family:var(--sans);font-size:.8rem;font-weight:600;color:var(--text-3);cursor:pointer" onclick="cancelPayment()">إلغاء</button>`;
+async function init(){
+  showLoader('Loading…');
+  lessonId=new URLSearchParams(location.search).get('lesson_id')||localStorage.getItem('checkout_lesson_id');
+  if(!lessonId){hideLoader();document.querySelector('main').innerHTML=`<div style="text-align:center;padding:100px 20px"><div style="font-size:3rem;margin-bottom:16px">⚠️</div><div style="font-family:var(--display);font-size:1.3rem;font-weight:700;margin-bottom:8px">No Course Selected</div><div style="font-size:.83rem;color:var(--muted);margin-bottom:20px">Please go back and choose a course.</div><button onclick="history.back()" class="back-btn">← Back</button></div>`;return;}
+  const{data:{session}}=await db.auth.getSession();
+  if(!session){hideLoader();window.location.href='/home';return;}
+  currentUser=session.user;
+  try{
+    const{data:snap,error}=await db.from('lessons').select('*').eq('id',lessonId).single();
+    if(error||!snap)throw new Error('Course not found');
+    lessonData=snap;localStorage.setItem('checkout_lesson_id',lessonId);
+    renderCourseCard();renderCartItem();renderPrices();hideLoader();
+  }catch(e){
+    hideLoader();document.querySelector('main').innerHTML=`<div style="text-align:center;padding:100px 20px;color:var(--red)"><div style="font-size:3rem">❌</div><div style="font-size:1rem;font-weight:800;margin-top:12px">${e.message}</div></div>`;
+  }
 }
-
-function retryPayment(){
-  document.getElementById('processingOverlay').classList.add('hidden');
-  const payBtn=document.getElementById('payBtn');
-  payBtn.disabled=false;
-  payBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> تأكيد الدفع';
-}
-
-function cancelPayment(){
-  if(pollInterval) clearInterval(pollInterval);
-  document.getElementById('processingOverlay').classList.add('hidden');
-  history.back();
-}
-
 init();
 </script>
 </body>
