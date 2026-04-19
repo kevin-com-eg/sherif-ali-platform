@@ -947,24 +947,61 @@ async function init(){
   }
 
   try{
-    const[{data:u},{data:codes}]=await Promise.all([
+    const [{data:u},{data:codes}] = await Promise.all([
       db.from('users').select('studentid').eq('id',currentUser.id).single(),
       db.from('codes').select('*').eq('usedby',currentUser.email)
     ]);
-    if(u)myStudentId=u.studentid||currentUser.id.substring(0,6).toUpperCase();
-    let ok=false,exp=null;const now=Date.now();
-    if(codes)codes.forEach(c=>{if(c.lessonid===lessonId&&c.expiryat>now){ok=true;exp=c.expiryat;}});
-    if(ok){localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));await loadLesson(lessonId);startAccessTimer(exp);hideLoader();}
-    else{hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
-  }catch(e){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
+    if(u) myStudentId = u.studentid || currentUser.id.substring(0,6).toUpperCase();
+
+    let ok=false, exp=null;
+    const now=Date.now();
+
+    if(codes){
+      codes.forEach(c=>{
+        if(
+          String(c.lessonid)===String(lessonId) &&
+          c.usedby===currentUser.email &&
+          Number(c.expiryat)>now
+        ){
+          ok=true;
+          exp=Number(c.expiryat);
+        }
+      });
+    }
+
+    if(ok){
+      localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry:exp,studentId:myStudentId}));
+      await loadLesson(lessonId);
+      startAccessTimer(exp);
+      hideLoader();
+    }
+    else{
+      hideLoader();
+      document.getElementById('codeLockScreen').classList.remove('hidden');
+    }
+  }catch(e){
+    hideLoader();
+    document.getElementById('codeLockScreen').classList.remove('hidden');
+  }
 }
 
 async function verifyBg(lessonId){
   try{
-    const{data:codes}=await db.from('codes').select('expiryat,lessonid').eq('usedby',currentUser.email);
-    if(!codes)return;const now=Date.now();let ok=false;
-    codes.forEach(c=>{if(c.lessonid===lessonId&&c.expiryat>now)ok=true;});
-    if(!ok)localStorage.removeItem(`access_${currentUser.id}_${lessonId}`);
+    const { data: codes } = await db.from('codes').select('expiryat,lessonid,usedby').eq('usedby',currentUser.email);
+    if(!codes) return;
+
+    const now = Date.now();
+    let ok = false;
+
+    codes.forEach(c=>{
+      if(
+        String(c.lessonid)===String(lessonId) &&
+        c.usedby===currentUser.email &&
+        Number(c.expiryat)>now
+      ) ok = true;
+    });
+
+    if(!ok) localStorage.removeItem(`access_${currentUser.id}_${lessonId}`);
   }catch(e){}
 }
 
@@ -1041,18 +1078,54 @@ document.getElementById('verifyBtn').onclick=async()=>{
   if(!code)return alert("Please enter the code");
   showLoader("Verifying…");
   try{
-    if(!currentUser){const{data:{session}}=await db.auth.getSession();if(!session){location.href='/home';return;}currentUser=session.user;}
-    const{data:rows}=await db.from('codes').select('*').eq('code',code);
-    if(rows&&rows.length>0){
-      const cd=rows[0],now=Date.now();
-      const{data:ls}=await db.from('lessons').select('validitydays').eq('id',lessonId).single();
-      const days=ls?.validitydays||90;
-      if(!cd.used){const exp=now+days*24*60*60*1000;await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code);localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));location.reload();}
-      else if(cd.usedby===currentUser.email&&cd.lessonid===lessonId&&cd.expiryat>now){localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:cd.expiryat,studentId:myStudentId}));location.reload();}
-      else if(cd.expiryat&&cd.expiryat<=now){alert("This code has expired!");}
-      else{alert("This code is already used by another account!");}
-    }else{alert("Invalid code!");}
-  }catch(e){alert("Error: "+e.message);}
+    if(!currentUser){
+      const { data:{ session } } = await db.auth.getSession();
+      if(!session){ location.href='/home'; return; }
+      currentUser=session.user;
+    }
+
+    const { data: rows, error: codeError } = await db.from('codes').select('*').eq('code', code);
+    if(codeError) throw codeError;
+
+    if(rows && rows.length>0){
+      const cd=rows[0], now=Date.now();
+      const { data: ls } = await db.from('lessons').select('validitydays').eq('id', lessonId).single();
+      const days = Number(ls?.validitydays || 90);
+
+      if(!cd.used){
+        const exp = now + days*24*60*60*1000;
+        const { error: updErr } = await db.from('codes').update({
+          used:true,
+          usedby:currentUser.email,
+          lessonid:lessonId,
+          expiryat:exp
+        }).eq('code', code).eq('used', false);
+
+        if(updErr) throw updErr;
+
+        localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry:exp,studentId:myStudentId}));
+        location.reload();
+      }
+      else if(
+        cd.usedby===currentUser.email &&
+        String(cd.lessonid)===String(lessonId) &&
+        Number(cd.expiryat)>now
+      ){
+        localStorage.setItem(`access_${currentUser.id}_${lessonId}`, JSON.stringify({expiry:Number(cd.expiryat),studentId:myStudentId}));
+        location.reload();
+      }
+      else if(cd.expiryat && Number(cd.expiryat)<=now){
+        alert("This code has expired!");
+      }
+      else{
+        alert("This code is already used by another account!");
+      }
+    }else{
+      alert("Invalid code!");
+    }
+  }catch(e){
+    alert("Error: "+(e?.message||e));
+  }
   hideLoader();
 };
 
