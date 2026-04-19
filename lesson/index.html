@@ -1050,7 +1050,13 @@ async function loadLesson(id){
   // Homework
   if(hwList&&hwList.length>0){
     hwData=hwList[0];hwQuestions=hwData.questions||[];
-    const{data:hwRes}=await db.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',hwData.id).single().catch(()=>({data:null}));
+    const { data: hwRes, error: hwResError } = await db
+      .from('hw_results')
+      .select('*')
+      .eq('email', currentUser.email)
+      .eq('hw_id', hwData.id)
+      .maybeSingle();
+    if(hwResError) console.warn('hw_results load error:', hwResError);
     if(hwRes){hwDone=true;hwResultsMap[hwData.id]=hwRes;renderHomeworkDone(hwRes);}
     else{hwDone=false;renderHomeworkStart();}
     document.getElementById('btn-homework-tab').classList.remove('locked-dim');
