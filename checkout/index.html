@@ -448,6 +448,16 @@ async function init(){
            || localStorage.getItem('checkout_lesson_id');
 
   if(!lessonId){
+    try{
+      const cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
+      if(Array.isArray(cart) && cart.length > 0){
+        lessonId = cart[0];
+        localStorage.setItem('checkout_lesson_id', lessonId);
+      }
+    }catch(e){}
+  }
+
+  if(!lessonId){
     hideLoader();
     document.querySelector('main').innerHTML=`
       <div style="text-align:center;padding:100px 20px">
@@ -514,6 +524,7 @@ function renderCourseCard(){
 }
 
 function renderCartItem(){
+  try{localStorage.setItem('checkout_lesson_id', lessonId);}catch(e){}
   document.getElementById('cartItem').innerHTML=`
     <div class="cart-ic">📚</div>
     <div class="cart-info">
@@ -637,6 +648,13 @@ async function completePurchase(order){
     const sid=u?.studentid||currentUser.id.substring(0,6).toUpperCase();
     localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
     localStorage.removeItem('checkout_lesson_id');
+    try{
+      const cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
+      if(Array.isArray(cart)){
+        const nextCart = cart.filter(id => id !== lessonId);
+        localStorage.setItem('mp_cart', JSON.stringify(nextCart));
+      }
+    }catch(e){}
   }catch(e){console.error(e);}
   showSuccess(order);
 }
