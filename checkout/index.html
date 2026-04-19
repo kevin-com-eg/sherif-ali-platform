@@ -387,31 +387,22 @@ main{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:32px 24px
           </div>
           <div class="prices" id="priceBreakdown"></div>
           <div class="pay-sec">
-            <div style="display:flex;gap:8px;margin-bottom:12px">
-              <button id="cardMethodBtn" class="coup-btn" style="flex:1;background:var(--green-dim);border-color:rgba(0,232,122,0.25);color:var(--green)" onclick="setPaymentMethod('card')">بطاقة / محفظة</button>
-              <button id="codeMethodBtn" class="coup-btn" style="flex:1" onclick="setPaymentMethod('code')">الدفع بالكود</button>
-            </div>
-
-            <div id="codePayBox" class="coupon-wrap hidden" style="margin-bottom:14px">
-              <div class="coup-lbl">كود التفعيل</div>
+            <div id="codePayBox" class="coupon-wrap" style="margin-bottom:14px">
+              <div class="coup-lbl">الدفع بالكود</div>
               <div class="coup-row">
-                <input id="accessCodeInput" class="coupon-input" placeholder="أدخل كود التفعيل" autocomplete="off" spellcheck="false">
-                <button id="accessCodeBtn" class="coup-btn" onclick="redeemAccessCode()">تفعيل</button>
+                <input id="accessCodeInput" class="coupon-input" placeholder="أدخل كود الدفع / التفعيل" autocomplete="off" spellcheck="false">
+                <button id="accessCodeBtn" class="coup-btn" onclick="redeemAccessCode()">دفع</button>
               </div>
               <div id="accessCodeMsg" class="coup-msg"></div>
             </div>
 
-            <button id="payBtn" class="pay-btn" onclick="startPayment()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-              تأكيد الدفع
-            </button>
-            <div class="pay-note">الدفع آمن ومشفر · SSL 256-bit</div>
+            <div class="pay-note">الدفع متاح بالكود فقط</div>
             <div class="secure-row">
               <div class="sec-chip">
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 Secured
               </div>
-              <div class="sec-chip" id="paymentMethodChip">💳 بطاقة / محفظة</div>
+              <div class="sec-chip" id="paymentMethodChip">🔑 الدفع بالكود فقط</div>
             </div>
           </div>
         </div>
@@ -441,7 +432,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
 let currentUser=null,lessonData=null,lessonId=null;
 let appliedCoupon=null,orderId=null,pollInterval=null;
-let paymentMethod='card';
+let paymentMethod='code';
 const CURRENCY='ج.م';
 
 function hideLoader(){
@@ -572,7 +563,7 @@ async function applyCoupon(){
     btn.textContent='تطبيق';btn.classList.remove('remove-mode');
     renderCourseCard();renderPrices();return;
   }
-  btn.disabled=true;btn.textContent='جاري التحقق…';
+  btn.disabled=true;btn.textContent='جاري الدفع…';
   input.classList.remove('error','success');msg.textContent='';
   try{
     const{data:coupon}=await db.from('coupons').select('*').eq('code',code).single();
@@ -600,34 +591,17 @@ async function applyCoupon(){
 document.getElementById('couponInput').addEventListener('keydown',e=>{if(e.key==='Enter') applyCoupon();});
 
 
-function setPaymentMethod(method){
-  paymentMethod=method;
-  const cardBtn=document.getElementById('cardMethodBtn');
-  const codeBtn=document.getElementById('codeMethodBtn');
-  const codeBox=document.getElementById('codePayBox');
-  const payBtn=document.getElementById('payBtn');
-  const chip=document.getElementById('paymentMethodChip');
+function setPaymentMethod(){
+  paymentMethod='code';
+}
 
-  if(method==='code'){
-    cardBtn.style.background='var(--glass-2)';
-    cardBtn.style.borderColor='var(--border-glass)';
-    cardBtn.style.color='var(--text)';
-    codeBtn.style.background='var(--green-dim)';
-    codeBtn.style.borderColor='rgba(0,232,122,0.25)';
-    codeBtn.style.color='var(--green)';
-    codeBox.classList.remove('hidden');
-    payBtn.classList.add('hidden');
-    chip.textContent='🔑 كود تفعيل';
-  }else{
-    codeBtn.style.background='var(--glass-2)';
-    codeBtn.style.borderColor='var(--border-glass)';
-    codeBtn.style.color='var(--text)';
-    cardBtn.style.background='var(--green-dim)';
-    cardBtn.style.borderColor='rgba(0,232,122,0.25)';
-    cardBtn.style.color='var(--green)';
-    codeBox.classList.add('hidden');
-    payBtn.classList.remove('hidden');
-    chip.textContent='💳 بطاقة / محفظة';
+async function getStudentIdSafe(){
+  try{
+    const { data:u, error } = await db.from('users').select('studentid').eq('id', currentUser.id).single();
+    if(error) return currentUser.id.substring(0,6).toUpperCase();
+    return u?.studentid || currentUser.id.substring(0,6).toUpperCase();
+  }catch(e){
+    return currentUser.id.substring(0,6).toUpperCase();
   }
 }
 
@@ -669,8 +643,7 @@ async function redeemAccessCode(){
 
     if(updateError) throw new Error('تعذر تفعيل الكود');
 
-    const {data:u}=await db.from('users').select('studentid').eq('id',currentUser.id).single().catch(()=>({data:null}));
-    const sid=u?.studentid||currentUser.id.substring(0,6).toUpperCase();
+    const sid = await getStudentIdSafe();
     localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
     localStorage.removeItem('checkout_lesson_id');
 
@@ -683,8 +656,8 @@ async function redeemAccessCode(){
 
     input.classList.add('success');
     msg.className='coup-msg ok';
-    msg.textContent='✓ تم تفعيل الكود بنجاح';
-    showSuccess({id:code,final_amount:0,isCodePayment:true});
+    msg.textContent='✓ تم الدفع بالكود بنجاح';
+    showSuccess({id:code,final_amount:(lessonData.price||0)-(appliedCoupon?appliedCoupon.discount:0),isCodePayment:true});
   }catch(e){
     input.classList.add('error');
     msg.className='coup-msg err';
@@ -692,31 +665,12 @@ async function redeemAccessCode(){
   }
 
   btn.disabled=false;
-  btn.textContent='تفعيل';
+  btn.textContent='دفع';
 }
 document.addEventListener('DOMContentLoaded',()=>{const el=document.getElementById('accessCodeInput');if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter') redeemAccessCode();});});
 
 async function startPayment(){
-  const price=lessonData.price||0;
-  const disc=appliedCoupon?appliedCoupon.discount:0;
-  const finalAmount=Math.max(0,price-disc);
-  if(finalAmount<=0){await completePurchase(null);return;}
-  const payBtn=document.getElementById('payBtn');
-  payBtn.disabled=true;
-  payBtn.innerHTML='<div style="width:18px;height:18px;border:2px solid rgba(10,15,30,.3);border-top-color:#0a0f1e;border-radius:50%;animation:spin .6s linear infinite"></div> جاري إنشاء الطلب…';
-  try{
-    const orderData={email:currentUser.email,lesson_id:lessonId,amount:price,discount_amount:disc,coupon_code:appliedCoupon?appliedCoupon.code:null,final_amount:finalAmount,status:'pending',payment_method:'card'};
-    const{data:order,error}=await db.from('orders').insert([orderData]).select().single();
-    if(error||!order) throw new Error('فشل إنشاء الطلب');
-    orderId=order.id;
-    showProcessing(order.id,finalAmount);
-    await initPayment(order.id,finalAmount);
-    startPolling(order.id);
-  }catch(e){
-    payBtn.disabled=false;
-    payBtn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> تأكيد الدفع';
-    alert('خطأ: '+e.message);
-  }
+  paymentFailed('الدفع بالبطاقة / المحفظة غير متاح حالياً');
 }
 
 async function initPayment(orderId,amount){
@@ -751,39 +705,7 @@ function startPolling(oid){
 }
 
 async function completePurchase(order){
-  try{
-    const validityDays=Number(lessonData?.validitydays||90);
-    const expiry=Date.now()+validityDays*24*60*60*1000;
-    const accessCode='AUTO_'+Date.now()+'_'+Math.random().toString(36).substring(2,8);
-
-    const {error:insertError}=await db.from('codes').insert([{
-      code:accessCode,
-      used:true,
-      usedby:currentUser.email,
-      lessonid:lessonId,
-      expiryat:expiry
-    }]);
-
-    if(insertError) throw new Error(insertError.message||'فشل تسجيل صلاحية الكورس');
-
-    const{data:u}=await db.from('users').select('studentid').eq('id',currentUser.id).single().catch(()=>({data:null}));
-    const sid=u?.studentid||currentUser.id.substring(0,6).toUpperCase();
-    localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
-    localStorage.removeItem('checkout_lesson_id');
-
-    try{
-      const cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
-      if(Array.isArray(cart)){
-        const nextCart = cart.filter(id => id !== lessonId);
-        localStorage.setItem('mp_cart', JSON.stringify(nextCart));
-      }
-    }catch(e){}
-
-    showSuccess(order);
-  }catch(e){
-    console.error('completePurchase error:',e);
-    paymentFailed(e.message||'فشل تفعيل الكورس بعد الدفع');
-  }
+  paymentFailed('الدفع بالكود فقط. استخدم كود الدفع لإتمام العملية.');
 }
 
 function showProcessing(oid,amount){
@@ -798,13 +720,13 @@ function showProcessing(oid,amount){
 function showSuccess(order){
   const disc=appliedCoupon?appliedCoupon.discount:0;
   const final=order?.final_amount??((lessonData.price||0)-disc);
-  const paidLabel = order?.isCodePayment ? 'تم التفعيل بالكود!' : 'تم الدفع بنجاح!';
-  const statusLabel = order?.isCodePayment ? 'مفعل بالكود ✓' : 'مدفوع ✓';
+  const paidLabel = order?.isCodePayment ? 'تم الدفع بالكود بنجاح!' : 'تم الدفع بنجاح!';
+  const statusLabel = order?.isCodePayment ? 'مدفوع بالكود ✓' : 'مدفوع ✓';
   document.getElementById('processingCard').innerHTML=`
     <div class="suc-ring"><div class="suc-inner">✓</div></div>
     <div class="proc-title" style="color:var(--green)">${paidLabel}</div>
     <div class="suc-amount">${final} ${CURRENCY}</div>
-    <div class="suc-lbl">المبلغ المدفوع</div>
+    <div class="suc-lbl">إجمالي العملية</div>
     <div class="suc-details">
       <div class="suc-row"><span class="sl">رقم الطلب</span><span class="sv">#${(order?.id||'').substring(0,8).toUpperCase()}</span></div>
       <div class="suc-row"><span class="sl">الكورس</span><span class="sv">${lessonData.name||'—'}</span></div>
