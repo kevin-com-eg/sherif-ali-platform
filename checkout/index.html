@@ -752,14 +752,25 @@ function startPolling(oid){
 
 async function completePurchase(order){
   try{
-    const validityDays=lessonData.validitydays||90;
+    const validityDays=Number(lessonData?.validitydays||90);
     const expiry=Date.now()+validityDays*24*60*60*1000;
     const accessCode='AUTO_'+Date.now()+'_'+Math.random().toString(36).substring(2,8);
-    await db.from('codes').insert([{code:accessCode,used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:expiry}]);
+
+    const {error:insertError}=await db.from('codes').insert([{
+      code:accessCode,
+      used:true,
+      usedby:currentUser.email,
+      lessonid:lessonId,
+      expiryat:expiry
+    }]);
+
+    if(insertError) throw new Error(insertError.message||'فشل تسجيل صلاحية الكورس');
+
     const{data:u}=await db.from('users').select('studentid').eq('id',currentUser.id).single().catch(()=>({data:null}));
     const sid=u?.studentid||currentUser.id.substring(0,6).toUpperCase();
     localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry,studentId:sid}));
     localStorage.removeItem('checkout_lesson_id');
+
     try{
       const cart = JSON.parse(localStorage.getItem('mp_cart') || '[]');
       if(Array.isArray(cart)){
@@ -767,8 +778,12 @@ async function completePurchase(order){
         localStorage.setItem('mp_cart', JSON.stringify(nextCart));
       }
     }catch(e){}
-  }catch(e){console.error(e);}
-  showSuccess(order);
+
+    showSuccess(order);
+  }catch(e){
+    console.error('completePurchase error:',e);
+    paymentFailed(e.message||'فشل تفعيل الكورس بعد الدفع');
+  }
 }
 
 function showProcessing(oid,amount){
