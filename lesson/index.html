@@ -387,16 +387,11 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
    ═══════════════════════════════ */
 function detectAdBlocker(){
   return new Promise(resolve=>{
-    // Method 1: bait element
     const bait=document.createElement('div');
     bait.setAttribute('class','ad ads adsbox doubleclick ad-placement carbon-ads textads banner_ad ad-unit advert');
     bait.setAttribute('id','ads-bait');
     bait.style.cssText='height:1px!important;width:1px!important;position:absolute!important;left:-9999px!important;top:-9999px!important;opacity:0!important';
     document.body.appendChild(bait);
-
-    // Method 2: try to fetch a known ad-network URL pattern
-    const urlBait=new Request('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js',{method:'HEAD',mode:'no-cors'});
-
     setTimeout(()=>{
       const el=document.getElementById('ads-bait');
       if(!el){resolve(true);return;}
@@ -404,7 +399,6 @@ function detectAdBlocker(){
       const blocked=el.offsetHeight===0||el.offsetWidth===0||style.display==='none'||style.visibility==='hidden'||style.opacity==='0';
       el.remove();
       if(blocked){resolve(true);return;}
-      // Method 3: Check Brave-specific brave://settings
       if(navigator.brave&&navigator.brave.isBrave){navigator.brave.isBrave().then(isBrave=>{if(isBrave)resolve(true);else resolve(false);}).catch(()=>resolve(false));}
       else resolve(false);
     },200);
@@ -443,8 +437,8 @@ window.switchTab=(tab)=>{
   setTimeout(()=>{
     document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.remove('hidden');
-    document.getElementById(`btn-${tab}-tab`).classList.add('active');
+    document.getElementById('tab-'+tab).classList.remove('hidden');
+    document.getElementById('btn-'+tab+'-tab').classList.add('active');
     if(tab==='videos')renderVideoPage();
     hideLoader();
   },300);
@@ -461,136 +455,194 @@ function extractVideos(snap){
   for(const[key,val] of Object.entries(snap)){if(['id','name','questions','pdf','created_at','validitydays'].includes(key))continue;const str=typeof val==='string'?val:JSON.stringify(val);if(str&&str.includes('youtu')){let p=val;if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){}}if(Array.isArray(p))return normalizeVideos(p);if(typeof p==='object'&&p.url)return normalizeVideos([p]);if(typeof val==='string'&&extractYTId(val))return normalizeVideos([{url:val,name:'Video 1'}]);}}
   return null;
 }
-function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video_url||v.src||'',name:v.name||v.title||v.label||`Video ${i+1}`,requireHw:!!(v.requireHw||v.require_hw||false),hwId:v.hwId||v.hw_id||''}));}
+function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video_url||v.src||'',name:v.name||v.title||v.label||'Video '+(i+1),requireHw:!!(v.requireHw||v.require_hw||false),hwId:v.hwId||v.hw_id||''}));}
 
 /* ── VIDEO PAGE ── */
 function renderVideoPage(){
   const container=document.getElementById('videosContainer');
-  if(!videosData||videosData.length===0){container.innerHTML=`<div class="empty-vid"><div class="ei">📺</div><div class="et">No Videos Yet</div><div class="es">Video lessons will appear here once added.</div></div>`;return;}
+  if(!videosData||videosData.length===0){container.innerHTML='<div class="empty-vid"><div class="ei">📺</div><div class="et">No Videos Yet</div><div class="es">Video lessons will appear here once added.</div></div>';return;}
   if(currentVideoIdx>=videosData.length)currentVideoIdx=videosData.length-1;
   if(currentVideoIdx<0)currentVideoIdx=0;
   const v=videosData[currentVideoIdx];
   const isLocked=v.requireHw&&!hwResultsMap[v.hwId];
-  const ytId=extractYTId(v.url);const isDirect=isDirectVid(v.url);
+  const ytId=extractYTId(v.url);
+  const isDirect=isDirectVid(v.url);
 
+  /* ── FIX: بناء side items بدون nested backticks ── */
   let sideItems='';
-  videosData.forEach((vid,i)=>{
+  videosData.forEach(function(vid,i){
     const locked=vid.requireHw&&!hwResultsMap[vid.hwId];
-    sideItems+=`<div class="side-item ${i===currentVideoIdx?'active':''} ${locked?'locked':''}" onclick="${locked?'':i===currentVideoIdx?'':``goToVideo(${i})``}">
-      <div class="side-head">
-        <span class="side-dot">${i+1}</span>
-        <div class="side-copy">
-          <div class="side-title">${vid.name||`Lecture ${i+1}`}</div>
-          <button class="side-play" ${locked?'disabled':''} onclick="event.stopPropagation();${locked?'':i===currentVideoIdx?'':``goToVideo(${i})``}">${locked?'🔒 Locked':'▶ Play'}</button>
-        </div>
-      </div>
-    </div>`;
+    const divClick=locked?'':( i===currentVideoIdx?'':'goToVideo('+i+')' );
+    const btnClick=locked?'':( i===currentVideoIdx?'':'goToVideo('+i+')' );
+    const activeClass=i===currentVideoIdx?'active':'';
+    const lockedClass=locked?'locked':'';
+    const vidName=vid.name||('Lecture '+(i+1));
+    sideItems+='<div class="side-item '+activeClass+' '+lockedClass+'" onclick="'+divClick+'">'
+      +'<div class="side-head">'
+      +'<span class="side-dot">'+(i+1)+'</span>'
+      +'<div class="side-copy">'
+      +'<div class="side-title">'+vidName+'</div>'
+      +'<button class="side-play" '+(locked?'disabled':'')
+      +' onclick="event.stopPropagation();'+btnClick+'">'
+      +(locked?'🔒 Locked':'▶ Play')
+      +'</button>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
   });
 
   let playerHtml='';
-  if(isLocked){playerHtml=`<div class="video-locked-ov"><div class="lk-emoji">🔒</div><div class="lk-title">Video Locked</div><div class="lk-sub">Complete the homework assignment first to unlock this video.</div><button class="lk-btn" onclick="switchTab('homework')">Go to Homework →</button></div>`;}
-  else if(ytId){playerHtml=`<iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&iv_load_policy=3&controls=1&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen" allowfullscreen></iframe><div class="video-wm">${myStudentId}</div>`;}
-  else if(isDirect){playerHtml=`<div id="mp4Slot" style="width:100%;height:100%"></div>`;}
-  else{playerHtml=`<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);background:var(--bg2)"><div style="font-size:2.5rem">⚠️</div><div style="font-size:.85rem">Could not load video</div></div>`;}
+  if(isLocked){
+    playerHtml='<div class="video-locked-ov"><div class="lk-emoji">🔒</div><div class="lk-title">Video Locked</div><div class="lk-sub">Complete the homework assignment first to unlock this video.</div><button class="lk-btn" onclick="switchTab(\'homework\')">Go to Homework →</button></div>';
+  } else if(ytId){
+    playerHtml='<iframe src="https://www.youtube.com/embed/'+ytId+'?rel=0&modestbranding=1&iv_load_policy=3&controls=1&playsinline=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen" allowfullscreen></iframe><div class="video-wm">'+myStudentId+'</div>';
+  } else if(isDirect){
+    playerHtml='<div id="mp4Slot" style="width:100%;height:100%"></div>';
+  } else {
+    playerHtml='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);background:var(--bg2)"><div style="font-size:2.5rem">⚠️</div><div style="font-size:.85rem">Could not load video</div></div>';
+  }
 
-  container.innerHTML=`
-    <div class="watch-layout">
-      <aside class="sidebar-card">
-        <div class="sidebar-head">📋 Course Content</div>
-        <div class="sidebar-scroll">${sideItems}</div>
-      </aside>
-      <section class="stage-area">
-        <div class="stage-player">${playerHtml}</div>
-        <div class="watch-info">
-          <div class="info-title">${v.name||`Lecture ${currentVideoIdx+1}`}</div>
-          <div class="info-grid">
-            <div class="info-chip"><span>Current Lesson</span><strong>${v.name||`Lecture ${currentVideoIdx+1}`}</strong></div>
-            <div class="info-chip"><span>Total Videos</span><strong>${videosData.length}</strong></div>
-            <div class="info-chip"><span>Progress</span><strong>${currentVideoIdx+1} / ${videosData.length}</strong></div>
-            <div class="info-chip"><span>Status</span><strong style="color:${isLocked?'var(--red)':'var(--accent2)'}">${isLocked?'🔒 Locked':'✓ Unlocked'}</strong></div>
-          </div>
-        </div>
-        <div class="bottom-nav-row">
-          <button class="vid-page-btn" onclick="videoPrev()" ${currentVideoIdx===0?'disabled':''}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Prev
-          </button>
-          <span class="vid-page-ind">${currentVideoIdx+1} / ${videosData.length}</span>
-          <button class="vid-page-btn" onclick="videoNext()" ${currentVideoIdx>=videosData.length-1?'disabled':''}>
-            Next <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-        </div>
-      </section>
-    </div>`;
+  const vidTitle=v.name||('Lecture '+(currentVideoIdx+1));
+  const statusColor=isLocked?'var(--red)':'var(--accent2)';
+  const statusText=isLocked?'🔒 Locked':'✓ Unlocked';
+  const prevDisabled=currentVideoIdx===0?'disabled':'';
+  const nextDisabled=currentVideoIdx>=videosData.length-1?'disabled':'';
+
+  container.innerHTML=
+    '<div class="watch-layout">'
+    +'<aside class="sidebar-card">'
+    +'<div class="sidebar-head">📋 Course Content</div>'
+    +'<div class="sidebar-scroll">'+sideItems+'</div>'
+    +'</aside>'
+    +'<section class="stage-area">'
+    +'<div class="stage-player">'+playerHtml+'</div>'
+    +'<div class="watch-info">'
+    +'<div class="info-title">'+vidTitle+'</div>'
+    +'<div class="info-grid">'
+    +'<div class="info-chip"><span>Current Lesson</span><strong>'+vidTitle+'</strong></div>'
+    +'<div class="info-chip"><span>Total Videos</span><strong>'+videosData.length+'</strong></div>'
+    +'<div class="info-chip"><span>Progress</span><strong>'+(currentVideoIdx+1)+' / '+videosData.length+'</strong></div>'
+    +'<div class="info-chip"><span>Status</span><strong style="color:'+statusColor+'">'+statusText+'</strong></div>'
+    +'</div>'
+    +'</div>'
+    +'<div class="bottom-nav-row">'
+    +'<button class="vid-page-btn" onclick="videoPrev()" '+prevDisabled+'>'
+    +'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Prev'
+    +'</button>'
+    +'<span class="vid-page-ind">'+(currentVideoIdx+1)+' / '+videosData.length+'</span>'
+    +'<button class="vid-page-btn" onclick="videoNext()" '+nextDisabled+'>'
+    +'Next <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
+    +'</button>'
+    +'</div>'
+    +'</section>'
+    +'</div>';
 
   if(isDirect&&!isLocked){const slot=document.getElementById('mp4Slot');if(slot)initMP4Player(slot,v.url,myStudentId);}
 }
-window.goToVideo=(idx)=>{currentVideoIdx=idx;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});};
-window.videoNext=()=>{if(currentVideoIdx<videosData.length-1){currentVideoIdx++;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
-window.videoPrev=()=>{if(currentVideoIdx>0){currentVideoIdx--;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
+
+window.goToVideo=function(idx){currentVideoIdx=idx;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});};
+window.videoNext=function(){if(currentVideoIdx<videosData.length-1){currentVideoIdx++;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
+window.videoPrev=function(){if(currentVideoIdx>0){currentVideoIdx--;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
 
 /* ── MP4 PLAYER ── */
 function initMP4Player(wrapper,videoUrl,studentId){
   const SPEEDS=[0.5,0.75,1,1.25,1.5,1.75,2];
-  wrapper.innerHTML=`<div class="mp4-wrap">
-    <div class="mp4-loader"></div>
-    <video class="main-vid" preload="metadata"><source src="${videoUrl}" type="video/mp4"></video>
-    <div class="mp4-wm">ID: ${studentId}</div>
-    <div class="vp-controls">
-      <div class="vp-progress"><div class="vp-bar" style="width:0%"></div></div>
-      <div class="vp-row">
-        <div class="vp-left">
-          <div class="vp-icon vp-rew" title="−10s"><i class="material-icons">replay_10</i></div>
-          <div class="vp-icon vp-pp" title="Play"><i class="material-icons">play_arrow</i></div>
-          <div class="vp-icon vp-fwd" title="+10s"><i class="material-icons">forward_10</i></div>
-          <div class="vp-vol-wrap"><div class="vp-icon vp-vol-btn"><i class="material-icons">volume_up</i></div><input type="range" min="0" max="100" value="80" class="vol-slider"></div>
-          <div class="vp-time"><span class="vp-cur">0:00</span> / <span class="vp-dur">0:00</span></div>
-        </div>
-        <div class="vp-right">
-          <div class="vp-speed" title="Speed">1×</div>
-          <div class="vp-icon vp-pip" title="PiP"><i class="material-icons">picture_in_picture_alt</i></div>
-          <div class="vp-icon vp-fs" title="Fullscreen"><i class="material-icons">fullscreen</i></div>
-        </div>
-      </div>
-    </div>
-    <div class="vp-settings-popup vp-popup"><div class="vp-popup-title">Speed</div><ul>${SPEEDS.map(s=>`<li data-speed="${s}" class="${s===1?'active':''}">${s===1?'Normal':s+'×'}</li>`).join('')}</ul></div>
-  </div>`;
-  requestAnimationFrame(()=>{
-    const pw=wrapper.querySelector('.mp4-wrap');const vid=pw.querySelector('.main-vid');const loader=pw.querySelector('.mp4-loader');const controls=pw.querySelector('.vp-controls');const progress=pw.querySelector('.vp-progress');const bar=pw.querySelector('.vp-bar');const pp=pw.querySelector('.vp-pp');const curEl=pw.querySelector('.vp-cur');const durEl=pw.querySelector('.vp-dur');const speedBtn=pw.querySelector('.vp-speed');const volSlider=pw.querySelector('.vol-slider');const volIcon=pw.querySelector('.vp-vol-btn i');const fsBtn=pw.querySelector('.vp-fs');const pipBtn=pw.querySelector('.vp-pip');const settingsPopup=pw.querySelector('.vp-popup');const speedItems=pw.querySelectorAll('.vp-popup ul li');
-    function fmt(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return`${m}:${sec<10?'0'+sec:sec}`;}
+  wrapper.innerHTML='<div class="mp4-wrap">'
+    +'<div class="mp4-loader"></div>'
+    +'<video class="main-vid" preload="metadata"><source src="'+videoUrl+'" type="video/mp4"></video>'
+    +'<div class="mp4-wm">ID: '+studentId+'</div>'
+    +'<div class="vp-controls">'
+    +'<div class="vp-progress"><div class="vp-bar" style="width:0%"></div></div>'
+    +'<div class="vp-row">'
+    +'<div class="vp-left">'
+    +'<div class="vp-icon vp-rew" title="−10s"><i class="material-icons">replay_10</i></div>'
+    +'<div class="vp-icon vp-pp" title="Play"><i class="material-icons">play_arrow</i></div>'
+    +'<div class="vp-icon vp-fwd" title="+10s"><i class="material-icons">forward_10</i></div>'
+    +'<div class="vp-vol-wrap"><div class="vp-icon vp-vol-btn"><i class="material-icons">volume_up</i></div><input type="range" min="0" max="100" value="80" class="vol-slider"></div>'
+    +'<div class="vp-time"><span class="vp-cur">0:00</span> / <span class="vp-dur">0:00</span></div>'
+    +'</div>'
+    +'<div class="vp-right">'
+    +'<div class="vp-speed" title="Speed">1×</div>'
+    +'<div class="vp-icon vp-pip" title="PiP"><i class="material-icons">picture_in_picture_alt</i></div>'
+    +'<div class="vp-icon vp-fs" title="Fullscreen"><i class="material-icons">fullscreen</i></div>'
+    +'</div>'
+    +'</div>'
+    +'</div>'
+    +'<div class="vp-settings-popup vp-popup"><div class="vp-popup-title">Speed</div><ul>'
+    +SPEEDS.map(function(s){return '<li data-speed="'+s+'" class="'+(s===1?'active':'')+'">'+( s===1?'Normal':s+'×' )+'</li>';}).join('')
+    +'</ul></div>'
+    +'</div>';
+
+  requestAnimationFrame(function(){
+    const pw=wrapper.querySelector('.mp4-wrap');
+    const vid=pw.querySelector('.main-vid');
+    const loader=pw.querySelector('.mp4-loader');
+    const controls=pw.querySelector('.vp-controls');
+    const progress=pw.querySelector('.vp-progress');
+    const bar=pw.querySelector('.vp-bar');
+    const pp=pw.querySelector('.vp-pp');
+    const curEl=pw.querySelector('.vp-cur');
+    const durEl=pw.querySelector('.vp-dur');
+    const speedBtn=pw.querySelector('.vp-speed');
+    const volSlider=pw.querySelector('.vol-slider');
+    const volIcon=pw.querySelector('.vp-vol-btn i');
+    const fsBtn=pw.querySelector('.vp-fs');
+    const pipBtn=pw.querySelector('.vp-pip');
+    const settingsPopup=pw.querySelector('.vp-popup');
+    const speedItems=pw.querySelectorAll('.vp-popup ul li');
+
+    function fmt(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0'+sec:sec);}
     function playV(){vid.play();pp.querySelector('i').textContent='pause';}
     function pauseV(){vid.pause();pp.querySelector('i').textContent='play_arrow';}
-    pp.addEventListener('click',()=>vid.paused?playV():pauseV());
-    pw.addEventListener('click',e=>{if(e.target===pw||e.target===vid){vid.paused?playV():pauseV();}});
-    vid.addEventListener('waiting',()=>loader.style.display='block');
-    vid.addEventListener('canplay',()=>loader.style.display='none');
-    vid.addEventListener('ended',()=>pp.querySelector('i').textContent='replay');
-    vid.addEventListener('loadeddata',()=>durEl.textContent=fmt(vid.duration));
-    vid.addEventListener('timeupdate',()=>{if(!vid.duration)return;bar.style.width=(vid.currentTime/vid.duration*100)+'%';curEl.textContent=fmt(vid.currentTime);});
+    pp.addEventListener('click',function(){vid.paused?playV():pauseV();});
+    pw.addEventListener('click',function(e){if(e.target===pw||e.target===vid){vid.paused?playV():pauseV();}});
+    vid.addEventListener('waiting',function(){loader.style.display='block';});
+    vid.addEventListener('canplay',function(){loader.style.display='none';});
+    vid.addEventListener('ended',function(){pp.querySelector('i').textContent='replay';});
+    vid.addEventListener('loadeddata',function(){durEl.textContent=fmt(vid.duration);});
+    vid.addEventListener('timeupdate',function(){if(!vid.duration)return;bar.style.width=(vid.currentTime/vid.duration*100)+'%';curEl.textContent=fmt(vid.currentTime);});
+
     let dragging=false;
     function seekTo(e){const rect=progress.getBoundingClientRect();const x=Math.max(0,Math.min(e.clientX-rect.left,rect.width));vid.currentTime=(x/rect.width)*vid.duration;}
-    progress.addEventListener('pointerdown',e=>{dragging=true;progress.setPointerCapture(e.pointerId);seekTo(e);});
-    progress.addEventListener('pointermove',e=>{if(dragging)seekTo(e);});
-    progress.addEventListener('pointerup',()=>dragging=false);
+    progress.addEventListener('pointerdown',function(e){dragging=true;progress.setPointerCapture(e.pointerId);seekTo(e);});
+    progress.addEventListener('pointermove',function(e){if(dragging)seekTo(e);});
+    progress.addEventListener('pointerup',function(){dragging=false;});
+
     volSlider.value=80;vid.volume=0.8;
     function updateVol(){const v=vid.volume;volIcon.textContent=v===0?'volume_off':v<0.4?'volume_down':'volume_up';}
-    volSlider.addEventListener('input',()=>{vid.volume=volSlider.value/100;updateVol();});
-    pw.querySelector('.vp-vol-btn').addEventListener('click',()=>{vid.volume=vid.volume>0?0:0.8;volSlider.value=vid.volume*100;updateVol();});
-    let hideTimer;function showCtrl(){controls.classList.add('show');clearTimeout(hideTimer);hideTimer=setTimeout(()=>{if(!vid.paused&&!settingsPopup.classList.contains('show'))controls.classList.remove('show');},2800);}
-    pw.addEventListener('mousemove',showCtrl);pw.addEventListener('touchstart',showCtrl,{passive:true});controls.classList.add('show');
-    speedItems.forEach(li=>{li.addEventListener('click',()=>{speedItems.forEach(x=>x.classList.remove('active'));li.classList.add('active');const s=parseFloat(li.dataset.speed);vid.playbackRate=s;speedBtn.textContent=s===1?'1×':s+'×';settingsPopup.classList.remove('show');});});
-    speedBtn.addEventListener('click',e=>{e.stopPropagation();settingsPopup.classList.toggle('show');});
-    document.addEventListener('click',e=>{if(!settingsPopup.contains(e.target)&&e.target!==speedBtn)settingsPopup.classList.remove('show');});
-    pipBtn.addEventListener('click',()=>{if(document.pictureInPictureEnabled)vid.requestPictureInPicture().catch(()=>{});});
-    fsBtn.addEventListener('click',()=>{if(!document.fullscreenElement){pw.requestFullscreen();fsBtn.querySelector('i').textContent='fullscreen_exit';}else{document.exitFullscreen();fsBtn.querySelector('i').textContent='fullscreen';}});
-    pw.querySelector('.vp-rew').addEventListener('click',()=>vid.currentTime=Math.max(0,vid.currentTime-10));
-    pw.querySelector('.vp-fwd').addEventListener('click',()=>vid.currentTime=Math.min(vid.duration,vid.currentTime+10));
-    vid.addEventListener('contextmenu',e=>e.preventDefault());updateVol();
+    volSlider.addEventListener('input',function(){vid.volume=volSlider.value/100;updateVol();});
+    pw.querySelector('.vp-vol-btn').addEventListener('click',function(){vid.volume=vid.volume>0?0:0.8;volSlider.value=vid.volume*100;updateVol();});
+
+    let hideTimer;
+    function showCtrl(){controls.classList.add('show');clearTimeout(hideTimer);hideTimer=setTimeout(function(){if(!vid.paused&&!settingsPopup.classList.contains('show'))controls.classList.remove('show');},2800);}
+    pw.addEventListener('mousemove',showCtrl);
+    pw.addEventListener('touchstart',showCtrl,{passive:true});
+    controls.classList.add('show');
+
+    speedItems.forEach(function(li){
+      li.addEventListener('click',function(){
+        speedItems.forEach(function(x){x.classList.remove('active');});
+        li.classList.add('active');
+        const s=parseFloat(li.dataset.speed);
+        vid.playbackRate=s;
+        speedBtn.textContent=s===1?'1×':s+'×';
+        settingsPopup.classList.remove('show');
+      });
+    });
+
+    speedBtn.addEventListener('click',function(e){e.stopPropagation();settingsPopup.classList.toggle('show');});
+    document.addEventListener('click',function(e){if(!settingsPopup.contains(e.target)&&e.target!==speedBtn)settingsPopup.classList.remove('show');});
+    pipBtn.addEventListener('click',function(){if(document.pictureInPictureEnabled)vid.requestPictureInPicture().catch(function(){});});
+    fsBtn.addEventListener('click',function(){if(!document.fullscreenElement){pw.requestFullscreen();fsBtn.querySelector('i').textContent='fullscreen_exit';}else{document.exitFullscreen();fsBtn.querySelector('i').textContent='fullscreen';}});
+    pw.querySelector('.vp-rew').addEventListener('click',function(){vid.currentTime=Math.max(0,vid.currentTime-10);});
+    pw.querySelector('.vp-fwd').addEventListener('click',function(){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);});
+    vid.addEventListener('contextmenu',function(e){e.preventDefault();});
+    updateVol();
   });
 }
 
 /* ── INIT ── */
 async function init(){
-  // 1. Check adblocker first
   const adBlocked=await checkAdBlocker();
   if(adBlocked)return;
 
@@ -600,137 +652,340 @@ async function init(){
   if(!session){hideLoader();location.href='/home';return;}
   currentUser=session.user;
 
-  const cached=localStorage.getItem(`access_${currentUser.id}_${lessonId}`);
+  const cached=localStorage.getItem('access_'+currentUser.id+'_'+lessonId);
   if(cached){
-    try{const p=JSON.parse(cached);if(p.expiry>Date.now()){myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();await loadLesson(lessonId);startAccessTimer(p.expiry);verifyBg(lessonId);hideLoader();return;}}catch(e){}
+    try{
+      const p=JSON.parse(cached);
+      if(p.expiry>Date.now()){
+        myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();
+        await loadLesson(lessonId);
+        startAccessTimer(p.expiry);
+        verifyBg(lessonId);
+        hideLoader();
+        return;
+      }
+    }catch(e){}
   }
 
   try{
-    const[{data:u},{data:codes}]=await Promise.all([db.from('users').select('studentid').eq('id',currentUser.id).single(),db.from('codes').select('*').eq('usedby',currentUser.email)]);
+    const[{data:u},{data:codes}]=await Promise.all([
+      db.from('users').select('studentid').eq('id',currentUser.id).single(),
+      db.from('codes').select('*').eq('usedby',currentUser.email)
+    ]);
     if(u)myStudentId=u.studentid||currentUser.id.substring(0,6).toUpperCase();
-    let ok=false,exp=null;const now=Date.now();
-    if(codes){codes.forEach(c=>{if(String(c.lessonid)===String(lessonId)&&c.usedby===currentUser.email&&Number(c.expiryat)>now){ok=true;exp=Number(c.expiryat);}});}
-    if(ok){localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));await loadLesson(lessonId);startAccessTimer(exp);hideLoader();}
-    else{hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
-  }catch(e){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
+    let ok=false,exp=null;
+    const now=Date.now();
+    if(codes){codes.forEach(function(c){if(String(c.lessonid)===String(lessonId)&&c.usedby===currentUser.email&&Number(c.expiryat)>now){ok=true;exp=Number(c.expiryat);}});}
+    if(ok){
+      localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:exp,studentId:myStudentId}));
+      await loadLesson(lessonId);
+      startAccessTimer(exp);
+      hideLoader();
+    } else {
+      hideLoader();
+      document.getElementById('codeLockScreen').classList.remove('hidden');
+    }
+  }catch(e){
+    hideLoader();
+    document.getElementById('codeLockScreen').classList.remove('hidden');
+  }
 }
 
 async function verifyBg(lessonId){
-  try{const{data:codes}=await db.from('codes').select('expiryat,lessonid,usedby').eq('usedby',currentUser.email);if(!codes)return;const now=Date.now();let ok=false;codes.forEach(c=>{if(String(c.lessonid)===String(lessonId)&&c.usedby===currentUser.email&&Number(c.expiryat)>now)ok=true;});if(!ok)localStorage.removeItem(`access_${currentUser.id}_${lessonId}`);}catch(e){}
+  try{
+    const{data:codes}=await db.from('codes').select('expiryat,lessonid,usedby').eq('usedby',currentUser.email);
+    if(!codes)return;
+    const now=Date.now();
+    let ok=false;
+    codes.forEach(function(c){if(String(c.lessonid)===String(lessonId)&&c.usedby===currentUser.email&&Number(c.expiryat)>now)ok=true;});
+    if(!ok)localStorage.removeItem('access_'+currentUser.id+'_'+lessonId);
+  }catch(e){}
 }
 
 function startAccessTimer(expiry){
   document.getElementById('accessTimerBox').classList.remove('hidden');
-  const tick=()=>{const d=expiry-Date.now();if(d<=0){clearInterval(iv);alert('Access expired.');location.reload();return;}const days=Math.floor(d/86400000),h=Math.floor((d%86400000)/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);document.getElementById('accessCountdown').textContent=days>0?`${days}d ${h}h`:`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;};tick();const iv=setInterval(tick,1000);
+  const tick=function(){
+    const d=expiry-Date.now();
+    if(d<=0){clearInterval(iv);alert('Access expired.');location.reload();return;}
+    const days=Math.floor(d/86400000),h=Math.floor((d%86400000)/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
+    document.getElementById('accessCountdown').textContent=days>0?(days+'d '+h+'h'):(h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'));
+  };
+  tick();
+  const iv=setInterval(tick,1000);
 }
 
 async function loadLesson(id){
   document.getElementById('codeLockScreen').classList.add('hidden');
   document.getElementById('lessonContent').classList.remove('hidden');
-  const[{data:snap},{data:res},{data:hwList}]=await Promise.all([db.from('lessons').select('*').eq('id',id).single(),db.from('results').select('*').eq('email',currentUser.email).order('date',{ascending:false}),db.from('homework').select('*').eq('lessonid',id)]);
+  const[{data:snap},{data:res},{data:hwList}]=await Promise.all([
+    db.from('lessons').select('*').eq('id',id).single(),
+    db.from('results').select('*').eq('email',currentUser.email).order('date',{ascending:false}),
+    db.from('homework').select('*').eq('lessonid',id)
+  ]);
   if(!snap)return;
-  lessonData=snap;questions=lessonData.questions||[];
+  lessonData=snap;
+  questions=lessonData.questions||[];
   document.getElementById('navLessonTitle').textContent=lessonData.name||'MathPro';
 
-  videosData=[];const extracted=extractVideos(snap);
-  if(extracted){videosData=extracted;}
-  else{try{const{data:vr}=await db.from('lesson_videos').select('*').eq('lessonid',id);if(vr&&vr.length>0)videosData=normalizeVideos(vr);}catch(e){}}
+  videosData=[];
+  const extracted=extractVideos(snap);
+  if(extracted){
+    videosData=extracted;
+  } else {
+    try{
+      const{data:vr}=await db.from('lesson_videos').select('*').eq('lessonid',id);
+      if(vr&&vr.length>0)videosData=normalizeVideos(vr);
+    }catch(e){}
+  }
 
   if(hwList&&hwList.length>0){
-    hwData=hwList[0];hwQuestions=hwData.questions||[];
+    hwData=hwList[0];
+    hwQuestions=hwData.questions||[];
     const{data:hwRes}=await db.from('hw_results').select('*').eq('email',currentUser.email).eq('hw_id',hwData.id).maybeSingle();
     if(hwRes){hwDone=true;hwResultsMap[hwData.id]=hwRes;renderHomeworkDone(hwRes);}
     else{hwDone=false;renderHomeworkStart();}
     document.getElementById('btn-homework-tab').classList.remove('locked');
-  }else{renderNoHomework();document.getElementById('btn-homework-tab').classList.remove('locked');}
+  } else {
+    renderNoHomework();
+    document.getElementById('btn-homework-tab').classList.remove('locked');
+  }
 
   if(lessonData.pdf)document.getElementById('pdfLink').href=lessonData.pdf;
 
   if(questions.length===0){
-    document.getElementById('tab-quiz').innerHTML=`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:60px 28px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:3rem;margin-bottom:14px">🎓</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:700">No Exam For This Course</div><div style="font-size:.87rem;color:var(--muted);margin-top:8px">Videos and PDF are unlocked automatically.</div></div>`;
-    unlockPostExam(true);return;
+    document.getElementById('tab-quiz').innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:60px 28px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:3rem;margin-bottom:14px">🎓</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:700">No Exam For This Course</div><div style="font-size:.87rem;color:var(--muted);margin-top:8px">Videos and PDF are unlocked automatically.</div></div>';
+    unlockPostExam(true);
+    return;
   }
 
-  const prev=res?.find(r=>r.lesson===lessonData.name);
-  if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(true,buildMsg(prev.score,questions.length,true));}
-  else{const saved=localStorage.getItem(`exam_${currentUser.id}_${id}`);if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockPostExam(true,buildMsg(pd.score,questions.length,true));}catch(e){}}}
+  const prev=res&&res.find(function(r){return r.lesson===lessonData.name;});
+  if(prev){
+    userAns=prev.userans||{};
+    generateReview();
+    unlockPostExam(true,buildMsg(prev.score,questions.length,true));
+  } else {
+    const saved=localStorage.getItem('exam_'+currentUser.id+'_'+id);
+    if(saved){
+      try{
+        const pd=JSON.parse(saved);
+        userAns=pd.userAns;
+        generateReview();
+        unlockPostExam(true,buildMsg(pd.score,questions.length,true));
+      }catch(e){}
+    }
+  }
 }
 
-document.getElementById('verifyBtn').onclick=async()=>{
-  const code=document.getElementById('accessCodeInput').value.trim();const lessonId=new URLSearchParams(location.search).get('id');
-  if(!code)return alert('Please enter the code');showLoader('Verifying…');
+document.getElementById('verifyBtn').onclick=async function(){
+  const code=document.getElementById('accessCodeInput').value.trim();
+  const lessonId=new URLSearchParams(location.search).get('id');
+  if(!code)return alert('Please enter the code');
+  showLoader('Verifying…');
   try{
     if(!currentUser){const{data:{session}}=await db.auth.getSession();if(!session){location.href='/home';return;}currentUser=session.user;}
-    const{data:rows,error:cErr}=await db.from('codes').select('*').eq('code',code);if(cErr)throw cErr;
+    const{data:rows,error:cErr}=await db.from('codes').select('*').eq('code',code);
+    if(cErr)throw cErr;
     if(rows&&rows.length>0){
-      const cd=rows[0],now=Date.now();const{data:ls}=await db.from('lessons').select('validitydays').eq('id',lessonId).single();const days=Number(ls?.validitydays||90);
-      if(!cd.used){const exp=now+days*24*60*60*1000;const{error:updErr}=await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code).eq('used',false);if(updErr)throw updErr;localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:exp,studentId:myStudentId}));location.reload();}
-      else if(cd.usedby===currentUser.email&&String(cd.lessonid)===String(lessonId)&&Number(cd.expiryat)>now){localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:Number(cd.expiryat),studentId:myStudentId}));location.reload();}
-      else if(cd.expiryat&&Number(cd.expiryat)<=now){alert('This code has expired!');}
-      else{alert('This code is already used by another account!');}
-    }else{alert('Invalid code!');}
-  }catch(e){alert('Error: '+(e?.message||e));}
+      const cd=rows[0],now=Date.now();
+      const{data:ls}=await db.from('lessons').select('validitydays').eq('id',lessonId).single();
+      const days=Number(ls&&ls.validitydays||90);
+      if(!cd.used){
+        const exp=now+days*24*60*60*1000;
+        const{error:updErr}=await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code).eq('used',false);
+        if(updErr)throw updErr;
+        localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:exp,studentId:myStudentId}));
+        location.reload();
+      } else if(cd.usedby===currentUser.email&&String(cd.lessonid)===String(lessonId)&&Number(cd.expiryat)>now){
+        localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:Number(cd.expiryat),studentId:myStudentId}));
+        location.reload();
+      } else if(cd.expiryat&&Number(cd.expiryat)<=now){
+        alert('This code has expired!');
+      } else {
+        alert('This code is already used by another account!');
+      }
+    } else {
+      alert('Invalid code!');
+    }
+  }catch(e){alert('Error: '+(e&&e.message||e));}
   hideLoader();
 };
 
 /* ── HOMEWORK ── */
-function renderNoHomework(){document.getElementById('tab-homework').innerHTML=`<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">No Assignment</div><div class="hw-sub">There is no homework assignment for this course.</div></div>`;}
-function renderHomeworkStart(){document.getElementById('tab-homework').innerHTML=`<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">Assignment: ${hwData.title||'Homework'}</div><div class="hw-sub">Answer ${hwQuestions.length} questions. Completing this may unlock gated videos!</div><button class="hw-btn" onclick="startHw()">Start Assignment →</button></div>`;}
+function renderNoHomework(){document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">No Assignment</div><div class="hw-sub">There is no homework assignment for this course.</div></div>';}
+function renderHomeworkStart(){document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">Assignment: '+(hwData.title||'Homework')+'</div><div class="hw-sub">Answer '+hwQuestions.length+' questions. Completing this may unlock gated videos!</div><button class="hw-btn" onclick="startHw()">Start Assignment →</button></div>';}
+
 function renderHomeworkDone(result){
-  const pct=result.total>0?Math.round(result.score/result.total*100):0;const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';
+  const pct=result.total>0?Math.round(result.score/result.total*100):0;
+  const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';
   let rev='<div style="margin-top:26px"><div class="review-title">Assignment Review</div>';
-  hwQuestions.forEach((q,i)=>{const ok=result.userans?.[i]===q.correct;const al=result.userans?.[i];const ans=al?(q[al]?`${al.toUpperCase()} — ${q[al]}`:al.toUpperCase()):'—';const corr=q.correct?(q[q.correct]?`${q.correct.toUpperCase()} — ${q[q.correct]}`:q.correct.toUpperCase()):'—';rev+=`<div class="review-item ${ok?'correct':'wrong'}"><div class="review-meta"><span class="rv-lbl">Q${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ Correct':'✗ Wrong'}</span></div><div class="rv-q">${q.text||'Choose:'}</div><div class="rv-ans">Your answer: <span>${ans}</span></div>${!ok?`<div class="rv-correct">✓ Correct: ${corr}</div>`:''}</div>`;});rev+='</div>';
-  document.getElementById('tab-homework').innerHTML=`<div class="hw-card"><div style="font-size:3rem;margin-bottom:12px">✅</div><div class="hw-title" style="color:var(--accent)">Assignment Complete!</div><div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:${clr};margin:12px 0 5px">${result.score}<span style="font-size:1.1rem;color:var(--muted)">/${result.total}</span></div><div style="font-size:.82rem;color:var(--muted)">${pct}% — ${pct>=70?'Excellent!':pct>=50?'Good job!':'Keep practicing!'}</div></div>${rev}`;
+  hwQuestions.forEach(function(q,i){
+    const ok=result.userans&&result.userans[i]===q.correct;
+    const al=result.userans&&result.userans[i];
+    const ans=al?(q[al]?al.toUpperCase()+' — '+q[al]:al.toUpperCase()):'—';
+    const corr=q.correct?(q[q.correct]?q.correct.toUpperCase()+' — '+q[q.correct]:q.correct.toUpperCase()):'—';
+    rev+='<div class="review-item '+(ok?'correct':'wrong')+'">'
+      +'<div class="review-meta"><span class="rv-lbl">Q'+(i+1)+'</span><span class="rbadge '+(ok?'correct':'wrong')+'">'+(ok?'✓ Correct':'✗ Wrong')+'</span></div>'
+      +'<div class="rv-q">'+(q.text||'Choose:')+'</div>'
+      +'<div class="rv-ans">Your answer: <span>'+ans+'</span></div>'
+      +(!ok?'<div class="rv-correct">✓ Correct: '+corr+'</div>':'')
+      +'</div>';
+  });
+  rev+='</div>';
+  document.getElementById('tab-homework').innerHTML=
+    '<div class="hw-card">'
+    +'<div style="font-size:3rem;margin-bottom:12px">✅</div>'
+    +'<div class="hw-title" style="color:var(--accent)">Assignment Complete!</div>'
+    +'<div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:'+clr+';margin:12px 0 5px">'+result.score+'<span style="font-size:1.1rem;color:var(--muted)">/' +result.total+'</span></div>'
+    +'<div style="font-size:.82rem;color:var(--muted)">'+pct+'% — '+(pct>=70?'Excellent!':pct>=50?'Good job!':'Keep practicing!')+'</div>'
+    +'</div>'+rev;
 }
-window.startHw=()=>{showLoader('Preparing…');setTimeout(()=>{hwCurIdx=0;hwUserAns={};renderHwQ();hideLoader();},300);};
+
+window.startHw=function(){showLoader('Preparing…');setTimeout(function(){hwCurIdx=0;hwUserAns={};renderHwQ();hideLoader();},300);};
+
 function renderHwQ(){
-  const q=hwQuestions[hwCurIdx];if(!q)return;const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);const count=q.optionsCount||4;
-  document.getElementById('tab-homework').innerHTML=`<div class="quiz-wrap"><div class="progress-row"><span class="q-count">${hwCurIdx+1}/${hwQuestions.length}</span><div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="q-card"><div class="q-label">Assignment · Q${hwCurIdx+1}</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'Choose:'}</div><div class="options">${OPT_LETTERS.slice(0,count).map(opt=>`<label class="opt"><input type="radio" name="hw" value="${opt}" ${hwUserAns[hwCurIdx]===opt?'checked':''}><span class="opt-key">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}</div></div><div class="quiz-nav"><button class="q-btn ghost ${hwCurIdx===0?'hidden':''}" onclick="saveHwAns();hwCurIdx--;renderHwQ()">← Previous</button>${hwCurIdx<hwQuestions.length-1?`<button class="q-btn primary" onclick="saveHwAns();hwCurIdx++;renderHwQ()">Next →</button>`:`<button class="q-btn primary" onclick="saveHwAns();submitHw()">Submit ✓</button>`}</div></div>`;
+  const q=hwQuestions[hwCurIdx];if(!q)return;
+  const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);
+  const count=q.optionsCount||4;
+  const prevHidden=hwCurIdx===0?'hidden':'';
+  const isLast=hwCurIdx<hwQuestions.length-1;
+  document.getElementById('tab-homework').innerHTML=
+    '<div class="quiz-wrap">'
+    +'<div class="progress-row"><span class="q-count">'+(hwCurIdx+1)+'/'+hwQuestions.length+'</span>'
+    +'<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>'
+    +'<div class="q-card">'
+    +'<div class="q-label">Assignment · Q'+(hwCurIdx+1)+'</div>'
+    +(q.image?'<img src="'+q.image+'" class="q-img" alt="">':'')
+    +'<div class="q-text">'+(q.text||'Choose:')+'</div>'
+    +'<div class="options">'
+    +OPT_LETTERS.slice(0,count).map(function(opt){
+      return '<label class="opt"><input type="radio" name="hw" value="'+opt+'" '+(hwUserAns[hwCurIdx]===opt?'checked':'')+'>'
+        +'<span class="opt-key">'+opt.toUpperCase()+'</span>'
+        +'<span class="opt-text">'+(q[opt]||'')+'</span></label>';
+    }).join('')
+    +'</div></div>'
+    +'<div class="quiz-nav">'
+    +'<button class="q-btn ghost '+prevHidden+'" onclick="saveHwAns();hwCurIdx--;renderHwQ()">← Previous</button>'
+    +(isLast
+      ?'<button class="q-btn primary" onclick="saveHwAns();hwCurIdx++;renderHwQ()">Next →</button>'
+      :'<button class="q-btn primary" onclick="saveHwAns();submitHw()">Submit ✓</button>')
+    +'</div></div>';
 }
+
 function saveHwAns(){const s=document.querySelector('input[name="hw"]:checked');if(s)hwUserAns[hwCurIdx]=s.value;}
+
 async function submitHw(){
-  saveHwAns();showLoader('Submitting…');let score=0;hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
-  const res={email:currentUser.email,hw_id:hwData.id,lesson:lessonData?.name||'',score,total:hwQuestions.length,userans:hwUserAns};
-  await db.from('hw_results').insert([res]).catch(()=>{});hwDone=true;hwResultsMap[hwData.id]={...res};renderHomeworkDone(res);hideLoader();
+  saveHwAns();showLoader('Submitting…');
+  let score=0;
+  hwQuestions.forEach(function(q,i){if(hwUserAns[i]===q.correct)score++;});
+  const res={email:currentUser.email,hw_id:hwData.id,lesson:lessonData&&lessonData.name||'',score:score,total:hwQuestions.length,userans:hwUserAns};
+  await db.from('hw_results').insert([res]).catch(function(){});
+  hwDone=true;hwResultsMap[hwData.id]=Object.assign({},res);renderHomeworkDone(res);hideLoader();
 }
 
 /* ── QUIZ ── */
-function buildMsg(score,total,prev){const pct=total>0?Math.round(score/total*100):0;return{score,total,pct,prev};}
-document.getElementById('startBtn').onclick=()=>{
+function buildMsg(score,total,prev){const pct=total>0?Math.round(score/total*100):0;return{score:score,total:total,pct:pct,prev:prev};}
+
+document.getElementById('startBtn').onclick=function(){
   if(!questions.length)return alert('No exam questions yet.');
-  showLoader('Preparing exam…');setTimeout(()=>{document.getElementById('startScreen').classList.add('hidden');document.getElementById('quizApp').classList.remove('hidden');document.getElementById('timerBox').classList.remove('hidden');renderQ();startTimer();hideLoader();},300);
+  showLoader('Preparing exam…');
+  setTimeout(function(){
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('quizApp').classList.remove('hidden');
+    document.getElementById('timerBox').classList.remove('hidden');
+    renderQ();startTimer();hideLoader();
+  },300);
 };
+
 function renderQ(){
-  const q=questions[curIdx];if(!q)return;const pct=Math.round((curIdx+1)/questions.length*100);const count=q.optionsCount||4;
-  document.getElementById('qCount').textContent=`${curIdx+1} / ${questions.length}`;
+  const q=questions[curIdx];if(!q)return;
+  const pct=Math.round((curIdx+1)/questions.length*100);
+  const count=q.optionsCount||4;
+  document.getElementById('qCount').textContent=(curIdx+1)+' / '+questions.length;
   document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('qDisplay').innerHTML=`<div class="q-label">Question ${curIdx+1}</div>${q.image?`<img src="${q.image}" class="q-img" alt="">`:''}<div class="q-text">${q.text||'Choose:'}</div><div class="options">${OPT_LETTERS.slice(0,count).map(opt=>`<label class="opt"><input type="radio" name="exam" value="${opt}" ${userAns[curIdx]===opt?'checked':''}><span class="opt-key">${opt.toUpperCase()}</span><span class="opt-text">${q[opt]||''}</span></label>`).join('')}</div>`;
+  document.getElementById('qDisplay').innerHTML=
+    '<div class="q-label">Question '+(curIdx+1)+'</div>'
+    +(q.image?'<img src="'+q.image+'" class="q-img" alt="">':'')
+    +'<div class="q-text">'+(q.text||'Choose:')+'</div>'
+    +'<div class="options">'
+    +OPT_LETTERS.slice(0,count).map(function(opt){
+      return '<label class="opt"><input type="radio" name="exam" value="'+opt+'" '+(userAns[curIdx]===opt?'checked':'')+'>'
+        +'<span class="opt-key">'+opt.toUpperCase()+'</span>'
+        +'<span class="opt-text">'+(q[opt]||'')+'</span></label>';
+    }).join('')
+    +'</div>';
   document.getElementById('prevBtn').classList.toggle('hidden',curIdx===0);
   document.getElementById('nextBtn').classList.toggle('hidden',curIdx===questions.length-1);
   document.getElementById('finishBtn').classList.toggle('hidden',curIdx!==questions.length-1);
 }
+
 function saveAns(){const s=document.querySelector('input[name="exam"]:checked');if(s)userAns[curIdx]=s.value;}
-document.getElementById('nextBtn').onclick=()=>{saveAns();curIdx++;renderQ();};
-document.getElementById('prevBtn').onclick=()=>{saveAns();curIdx--;renderQ();};
-document.getElementById('finishBtn').onclick=()=>{
+document.getElementById('nextBtn').onclick=function(){saveAns();curIdx++;renderQ();};
+document.getElementById('prevBtn').onclick=function(){saveAns();curIdx--;renderQ();};
+document.getElementById('finishBtn').onclick=function(){
   saveAns();clearInterval(examTimer);showLoader('Grading…');
-  let score=0;questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
-  db.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns}]).catch(()=>{});
-  setTimeout(()=>{const id=new URLSearchParams(location.search).get('id');localStorage.setItem(`exam_${currentUser.id}_${id}`,JSON.stringify({userAns,score}));generateReview();unlockPostExam(false,buildMsg(score,questions.length,false));scrollTo({top:0,behavior:'smooth'});hideLoader();},400);
+  let score=0;
+  questions.forEach(function(q,i){if(userAns[i]===q.correct)score++;});
+  db.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score:score,total:questions.length,userans:userAns}]).catch(function(){});
+  setTimeout(function(){
+    const id=new URLSearchParams(location.search).get('id');
+    localStorage.setItem('exam_'+currentUser.id+'_'+id,JSON.stringify({userAns:userAns,score:score}));
+    generateReview();
+    unlockPostExam(false,buildMsg(score,questions.length,false));
+    scrollTo({top:0,behavior:'smooth'});
+    hideLoader();
+  },400);
 };
+
 function generateReview(){
   const list=document.getElementById('reviewList');if(!list)return;list.innerHTML='';
-  questions.forEach((q,i)=>{const ok=userAns[i]===q.correct;const al=userAns[i];const ans=al?(q[al]?`${al.toUpperCase()} — ${q[al]}`:al.toUpperCase()):'—';const corr=q.correct?(q[q.correct]?`${q.correct.toUpperCase()} — ${q[q.correct]}`:q.correct.toUpperCase()):'—';list.innerHTML+=`<div class="review-item ${ok?'correct':'wrong'}" style="animation:cardIn .35s ease ${i*.04}s both"><div class="review-meta"><span class="rv-lbl">Q${i+1}</span><span class="rbadge ${ok?'correct':'wrong'}">${ok?'✓ Correct':'✗ Wrong'}</span></div>${q.image?`<img src="${q.image}" style="max-height:150px;border-radius:var(--radius);margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2)">`:''}<div class="rv-q">${q.text||'Choose:'}</div><div class="rv-ans">Your answer: <span>${ans}</span></div>${!ok?`<div class="rv-correct">✓ Correct: ${corr}</div>`:''}</div>`;});
+  questions.forEach(function(q,i){
+    const ok=userAns[i]===q.correct;
+    const al=userAns[i];
+    const ans=al?(q[al]?al.toUpperCase()+' — '+q[al]:al.toUpperCase()):'—';
+    const corr=q.correct?(q[q.correct]?q.correct.toUpperCase()+' — '+q[q.correct]:q.correct.toUpperCase()):'—';
+    list.innerHTML+='<div class="review-item '+(ok?'correct':'wrong')+'" style="animation:cardIn .35s ease '+(i*.04)+'s both">'
+      +'<div class="review-meta"><span class="rv-lbl">Q'+(i+1)+'</span><span class="rbadge '+(ok?'correct':'wrong')+'">'+(ok?'✓ Correct':'✗ Wrong')+'</span></div>'
+      +(q.image?'<img src="'+q.image+'" style="max-height:150px;border-radius:var(--radius);margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2)">':'')
+      +'<div class="rv-q">'+(q.text||'Choose:')+'</div>'
+      +'<div class="rv-ans">Your answer: <span>'+ans+'</span></div>'
+      +(!ok?'<div class="rv-correct">✓ Correct: '+corr+'</div>':'')
+      +'</div>';
+  });
 }
-function unlockPostExam(skipAnim=false,msgObj=null){
-  document.getElementById('startScreen').classList.add('hidden');document.getElementById('quizApp').classList.add('hidden');document.getElementById('timerBox').classList.add('hidden');document.getElementById('reviewArea').classList.remove('hidden');
+
+function unlockPostExam(skipAnim,msgObj){
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('quizApp').classList.add('hidden');
+  document.getElementById('timerBox').classList.add('hidden');
+  document.getElementById('reviewArea').classList.remove('hidden');
   if(msgObj){
-    const{score,total,pct,prev}=msgObj;const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';const r=50,circ=2*Math.PI*r,off=circ-(pct/100)*circ;
-    document.getElementById('scoreBanner').innerHTML=`<div class="score-ring"><svg width="116" height="116" viewBox="0 0 116 116"><circle cx="58" cy="58" r="${r}" fill="none" stroke="var(--border2)" stroke-width="7"/><circle cx="58" cy="58" r="${r}" fill="none" stroke="${clr}" stroke-width="7" stroke-dasharray="${circ}" stroke-dashoffset="${off}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 6px ${clr})"/></svg><div class="score-n" style="color:${clr}">${score}</div><div class="score-pct">${pct}%</div></div><div class="score-of">Out of ${total} questions</div><div class="score-msg">${prev?'✦ You already completed this exam':'✦ Score recorded!'}</div><div class="score-unlock">✅ Videos & PDF Unlocked</div>`;
+    const score=msgObj.score,total=msgObj.total,pct=msgObj.pct,prev=msgObj.prev;
+    const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';
+    const r=50,circ=2*Math.PI*r,off=circ-(pct/100)*circ;
+    document.getElementById('scoreBanner').innerHTML=
+      '<div class="score-ring">'
+      +'<svg width="116" height="116" viewBox="0 0 116 116">'
+      +'<circle cx="58" cy="58" r="'+r+'" fill="none" stroke="var(--border2)" stroke-width="7"/>'
+      +'<circle cx="58" cy="58" r="'+r+'" fill="none" stroke="'+clr+'" stroke-width="7" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 6px '+clr+')"/>'
+      +'</svg>'
+      +'<div class="score-n" style="color:'+clr+'">'+score+'</div>'
+      +'<div class="score-pct">'+pct+'%</div>'
+      +'</div>'
+      +'<div class="score-of">Out of '+total+' questions</div>'
+      +'<div class="score-msg">'+(prev?'✦ You already completed this exam':'✦ Score recorded!')+'</div>'
+      +'<div class="score-unlock">✅ Videos &amp; PDF Unlocked</div>';
   }
-  ['videos','pdf'].forEach(t=>document.getElementById(`btn-${t}-tab`).classList.remove('locked'));
+  ['videos','pdf'].forEach(function(t){document.getElementById('btn-'+t+'-tab').classList.remove('locked');});
 }
-function startTimer(){examTimer=setInterval(()=>{const m=Math.floor(timeLeft/60),s=timeLeft%60;document.getElementById('timerVal').textContent=`${m}:${s<10?'0'+s:s}`;if(timeLeft<=120)document.getElementById('timerBox').classList.add('urgent');if(timeLeft--<=0){clearInterval(examTimer);alert('Time is up!');document.getElementById('finishBtn').click();}},1000);}
+
+function startTimer(){
+  examTimer=setInterval(function(){
+    const m=Math.floor(timeLeft/60),s=timeLeft%60;
+    document.getElementById('timerVal').textContent=m+':'+(s<10?'0'+s:s);
+    if(timeLeft<=120)document.getElementById('timerBox').classList.add('urgent');
+    if(timeLeft--<=0){clearInterval(examTimer);alert('Time is up!');document.getElementById('finishBtn').click();}
+  },1000);
+}
 
 init();
 </script>
