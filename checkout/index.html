@@ -269,6 +269,17 @@ const CURRENCY='EGP';
 function showLoader(t='Loading…'){const s=document.getElementById('loadingScreen');document.getElementById('ldTxt').textContent=t;s.style.display='flex';void s.offsetWidth;s.style.opacity='1';}
 function hideLoader(){const s=document.getElementById('loadingScreen');s.style.opacity='0';setTimeout(()=>s.style.display='none',320);}
 
+function hasLocalAccess(userId, lid){
+  try{
+    const raw=localStorage.getItem(`access_${userId}_${lid}`);
+    if(!raw)return null;
+    const data=JSON.parse(raw);
+    if(Number(data.expiry)>Date.now())return data;
+    localStorage.removeItem(`access_${userId}_${lid}`);
+  }catch{}
+  return null;
+}
+
 function renderCourseCard(){
   const p=lessonData.price||0;const disc=appliedCoupon?appliedCoupon.discount:0;const final=Math.max(0,p-disc);
   const qc=lessonData.questions?.length||0;const vc=(lessonData.videos||[]).length;const days=lessonData.validitydays||90;
@@ -398,9 +409,26 @@ async function init(){
   const{data:{session}}=await db.auth.getSession();
   if(!session){hideLoader();window.location.href='/home';return;}
   currentUser=session.user;
+  const cached=hasLocalAccess(currentUser.id,lessonId);
+  if(cached){
+    hideLoader();
+    window.location.href=`/lesson?id=${lessonId}`;
+    return;
+  }
   try{
-    const{data:snap,error}=await db.from('lessons').select('*').eq('id',lessonId).single();
+    const [{data:snap,error},{data:ownedCodes}] = await Promise.all([
+      db.from('lessons').select('*').eq('id',lessonId).single(),
+      db.from('codes').select('lessonid,expiryat,usedby').eq('usedby',currentUser.email).eq('lessonid',lessonId)
+    ]);
     if(error||!snap)throw new Error('Course not found');
+    const activeCode=(ownedCodes||[]).find(c=>Number(c.expiryat)>Date.now());
+    if(activeCode){
+      const sid=await getStudentId();
+      localStorage.setItem(`access_${currentUser.id}_${lessonId}`,JSON.stringify({expiry:Number(activeCode.expiryat),studentId:sid}));
+      hideLoader();
+      window.location.href=`/lesson?id=${lessonId}`;
+      return;
+    }
     lessonData=snap;localStorage.setItem('checkout_lesson_id',lessonId);
     renderCourseCard();renderCartItem();renderPrices();hideLoader();
   }catch(e){
