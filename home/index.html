@@ -328,7 +328,7 @@ footer{padding:46px 28px 24px;position:relative;z-index:1}
     <div class="nav-links">
       <a href="#why" class="nav-link">Why Us</a>
       <a href="#contact" class="nav-link">Get In Touch</a>
-      <button class="nav-btn" onclick="document.querySelector('.card-col').scrollIntoView({behavior:'smooth'})">Enter Platform</button>
+      <button class="nav-btn" onclick="document.querySelector('.card-col').scrollIntoView({behavior:'smooth'})">Login / Sign Up</button>
     </div>
   </div>
 </nav>
@@ -342,7 +342,7 @@ footer{padding:46px 28px 24px;position:relative;z-index:1}
         <h1 class="hero-h1">Master Mathematics <span class="accent">With Clarity, Speed & Confidence</span></h1>
         <p class="hero-p">A cleaner, stronger learning experience for secondary students with premium lessons, fast revision, instant exams, and real tracking that helps every student stay consistent and improve week after week.</p>
         <div class="hero-actions">
-          <button class="primary-btn" onclick="document.querySelector('.card-col').scrollIntoView({behavior:'smooth'})">Start Now →</button>
+          <button class="primary-btn" onclick="document.querySelector('.card-col').scrollIntoView({behavior:'smooth'})">Login / Sign Up →</button>
           <button class="ghost-btn" onclick="document.getElementById('why').scrollIntoView({behavior:'smooth'})">Explore Why Us</button>
         </div>
         <div class="hero-metrics">
@@ -360,44 +360,86 @@ footer{padding:46px 28px 24px;position:relative;z-index:1}
     </div>
 
     <div class="hero-right card-col reveal">
-      <div class="hero-shell hero-visual">
-        <div class="visual-grid"></div>
-        <div class="visual-bubble b1"></div><div class="visual-bubble b2"></div><div class="visual-bubble b3"></div>
-        <div class="big-showcase">
-          <div class="showcase-card teacher-showcase reveal stagger-1">
-            <div class="teacher-copy">
-              <div class="tiny">Why students choose MathPro</div>
-              <h2>Clear teaching. Better results.</h2>
-              <p>We removed the old small image block and replaced it with a bigger premium showcase area that highlights the teacher, the platform value, and the student experience in a stronger way.</p>
-              <div class="quick-points">
-                <div class="qp">✓ Organized lessons for every chapter</div>
-                <div class="qp">✓ Instant correction & exam review</div>
-                <div class="qp">✓ Easy access from phone or laptop</div>
-                <div class="qp">✓ Better follow-up for students and parents</div>
-              </div>
+      <div class="auth-card" id="authCard">
+        <div class="card-title">Welcome 👋</div>
+        <div class="card-sub">Sign in or create a new account to start learning now.</div>
+
+        <div class="tabs">
+          <button type="button" class="tab on" id="loginTab">Login</button>
+          <button type="button" class="tab" id="signupTab">Sign Up</button>
+        </div>
+
+        <form id="authForm" autocomplete="on">
+          <div id="extraFields" class="hidden fields" style="margin-bottom:12px;">
+            <div class="fw">
+              <span class="flbl">Full Name</span>
+              <input id="userName" name="name" class="inp" placeholder="Enter your full name..." autocomplete="name">
             </div>
-            <div class="teacher-media">
-              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80" alt="MathPro learning showcase">
-              <div class="media-caption">
-                <div class="cap-top">
-                  <div class="cap-name">Modern Learning Experience</div>
-                  <div class="cap-badge">New Hero Visual</div>
-                </div>
-                <p>Place your final image here later if you want. The old image has been removed and this section is now much bigger and cleaner.</p>
+            <div class="fw">
+              <span class="flbl">School Grade</span>
+              <select id="userGrade" class="inp" onchange="this.classList.add('filled')">
+                <option value="" disabled selected>Select grade...</option>
+                <option value="1">1st Year Secondary</option>
+                <option value="2">2nd Year Secondary</option>
+                <option value="3">3rd Year Secondary</option>
+              </select>
+            </div>
+            <div class="f2col">
+              <div class="fw">
+                <span class="flbl">Student Phone</span>
+                <input id="userPhone" name="phone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr">
+              </div>
+              <div class="fw">
+                <span class="flbl">Parent Phone</span>
+                <input id="parentPhone" name="parentPhone" class="inp" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="tel" dir="ltr">
               </div>
             </div>
           </div>
-        </div>
-        <div class="floating-mini mini-1">
-          <div class="mini-num">24/7</div>
-          <div class="mini-lbl">Access</div>
-          <div class="mini-copy">Study anytime with a layout designed to feel premium and easy on the eye.</div>
-        </div>
-        <div class="floating-mini mini-2">
-          <div class="mini-num">Why Us</div>
-          <div class="mini-lbl">Main Focus</div>
-          <div class="mini-copy">The section is now stronger, more visual, and more premium than the old block.</div>
-        </div>
+
+          <div class="fields">
+            <div class="fw">
+              <span class="flbl">Email Address</span>
+              <input id="email" name="email" type="email" class="inp" placeholder="example@email.com" autocomplete="email" autocapitalize="off" spellcheck="false" inputmode="email" dir="ltr">
+            </div>
+            <div class="fw">
+              <span class="flbl">Password</span>
+              <div class="pass-row">
+                <input id="password" name="password" type="password" class="inp" placeholder="••••••••" autocomplete="current-password" minlength="6" dir="ltr">
+                <button type="button" class="eye-btn" id="eyeBtn" aria-label="Toggle password visibility">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="forgotArea" class="forgot">
+            <button type="button" id="forgotBtn">Forgot your password?</button>
+          </div>
+
+          <button type="submit" class="cta-btn" id="actionBtn">Login →</button>
+
+          <div class="or-line">
+            <div class="or-bar"></div>
+            <span class="or-txt">OR CONTINUE WITH</span>
+            <div class="or-bar"></div>
+          </div>
+
+          <button type="button" class="g-btn" id="googleBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+            Continue with Google
+          </button>
+
+          <div class="trust">
+            <span style="color:#16a34a;font-size:11px;">🔒</span>
+            <span class="trust-txt">Your data is protected · SSL encrypted</span>
+          </div>
+        </form>
+      </div>
+
+      <div style="margin-top:16px;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:24px;padding:16px 18px;box-shadow:var(--shadow);">
+        <div style="font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);font-weight:700;">Image note</div>
+        <div style="font-family:var(--display);font-size:1.25rem;font-weight:800;margin:6px 0 8px;">Your uploaded image is not inserted yet.</div>
+        <p style="color:var(--muted);line-height:1.75;font-size:.92rem;">The Google Drive link cannot be pulled directly here. Upload the actual image file in the chat, and I will place it in the hero section exactly where you want.</p>
       </div>
     </div>
   </section>
