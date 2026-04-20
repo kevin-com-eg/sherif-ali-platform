@@ -435,7 +435,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
         </div>
         <div style="padding:4px">
           <div class="table-wrap" style="max-height:520px;overflow-y:auto">
-            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th><th style="text-align:center">Action</th></tr></thead>
+            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th><th style="text-align:center">Parent Report</th></tr></thead>
             <tbody id="resultsBody"><tr><td colspan="6" class="td-empty">Loading…</td></tr></tbody></table>
           </div>
         </div>
@@ -501,6 +501,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
         <div class="sp-actions">
           <button class="btn btn-danger" id="btnBlockStudent" style="padding:5px 12px; font-size:.7rem;" onclick="toggleBlockStudent()">🚫 Block Student</button>
           <button class="btn btn-ghost" style="padding:5px 12px; font-size:.7rem;" onclick="resetStudentDevice()">💻 Reset Device</button>
+          <button class="btn btn-primary" id="btnParentReport" style="padding:5px 12px; font-size:.7rem;" onclick="sendParentReport(currentOpenStudentEmail)">📲 Parent Report</button>
         </div>
       </div>
       <button class="sp-close" onclick="closeStudent()">✕</button>
@@ -528,6 +529,72 @@ let currentOpenStudentEmail=null;
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 
 const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
+
+function normalizePhoneEg(phone){
+  let value=String(phone||'').replace(/[^\d+]/g,'');
+  if(!value) return '';
+  value=value.replace(/^00/,'');
+  if(value.startsWith('+')) value=value.slice(1);
+  if(value.startsWith('2') && value[1]==='0') return value;
+  if(value.startsWith('20')) return value;
+  if(value.startsWith('0')) return '2'+value;
+  return value;
+}
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g,function(ch){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];});
+}
+function getStudentLatestResults(email,limit=5){
+  return examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,limit);
+}
+function buildParentReportText(email,student,maxItems=5){
+  const raw=student?.raw||{};
+  const name=student?.name||email.split('@')[0];
+  const grade=GRADE_MAP[String(raw.grade||'')]||'—';
+  const results=getStudentLatestResults(email,maxItems);
+  const latest=results[0];
+  const avg=results.length?Math.round(results.reduce((sum,r)=>sum+((Number(r.score)||0)/(Number(r.total)||1))*100,0)/results.length):0;
+  let lines=[
+    'تقرير الطالب من منصة MathPro',
+    `الطالب: ${name}`,
+    `الصف: ${grade}`,
+    `عدد الامتحانات المسجلة: ${results.length}`
+  ];
+  if(latest){
+    lines.push(`آخر امتحان: ${latest.lesson}`);
+    lines.push(`الدرجة: ${latest.score}/${latest.total}`);
+    lines.push(`متوسط الأداء: ${avg}%`);
+    lines.push('');
+    lines.push('آخر الدرجات:');
+    results.forEach((r,index)=>{
+      const dt=r.date?new Date(r.date).toLocaleDateString('en-GB'):'—';
+      lines.push(`${index+1}) ${r.lesson}: ${r.score}/${r.total} - ${dt}`);
+    });
+  } else {
+    lines.push('لا توجد درجات مسجلة حتى الآن.');
+  }
+  lines.push('');
+  lines.push('مع تحيات مستر شريف علي');
+  return lines.join('\n');
+}
+function buildParentWhatsappUrl(email){
+  const student=studentsByEmail[email];
+  const phone=normalizePhoneEg(student?.raw?.parentphone||student?.raw?.parent_phone||student?.raw?.parentPhone||'');
+  if(!phone) return '';
+  return `https://wa.me/${phone}?text=${encodeURIComponent(buildParentReportText(email,student))}`;
+}
+function sendParentReport(email){
+  const url=buildParentWhatsappUrl(email);
+  const student=studentsByEmail[email];
+  if(!student?.raw?.parentphone && !student?.raw?.parent_phone && !student?.raw?.parentPhone){
+    showToast('warning','No Parent Phone','This student does not have a parent phone number saved.');
+    return;
+  }
+  if(!url){
+    showToast('error','Cannot Build Report','Please check the parent phone number format.');
+    return;
+  }
+  window.open(url,'_blank');
+}
 
 function isMissingColumnError(error){
   const msg=String(error?.message||error||'');
@@ -706,18 +773,18 @@ function renderResultsTable(){
     const sRes=examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date));
     const latest=sRes[0];
     const dt=latest?.date?new Date(latest.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
-    
-    // WhatsApp Msg prep
-    let waLink = '—';
-    if(latest){
-      const whatsappMsg = encodeURIComponent(`أهلاً، درجة الطالب ${s.name} في امتحان ${latest.lesson} هي: ${latest.score}/${latest.total}`);
-      waLink = `<a href="https://api.whatsapp.com/send?text=${whatsappMsg}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none; font-size:1.1rem; filter: grayscale(0%); transition: transform 0.2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Send WhatsApp">💬</a>`;
+    const parentPhone=s.raw?.parentphone||s.raw?.parent_phone||s.raw?.parentPhone||'';
+    let waLink='<span style="font-size:.72rem;color:var(--muted)">—</span>';
+    if(parentPhone && latest){
+      waLink = `<a href="${buildParentWhatsappUrl(email)}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--green-light);border:1px solid var(--border2);text-decoration:none;font-size:1rem" title="Send report to parent">📲</a>`;
+    } else if(!parentPhone){
+      waLink = `<span style="font-size:.68rem;color:var(--amber);font-weight:700">No parent</span>`;
     }
 
-    rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\\'")}')">
-      <td class="td-name"><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;background:var(--green-light);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0">👤</div><div>${s.name}<div style="font-size:.68rem;color:var(--muted)">${sRes.length} exams</div></div></div></td>
-      <td class="td-email">${email}</td>
-      <td class="td-green">${latest?.lesson||'—'}</td>
+    rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\'")}')">
+      <td class="td-name"><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;background:var(--green-light);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0">👤</div><div>${escapeHtml(s.name)}<div style="font-size:.68rem;color:var(--muted)">${sRes.length} exams</div></div></div></td>
+      <td class="td-email">${escapeHtml(email)}</td>
+      <td class="td-green">${escapeHtml(latest?.lesson||'—')}</td>
       <td>${latest?`<span class="td-score">${latest.score}/${latest.total}</span>`:'—'}</td>
       <td class="td-date">${dt}</td>
       <td style="text-align:center">${waLink}</td>
@@ -741,6 +808,13 @@ async function openStudent(email,name){
   // Set block button status based on current raw data
   const sData = studentsByEmail[email]?.raw;
   const btnBlock = document.getElementById('btnBlockStudent');
+  const btnParentReport = document.getElementById('btnParentReport');
+  const hasParentPhone = Boolean(sData?.parentphone || sData?.parent_phone || sData?.parentPhone);
+  if(btnParentReport){
+    btnParentReport.disabled = !hasParentPhone;
+    btnParentReport.style.opacity = hasParentPhone ? '1' : '.5';
+    btnParentReport.title = hasParentPhone ? 'Send full report to parent' : 'No parent phone saved';
+  }
   if(sData?.is_blocked){
     btnBlock.innerHTML = '✅ Unblock Student';
     btnBlock.classList.replace('btn-danger', 'btn-primary');
