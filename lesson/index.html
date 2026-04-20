@@ -899,19 +899,38 @@ function renderQ(){
 function saveAns(){const s=document.querySelector('input[name="exam"]:checked');if(s)userAns[curIdx]=s.value;}
 document.getElementById('nextBtn').onclick=function(){saveAns();curIdx++;renderQ();};
 document.getElementById('prevBtn').onclick=function(){saveAns();curIdx--;renderQ();};
-document.getElementById('finishBtn').onclick=function(){
-  saveAns();clearInterval(examTimer);showLoader('Grading…');
-  let score=0;
-  questions.forEach(function(q,i){if(userAns[i]===q.correct)score++;});
-  db.from('results').insert([{email:currentUser.email,lesson:lessonData.name,score:score,total:questions.length,userans:userAns}]).catch(function(){});
-  setTimeout(function(){
+document.getElementById('finishBtn').onclick=async function(){
+  saveAns();
+  clearInterval(examTimer);
+  showLoader('Grading…');
+
+  try{
+    let score=0;
+    questions.forEach(function(q,i){if(userAns[i]===q.correct)score++;});
+
+    const payload={
+      email:currentUser.email,
+      lesson:lessonData.name,
+      score:score,
+      total:questions.length,
+      userans:userAns,
+      date:new Date().toISOString()
+    };
+
+    const{error}=await db.from('results').insert([payload]);
+    if(error)throw error;
+
     const id=new URLSearchParams(location.search).get('id');
     localStorage.setItem('exam_'+currentUser.id+'_'+id,JSON.stringify({userAns:userAns,score:score}));
     generateReview();
     unlockPostExam(false,buildMsg(score,questions.length,false));
     scrollTo({top:0,behavior:'smooth'});
+  }catch(err){
+    console.error('Exam submit error:',err);
+    alert('فيه مشكلة في حفظ نتيجة الامتحان: '+(err.message||err));
+  }finally{
     hideLoader();
-  },400);
+  }
 };
 
 function generateReview(){
