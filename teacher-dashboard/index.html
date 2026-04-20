@@ -5,42 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MathPro | Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 
 :root{
-  --bg:#f0faf4;
-  --bg2:#e8f5ee;
-  --surface:#ffffff;
-  --surface2:#f7fdf9;
-  --navy:#0d1f14;
-  --green:#16a34a;
-  --green2:#15803d;
-  --green3:#22c55e;
-  --green4:#4ade80;
-  --green-light:rgba(22,163,74,.1);
-  --green-light2:rgba(22,163,74,.15);
-  --border:rgba(22,163,74,.18);
-  --border2:rgba(22,163,74,.3);
-  --text:#0d1f14;
-  --muted:#4b7a5e;
-  --muted2:#7aab8a;
-  --red:#dc2626;
-  --red-bg:rgba(220,38,38,.08);
-  --amber:#d97706;
-  --amber-bg:rgba(217,119,6,.1);
-  --shadow:0 4px 24px rgba(13,31,20,.08);
-  --shadow2:0 8px 40px rgba(13,31,20,.14);
+  --bg:#F5F0E8;
+  --bg2:#EDE7DB;
+  --surface:#FAF7F2;
+  --surface2:#F7F2EA;
+  --navy:#2C2418;
+  --green:#2D5A3D;
+  --green2:#3A7550;
+  --green3:#4A9060;
+  --green4:#7AA88A;
+  --green-light:rgba(45,90,61,.09);
+  --green-light2:rgba(45,90,61,.14);
+  --border:rgba(44,36,24,.10);
+  --border2:rgba(44,36,24,.20);
+  --text:#2C2418;
+  --muted:#6B5E4E;
+  --muted2:#9B8E7A;
+  --red:#A33B2E;
+  --red-bg:rgba(163,59,46,.08);
+  --amber:#C4654A;
+  --amber-bg:rgba(196,101,74,.10);
+  --shadow:0 8px 28px rgba(44,36,24,.07);
+  --shadow2:0 20px 54px rgba(44,36,24,.12);
   --sans:'DM Sans',sans-serif;
-  --display:'Syne',sans-serif;
+  --display:'Cormorant Garamond',serif;
   --mono:'JetBrains Mono',monospace;
   --sidebar-w:248px;
 }
 
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;}
+body{font-family:var(--sans);background:radial-gradient(circle at top left,rgba(196,168,130,.12),transparent 24%),var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;position:relative;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px;}
 ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
 .hidden{display:none!important;}
 
@@ -237,6 +238,37 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 .mob-toggle{display:none;position:fixed;bottom:18px;right:18px;z-index:200;width:50px;height:50px;background:var(--green);border-radius:50%;border:none;color:#fff;cursor:pointer;box-shadow:0 6px 20px rgba(22,163,74,.4);align-items:center;justify-content:center;}
 .sb-backdrop{display:none;position:fixed;inset:0;z-index:49;background:rgba(13,31,20,.6);}
 .sb-backdrop.show{display:block;}
+
+.sidebar{background:linear-gradient(180deg,rgba(44,36,24,.98),rgba(44,36,24,.94));box-shadow:18px 0 44px rgba(44,36,24,.12)}
+.sb-logo{padding:24px 18px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.sb-logo-mark{background:linear-gradient(135deg,var(--green),var(--green2));border-radius:12px;box-shadow:0 8px 20px rgba(45,90,61,.24)}
+.sb-link{border:1px solid transparent}
+.sb-link:hover{border-color:rgba(255,255,255,.08)}
+.topbar{background:rgba(250,247,242,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--border2)}
+.card{background:rgba(250,247,242,.92);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:24px}
+.card-head{background:linear-gradient(180deg,rgba(237,231,219,.8),rgba(250,247,242,.92));}
+.stat-c{border-radius:22px}
+.stat-icon{background:linear-gradient(135deg,var(--green-light),rgba(196,168,130,.12));border-radius:14px}
+.teacher-pill{background:rgba(45,90,61,.08)}
+.table-wrap{border-radius:16px;background:rgba(255,255,255,.45)}
+.sp-card{background:rgba(250,247,242,.96);border-radius:28px}
+.wa-stack{display:flex;flex-direction:column;align-items:center;gap:6px}
+.wa-send-btn{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--green-light);border:1px solid var(--border2);text-decoration:none;font-size:1rem;transition:transform .18s ease,background .18s ease, box-shadow .18s ease}
+.wa-send-btn:hover{transform:translateY(-2px);background:rgba(45,90,61,.14);box-shadow:0 8px 20px rgba(45,90,61,.14)}
+.wa-sent{font-size:.64rem;font-weight:800;color:var(--green2);background:rgba(45,90,61,.08);border:1px solid rgba(45,90,61,.16);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.wa-not-sent{font-size:.64rem;font-weight:800;color:var(--amber);background:rgba(196,101,74,.08);border:1px solid rgba(196,101,74,.16);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.wa-no-parent{font-size:.64rem;font-weight:800;color:var(--muted2);background:rgba(44,36,24,.04);border:1px solid rgba(44,36,24,.08);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.section-page{position:relative;z-index:1}
+@media(max-width:900px){
+  .topbar{height:58px}
+  .card{border-radius:20px}
+  .card-head,.card-body{padding-left:16px;padding-right:16px}
+  tbody td{padding:12px 12px;font-size:.78rem}
+  thead th{padding:11px 12px}
+  .search-wrap{max-width:none}
+  .teacher-pill{padding:6px 10px;font-size:.7rem}
+}
+
 </style>
 </head>
 <body>
@@ -294,7 +326,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 <div class="main-area">
   <div class="topbar">
     <div class="topbar-title" id="topbarTitle">Overview</div>
-    <div class="teacher-pill"><div class="teacher-dot"></div>Mr. Sherif Ali</div>
+    <div class="teacher-pill"><div class="teacher-dot"></div>MathPro Command</div>
   </div>
 
   <div class="content">
@@ -435,7 +467,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
         </div>
         <div style="padding:4px">
           <div class="table-wrap" style="max-height:520px;overflow-y:auto">
-            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th><th style="text-align:center">Parent Report</th></tr></thead>
+            <table><thead><tr><th>Student</th><th>Email</th><th>Latest Course</th><th>Score</th><th>Date</th><th style="text-align:center">WhatsApp</th></tr></thead>
             <tbody id="resultsBody"><tr><td colspan="6" class="td-empty">Loading…</td></tr></tbody></table>
           </div>
         </div>
@@ -582,18 +614,54 @@ function buildParentWhatsappUrl(email){
   if(!phone) return '';
   return `https://wa.me/${phone}?text=${encodeURIComponent(buildParentReportText(email,student))}`;
 }
+
+function getLatestResultRecord(email){
+  return examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]||null;
+}
+function getWhatsappSentStore(){
+  try{return JSON.parse(localStorage.getItem('mp_whatsapp_sent_store')||'{}')||{};}catch(_){return {};}
+}
+function setWhatsappSentStore(store){
+  localStorage.setItem('mp_whatsapp_sent_store', JSON.stringify(store));
+}
+function getWhatsappSentKey(email,result){
+  if(!result) return '';
+  return [email,result.lesson||'',result.score||'',result.total||'',result.date||''].join('||');
+}
+function markWhatsappSent(email,result){
+  const key=getWhatsappSentKey(email,result);
+  if(!key) return;
+  const store=getWhatsappSentStore();
+  store[key]={sent:true,sentAt:new Date().toISOString()};
+  setWhatsappSentStore(store);
+}
+function isWhatsappSent(email,result){
+  const key=getWhatsappSentKey(email,result);
+  if(!key) return false;
+  const store=getWhatsappSentStore();
+  return Boolean(store[key]&&store[key].sent);
+}
+
 function sendParentReport(email){
   const url=buildParentWhatsappUrl(email);
   const student=studentsByEmail[email];
+  const latest=getLatestResultRecord(email);
   if(!student?.raw?.parentphone && !student?.raw?.parent_phone && !student?.raw?.parentPhone){
     showToast('warning','No Parent Phone','This student does not have a parent phone number saved.');
+    return;
+  }
+  if(!latest){
+    showToast('warning','No Result','There is no saved degree to send for this student yet.');
     return;
   }
   if(!url){
     showToast('error','Cannot Build Report','Please check the parent phone number format.');
     return;
   }
+  markWhatsappSent(email,latest);
   window.open(url,'_blank');
+  renderResultsTable();
+  showToast('success','WhatsApp Ready','تم تعليم الدرجة كـ تم الإرسال عبر واتساب.');
 }
 
 function isMissingColumnError(error){
@@ -774,11 +842,14 @@ function renderResultsTable(){
     const latest=sRes[0];
     const dt=latest?.date?new Date(latest.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
     const parentPhone=s.raw?.parentphone||s.raw?.parent_phone||s.raw?.parentPhone||'';
-    let waLink='<span style="font-size:.72rem;color:var(--muted)">—</span>';
+    const sent=latest?isWhatsappSent(email,latest):false;
+    let waCell='<div class="wa-stack"><span class="wa-no-parent">—</span></div>';
     if(parentPhone && latest){
-      waLink = `<a href="${buildParentWhatsappUrl(email)}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--green-light);border:1px solid var(--border2);text-decoration:none;font-size:1rem" title="Send report to parent">📲</a>`;
+      waCell = `<div class="wa-stack"><a href="${buildParentWhatsappUrl(email)}" target="_blank" onclick="event.stopPropagation(); sendParentReport('${email}'); return false;" class="wa-send-btn" title="Send report to parent">📲</a><span class="${sent?'wa-sent':'wa-not-sent'}">${sent?'تم الإرسال عبر واتساب':'لم يتم الإرسال'}</span></div>`;
     } else if(!parentPhone){
-      waLink = `<span style="font-size:.68rem;color:var(--amber);font-weight:700">No parent</span>`;
+      waCell = `<div class="wa-stack"><span class="wa-no-parent">No parent number</span></div>`;
+    } else if(!latest){
+      waCell = `<div class="wa-stack"><span class="wa-not-sent">No result yet</span></div>`;
     }
 
     rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\'")}')">
@@ -787,7 +858,7 @@ function renderResultsTable(){
       <td class="td-green">${escapeHtml(latest?.lesson||'—')}</td>
       <td>${latest?`<span class="td-score">${latest.score}/${latest.total}</span>`:'—'}</td>
       <td class="td-date">${dt}</td>
-      <td style="text-align:center">${waLink}</td>
+      <td style="text-align:center">${waCell}</td>
     </tr>`;
   });
   document.getElementById('resultsBody').innerHTML=rows;
@@ -848,7 +919,7 @@ async function openStudent(email,name){
       html+=`<div class="sp-section-title">📝 Exams</div>`;
       sExams.forEach(r=>{
         const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';
-        html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.7rem;color:var(--muted)">${dt}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
+        const sentBadge=isWhatsappSent(email,r)?'<span class="wa-sent">تم الإرسال عبر واتساب</span>':'<span class="wa-not-sent">لم يتم الإرسال</span>'; html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.7rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center">${dt} ${sentBadge}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
       });
     }
     if(!courses.length&&!sExams.length)html='<div style="text-align:center;padding:32px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
