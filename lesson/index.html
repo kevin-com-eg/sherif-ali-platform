@@ -387,21 +387,22 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
    ═══════════════════════════════ */
 function detectAdBlocker(){
   return new Promise(resolve=>{
+    // Only use bait element check — no Brave false-positive detection
     const bait=document.createElement('div');
-    bait.setAttribute('class','ad ads adsbox doubleclick ad-placement carbon-ads textads banner_ad ad-unit advert');
     bait.setAttribute('id','ads-bait');
     bait.style.cssText='height:1px!important;width:1px!important;position:absolute!important;left:-9999px!important;top:-9999px!important;opacity:0!important';
+    // Use a neutral class name to avoid false positives
+    bait.className='ad-unit-bait-test';
     document.body.appendChild(bait);
     setTimeout(()=>{
       const el=document.getElementById('ads-bait');
-      if(!el){resolve(true);return;}
+      if(!el){el&&el.remove();resolve(false);return;}
+      // Only block if element is completely removed from layout (not just sized 1px)
       const style=window.getComputedStyle(el);
-      const blocked=el.offsetHeight===0||el.offsetWidth===0||style.display==='none'||style.visibility==='hidden'||style.opacity==='0';
+      const blocked=style.display==='none'||style.visibility==='hidden';
       el.remove();
-      if(blocked){resolve(true);return;}
-      if(navigator.brave&&navigator.brave.isBrave){navigator.brave.isBrave().then(isBrave=>{if(isBrave)resolve(true);else resolve(false);}).catch(()=>resolve(false));}
-      else resolve(false);
-    },200);
+      resolve(blocked);
+    },300);
   });
 }
 
