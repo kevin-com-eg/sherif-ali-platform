@@ -450,7 +450,7 @@ function renderLessons(lessons){
     if(accessible){btnsHtml=`<a class="lc-btn enter" href="/lesson?id=${id}">▶ Enter Lesson</a>`;}
     else if(inCart){btnsHtml=`<button class="lc-btn incart" data-lid="${id}" onclick="location.href='/checkout?lesson_id=${id}'">✓ In Cart &nbsp;·&nbsp; <u>Checkout →</u></button>`;}
     else{btnsHtml=`<button class="lc-btn cart-add" data-lid="${id}" onclick="addToCart('${id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Add to Cart</button>`;}
-    const c=document.createElement('div');c.className='lesson-card';c.dataset.owned=accessible?'true':'false';c.dataset.free=isFree?'true':'false';c.dataset.id=id;c.style.animationDelay=(i*.05)+'s';
+    const c=document.createElement('div');c.className='lesson-card';c.dataset.owned=owned?'true':'false';c.dataset.free=isFree?'true':'false';c.dataset.id=id;c.style.animationDelay=(i*.05)+'s';
     c.innerHTML=`<div class="lc-img">${img?`<img src="${img}" alt="" loading="lazy">`:`<div class="lc-img-ph">📚</div>`}<div class="lc-overlay"></div><div class="lc-badges"><span class="badge ${accessible?'badge-unlock':'badge-lock'}">${accessible?'✓ Unlocked':'🔒 Locked'}</span><span class="badge ${isFree?'badge-free':'badge-price'}">${price}</span></div></div><div class="lc-body"><div class="lc-tags"><span class="lc-tag grade">${gradeMap[d.grade]||''}</span><span class="lc-tag teacher">Mr. Sherif Ali</span></div><div class="lc-title">${d.name}</div><div class="lc-rule"></div><div class="lc-meta"><span class="lc-date"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${dateStr}</span><span class="lc-stat ${accessible?'open':'locked'}">${accessible?'▶ Ready':'🔒 Buy'}</span></div><div class="lc-btns">${btnsHtml}</div></div>`;
     grid.appendChild(c);
   });
@@ -473,7 +473,7 @@ function applyUserUI(d){
 window.saveProfile=async()=>{
   const name=document.getElementById('editName').value.trim(),phone=document.getElementById('editPhone').value.trim(),par=document.getElementById('editParent').value.trim();
   if(!name||!phone||!par){showToast('warning','Missing Fields','Please fill all fields.');return;}
-  try{const{error}=await db.from('users').update({name,phone,parentphone:par}).eq('id',currentUser.id);if(error)throw error;applyUserUI({...currentUser,name,phone,parentphone:par});showToast('success','Saved ✅');closeProfile();}
+  try{const{error}=await db.from('users').update({name,phone,parentphone:par}).eq('id',currentUser.id);if(error)throw error;currentUser={...currentUser,name,phone,parentphone:par};applyUserUI(currentUser);showToast('success','Saved ✅');closeProfile();}
   catch(e){showToast('error','Error',e.message);}
 };
 
@@ -500,7 +500,7 @@ async function init(){
   if(ann&&ann.length>0){document.getElementById('notifTxt').textContent=ann[0].message;document.getElementById('notif-bar').classList.remove('hidden');}
 
   let validCount=0,spent=0,puHtml='';myActive=[];const now=Date.now();
-  if(codes){codes.forEach(cd=>{const ls=lessonsMap[cd.lessonid];if(!ls)return;if(Number(cd.expiryat)>now){myActive.push(cd.lessonid);validCount++;}spent+=Number(ls.price)||0;const exp=Number(cd.expiryat)<now;const dt=cd.expiryat?new Date(Number(cd.expiryat)-90*864e5).toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'}):'—';puHtml+=`<div class="rep-item"><div><div class="rep-item-name">${ls.name}</div><div class="rep-item-date">Activated: ${dt}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="${exp?'badge-expired':'badge-active'}">${exp?'Expired':'Active'}</span><span style="font-family:var(--mono);font-size:.78rem;color:var(--gold)">${ls.price>0?ls.price+' EGP':'Free'}</span></div></div>`;});}
+  if(codes){codes.forEach(cd=>{const ls=lessonsMap[cd.lessonid];if(!ls)return;if(Number(cd.expiryat)>now){myActive.push(cd.lessonid);validCount++;}spent+=Number(ls.price)||0;const exp=Number(cd.expiryat)<now;const dt=cd.expiryat?new Date(Number(cd.expiryat)).toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'}):'—';puHtml+=`<div class="rep-item"><div><div class="rep-item-name">${ls.name}</div><div class="rep-item-date">Activated: ${dt}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="${exp?'badge-expired':'badge-active'}">${exp?'Expired':'Active'}</span><span style="font-family:var(--mono);font-size:.78rem;color:var(--gold)">${ls.price>0?ls.price+' EGP':'Free'}</span></div></div>`;});}
   let exHtml='',exCount=0;
   if(results){results.forEach(r=>{exCount++;const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{year:'numeric',month:'short',day:'numeric'}):'—';exHtml+=`<div class="rep-item"><div><div class="rep-item-name">${r.lesson}</div><div class="rep-item-date">${dt}</div></div><div style="text-align:right"><div class="score-v">${r.score}</div><div class="score-t">of ${r.total}</div></div></div>`;});}
 
