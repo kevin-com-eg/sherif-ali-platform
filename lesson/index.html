@@ -200,6 +200,53 @@ main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:26px 20p
 .empty-vid .et{font-family:var(--display);font-size:1.35rem;font-weight:700}
 .empty-vid .es{font-size:.85rem;color:var(--muted);margin-top:7px}
 
+/* ── VERIFY CODE ── */
+document.getElementById('verifyBtn').onclick=async function(){
+  const rawCode=document.getElementById('accessCodeInput').value.trim();
+  const code=rawCode.toUpperCase();
+  const lessonId=new URLSearchParams(location.search).get('id');
+  if(!code)return alert('Please enter the code');
+  if(!lessonId){alert('Error: No lesson ID in URL.');return;}
+  showLoader('Verifying…');
+  try{
+    if(!currentUser){
+      const{data:{session}}=await db.auth.getSession();
+      if(!session){hideLoader();location.href='/home';return;}
+      currentUser=session.user;
+    }
+    const{data:rows,error:cErr}=await db.from('codes').select('*').ilike('code',code);
+    if(cErr)throw cErr;
+    if(!rows||rows.length===0){
+      alert('Invalid code: "'+rawCode+'". Please check and try again.');
+      hideLoader();return;
+    }
+    const cd=rows[0];
+    const now=Date.now();
+    const{data:ls}=await db.from('lessons').select('validitydays').eq('id',lessonId).single();
+    const days=Number(ls&&ls.validitydays||90);
+    if(!cd.used){
+      const exp=now+days*24*60*60*1000;
+      const{error:updErr}=await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('id',cd.id);
+      if(updErr)throw updErr;
+      localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:exp,studentId:myStudentId}));
+      hideLoader();location.reload();
+    } else if(cd.usedby===currentUser.email&&String(cd.lessonid)===String(lessonId)&&Number(cd.expiryat)>now){
+      localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:Number(cd.expiryat),studentId:myStudentId}));
+      hideLoader();location.reload();
+    } else if(cd.usedby===currentUser.email&&String(cd.lessonid)!==String(lessonId)){
+      alert('This code belongs to lesson ID: '+cd.lessonid+', but you are on lesson ID: '+lessonId);
+    } else if(cd.expiryat&&Number(cd.expiryat)<=now){
+      alert('This code has expired!');
+    } else {
+      alert('This code is already used by: '+cd.usedby);
+    }
+  }catch(e){
+    console.error('Verify error:',e);
+    alert('Error: '+(e&&e.message||String(e)));
+  }
+  hideLoader();
+};
+
 /* ── HOMEWORK ── */
 .hw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:50px 30px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow)}
 .hw-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:3px;background:linear-gradient(to right,transparent,var(--accent),transparent);border-radius:0 0 4px 4px}
@@ -777,39 +824,6 @@ async function loadLesson(id){
   }
 }
 
-document.getElementById('verifyBtn').onclick=async function(){
-  const code=document.getElementById('accessCodeInput').value.trim();
-  const lessonId=new URLSearchParams(location.search).get('id');
-  if(!code)return alert('Please enter the code');
-  showLoader('Verifying…');
-  try{
-    if(!currentUser){const{data:{session}}=await db.auth.getSession();if(!session){location.href='/home';return;}currentUser=session.user;}
-    const{data:rows,error:cErr}=await db.from('codes').select('*').eq('code',code);
-    if(cErr)throw cErr;
-    if(rows&&rows.length>0){
-      const cd=rows[0],now=Date.now();
-      const{data:ls}=await db.from('lessons').select('validitydays').eq('id',lessonId).single();
-      const days=Number(ls&&ls.validitydays||90);
-      if(!cd.used){
-        const exp=now+days*24*60*60*1000;
-        const{error:updErr}=await db.from('codes').update({used:true,usedby:currentUser.email,lessonid:lessonId,expiryat:exp}).eq('code',code).eq('used',false);
-        if(updErr)throw updErr;
-        localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:exp,studentId:myStudentId}));
-        location.reload();
-      } else if(cd.usedby===currentUser.email&&String(cd.lessonid)===String(lessonId)&&Number(cd.expiryat)>now){
-        localStorage.setItem('access_'+currentUser.id+'_'+lessonId,JSON.stringify({expiry:Number(cd.expiryat),studentId:myStudentId}));
-        location.reload();
-      } else if(cd.expiryat&&Number(cd.expiryat)<=now){
-        alert('This code has expired!');
-      } else {
-        alert('This code is already used by another account!');
-      }
-    } else {
-      alert('Invalid code!');
-    }
-  }catch(e){alert('Error: '+(e&&e.message||e));}
-  hideLoader();
-};
 
 /* ── HOMEWORK ── */
 function renderNoHomework(){document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">No Assignment</div><div class="hw-sub">There is no homework assignment for this course.</div></div>';}
