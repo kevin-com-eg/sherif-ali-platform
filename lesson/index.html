@@ -653,6 +653,50 @@ function extractVideos(snap){
 }
 function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video_url||v.src||'',name:v.name||v.title||v.label||'Video '+(i+1),requireHw:!!(v.requireHw||v.require_hw||false),hwId:v.hwId||v.hw_id||''}));}
 
+/* ── DESKTOP PLAYER BRIDGE ── */
+const DESKTOP_PROTOCOL='mathpro://open';
+const pageParams=new URLSearchParams(location.search);
+const DESKTOP_MODE=pageParams.get('desktop')==='1';
+const REQUESTED_VIDEO_INDEX=Math.max(0,parseInt(pageParams.get('video')||'0',10)||0);
+
+function buildDesktopPlayerUrl(idx){
+  const v=videosData[idx];
+  if(!v)return '';
+  const lessonId=pageParams.get('id')||'';
+  const title=encodeURIComponent(v.name||('Lecture '+(idx+1)));
+  const videoUrl=encodeURIComponent(v.url||'');
+  const student=encodeURIComponent(myStudentId||'000000');
+  return DESKTOP_PROTOCOL+'?lesson='+encodeURIComponent(lessonId)+'&video='+idx+'&student='+student+'&title='+title+'&url='+videoUrl;
+}
+
+function openDesktopPlayerOrFallback(idx){
+  const appUrl=buildDesktopPlayerUrl(idx);
+  if(!appUrl){goToVideo(idx);switchTab('videos');return;}
+  const lessonId=pageParams.get('id')||'';
+  const fallbackUrl='/lesson?id='+encodeURIComponent(lessonId)+'&video='+idx+'&desktop=1';
+  let hiddenTriggered=false;
+  const onHide=function(){hiddenTriggered=true;cleanup();};
+  const cleanup=function(){window.removeEventListener('blur',onHide);document.removeEventListener('visibilitychange',onVis);};
+  const onVis=function(){if(document.hidden){hiddenTriggered=true;cleanup();}};
+  window.addEventListener('blur',onHide,{once:true});
+  document.addEventListener('visibilitychange',onVis);
+  location.href=appUrl;
+  setTimeout(function(){
+    cleanup();
+    if(!hiddenTriggered)location.href=fallbackUrl;
+  },1200);
+}
+
+function applyInitialVideoLaunch(){
+  if(videosData&&videosData.length>0){
+    currentVideoIdx=Math.min(Math.max(REQUESTED_VIDEO_INDEX,0),videosData.length-1);
+  }
+  if(DESKTOP_MODE){
+    document.getElementById('btn-videos-tab').classList.remove('locked');
+    switchTab('videos');
+  }
+}
+
 /* ════════════════════════════════
    CUSTOM YOUTUBE PLAYER
    ════════════════════════════════ */
@@ -941,7 +985,7 @@ function renderVideoPage(){
   videosData.forEach(function(vid,i){
     const locked=vid.requireHw&&!hwResultsMap[vid.hwId];
     const divClick=locked?'':( i===currentVideoIdx?'':'goToVideo('+i+')' );
-    const btnClick=locked?'':( i===currentVideoIdx?'':'goToVideo('+i+')' );
+    const btnClick=locked?'':( DESKTOP_MODE?'goToVideo('+i+')':'openDesktopPlayerOrFallback('+i+')' );
     const activeClass=i===currentVideoIdx?'active':'';
     const lockedClass=locked?'locked':'';
     const vidName=vid.name||('Lecture '+(i+1));
@@ -952,7 +996,7 @@ function renderVideoPage(){
       +'<div class="side-title">'+vidName+'</div>'
       +'<button class="side-play" '+(locked?'disabled':'')
       +' onclick="event.stopPropagation();'+btnClick+'">'
-      +(locked?'🔒 Locked':'▶ Play')
+      +(locked?'🔒 Locked':(DESKTOP_MODE?'▶ Play':'▶ Open in App'))
       +'</button>'
       +'</div>'
       +'</div>'
@@ -1194,11 +1238,19 @@ async function loadLesson(id){
   if(lessonData.pdf)document.getElementById('pdfLink').href=lessonData.pdf;
   if(questions.length===0){
     document.getElementById('tab-quiz').innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:60px 28px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:3rem;margin-bottom:14px">🎓</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:700">No Exam For This Course</div><div style="font-size:.87rem;color:var(--muted);margin-top:8px">Videos and PDF are unlocked automatically.</div></div>';
-    unlockPostExam(true);return;
+    unlockPostExam(true);
+    applyInitialVideoLaunch();
+    return;
   }
   const prev=res&&res.find(function(r){return r.lesson===lessonData.name;});
-  if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(true,buildMsg(prev.score,questions.length,true));}
-  else{const saved=localStorage.getItem('exam_'+currentUser.id+'_'+id);if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockPostExam(true,buildMsg(pd.score,questions.length,true));}catch(e){}}}
+  if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(true,buildMsg(prev.score,questions.length,true));applyInitialVideoLaunch();}
+  else{
+    const saved=localStorage.getItem('exam_'+currentUser.id+'_'+id);
+    if(saved){
+      try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockPostExam(true,buildMsg(pd.score,questions.length,true));applyInitialVideoLaunch();}
+      catch(e){}
+    }
+  }
 }
 
 /* ── HOMEWORK ── */
