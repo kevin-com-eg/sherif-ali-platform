@@ -243,123 +243,37 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
   gap:8px;
   overflow:hidden;
 }
-.drop-zone:hover{
-  border-color:var(--green);
-  background:var(--green-light);
-}
-.drop-zone.dragover{
-  border-color:var(--green2);
-  background:rgba(45,90,61,.12);
-  transform:scale(1.01);
-  box-shadow:0 0 0 4px rgba(45,90,61,.08);
-}
-.drop-zone.has-file{
-  border-style:solid;
-  border-color:var(--green);
-  background:var(--green-light);
-}
-.drop-zone-icon{
-  font-size:2rem;
-  line-height:1;
-  opacity:.6;
-  transition:all .25s;
-}
-.drop-zone.dragover .drop-zone-icon,
-.drop-zone:hover .drop-zone-icon{
-  opacity:1;
-  transform:translateY(-2px);
-}
-.drop-zone-text{
-  font-size:.78rem;
-  color:var(--muted);
-  font-weight:600;
-}
-.drop-zone-text span{
-  color:var(--green);
-  text-decoration:underline;
-  font-weight:700;
-}
-.drop-zone-hint{
-  font-size:.65rem;
-  color:var(--muted2);
-  font-family:var(--mono);
-}
-.drop-zone input[type="file"]{
-  position:absolute;
-  inset:0;
-  opacity:0;
-  cursor:pointer;
-  width:100%;
-  height:100%;
-}
-.drop-zone-preview{
-  position:relative;
-  width:100%;
-  max-width:260px;
-  border-radius:10px;
-  overflow:hidden;
-  border:1px solid var(--border2);
-  background:#fff;
-}
-.drop-zone-preview img{
-  width:100%;
-  display:block;
-  object-fit:contain;
-  max-height:180px;
-}
-.drop-zone-remove{
-  position:absolute;
-  top:6px;right:6px;
-  width:26px;height:26px;
-  background:rgba(163,59,46,.9);
-  color:#fff;
-  border:none;
-  border-radius:50%;
-  cursor:pointer;
-  font-size:.7rem;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:all .2s;
-  box-shadow:0 2px 8px rgba(0,0,0,.25);
-}
-.drop-zone-remove:hover{
-  background:var(--red);
-  transform:scale(1.1);
-}
-.drop-zone-filename{
-  font-family:var(--mono);
-  font-size:.68rem;
-  color:var(--green);
-  font-weight:700;
-  margin-top:6px;
-  word-break:break-all;
-}
-.upload-progress{
-  width:100%;
-  max-width:220px;
-  height:4px;
-  background:var(--border);
-  border-radius:4px;
-  overflow:hidden;
-  margin-top:8px;
-}
-.upload-progress-bar{
-  height:100%;
-  background:linear-gradient(90deg,var(--green),var(--green3));
-  border-radius:4px;
-  transition:width .3s;
-  width:0%;
-}
-.upload-status{
-  font-size:.65rem;
-  font-family:var(--mono);
-  font-weight:700;
-  margin-top:4px;
-}
+.drop-zone:hover{border-color:var(--green);background:var(--green-light);}
+.drop-zone.dragover{border-color:var(--green2);background:rgba(45,90,61,.12);transform:scale(1.01);box-shadow:0 0 0 4px rgba(45,90,61,.08);}
+.drop-zone.has-file{border-style:solid;border-color:var(--green);background:var(--green-light);}
+.drop-zone-icon{font-size:2rem;line-height:1;opacity:.6;transition:all .25s;}
+.drop-zone.dragover .drop-zone-icon,.drop-zone:hover .drop-zone-icon{opacity:1;transform:translateY(-2px);}
+.drop-zone-text{font-size:.78rem;color:var(--muted);font-weight:600;}
+.drop-zone-text span{color:var(--green);text-decoration:underline;font-weight:700;}
+.drop-zone-hint{font-size:.65rem;color:var(--muted2);font-family:var(--mono);}
+.drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop-zone-preview{position:relative;width:100%;max-width:260px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);background:#fff;}
+.drop-zone-preview img{width:100%;display:block;object-fit:contain;max-height:180px;}
+.drop-zone-remove{position:absolute;top:6px;right:6px;width:26px;height:26px;background:rgba(163,59,46,.9);color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.drop-zone-remove:hover{background:var(--red);transform:scale(1.1);}
+.drop-zone-filename{font-family:var(--mono);font-size:.68rem;color:var(--green);font-weight:700;margin-top:6px;word-break:break-all;}
+.upload-progress{width:100%;max-width:220px;height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:8px;}
+.upload-progress-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--green3));border-radius:4px;transition:width .3s;width:0%;}
+.upload-status{font-size:.65rem;font-family:var(--mono);font-weight:700;margin-top:4px;}
 .upload-status.uploading{color:var(--amber);}
 .upload-status.done{color:var(--green);}
 .upload-status.error{color:var(--red);}
+
+/* ── TRACKER ── */
+.tracker-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.tracker-stat{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:12px;}
+.tracker-stat-icon{width:38px;height:38px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.tracker-stat-val{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;}
+.tracker-stat-lbl{font-size:.62rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-top:3px;}
+.tracker-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.tracker-filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .2s;}
+.tracker-filter-btn:hover{border-color:var(--green);color:var(--green);}
+.tracker-filter-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
 
 @media(max-width:900px){
   .main-area{margin-left:0;}
@@ -403,8 +317,9 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
   thead th{padding:11px 12px}
   .search-wrap{max-width:none}
   .teacher-pill{padding:6px 10px;font-size:.7rem}
+  .tracker-summary{grid-template-columns:1fr 1fr;}
+  .tracker-filters{gap:6px;}
 }
-
 </style>
 </head>
 <body>
@@ -443,6 +358,10 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
     <button class="sb-link" onclick="showSection('codes',this)">
       <div class="sb-icon">🎫</div>Codes
     </button>
+    <!-- ✅ NEW: Code Tracker -->
+    <button class="sb-link" onclick="showSection('tracker',this)">
+      <div class="sb-icon">🗂️</div>Code Tracker
+    </button>
     <button class="sb-link" onclick="showSection('notif',this)">
       <div class="sb-icon">📢</div>Broadcast
     </button>
@@ -467,6 +386,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 
   <div class="content">
 
+    <!-- OVERVIEW -->
     <div class="section-page active" id="sec-overview">
       <div class="stats-row">
         <div class="stat-c"><div class="stat-icon">👥</div><div><div class="stat-val" id="statStudents">—</div><div class="stat-lbl">Students</div></div></div>
@@ -484,6 +404,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
+    <!-- LESSONS -->
     <div class="section-page" id="sec-lessons">
       <div class="card">
         <div class="card-head">
@@ -514,8 +435,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
             <div class="fw"><label class="flbl">Price (EGP)</label><input id="lessonPrice" type="number" class="finp" placeholder="150"></div>
             <div class="fw"><label class="flbl">Validity (Days)</label><input id="lessonValidity" type="number" class="finp" placeholder="90" value="90"></div>
           </div>
-
-          <!-- COVER IMAGE — DRAG & DROP -->
           <div class="fw">
             <label class="flbl">Cover Image</label>
             <div class="drop-zone" id="dropCoverImage" data-target="lessonImage">
@@ -526,8 +445,6 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
             </div>
             <input type="hidden" id="lessonImage">
           </div>
-
-          <!-- PDF NOTES — DRAG & DROP -->
           <div class="fw">
             <label class="flbl">PDF Notes</label>
             <div class="drop-zone" id="dropPdfNotes" data-target="lessonPdf">
@@ -538,9 +455,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
             </div>
             <input type="hidden" id="lessonPdf">
           </div>
-
           <div class="divider"></div>
-
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div>
               <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">📺 Video Lessons</div>
@@ -549,15 +464,12 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
             <button class="btn btn-ghost" style="font-size:.78rem;padding:8px 14px" onclick="addVideoBlock()">+ Add Video</button>
           </div>
           <div id="videosContainer"></div>
-
           <div class="divider"></div>
-
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div style="font-family:var(--display);font-size:.95rem;font-weight:700;">📝 Exam Questions</div>
             <button class="btn btn-ghost" style="font-size:.78rem;padding:8px 14px" onclick="addQuestion('questionsContainer')">+ Add Question</button>
           </div>
           <div id="questionsContainer"></div>
-
           <div class="divider"></div>
           <div style="display:flex;gap:10px;">
             <button id="saveLessonBtn" class="btn btn-primary btn-full btn-lg" onclick="saveLesson()">Publish Course 🚀</button>
@@ -567,6 +479,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
+    <!-- HOMEWORK -->
     <div class="section-page" id="sec-homework">
       <div class="card">
         <div class="card-head">
@@ -612,6 +525,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
+    <!-- RESULTS -->
     <div class="section-page" id="sec-results">
       <div class="card">
         <div class="card-head">
@@ -630,6 +544,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
       </div>
     </div>
 
+    <!-- CODES -->
     <div class="section-page" id="sec-codes">
       <div class="card">
         <div class="card-head">
@@ -643,15 +558,13 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
           <div id="codesPlaceholder" class="hidden" style="text-align:center;padding:40px;color:var(--muted);background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;">
             Click the button above to generate 50 new subscription codes 🎯
           </div>
-          
-          <div id="codesResultArea" class="hidden" style="margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+          <div id="codesResultArea" class="hidden" style="margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:20px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
               <span style="font-size:.82rem;color:var(--green);font-weight:700">Newly Generated Codes — distribute these to students.</span>
               <button class="btn btn-ghost" style="font-size:.78rem;padding:7px 14px" onclick="copyCodes()">Copy All 📋</button>
             </div>
             <div class="codes-grid" id="codesGrid"></div>
           </div>
-
           <div style="font-family:var(--display);font-size:.95rem;font-weight:700;margin-bottom:14px;">📋 All Codes List</div>
           <div class="table-wrap" style="max-height:400px;overflow-y:auto">
             <table>
@@ -659,11 +572,77 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
               <tbody id="codesListBody"><tr><td colspan="4" class="td-empty">Loading codes...</td></tr></tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>
 
+    <!-- ✅ CODE TRACKER (NEW) -->
+    <div class="section-page" id="sec-tracker">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🗂️ Code Tracker</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <div class="search-wrap">
+              <span class="search-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+              <input id="trackerSearch" placeholder="Search student, code, lesson…" onkeyup="filterTracker()">
+            </div>
+            <button class="btn btn-ghost" onclick="loadTracker()">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <!-- Summary Stats -->
+          <div class="tracker-summary" id="trackerSummary">
+            <div class="tracker-stat">
+              <div class="tracker-stat-icon">🎫</div>
+              <div><div class="tracker-stat-val" id="tStatTotal">—</div><div class="tracker-stat-lbl">Codes Used</div></div>
+            </div>
+            <div class="tracker-stat">
+              <div class="tracker-stat-icon">✅</div>
+              <div><div class="tracker-stat-val" id="tStatActive">—</div><div class="tracker-stat-lbl">Active</div></div>
+            </div>
+            <div class="tracker-stat">
+              <div class="tracker-stat-icon">❌</div>
+              <div><div class="tracker-stat-val" id="tStatExpired">—</div><div class="tracker-stat-lbl">Expired</div></div>
+            </div>
+            <div class="tracker-stat">
+              <div class="tracker-stat-icon">📚</div>
+              <div><div class="tracker-stat-val" id="tStatLessons">—</div><div class="tracker-stat-lbl">Lessons Enrolled</div></div>
+            </div>
+          </div>
+
+          <!-- Filter Buttons -->
+          <div class="tracker-filters">
+            <span style="font-size:.72rem;font-weight:700;color:var(--muted);font-family:var(--mono);">FILTER:</span>
+            <button class="tracker-filter-btn active" id="filterAll" onclick="setTrackerFilter('all',this)">All</button>
+            <button class="tracker-filter-btn" id="filterActive" onclick="setTrackerFilter('active',this)">✅ Active Only</button>
+            <button class="tracker-filter-btn" id="filterExpired" onclick="setTrackerFilter('expired',this)">❌ Expired Only</button>
+          </div>
+
+          <!-- Table -->
+          <div class="table-wrap" style="max-height:540px;overflow-y:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Email</th>
+                  <th>Code Used</th>
+                  <th>Lesson</th>
+                  <th>Activated On</th>
+                  <th>Expires On</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="trackerBody">
+                <tr><td colspan="7" class="td-empty">Click Refresh to load data</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BROADCAST -->
     <div class="section-page" id="sec-notif">
       <div class="card">
         <div class="card-head"><div class="card-title">📢 Broadcast Announcement</div></div>
@@ -680,6 +659,7 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
   </div>
 </div>
 
+<!-- STUDENT MODAL -->
 <div id="studentModal" class="sp-overlay">
   <div class="sp-card">
     <div class="sp-head">
@@ -687,9 +667,9 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
         <div class="sp-name" id="spName">Student</div>
         <div class="sp-email" id="spEmail">email</div>
         <div class="sp-actions">
-          <button class="btn btn-danger" id="btnBlockStudent" style="padding:5px 12px; font-size:.7rem;" onclick="toggleBlockStudent()">🚫 Block Student</button>
-          <button class="btn btn-ghost" style="padding:5px 12px; font-size:.7rem;" onclick="resetStudentDevice()">💻 Reset Device</button>
-          <button class="btn btn-primary" id="btnParentReport" style="padding:5px 12px; font-size:.7rem;" onclick="sendParentReport(currentOpenStudentEmail)">📲 Parent Report</button>
+          <button class="btn btn-danger" id="btnBlockStudent" style="padding:5px 12px;font-size:.7rem;" onclick="toggleBlockStudent()">🚫 Block Student</button>
+          <button class="btn btn-ghost" style="padding:5px 12px;font-size:.7rem;" onclick="resetStudentDevice()">💻 Reset Device</button>
+          <button class="btn btn-primary" id="btnParentReport" style="padding:5px 12px;font-size:.7rem;" onclick="sendParentReport(currentOpenStudentEmail)">📲 Parent Report</button>
         </div>
       </div>
       <button class="sp-close" onclick="closeStudent()">✕</button>
@@ -710,265 +690,134 @@ const SUPABASE_URL="https://kspfjzewkpfoeyocbzbm.supabase.co";
 const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const ADMIN="kevin.hany.08@proton.me";
-
-// Storage bucket name — create this in Supabase Dashboard > Storage
-const STORAGE_BUCKET = 'uploads';
+const STORAGE_BUCKET='uploads';
 
 let editingLessonId=null,editingHwId=null,allLessons={},allHw={};
 let examResults=[],studentsByEmail={};
 let currentOpenStudentEmail=null;
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
-
 const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
 
 /* ══════════════════════════════════════════
    DRAG & DROP UPLOAD SYSTEM
-   ══════════════════════════════════════════ */
-
-// Initialize all drop zones
-document.addEventListener('DOMContentLoaded', () => {
+══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.drop-zone').forEach(initDropZone);
 });
 
-function initDropZone(zone) {
-  const fileInput = zone.querySelector('input[type="file"]');
-  
-  ['dragenter','dragover'].forEach(evt => {
-    zone.addEventListener(evt, e => {
-      e.preventDefault();
-      zone.classList.add('dragover');
-    });
+function initDropZone(zone){
+  const fileInput=zone.querySelector('input[type="file"]');
+  ['dragenter','dragover'].forEach(evt=>{
+    zone.addEventListener(evt,e=>{e.preventDefault();zone.classList.add('dragover');});
   });
-  
-  ['dragleave','drop'].forEach(evt => {
-    zone.addEventListener(evt, e => {
-      e.preventDefault();
-      zone.classList.remove('dragover');
-    });
+  ['dragleave','drop'].forEach(evt=>{
+    zone.addEventListener(evt,e=>{e.preventDefault();zone.classList.remove('dragover');});
   });
-  
-  zone.addEventListener('drop', e => {
-    const files = e.dataTransfer.files;
-    if (files.length) {
-      fileInput.files = files;
-      processDropZoneFile(zone, files[0]);
-    }
+  zone.addEventListener('drop',e=>{
+    const files=e.dataTransfer.files;
+    if(files.length){fileInput.files=files;processDropZoneFile(zone,files[0]);}
   });
 }
 
-function handleDropZoneFile(input) {
-  const zone = input.closest('.drop-zone');
-  if (input.files.length) {
-    processDropZoneFile(zone, input.files[0]);
-  }
+function handleDropZoneFile(input){
+  const zone=input.closest('.drop-zone');
+  if(input.files.length) processDropZoneFile(zone,input.files[0]);
 }
 
-async function processDropZoneFile(zone, file) {
-  const targetId = zone.dataset.target;
-  const isImage = file.type.startsWith('image/');
-  const isPdf = file.type === 'application/pdf';
-  
-  // Validate
-  if (targetId === 'lessonImage' || zone.classList.contains('q-image-zone')) {
-    if (!isImage) {
-      showToast('error', 'Invalid File', 'Please upload an image (PNG, JPG, WEBP)');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('error', 'Too Large', 'Image must be under 5MB');
-      return;
-    }
+async function processDropZoneFile(zone,file){
+  const targetId=zone.dataset.target;
+  const isImage=file.type.startsWith('image/');
+  const isPdf=file.type==='application/pdf';
+  if(targetId==='lessonImage'||zone.classList.contains('q-image-zone')){
+    if(!isImage){showToast('error','Invalid File','Please upload an image (PNG, JPG, WEBP)');return;}
+    if(file.size>5*1024*1024){showToast('error','Too Large','Image must be under 5MB');return;}
   }
-  if (targetId === 'lessonPdf') {
-    if (!isPdf) {
-      showToast('error', 'Invalid File', 'Please upload a PDF file');
-      return;
-    }
-    if (file.size > 20 * 1024 * 1024) {
-      showToast('error', 'Too Large', 'PDF must be under 20MB');
-      return;
-    }
+  if(targetId==='lessonPdf'){
+    if(!isPdf){showToast('error','Invalid File','Please upload a PDF file');return;}
+    if(file.size>20*1024*1024){showToast('error','Too Large','PDF must be under 20MB');return;}
   }
-  
-  // Show upload UI
-  const oldContent = zone.innerHTML;
-  const fileInputHtml = `<input type="file" accept="${isImage ? 'image/*' : '.pdf,application/pdf'}" onchange="handleDropZoneFile(this)" style="display:none">`;
-  
-  zone.innerHTML = `
-    ${fileInputHtml}
-    <div class="drop-zone-icon">${isImage ? '🖼️' : '📄'}</div>
-    <div class="drop-zone-filename">${file.name}</div>
-    <div class="upload-progress"><div class="upload-progress-bar" id="prog-${targetId || zone.id}"></div></div>
-    <div class="upload-status uploading" id="status-${targetId || zone.id}">Uploading…</div>
-  `;
+  const fileInputHtml=`<input type="file" accept="${isImage?'image/*':'.pdf,application/pdf'}" onchange="handleDropZoneFile(this)" style="display:none">`;
+  zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon">${isImage?'🖼️':'📄'}</div><div class="drop-zone-filename">${file.name}</div><div class="upload-progress"><div class="upload-progress-bar" id="prog-${targetId||zone.id}"></div></div><div class="upload-status uploading" id="status-${targetId||zone.id}">Uploading…</div>`;
   zone.classList.add('has-file');
-  
-  // Simulate progress
-  const progBar = zone.querySelector('.upload-progress-bar');
-  let progress = 0;
-  const progInterval = setInterval(() => {
-    progress = Math.min(progress + Math.random() * 20, 90);
-    progBar.style.width = progress + '%';
-  }, 200);
-  
-  try {
-    // Upload to Supabase Storage
-    const timestamp = Date.now();
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const folder = isImage ? 'images' : 'pdfs';
-    const filePath = `${folder}/${timestamp}_${safeName}`;
-    
-    const { data, error } = await db.storage.from(STORAGE_BUCKET).upload(filePath, file, {
-      cacheControl: '3600',
-      upsert: false
-    });
-    
+  const progBar=zone.querySelector('.upload-progress-bar');
+  let progress=0;
+  const progInterval=setInterval(()=>{progress=Math.min(progress+Math.random()*20,90);progBar.style.width=progress+'%';},200);
+  try{
+    const timestamp=Date.now();
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const folder=isImage?'images':'pdfs';
+    const filePath=`${folder}/${timestamp}_${safeName}`;
+    const{data,error}=await db.storage.from(STORAGE_BUCKET).upload(filePath,file,{cacheControl:'3600',upsert:false});
     clearInterval(progInterval);
-    
-    if (error) throw error;
-    
-    // Get public URL
-    const { data: urlData } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
-    const publicUrl = urlData.publicUrl;
-    
-    // Store URL in hidden input
-    if (targetId) {
-      document.getElementById(targetId).value = publicUrl;
-    }
-    
-    // Show success with preview
-    progBar.style.width = '100%';
-    const statusEl = zone.querySelector('.upload-status');
-    statusEl.className = 'upload-status done';
-    statusEl.textContent = 'Uploaded ✓';
-    
-    setTimeout(() => {
-      if (isImage) {
-        zone.innerHTML = `
-          ${fileInputHtml}
-          <div class="drop-zone-preview">
-            <img src="${publicUrl}" alt="Preview">
-            <button class="drop-zone-remove" onclick="clearDropZone(this, '${targetId}')">✕</button>
-          </div>
-          <div class="drop-zone-filename">${file.name}</div>
-          <div class="upload-status done">Uploaded ✓</div>
-        `;
-      } else {
-        zone.innerHTML = `
-          ${fileInputHtml}
-          <div class="drop-zone-icon" style="font-size:2.5rem">✅</div>
-          <div class="drop-zone-filename">${file.name}</div>
-          <div class="upload-status done">PDF Uploaded ✓</div>
-          <button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this, '${targetId}')">✕</button>
-        `;
+    if(error) throw error;
+    const{data:urlData}=db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+    const publicUrl=urlData.publicUrl;
+    if(targetId) document.getElementById(targetId).value=publicUrl;
+    progBar.style.width='100%';
+    const statusEl=zone.querySelector('.upload-status');
+    statusEl.className='upload-status done';statusEl.textContent='Uploaded ✓';
+    setTimeout(()=>{
+      if(isImage){
+        zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview"><img src="${publicUrl}" alt="Preview"><button class="drop-zone-remove" onclick="clearDropZone(this,'${targetId}')">✕</button></div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done">Uploaded ✓</div>`;
+      }else{
+        zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:2.5rem">✅</div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done">PDF Uploaded ✓</div><button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this,'${targetId}')">✕</button>`;
       }
       zone.classList.add('has-file');
-    }, 600);
-    
-    // Return URL for question image zones
-    if (zone.dataset.urlStore !== undefined) {
-      zone.dataset.uploadedUrl = publicUrl;
-    }
-    
-    showToast('success', 'Uploaded!', `${file.name} uploaded successfully`);
-    
-  } catch (err) {
+    },600);
+    if(zone.dataset.urlStore!==undefined) zone.dataset.uploadedUrl=publicUrl;
+    showToast('success','Uploaded!',`${file.name} uploaded successfully`);
+  }catch(err){
     clearInterval(progInterval);
-    console.error('Upload error:', err);
-    
-    // Reset zone
-    const accept = isImage ? 'image/*' : '.pdf,application/pdf';
-    const icon = isImage ? '🖼️' : '📄';
-    const typeText = isImage ? 'image' : 'PDF';
-    const hint = isImage ? 'PNG, JPG, WEBP — max 5MB' : 'PDF only — max 20MB';
-    
-    zone.innerHTML = `
-      <input type="file" accept="${accept}" onchange="handleDropZoneFile(this)">
-      <div class="drop-zone-icon">${icon}</div>
-      <div class="drop-zone-text">Drag & drop ${typeText} here or <span>browse</span></div>
-      <div class="drop-zone-hint">${hint}</div>
-    `;
+    const accept=isImage?'image/*':'.pdf,application/pdf';
+    const icon=isImage?'🖼️':'📄';
+    const typeText=isImage?'image':'PDF';
+    const hint=isImage?'PNG, JPG, WEBP — max 5MB':'PDF only — max 20MB';
+    zone.innerHTML=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">${icon}</div><div class="drop-zone-text">Drag & drop ${typeText} here or <span>browse</span></div><div class="drop-zone-hint">${hint}</div>`;
     zone.classList.remove('has-file');
     initDropZone(zone);
-    
-    showToast('error', 'Upload Failed', err.message || 'Check Supabase Storage bucket settings');
+    showToast('error','Upload Failed',err.message||'Check Supabase Storage bucket settings');
   }
 }
 
-window.clearDropZone = function(btn, targetId) {
-  const zone = btn.closest('.drop-zone');
-  const isImageZone = targetId === 'lessonImage' || zone.classList.contains('q-image-zone');
-  const accept = isImageZone ? 'image/*' : '.pdf,application/pdf';
-  const icon = isImageZone ? '🖼️' : '📄';
-  const typeText = isImageZone ? 'image' : 'PDF';
-  const hint = isImageZone ? 'PNG, JPG, WEBP — max 5MB' : 'PDF only — max 20MB';
-  
-  zone.innerHTML = `
-    <input type="file" accept="${accept}" onchange="handleDropZoneFile(this)">
-    <div class="drop-zone-icon">${icon}</div>
-    <div class="drop-zone-text">Drag & drop ${typeText} here or <span>browse</span></div>
-    <div class="drop-zone-hint">${hint}</div>
-  `;
+window.clearDropZone=function(btn,targetId){
+  const zone=btn.closest('.drop-zone');
+  const isImageZone=targetId==='lessonImage'||zone.classList.contains('q-image-zone');
+  const accept=isImageZone?'image/*':'.pdf,application/pdf';
+  const icon=isImageZone?'🖼️':'📄';
+  const typeText=isImageZone?'image':'PDF';
+  const hint=isImageZone?'PNG, JPG, WEBP — max 5MB':'PDF only — max 20MB';
+  zone.innerHTML=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">${icon}</div><div class="drop-zone-text">Drag & drop ${typeText} here or <span>browse</span></div><div class="drop-zone-hint">${hint}</div>`;
   zone.classList.remove('has-file');
   initDropZone(zone);
-  
-  if (targetId) {
-    document.getElementById(targetId).value = '';
-  }
-  if (zone.dataset.uploadedUrl) {
-    zone.dataset.uploadedUrl = '';
-  }
+  if(targetId) document.getElementById(targetId).value='';
+  if(zone.dataset.uploadedUrl) zone.dataset.uploadedUrl='';
 };
 
-// Pre-fill drop zone with existing URL (for editing)
-function setDropZonePreview(zone, url) {
-  if (!zone || !url) return;
-  const targetId = zone.dataset.target || '';
-  const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)/i.test(url) || targetId === 'lessonImage';
-  
-  if (targetId) {
-    document.getElementById(targetId).value = url;
-  }
-  
-  const accept = isImage ? 'image/*' : '.pdf,application/pdf';
-  const fileInputHtml = `<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)" style="display:none">`;
-  
-  if (isImage) {
-    zone.innerHTML = `
-      ${fileInputHtml}
-      <div class="drop-zone-preview">
-        <img src="${url}" alt="Preview">
-        <button class="drop-zone-remove" onclick="clearDropZone(this, '${targetId}')">✕</button>
-      </div>
-      <div class="drop-zone-filename" style="word-break:break-all">${url.split('/').pop()}</div>
-      <div class="upload-status done">Loaded ✓</div>
-    `;
-  } else {
-    zone.innerHTML = `
-      ${fileInputHtml}
-      <div class="drop-zone-icon" style="font-size:2.5rem">📄</div>
-      <div class="drop-zone-filename" style="word-break:break-all">${url.split('/').pop()}</div>
-      <div class="upload-status done">Loaded ✓</div>
-      <button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this, '${targetId}')">✕</button>
-    `;
+function setDropZonePreview(zone,url){
+  if(!zone||!url) return;
+  const targetId=zone.dataset.target||'';
+  const isImage=/\.(jpg|jpeg|png|gif|webp|svg|bmp)/i.test(url)||targetId==='lessonImage';
+  if(targetId) document.getElementById(targetId).value=url;
+  const accept=isImage?'image/*':'.pdf,application/pdf';
+  const fileInputHtml=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)" style="display:none">`;
+  if(isImage){
+    zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview"><img src="${url}" alt="Preview"><button class="drop-zone-remove" onclick="clearDropZone(this,'${targetId}')">✕</button></div><div class="drop-zone-filename" style="word-break:break-all">${url.split('/').pop()}</div><div class="upload-status done">Loaded ✓</div>`;
+  }else{
+    zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:2.5rem">📄</div><div class="drop-zone-filename" style="word-break:break-all">${url.split('/').pop()}</div><div class="upload-status done">Loaded ✓</div><button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this,'${targetId}')">✕</button>`;
   }
   zone.classList.add('has-file');
-  if (zone.dataset.uploadedUrl !== undefined) {
-    zone.dataset.uploadedUrl = url;
-  }
+  if(zone.dataset.uploadedUrl!==undefined) zone.dataset.uploadedUrl=url;
 }
 
-
 /* ══════════════════════════════════════════
-   ORIGINAL LOGIC (all preserved)
-   ══════════════════════════════════════════ */
-
+   HELPERS
+══════════════════════════════════════════ */
 function normalizePhoneEg(phone){
   let value=String(phone||'').replace(/[^\d+]/g,'');
   if(!value) return '';
   value=value.replace(/^00/,'');
   if(value.startsWith('+')) value=value.slice(1);
-  if(value.startsWith('2') && value[1]==='0') return value;
+  if(value.startsWith('2')&&value[1]==='0') return value;
   if(value.startsWith('20')) return value;
   if(value.startsWith('0')) return '2'+value;
   return value;
@@ -986,12 +835,7 @@ function buildParentReportText(email,student,maxItems=5){
   const results=getStudentLatestResults(email,maxItems);
   const latest=results[0];
   const avg=results.length?Math.round(results.reduce((sum,r)=>sum+((Number(r.score)||0)/(Number(r.total)||1))*100,0)/results.length):0;
-  let lines=[
-    'تقرير الطالب من منصة MathPro',
-    `الطالب: ${name}`,
-    `الصف: ${grade}`,
-    `عدد الامتحانات المسجلة: ${results.length}`
-  ];
+  let lines=['تقرير الطالب من منصة MathPro',`الطالب: ${name}`,`الصف: ${grade}`,`عدد الامتحانات المسجلة: ${results.length}`];
   if(latest){
     lines.push(`آخر امتحان: ${latest.lesson}`);
     lines.push(`الدرجة: ${latest.score}/${latest.total}`);
@@ -1002,11 +846,8 @@ function buildParentReportText(email,student,maxItems=5){
       const dt=r.date?new Date(r.date).toLocaleDateString('en-GB'):'—';
       lines.push(`${index+1}) ${r.lesson}: ${r.score}/${r.total} - ${dt}`);
     });
-  } else {
-    lines.push('لا توجد درجات مسجلة حتى الآن.');
-  }
-  lines.push('');
-  lines.push('مع تحيات مستر شريف علي');
+  }else{lines.push('لا توجد درجات مسجلة حتى الآن.');}
+  lines.push('');lines.push('مع تحيات مستر شريف علي');
   return lines.join('\n');
 }
 function buildParentWhatsappUrl(email){
@@ -1015,146 +856,77 @@ function buildParentWhatsappUrl(email){
   if(!phone) return '';
   return `https://wa.me/${phone}?text=${encodeURIComponent(buildParentReportText(email,student))}`;
 }
-
 function getLatestResultRecord(email){
   return examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]||null;
 }
-function getWhatsappSentStore(){
-  try{return JSON.parse(localStorage.getItem('mp_whatsapp_sent_store')||'{}')||{};}catch(_){return {};}
-}
-function setWhatsappSentStore(store){
-  localStorage.setItem('mp_whatsapp_sent_store', JSON.stringify(store));
-}
-function getWhatsappSentKey(email,result){
-  if(!result) return '';
-  return [email,result.lesson||'',result.score||'',result.total||'',result.date||''].join('||');
-}
-function markWhatsappSent(email,result){
-  const key=getWhatsappSentKey(email,result);
-  if(!key) return;
-  const store=getWhatsappSentStore();
-  store[key]={sent:true,sentAt:new Date().toISOString()};
-  setWhatsappSentStore(store);
-}
-function isWhatsappSent(email,result){
-  const key=getWhatsappSentKey(email,result);
-  if(!key) return false;
-  const store=getWhatsappSentStore();
-  return Boolean(store[key]&&store[key].sent);
-}
-
+function getWhatsappSentStore(){try{return JSON.parse(localStorage.getItem('mp_whatsapp_sent_store')||'{}')||{};}catch(_){return {};}}
+function setWhatsappSentStore(store){localStorage.setItem('mp_whatsapp_sent_store',JSON.stringify(store));}
+function getWhatsappSentKey(email,result){if(!result) return '';return [email,result.lesson||'',result.score||'',result.total||'',result.date||''].join('||');}
+function markWhatsappSent(email,result){const key=getWhatsappSentKey(email,result);if(!key) return;const store=getWhatsappSentStore();store[key]={sent:true,sentAt:new Date().toISOString()};setWhatsappSentStore(store);}
+function isWhatsappSent(email,result){const key=getWhatsappSentKey(email,result);if(!key) return false;const store=getWhatsappSentStore();return Boolean(store[key]&&store[key].sent);}
 function sendParentReport(email){
   const url=buildParentWhatsappUrl(email);
   const student=studentsByEmail[email];
   const latest=getLatestResultRecord(email);
-  if(!student?.raw?.parentphone && !student?.raw?.parent_phone && !student?.raw?.parentPhone){
-    showToast('warning','No Parent Phone','This student does not have a parent phone number saved.');
-    return;
-  }
-  if(!latest){
-    showToast('warning','No Result','There is no saved degree to send for this student yet.');
-    return;
-  }
-  if(!url){
-    showToast('error','Cannot Build Report','Please check the parent phone number format.');
-    return;
-  }
+  if(!student?.raw?.parentphone&&!student?.raw?.parent_phone&&!student?.raw?.parentPhone){showToast('warning','No Parent Phone','This student does not have a parent phone number saved.');return;}
+  if(!latest){showToast('warning','No Result','There is no saved degree to send for this student yet.');return;}
+  if(!url){showToast('error','Cannot Build Report','Please check the parent phone number format.');return;}
   markWhatsappSent(email,latest);
   window.open(url,'_blank');
   renderResultsTable();
   showToast('success','WhatsApp Ready','تم تعليم الدرجة كـ تم الإرسال عبر واتساب.');
 }
+function isMissingColumnError(error){const msg=String(error?.message||error||'');return /column .* does not exist|Could not find the .* column|schema cache/i.test(msg);}
 
-function isMissingColumnError(error){
-  const msg=String(error?.message||error||'');
-  return /column .* does not exist|Could not find the .* column|schema cache/i.test(msg);
-}
+/* ── Video helpers ── */
 function normalizeVideoItem(item,index=0,fallbackName=''){
   if(!item) return null;
-  if(typeof item==='string'){
-    const url=item.trim();
-    if(!url) return null;
-    return {name:fallbackName||`Video ${index+1}`,url,requireHw:false,hwId:''};
-  }
+  if(typeof item==='string'){const url=item.trim();if(!url) return null;return{name:fallbackName||`Video ${index+1}`,url,requireHw:false,hwId:''};}
   const url=String(item.url||item.video||item.link||'').trim();
   if(!url) return null;
-  return {
-    name:String(item.name||item.title||fallbackName||`Video ${index+1}`).trim(),
-    url,
-    requireHw:Boolean(item.requireHw),
-    hwId:String(item.hwId||item.homeworkId||item.homework_id||'').trim()
-  };
+  return{name:String(item.name||item.title||fallbackName||`Video ${index+1}`).trim(),url,requireHw:Boolean(item.requireHw),hwId:String(item.hwId||item.homeworkId||item.homework_id||'').trim()};
 }
 function parseVideoArray(raw,fallbackName=''){
   if(Array.isArray(raw)) return raw.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);
   if(typeof raw==='string'){
-    const trimmed=raw.trim();
-    if(!trimmed) return [];
-    try{
-      const parsed=JSON.parse(trimmed);
-      if(Array.isArray(parsed)) return parsed.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);
-      const one=normalizeVideoItem(parsed,0,fallbackName);
-      return one?[one]:[];
-    }catch(_){}
-    const one=normalizeVideoItem(trimmed,0,fallbackName);
-    return one?[one]:[];
+    const trimmed=raw.trim();if(!trimmed) return [];
+    try{const parsed=JSON.parse(trimmed);if(Array.isArray(parsed)) return parsed.map((item,index)=>normalizeVideoItem(item,index,fallbackName)).filter(Boolean);const one=normalizeVideoItem(parsed,0,fallbackName);return one?[one]:[];}catch(_){}
+    const one=normalizeVideoItem(trimmed,0,fallbackName);return one?[one]:[];
   }
-  if(raw&&typeof raw==='object'){
-    const one=normalizeVideoItem(raw,0,fallbackName);
-    return one?[one]:[];
-  }
+  if(raw&&typeof raw==='object'){const one=normalizeVideoItem(raw,0,fallbackName);return one?[one]:[];}
   return [];
 }
 function normalizeLessonVideos(lesson){
-  const videosFromVideos=parseVideoArray(lesson?.videos,lesson?.name||'Video');
-  if(videosFromVideos.length) return videosFromVideos;
-  const videosFromVideo=parseVideoArray(lesson?.video,lesson?.name||'Video');
-  if(videosFromVideo.length) return videosFromVideo;
+  const v1=parseVideoArray(lesson?.videos,lesson?.name||'Video');if(v1.length) return v1;
+  const v2=parseVideoArray(lesson?.video,lesson?.name||'Video');if(v2.length) return v2;
   return [];
 }
 function normalizeQuestions(raw){
   if(Array.isArray(raw)) return raw;
-  if(typeof raw==='string'){
-    try{
-      const parsed=JSON.parse(raw);
-      return Array.isArray(parsed)?parsed:[];
-    }catch(_){}
-  }
+  if(typeof raw==='string'){try{const p=JSON.parse(raw);return Array.isArray(p)?p:[];}catch(_){}}
   return [];
 }
 function serializeLegacyVideoValue(videos,fallbackVideo=''){
   const normalized=parseVideoArray(videos,'Video');
   if(!normalized.length) return String(fallbackVideo||'').trim();
-  if(normalized.length===1 && !normalized[0].requireHw && !normalized[0].hwId) return normalized[0].url;
+  if(normalized.length===1&&!normalized[0].requireHw&&!normalized[0].hwId) return normalized[0].url;
   return JSON.stringify(normalized);
 }
 async function saveLessonWithFallback(payload){
   const legacyVideoValue=serializeLegacyVideoValue(payload.videos,payload.video||'');
-  const basePayload={
-    name:payload.name,
-    grade:payload.grade,
-    price:payload.price,
-    validitydays:payload.validitydays,
-    image:payload.image,
-    pdf:payload.pdf,
-    video:legacyVideoValue
-  };
+  const basePayload={name:payload.name,grade:payload.grade,price:payload.price,validitydays:payload.validitydays,image:payload.image,pdf:payload.pdf,video:legacyVideoValue};
   const candidates=[
     {mode:'modern-all',data:{...basePayload,videos:payload.videos,questions:payload.questions}},
     {mode:'legacy-video+questions',data:{...basePayload,questions:payload.questions}},
     {mode:'modern-videos-only',data:{...basePayload,videos:payload.videos}},
     {mode:'legacy-video-only',data:{...basePayload}}
   ];
-  const tried=new Set();
-  let lastError=null;
+  const tried=new Set();let lastError=null;
   for(const candidate of candidates){
     const key=Object.keys(candidate.data).sort().join('|');
-    if(tried.has(key)) continue;
-    tried.add(key);
-    const req=editingLessonId
-      ? db.from('lessons').update(candidate.data).eq('id',editingLessonId)
-      : db.from('lessons').insert([candidate.data]);
-    const {error}=await req;
+    if(tried.has(key)) continue;tried.add(key);
+    const req=editingLessonId?db.from('lessons').update(candidate.data).eq('id',editingLessonId):db.from('lessons').insert([candidate.data]);
+    const{error}=await req;
     if(!error) return candidate;
     lastError=error;
     if(!isMissingColumnError(error)) throw error;
@@ -1162,7 +934,9 @@ async function saveLessonWithFallback(payload){
   throw lastError||new Error('Failed to save lesson.');
 }
 
-/* ── TOAST ── */
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
 function showToast(type,title,msg,dur=4500){
   const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
   const c=document.getElementById('toast-container');
@@ -1172,30 +946,36 @@ function showToast(type,title,msg,dur=4500){
   c.appendChild(t);setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),250)},dur);
 }
 
-/* ── AUTH ── */
+/* ══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════ */
 async function checkAuth(){
   const{data:{session}}=await db.auth.getSession();
   if(session&&session.user.email===ADMIN){document.getElementById('secureLayer').classList.add('hidden');loadAll();}
   else window.location.href='/home';
 }
 checkAuth();
-
 async function loadAll(){await loadStats();await loadLessons();await loadHw();await loadResults();await loadAllCodes();}
 
-/* ── SIDEBAR ── */
-const TITLES={overview:'Overview',lessons:'Courses & Lessons',homework:'Assignments',results:'Student Results',codes:'Subscription Codes',notif:'Broadcast'};
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+const TITLES={overview:'Overview',lessons:'Courses & Lessons',homework:'Assignments',results:'Student Results',codes:'Subscription Codes',tracker:'Code Tracker',notif:'Broadcast'};
 function showSection(name,btn){
   document.querySelectorAll('.section-page').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
+  if(btn) btn.classList.add('active');
   document.getElementById('topbarTitle').textContent=TITLES[name]||name;
   closeSidebar();
+  if(name==='tracker') loadTracker();
 }
 function toggleSidebar(){document.getElementById('sidebarEl').classList.toggle('open');document.getElementById('sbBackdrop').classList.toggle('show');}
 function closeSidebar(){document.getElementById('sidebarEl').classList.remove('open');document.getElementById('sbBackdrop').classList.remove('show');}
 
-/* ── STATS ── */
+/* ══════════════════════════════════════════
+   STATS
+══════════════════════════════════════════ */
 async function loadStats(){
   try{
     const[{count:u},{count:r},{count:l}]=await Promise.all([
@@ -1209,7 +989,9 @@ async function loadStats(){
   }catch(e){}
 }
 
-/* ── RESULTS ── */
+/* ══════════════════════════════════════════
+   RESULTS
+══════════════════════════════════════════ */
 async function loadResults(){
   try{
     const[{data:users},{data:res}]=await Promise.all([
@@ -1217,17 +999,14 @@ async function loadResults(){
       db.from('results').select('*').order('date',{ascending:false})
     ]);
     const uMap={};
-    if(users)users.forEach(u=>{if(u.email)uMap[u.email]={name:u.name||u.email.split('@')[0],raw:u};});
-    studentsByEmail=uMap;
-    examResults=res||[];
-
+    if(users) users.forEach(u=>{if(u.email) uMap[u.email]={name:u.name||u.email.split('@')[0],raw:u};});
+    studentsByEmail=uMap;examResults=res||[];
     const ovRows=(res||[]).slice(0,8).map(r=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
       const nm=uMap[r.email]?.name||r.email?.split('@')[0]||'—';
       return`<tr><td class="td-name">${nm}</td><td class="td-green">${r.lesson||'—'}</td><td><span class="td-score">${r.score}/${r.total}</span></td><td class="td-date">${dt}</td></tr>`;
     }).join('');
     document.getElementById('ovBody').innerHTML=ovRows||`<tr><td colspan="4" class="td-empty">No results yet</td></tr>`;
-
     renderResultsTable();
   }catch(e){}
 }
@@ -1243,15 +1022,10 @@ function renderResultsTable(){
     const parentPhone=s.raw?.parentphone||s.raw?.parent_phone||s.raw?.parentPhone||'';
     const sent=latest?isWhatsappSent(email,latest):false;
     let waCell='<div class="wa-stack"><span class="wa-no-parent">—</span></div>';
-    if(parentPhone && latest){
-      waCell = `<div class="wa-stack"><a href="${buildParentWhatsappUrl(email)}" target="_blank" onclick="event.stopPropagation(); sendParentReport('${email}'); return false;" class="wa-send-btn" title="Send report to parent">📲</a><span class="${sent?'wa-sent':'wa-not-sent'}">${sent?'تم الإرسال عبر واتساب':'لم يتم الإرسال'}</span></div>`;
-    } else if(!parentPhone){
-      waCell = `<div class="wa-stack"><span class="wa-no-parent">No parent number</span></div>`;
-    } else if(!latest){
-      waCell = `<div class="wa-stack"><span class="wa-not-sent">No result yet</span></div>`;
-    }
-
-    rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\'")}')">
+    if(parentPhone&&latest){waCell=`<div class="wa-stack"><a href="${buildParentWhatsappUrl(email)}" target="_blank" onclick="event.stopPropagation();sendParentReport('${email}');return false;" class="wa-send-btn" title="Send report to parent">📲</a><span class="${sent?'wa-sent':'wa-not-sent'}">${sent?'تم الإرسال عبر واتساب':'لم يتم الإرسال'}</span></div>`;}
+    else if(!parentPhone){waCell=`<div class="wa-stack"><span class="wa-no-parent">No parent number</span></div>`;}
+    else if(!latest){waCell=`<div class="wa-stack"><span class="wa-not-sent">No result yet</span></div>`;}
+    rows+=`<tr style="cursor:pointer" onclick="openStudent('${email}','${String(s.name).replace(/'/g,"\\'")}')">
       <td class="td-name"><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;background:var(--green-light);color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0">👤</div><div>${escapeHtml(s.name)}<div style="font-size:.68rem;color:var(--muted)">${sRes.length} exams</div></div></div></td>
       <td class="td-email">${escapeHtml(email)}</td>
       <td class="td-green">${escapeHtml(latest?.lesson||'—')}</td>
@@ -1268,30 +1042,21 @@ function searchTable(){
   document.querySelectorAll('#resultsBody tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
 }
 
-/* ── STUDENT MODAL & ADMIN ACTIONS ── */
+/* ══════════════════════════════════════════
+   STUDENT MODAL
+══════════════════════════════════════════ */
 async function openStudent(email,name){
   currentOpenStudentEmail=email;
   document.getElementById('spName').textContent=name;
   document.getElementById('spEmail').textContent=email;
   document.getElementById('studentModal').classList.add('show');
-  
-  const sData = studentsByEmail[email]?.raw;
-  const btnBlock = document.getElementById('btnBlockStudent');
-  const btnParentReport = document.getElementById('btnParentReport');
-  const hasParentPhone = Boolean(sData?.parentphone || sData?.parent_phone || sData?.parentPhone);
-  if(btnParentReport){
-    btnParentReport.disabled = !hasParentPhone;
-    btnParentReport.style.opacity = hasParentPhone ? '1' : '.5';
-    btnParentReport.title = hasParentPhone ? 'Send full report to parent' : 'No parent phone saved';
-  }
-  if(sData?.is_blocked){
-    btnBlock.innerHTML = '✅ Unblock Student';
-    btnBlock.classList.replace('btn-danger', 'btn-primary');
-  } else {
-    btnBlock.innerHTML = '🚫 Block Student';
-    btnBlock.classList.replace('btn-primary', 'btn-danger');
-  }
-
+  const sData=studentsByEmail[email]?.raw;
+  const btnBlock=document.getElementById('btnBlockStudent');
+  const btnParentReport=document.getElementById('btnParentReport');
+  const hasParentPhone=Boolean(sData?.parentphone||sData?.parent_phone||sData?.parentPhone);
+  if(btnParentReport){btnParentReport.disabled=!hasParentPhone;btnParentReport.style.opacity=hasParentPhone?'1':'.5';btnParentReport.title=hasParentPhone?'Send full report to parent':'No parent phone saved';}
+  if(sData?.is_blocked){btnBlock.innerHTML='✅ Unblock Student';btnBlock.classList.replace('btn-danger','btn-primary');}
+  else{btnBlock.innerHTML='🚫 Block Student';btnBlock.classList.replace('btn-primary','btn-danger');}
   document.getElementById('spDetails').innerHTML='<div style="text-align:center;padding:28px;color:var(--muted)">Loading…</div>';
   try{
     const[{data:codes},{data:hwRes}]=await Promise.all([
@@ -1321,62 +1086,41 @@ async function openStudent(email,name){
         html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.7rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center">${dt} ${sentBadge}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
       });
     }
-    if(!courses.length&&!sExams.length)html='<div style="text-align:center;padding:32px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
+    if(!courses.length&&!sExams.length) html='<div style="text-align:center;padding:32px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
     document.getElementById('spDetails').innerHTML=html;
   }catch(e){document.getElementById('spDetails').innerHTML=`<div style="color:var(--red);text-align:center;padding:24px">Error loading data</div>`;}
 }
-
 function closeStudent(){document.getElementById('studentModal').classList.remove('show');currentOpenStudentEmail=null;}
 
-window.toggleBlockStudent = async () => {
+window.toggleBlockStudent=async()=>{
   if(!currentOpenStudentEmail) return;
-  const sData = studentsByEmail[currentOpenStudentEmail]?.raw;
-  const isBlocked = sData?.is_blocked || false;
-  const newStatus = !isBlocked;
-
-  if(!confirm(newStatus ? "Are you sure you want to block this student from accessing the platform?" : "Unblock this student?")) return;
-  
-  try {
-    await db.from('users').update({ is_blocked: newStatus }).eq('email', currentOpenStudentEmail);
-    showToast('success', 'Success', newStatus ? 'Student blocked.' : 'Student unblocked.');
-    if(studentsByEmail[currentOpenStudentEmail]) studentsByEmail[currentOpenStudentEmail].raw.is_blocked = newStatus;
-    openStudent(currentOpenStudentEmail, studentsByEmail[currentOpenStudentEmail].name);
-  } catch(e) { showToast('error', 'Error', e.message); }
+  const sData=studentsByEmail[currentOpenStudentEmail]?.raw;
+  const isBlocked=sData?.is_blocked||false;const newStatus=!isBlocked;
+  if(!confirm(newStatus?"Are you sure you want to block this student from accessing the platform?":"Unblock this student?")) return;
+  try{
+    await db.from('users').update({is_blocked:newStatus}).eq('email',currentOpenStudentEmail);
+    showToast('success','Success',newStatus?'Student blocked.':'Student unblocked.');
+    if(studentsByEmail[currentOpenStudentEmail]) studentsByEmail[currentOpenStudentEmail].raw.is_blocked=newStatus;
+    openStudent(currentOpenStudentEmail,studentsByEmail[currentOpenStudentEmail].name);
+  }catch(e){showToast('error','Error',e.message);}
 };
 
-window.resetStudentDevice = async () => {
+window.resetStudentDevice=async()=>{
   if(!currentOpenStudentEmail) return;
   if(!confirm("Are you sure you want to reset the device limit for this student? They will be asked to log in again.")) return;
-
-  const attempts=[
-    {devices:[]},
-    {devices:'[]'},
-    {devices:null},
-    {device_id:null},
-    {deviceId:null},
-    {device_id:null,device_token:null},
-    {device_id:null,device_fingerprint:null},
-    {device_id:null,last_device_id:null}
-  ];
-
+  const attempts=[{devices:[]},{devices:'[]'},{devices:null},{device_id:null},{deviceId:null},{device_id:null,device_token:null},{device_id:null,device_fingerprint:null},{device_id:null,last_device_id:null}];
   let success=false,lastError=null;
   for(const updates of attempts){
-    const {error}=await db.from('users').update(updates).eq('email',currentOpenStudentEmail);
-    if(!error){success=true;break;}
-    lastError=error;
-    if(!isMissingColumnError(error)) break;
+    const{error}=await db.from('users').update(updates).eq('email',currentOpenStudentEmail);
+    if(!error){success=true;break;}lastError=error;if(!isMissingColumnError(error)) break;
   }
-
-  if(success){
-    const rawUser=studentsByEmail[currentOpenStudentEmail]?.raw;
-    if(rawUser) rawUser.devices=[];
-    showToast('success','Success','Devices reset successfully. Ask the student to log out, then sign in again.');
-  }else{
-    showToast('error','Error',lastError?.message||'Could not reset devices.');
-  }
+  if(success){const rawUser=studentsByEmail[currentOpenStudentEmail]?.raw;if(rawUser) rawUser.devices=[];showToast('success','Success','Devices reset successfully. Ask the student to log out, then sign in again.');}
+  else{showToast('error','Error',lastError?.message||'Could not reset devices.');}
 };
 
-/* ── LESSONS ── */
+/* ══════════════════════════════════════════
+   LESSONS
+══════════════════════════════════════════ */
 async function loadLessons(){
   try{
     const{data}=await db.from('lessons').select('*').order('created_at',{ascending:false});
@@ -1401,7 +1145,7 @@ async function loadLessons(){
       </tr>`;
     });
     document.getElementById('lessonsBody').innerHTML=rows;
-    ['hwLessonId','hwNextLessonId'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+    ['hwLessonId','hwNextLessonId'].forEach(id=>{const el=document.getElementById(id);if(el) el.innerHTML=opts;});
   }catch(e){}
 }
 
@@ -1418,34 +1162,14 @@ function resetLessonForm(){
   document.getElementById('lessonFormTitle').textContent='➕ Add New Course';
   document.getElementById('saveLessonBtn').textContent='Publish Course 🚀';
   document.getElementById('cancelLessonBtn').classList.add('hidden');
-  
-  // Reset drop zones
-  const coverZone = document.getElementById('dropCoverImage');
-  const pdfZone = document.getElementById('dropPdfNotes');
-  if(coverZone) {
-    coverZone.innerHTML = `
-      <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
-      <div class="drop-zone-icon">🖼️</div>
-      <div class="drop-zone-text">Drag & drop image here or <span>browse</span></div>
-      <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
-    `;
-    coverZone.classList.remove('has-file');
-    initDropZone(coverZone);
-  }
-  if(pdfZone) {
-    pdfZone.innerHTML = `
-      <input type="file" accept=".pdf,application/pdf" onchange="handleDropZoneFile(this)">
-      <div class="drop-zone-icon">📄</div>
-      <div class="drop-zone-text">Drag & drop PDF here or <span>browse</span></div>
-      <div class="drop-zone-hint">PDF only — max 20MB</div>
-    `;
-    pdfZone.classList.remove('has-file');
-    initDropZone(pdfZone);
-  }
+  const coverZone=document.getElementById('dropCoverImage');
+  const pdfZone=document.getElementById('dropPdfNotes');
+  if(coverZone){coverZone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">🖼️</div><div class="drop-zone-text">Drag & drop image here or <span>browse</span></div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;coverZone.classList.remove('has-file');initDropZone(coverZone);}
+  if(pdfZone){pdfZone.innerHTML=`<input type="file" accept=".pdf,application/pdf" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">📄</div><div class="drop-zone-text">Drag & drop PDF here or <span>browse</span></div><div class="drop-zone-hint">PDF only — max 20MB</div>`;pdfZone.classList.remove('has-file');initDropZone(pdfZone);}
 }
 
 function editLesson(id){
-  const d=allLessons[id];if(!d)return;
+  const d=allLessons[id];if(!d) return;
   editingLessonId=id;
   document.getElementById('lessonName').value=d.name||'';
   document.getElementById('lessonGrade').value=d.grade||'1';
@@ -1455,15 +1179,8 @@ function editLesson(id){
   document.getElementById('lessonPdf').value=d.pdf||'';
   document.getElementById('videosContainer').innerHTML='';
   document.getElementById('questionsContainer').innerHTML='';
-  
-  // Set drop zone previews for existing files
-  if(d.image) {
-    setDropZonePreview(document.getElementById('dropCoverImage'), d.image);
-  }
-  if(d.pdf) {
-    setDropZonePreview(document.getElementById('dropPdfNotes'), d.pdf);
-  }
-  
+  if(d.image) setDropZonePreview(document.getElementById('dropCoverImage'),d.image);
+  if(d.pdf) setDropZonePreview(document.getElementById('dropPdfNotes'),d.pdf);
   const normalizedVideos=normalizeLessonVideos(d);
   if(normalizedVideos.length) normalizedVideos.forEach(v=>addVideoBlock(v));
   else if(d.video) addVideoBlock({name:d.name||'Main Video',url:d.video,requireHw:false,hwId:''});
@@ -1475,21 +1192,17 @@ function editLesson(id){
 }
 
 async function delLesson(id){
-  if(!confirm("Delete this course permanently?"))return;
+  if(!confirm("Delete this course permanently?")) return;
   try{await db.from('lessons').delete().eq('id',id);showToast('success','Deleted','Course removed.');loadLessons();loadStats();}
   catch(e){showToast('error','Error',e.message);}
 }
 
 /* ── VIDEO BLOCKS ── */
-let hwSelectOptionsCache='';
-function getHwOptions(){
-  return Object.values(allHw).map(h=>`<option value="${h.id}">${h.title||h.name||h.id}</option>`).join('');
-}
+function getHwOptions(){return Object.values(allHw).map(h=>`<option value="${h.id}">${h.title||h.name||h.id}</option>`).join('');}
 
 window.addVideoBlock=function(data=null){
   const n=document.querySelectorAll('#videosContainer .video-block').length+1;
-  const div=document.createElement('div');
-  div.className='video-block';
+  const div=document.createElement('div');div.className='video-block';
   const hwOpts=`<option value="">— None —</option>${getHwOptions()}`;
   div.innerHTML=`
     <div class="video-block-head">
@@ -1513,9 +1226,7 @@ window.addVideoBlock=function(data=null){
         <select class="vid-hw-id finp">${hwOpts}</select>
       </div>
     </div>`;
-  if(data?.requireHw&&data?.hwId){
-    setTimeout(()=>{const sel=div.querySelector('.vid-hw-id');if(sel)sel.value=data.hwId;},50);
-  }
+  if(data?.requireHw&&data?.hwId){setTimeout(()=>{const sel=div.querySelector('.vid-hw-id');if(sel) sel.value=data.hwId;},50);}
   document.getElementById('videosContainer').appendChild(div);
 };
 
@@ -1523,6 +1234,7 @@ window.toggleHwSelect=function(sel){
   const wrap=sel.closest('.video-block').querySelector('.vid-hw-select-wrap');
   wrap.style.display=sel.value==='1'?'':'none';
 };
+
 function getVideosFromForm(){
   const videos=[];
   document.querySelectorAll('#videosContainer .video-block').forEach((b,index)=>{
@@ -1531,49 +1243,31 @@ function getVideosFromForm(){
     const url=b.querySelector('.vid-url').value.trim();
     const name=b.querySelector('.vid-name').value.trim();
     if(!url) return;
-    videos.push({
-      name:name||`Video ${index+1}`,
-      url,
-      requireHw:req,
-      hwId:req?hwId:''
-    });
+    videos.push({name:name||`Video ${index+1}`,url,requireHw:req,hwId:req?hwId:''});
   });
   return videos;
 }
 
 async function saveLesson(){
   const name=document.getElementById('lessonName').value.trim();
-  if(!name)return showToast('warning','Missing','Course title is required!');
+  if(!name) return showToast('warning','Missing','Course title is required!');
   const videos=getVideosFromForm();
-  if(!videos.length)return showToast('warning','Missing','Add at least one video URL.');
+  if(!videos.length) return showToast('warning','Missing','Add at least one video URL.');
   const questions=getQuestionsFrom('questionsContainer');
   const btn=document.getElementById('saveLessonBtn');
   btn.textContent='Saving…';btn.disabled=true;
   try{
-    const payload={
-      name,
-      grade:document.getElementById('lessonGrade').value,
-      price:Number(document.getElementById('lessonPrice').value)||0,
-      validitydays:Number(document.getElementById('lessonValidity').value)||90,
-      image:document.getElementById('lessonImage').value.trim(),
-      pdf:document.getElementById('lessonPdf').value.trim(),
-      video:videos[0]?.url||'',
-      videos,
-      questions
-    };
+    const payload={name,grade:document.getElementById('lessonGrade').value,price:Number(document.getElementById('lessonPrice').value)||0,validitydays:Number(document.getElementById('lessonValidity').value)||90,image:document.getElementById('lessonImage').value.trim(),pdf:document.getElementById('lessonPdf').value.trim(),video:videos[0]?.url||'',videos,questions};
     const saveResult=await saveLessonWithFallback(payload);
-    let successMsg='Course published!';
-    if(saveResult.mode==='modern-all') successMsg=editingLessonId?'Course updated!':'Course published!';
-    if(saveResult.mode==='modern-videos-only') successMsg=editingLessonId?'Course updated. Videos were saved, but questions column is missing.':'Course published. Videos were saved, but questions column is missing.';
-    if(saveResult.mode==='legacy-video+questions') successMsg=editingLessonId?'Course updated. Videos were saved inside the legacy video field.':'Course published. Videos were saved inside the legacy video field.';
-    if(saveResult.mode==='legacy-video-only') successMsg=editingLessonId?'Course updated. Videos were saved inside the legacy video field, but questions column is missing.':'Course published. Videos were saved inside the legacy video field, but questions column is missing.';
-    showToast('success',editingLessonId?'Updated ✅':'Published ✅',successMsg);
+    showToast('success',editingLessonId?'Updated ✅':'Published ✅','Course saved successfully!');
     resetLessonForm();loadLessons();loadStats();
   }catch(e){showToast('error','Error',e.message);}
   btn.textContent=editingLessonId?'Update Course 🔄':'Publish Course 🚀';btn.disabled=false;
 }
 
-/* ── HOMEWORK ── */
+/* ══════════════════════════════════════════
+   HOMEWORK
+══════════════════════════════════════════ */
 async function loadHw(){
   try{
     const{data}=await db.from('homework').select('*').order('created_at',{ascending:false});
@@ -1599,10 +1293,8 @@ async function loadHw(){
 
 function resetHwForm(){
   editingHwId=null;
-  document.getElementById('hwTitle').value='';
-  document.getElementById('hwGrade').value='1';
-  document.getElementById('hwLessonId').value='';
-  document.getElementById('hwNextLessonId').value='';
+  document.getElementById('hwTitle').value='';document.getElementById('hwGrade').value='1';
+  document.getElementById('hwLessonId').value='';document.getElementById('hwNextLessonId').value='';
   document.getElementById('hwQuestionsContainer').innerHTML='';
   document.getElementById('hwFormTitle').textContent='➕ Create Assignment';
   document.getElementById('saveHwBtn').textContent='Publish Assignment 📤';
@@ -1610,7 +1302,7 @@ function resetHwForm(){
 }
 
 function editHw(id){
-  const d=allHw[id];if(!d)return;
+  const d=allHw[id];if(!d) return;
   editingHwId=id;
   document.getElementById('hwTitle').value=d.title||d.name||'';
   document.getElementById('hwGrade').value=d.grade||'1';
@@ -1625,25 +1317,19 @@ function editHw(id){
 }
 
 async function delHw(id){
-  if(!confirm("Delete this assignment?"))return;
+  if(!confirm("Delete this assignment?")) return;
   await db.from('homework').delete().eq('id',id).then(()=>showToast('success','Deleted','Assignment removed.')).catch(e=>showToast('error','Error',e.message));
   loadHw();
 }
 
 async function saveHw(){
   const title=document.getElementById('hwTitle').value;
-  if(!title)return showToast('warning','Missing','Title required!');
+  if(!title) return showToast('warning','Missing','Title required!');
   const questions=getQuestionsFrom('hwQuestionsContainer');
   const btn=document.getElementById('saveHwBtn');
   btn.textContent='Saving…';btn.disabled=true;
   try{
-    const payload={
-      title,
-      grade:document.getElementById('hwGrade').value,
-      lessonid:document.getElementById('hwLessonId').value||null,
-      next_lesson_id:document.getElementById('hwNextLessonId').value||null,
-      questions
-    };
+    const payload={title,grade:document.getElementById('hwGrade').value,lessonid:document.getElementById('hwLessonId').value||null,next_lesson_id:document.getElementById('hwNextLessonId').value||null,questions};
     if(editingHwId){await db.from('homework').update(payload).eq('id',editingHwId);showToast('success','Updated ✅','Assignment updated!');}
     else{await db.from('homework').insert([payload]);showToast('success','Published ✅','Assignment published!');}
     resetHwForm();loadHw();
@@ -1651,7 +1337,9 @@ async function saveHw(){
   btn.textContent=editingHwId?'Update Assignment 🔄':'Publish Assignment 📤';btn.disabled=false;
 }
 
-/* ── QUESTION HELPER (with drag & drop image) ── */
+/* ══════════════════════════════════════════
+   QUESTIONS
+══════════════════════════════════════════ */
 window.updateOptionsUI=function(sel){
   const count=parseInt(sel.value);
   const block=sel.closest('.q-block');
@@ -1669,23 +1357,19 @@ window.updateOptionsUI=function(sel){
   optsC.innerHTML=ih;corrS.innerHTML=ch;
 };
 
-// Unique ID counter for question image zones
-let qImageZoneCounter = 0;
-
+let qImageZoneCounter=0;
 window.addQuestion=function(cid,data=null){
   const n=document.querySelectorAll('#'+cid+' .question-block').length+1;
   const div=document.createElement('div');div.className='q-block question-block';
   const cnt=data?.optionsCount||4;
   let cOpts='',iH='',chH='';
-  for(let i=2;i<=10;i++)cOpts+=`<option value="${i}" ${cnt==i?'selected':''}>${i} Options</option>`;
+  for(let i=2;i<=10;i++) cOpts+=`<option value="${i}" ${cnt==i?'selected':''}>${i} Options</option>`;
   for(let i=0;i<cnt;i++){
     const l=OPT_LETTERS[i],v=data?data[l]||'':'',U=l.toUpperCase();
     iH+=`<div><div class="opt-lbl">OPTION ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="Option ${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;
     chH+=`<option value="${l}" ${data?.correct===l?'selected':''}>${U}</option>`;
   }
-  
-  const zoneId = 'qImgZone_' + (++qImageZoneCounter);
-  
+  const zoneId='qImgZone_'+(++qImageZoneCounter);
   div.innerHTML=`
     <div class="q-block-head">
       <span class="q-num-badge">Question ${n}</span>
@@ -1703,48 +1387,25 @@ window.addQuestion=function(cid,data=null){
       <input type="hidden" class="q-image" value="${(data?.image||'').replace(/"/g,'&quot;')}">
     </div>
     <div class="fg2" style="margin-bottom:10px">
-      <div class="fw">
-        <label class="flbl">Number of Options</label>
-        <select class="q-opt-count finp" onchange="updateOptionsUI(this)">${cOpts}</select>
-      </div>
-      <div class="fw" style="margin-bottom:0">
-        <label class="flbl">Correct Answer</label>
-        <select class="q-correct finp">${chH}</select>
-      </div>
+      <div class="fw"><label class="flbl">Number of Options</label><select class="q-opt-count finp" onchange="updateOptionsUI(this)">${cOpts}</select></div>
+      <div class="fw" style="margin-bottom:0"><label class="flbl">Correct Answer</label><select class="q-correct finp">${chH}</select></div>
     </div>
     <div class="dynamic-opts">${iH}</div>`;
   document.getElementById(cid).appendChild(div);
-  
-  // Initialize the question image drop zone
-  const qZone = document.getElementById(zoneId);
+  const qZone=document.getElementById(zoneId);
   initDropZone(qZone);
-  
-  // If editing and there's an existing image, show preview
-  if(data?.image) {
-    setDropZonePreview(qZone, data.image);
-  }
-  
-  // Override the upload behavior for question image zones
-  // We need to store the URL in the hidden input next to the zone
-  const origProcess = processDropZoneFile;
-  // We handle this via the dataset.uploadedUrl + getQuestionsFrom
+  if(data?.image) setDropZonePreview(qZone,data.image);
 };
 
 function getQuestionsFrom(cid){
   const qs=[];
   document.querySelectorAll('#'+cid+' .question-block').forEach(b=>{
     const cnt=parseInt(b.querySelector('.q-opt-count').value)||4;
-    
-    // Get image from either the hidden input or the drop zone's uploaded URL
-    const hiddenInput = b.querySelector('.q-image');
-    const dropZone = b.querySelector('.q-image-zone');
-    let imageUrl = '';
-    if(dropZone && dropZone.dataset.uploadedUrl) {
-      imageUrl = dropZone.dataset.uploadedUrl;
-    } else if(hiddenInput) {
-      imageUrl = hiddenInput.value;
-    }
-    
+    const hiddenInput=b.querySelector('.q-image');
+    const dropZone=b.querySelector('.q-image-zone');
+    let imageUrl='';
+    if(dropZone&&dropZone.dataset.uploadedUrl) imageUrl=dropZone.dataset.uploadedUrl;
+    else if(hiddenInput) imageUrl=hiddenInput.value;
     const q={text:b.querySelector('.q-text').value||'',image:imageUrl,correct:b.querySelector('.q-correct').value,optionsCount:cnt};
     for(let i=0;i<cnt;i++){const l=OPT_LETTERS[i];q[l]=b.querySelector('.q-'+l)?.value||'';}
     qs.push(q);
@@ -1752,148 +1413,80 @@ function getQuestionsFrom(cid){
   return qs;
 }
 
-// Override processDropZoneFile to handle question image zones
-const _origProcessDropZoneFile = processDropZoneFile;
-async function processDropZoneFileOverride(zone, file) {
-  // For question image zones, we need special handling for the URL storage
-  if (zone.classList.contains('q-image-zone')) {
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-      showToast('error', 'Invalid File', 'Please upload an image (PNG, JPG, WEBP)');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('error', 'Too Large', 'Image must be under 5MB');
-      return;
-    }
-    
-    const fileInputHtml = `<input type="file" accept="image/*" onchange="handleDropZoneFile(this)" style="display:none">`;
-    
-    zone.innerHTML = `
-      ${fileInputHtml}
-      <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
-      <div class="drop-zone-filename">${file.name}</div>
-      <div class="upload-progress"><div class="upload-progress-bar"></div></div>
-      <div class="upload-status uploading">Uploading…</div>
-    `;
+const _origProcessDropZoneFile=processDropZoneFile;
+async function processDropZoneFileOverride(zone,file){
+  if(zone.classList.contains('q-image-zone')){
+    const isImage=file.type.startsWith('image/');
+    if(!isImage){showToast('error','Invalid File','Please upload an image (PNG, JPG, WEBP)');return;}
+    if(file.size>5*1024*1024){showToast('error','Too Large','Image must be under 5MB');return;}
+    const fileInputHtml=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)" style="display:none">`;
+    zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div><div class="drop-zone-filename">${file.name}</div><div class="upload-progress"><div class="upload-progress-bar"></div></div><div class="upload-status uploading">Uploading…</div>`;
     zone.classList.add('has-file');
-    
-    const progBar = zone.querySelector('.upload-progress-bar');
-    let progress = 0;
-    const progInterval = setInterval(() => {
-      progress = Math.min(progress + Math.random() * 20, 90);
-      progBar.style.width = progress + '%';
-    }, 200);
-    
-    try {
-      const timestamp = Date.now();
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const filePath = `images/questions/${timestamp}_${safeName}`;
-      
-      const { data, error } = await db.storage.from(STORAGE_BUCKET).upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-      
+    const progBar=zone.querySelector('.upload-progress-bar');
+    let progress=0;
+    const progInterval=setInterval(()=>{progress=Math.min(progress+Math.random()*20,90);progBar.style.width=progress+'%';},200);
+    try{
+      const timestamp=Date.now();
+      const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      const filePath=`images/questions/${timestamp}_${safeName}`;
+      const{data,error}=await db.storage.from(STORAGE_BUCKET).upload(filePath,file,{cacheControl:'3600',upsert:false});
       clearInterval(progInterval);
-      if (error) throw error;
-      
-      const { data: urlData } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
-      const publicUrl = urlData.publicUrl;
-      
-      // Store URL in dataset
-      zone.dataset.uploadedUrl = publicUrl;
-      
-      // Also update the hidden input
-      const hiddenInput = zone.closest('.fw').querySelector('.q-image');
-      if(hiddenInput) hiddenInput.value = publicUrl;
-      
-      progBar.style.width = '100%';
-      
-      setTimeout(() => {
-        zone.innerHTML = `
-          ${fileInputHtml}
-          <div class="drop-zone-preview" style="max-width:200px">
-            <img src="${publicUrl}" alt="Question Image">
-            <button class="drop-zone-remove" onclick="clearQuestionImage(this)">✕</button>
-          </div>
-          <div class="drop-zone-filename">${file.name}</div>
-          <div class="upload-status done" style="font-size:.6rem">Uploaded ✓</div>
-        `;
+      if(error) throw error;
+      const{data:urlData}=db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+      const publicUrl=urlData.publicUrl;
+      zone.dataset.uploadedUrl=publicUrl;
+      const hiddenInput=zone.closest('.fw').querySelector('.q-image');
+      if(hiddenInput) hiddenInput.value=publicUrl;
+      progBar.style.width='100%';
+      setTimeout(()=>{
+        zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview" style="max-width:200px"><img src="${publicUrl}" alt="Question Image"><button class="drop-zone-remove" onclick="clearQuestionImage(this)">✕</button></div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done" style="font-size:.6rem">Uploaded ✓</div>`;
         zone.classList.add('has-file');
-      }, 600);
-      
-      showToast('success', 'Uploaded!', `Question image uploaded`);
-      
-    } catch (err) {
+      },600);
+      showToast('success','Uploaded!','Question image uploaded');
+    }catch(err){
       clearInterval(progInterval);
-      zone.innerHTML = `
-        <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
-        <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
-        <div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div>
-        <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
-      `;
-      zone.classList.remove('has-file');
-      zone.dataset.uploadedUrl = '';
+      zone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div><div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;
+      zone.classList.remove('has-file');zone.dataset.uploadedUrl='';
       initDropZone(zone);
-      showToast('error', 'Upload Failed', err.message);
+      showToast('error','Upload Failed',err.message);
     }
     return;
   }
-  
-  // Default behavior for non-question zones
-  return _origProcessDropZoneFile(zone, file);
+  return _origProcessDropZoneFile(zone,file);
 }
+processDropZoneFile=processDropZoneFileOverride;
 
-// Replace the global function
-processDropZoneFile = processDropZoneFileOverride;
-
-window.clearQuestionImage = function(btn) {
-  const zone = btn.closest('.q-image-zone');
-  zone.dataset.uploadedUrl = '';
-  const hiddenInput = zone.closest('.fw').querySelector('.q-image');
-  if(hiddenInput) hiddenInput.value = '';
-  
-  zone.innerHTML = `
-    <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
-    <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
-    <div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div>
-    <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
-  `;
-  zone.classList.remove('has-file');
-  initDropZone(zone);
+window.clearQuestionImage=function(btn){
+  const zone=btn.closest('.q-image-zone');
+  zone.dataset.uploadedUrl='';
+  const hiddenInput=zone.closest('.fw').querySelector('.q-image');
+  if(hiddenInput) hiddenInput.value='';
+  zone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div><div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;
+  zone.classList.remove('has-file');initDropZone(zone);
 };
 
-/* ── CODES ── */
-async function loadAllCodes() {
-  const tbody = document.getElementById('codesListBody');
-  tbody.innerHTML = '<tr><td colspan="4" class="td-empty">Loading codes...</td></tr>';
-  try {
-    const {data} = await db.from('codes').select('*').order('created_at', {ascending:false});
-    if(!data || !data.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="td-empty">No codes generated yet.</td></tr>';
-      return;
-    }
-    let rows = '';
-    data.forEach(c => {
-       const status = c.used ? '<span style="color:var(--red);font-weight:bold;font-size:0.75rem">Used</span>' : '<span style="color:var(--green);font-weight:bold;font-size:0.75rem">Available</span>';
-       const user = c.usedby || '<span style="color:var(--muted)">—</span>';
-       const lesson = allLessons[c.lessonid]?.name || '<span style="color:var(--muted)">Any</span>';
-       rows += `<tr>
-         <td class="td-name" style="font-family:var(--mono); font-size:0.78rem;">${c.code}</td>
-         <td>${status}</td>
-         <td style="font-size:0.75rem; font-family:var(--mono);">${user}</td>
-         <td style="font-size:0.75rem; color:var(--muted)">${lesson}</td>
-       </tr>`;
+/* ══════════════════════════════════════════
+   CODES
+══════════════════════════════════════════ */
+async function loadAllCodes(){
+  const tbody=document.getElementById('codesListBody');
+  tbody.innerHTML='<tr><td colspan="4" class="td-empty">Loading codes...</td></tr>';
+  try{
+    const{data}=await db.from('codes').select('*').order('created_at',{ascending:false});
+    if(!data||!data.length){tbody.innerHTML='<tr><td colspan="4" class="td-empty">No codes generated yet.</td></tr>';return;}
+    let rows='';
+    data.forEach(c=>{
+      const status=c.used?'<span style="color:var(--red);font-weight:bold;font-size:0.75rem">Used</span>':'<span style="color:var(--green);font-weight:bold;font-size:0.75rem">Available</span>';
+      const user=c.usedby||'<span style="color:var(--muted)">—</span>';
+      const lesson=allLessons[c.lessonid]?.name||'<span style="color:var(--muted)">Any</span>';
+      rows+=`<tr><td class="td-name" style="font-family:var(--mono);font-size:0.78rem;">${c.code}</td><td>${status}</td><td style="font-size:0.75rem;font-family:var(--mono);">${user}</td><td style="font-size:0.75rem;color:var(--muted)">${lesson}</td></tr>`;
     });
-    tbody.innerHTML = rows;
-  } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="4" class="td-empty" style="color:red">Error loading codes</td></tr>`;
-  }
+    tbody.innerHTML=rows;
+  }catch(e){tbody.innerHTML=`<tr><td colspan="4" class="td-empty" style="color:red">Error loading codes</td></tr>`;}
 }
 
 async function generateCodes(){
-  if(!confirm("Generate 50 new codes?"))return;
+  if(!confirm("Generate 50 new codes?")) return;
   document.getElementById('codesResultArea').classList.remove('hidden');
   document.getElementById('codesPlaceholder').classList.add('hidden');
   const grid=document.getElementById('codesGrid');grid.innerHTML='';
@@ -1903,20 +1496,132 @@ async function generateCodes(){
     codes.push({code:c,used:false});
     const el=document.createElement('div');el.className='code-pill';el.textContent=c;grid.appendChild(el);
   }
-  try{
-    await db.from('codes').insert(codes);
-    loadAllCodes();
-  }catch(e){showToast('error','Save Error',e.message);}
+  try{await db.from('codes').insert(codes);loadAllCodes();}
+  catch(e){showToast('error','Save Error',e.message);}
 }
+
 function copyCodes(){
   const codes=Array.from(document.getElementById('codesGrid').children).map(d=>d.textContent).join('\n');
   navigator.clipboard.writeText(codes).then(()=>showToast('success','Copied!','All codes copied to clipboard ✅'));
 }
 
-/* ── NOTIF ── */
+/* ══════════════════════════════════════════
+   ✅ CODE TRACKER
+══════════════════════════════════════════ */
+let trackerData=[];
+let trackerFilter='all';
+
+async function loadTracker(){
+  const tbody=document.getElementById('trackerBody');
+  tbody.innerHTML='<tr><td colspan="7" class="td-empty">Loading…</td></tr>';
+  try{
+    const{data:codes}=await db.from('codes')
+      .select('*')
+      .eq('used',true)
+      .order('created_at',{ascending:false});
+
+    if(!codes||!codes.length){
+      tbody.innerHTML='<tr><td colspan="7" class="td-empty">No codes used yet</td></tr>';
+      updateTrackerStats([]);
+      return;
+    }
+
+    trackerData=codes.map(c=>{
+      const student=studentsByEmail[c.usedby]||{};
+      const lessonName=allLessons[c.lessonid]?.name||'—';
+
+      // تاريخ التفعيل — used_at أو created_at
+      const activatedRaw=c.used_at||c.created_at||null;
+      const activatedOn=activatedRaw
+        ? new Date(activatedRaw).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+        : '—';
+
+      const expiryTs=c.expiryat?new Date(c.expiryat).getTime():NaN;
+      const expiresOn=Number.isFinite(expiryTs)
+        ? new Date(expiryTs).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+        : '—';
+      const isActive=Number.isFinite(expiryTs)?expiryTs>Date.now():null;
+
+      return{
+        name:student.name||c.usedby?.split('@')[0]||'—',
+        email:c.usedby||'—',
+        code:c.code||'—',
+        lesson:lessonName,
+        activatedOn,
+        expiresOn,
+        isActive,
+        _raw:c
+      };
+    });
+
+    updateTrackerStats(trackerData);
+    applyTrackerFilter();
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="7" class="td-empty" style="color:var(--red)">Error: ${e.message}</td></tr>`;
+  }
+}
+
+function updateTrackerStats(data){
+  const total=data.length;
+  const active=data.filter(d=>d.isActive===true).length;
+  const expired=data.filter(d=>d.isActive===false).length;
+  const uniqueLessons=new Set(data.map(d=>d.lesson).filter(l=>l&&l!=='—')).size;
+  document.getElementById('tStatTotal').textContent=total;
+  document.getElementById('tStatActive').textContent=active;
+  document.getElementById('tStatExpired').textContent=expired;
+  document.getElementById('tStatLessons').textContent=uniqueLessons;
+}
+
+function setTrackerFilter(filter,btn){
+  trackerFilter=filter;
+  document.querySelectorAll('.tracker-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyTrackerFilter();
+}
+
+function applyTrackerFilter(){
+  const search=(document.getElementById('trackerSearch')?.value||'').toLowerCase();
+  let filtered=trackerData;
+  if(trackerFilter==='active') filtered=filtered.filter(d=>d.isActive===true);
+  if(trackerFilter==='expired') filtered=filtered.filter(d=>d.isActive===false);
+  if(search) filtered=filtered.filter(d=>
+    d.name.toLowerCase().includes(search)||
+    d.email.toLowerCase().includes(search)||
+    d.lesson.toLowerCase().includes(search)||
+    d.code.toLowerCase().includes(search)
+  );
+  renderTracker(filtered);
+}
+
+function filterTracker(){applyTrackerFilter();}
+
+function renderTracker(data){
+  const tbody=document.getElementById('trackerBody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="7" class="td-empty">No results found</td></tr>';return;}
+  tbody.innerHTML=data.map(r=>{
+    let statusBadge;
+    if(r.isActive===null) statusBadge='<span style="color:var(--muted2);font-size:.72rem;font-family:var(--mono)">No expiry</span>';
+    else if(r.isActive) statusBadge='<span class="badge badge-active">✅ Active</span>';
+    else statusBadge='<span class="badge badge-expired">❌ Expired</span>';
+
+    return`<tr>
+      <td class="td-name">${escapeHtml(r.name)}</td>
+      <td class="td-email">${escapeHtml(r.email)}</td>
+      <td style="font-family:var(--mono);font-size:.72rem;letter-spacing:.5px;color:var(--green2);font-weight:700;white-space:nowrap">${escapeHtml(r.code)}</td>
+      <td class="td-green" style="font-size:.82rem">${escapeHtml(r.lesson)}</td>
+      <td class="td-date">${r.activatedOn}</td>
+      <td class="td-date">${r.expiresOn}</td>
+      <td>${statusBadge}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   BROADCAST
+══════════════════════════════════════════ */
 async function sendNotif(){
   const msg=document.getElementById('notifMessage').value;
-  if(!msg)return showToast('warning','Empty','Write a message first!');
+  if(!msg) return showToast('warning','Empty','Write a message first!');
   try{
     await db.from('announcements').insert([{message:msg,active:true}]);
     showToast('success','Sent! 🚀','Broadcast sent to all students.');
