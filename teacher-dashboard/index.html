@@ -225,6 +225,142 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
 .sp-item-name{font-size:.85rem;font-weight:700;}
 .sp-item-score{font-family:var(--mono);font-size:.78rem;font-weight:800;color:var(--green);background:var(--green-light);border:1px solid var(--border2);padding:4px 11px;border-radius:7px;}
 
+/* ── DRAG & DROP UPLOAD ZONE ── */
+.drop-zone{
+  position:relative;
+  border:2px dashed var(--border2);
+  border-radius:14px;
+  padding:24px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .25s;
+  background:var(--bg2);
+  min-height:120px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  overflow:hidden;
+}
+.drop-zone:hover{
+  border-color:var(--green);
+  background:var(--green-light);
+}
+.drop-zone.dragover{
+  border-color:var(--green2);
+  background:rgba(45,90,61,.12);
+  transform:scale(1.01);
+  box-shadow:0 0 0 4px rgba(45,90,61,.08);
+}
+.drop-zone.has-file{
+  border-style:solid;
+  border-color:var(--green);
+  background:var(--green-light);
+}
+.drop-zone-icon{
+  font-size:2rem;
+  line-height:1;
+  opacity:.6;
+  transition:all .25s;
+}
+.drop-zone.dragover .drop-zone-icon,
+.drop-zone:hover .drop-zone-icon{
+  opacity:1;
+  transform:translateY(-2px);
+}
+.drop-zone-text{
+  font-size:.78rem;
+  color:var(--muted);
+  font-weight:600;
+}
+.drop-zone-text span{
+  color:var(--green);
+  text-decoration:underline;
+  font-weight:700;
+}
+.drop-zone-hint{
+  font-size:.65rem;
+  color:var(--muted2);
+  font-family:var(--mono);
+}
+.drop-zone input[type="file"]{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  cursor:pointer;
+  width:100%;
+  height:100%;
+}
+.drop-zone-preview{
+  position:relative;
+  width:100%;
+  max-width:260px;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid var(--border2);
+  background:#fff;
+}
+.drop-zone-preview img{
+  width:100%;
+  display:block;
+  object-fit:contain;
+  max-height:180px;
+}
+.drop-zone-remove{
+  position:absolute;
+  top:6px;right:6px;
+  width:26px;height:26px;
+  background:rgba(163,59,46,.9);
+  color:#fff;
+  border:none;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:.7rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all .2s;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+.drop-zone-remove:hover{
+  background:var(--red);
+  transform:scale(1.1);
+}
+.drop-zone-filename{
+  font-family:var(--mono);
+  font-size:.68rem;
+  color:var(--green);
+  font-weight:700;
+  margin-top:6px;
+  word-break:break-all;
+}
+.upload-progress{
+  width:100%;
+  max-width:220px;
+  height:4px;
+  background:var(--border);
+  border-radius:4px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.upload-progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--green),var(--green3));
+  border-radius:4px;
+  transition:width .3s;
+  width:0%;
+}
+.upload-status{
+  font-size:.65rem;
+  font-family:var(--mono);
+  font-weight:700;
+  margin-top:4px;
+}
+.upload-status.uploading{color:var(--amber);}
+.upload-status.done{color:var(--green);}
+.upload-status.error{color:var(--red);}
+
 @media(max-width:900px){
   .main-area{margin-left:0;}
   .sidebar{transform:translateX(-100%);transition:transform .3s;}
@@ -378,9 +514,29 @@ tbody td{padding:13px 18px;font-size:.84rem;vertical-align:middle;}
             <div class="fw"><label class="flbl">Price (EGP)</label><input id="lessonPrice" type="number" class="finp" placeholder="150"></div>
             <div class="fw"><label class="flbl">Validity (Days)</label><input id="lessonValidity" type="number" class="finp" placeholder="90" value="90"></div>
           </div>
-          <div class="fg2">
-            <div class="fw"><label class="flbl">Cover Image URL</label><input id="lessonImage" class="finp" placeholder="https://…"></div>
-            <div class="fw"><label class="flbl">PDF Notes URL</label><input id="lessonPdf" class="finp" placeholder="https://…"></div>
+
+          <!-- COVER IMAGE — DRAG & DROP -->
+          <div class="fw">
+            <label class="flbl">Cover Image</label>
+            <div class="drop-zone" id="dropCoverImage" data-target="lessonImage">
+              <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
+              <div class="drop-zone-icon">🖼️</div>
+              <div class="drop-zone-text">Drag & drop image here or <span>browse</span></div>
+              <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
+            </div>
+            <input type="hidden" id="lessonImage">
+          </div>
+
+          <!-- PDF NOTES — DRAG & DROP -->
+          <div class="fw">
+            <label class="flbl">PDF Notes</label>
+            <div class="drop-zone" id="dropPdfNotes" data-target="lessonPdf">
+              <input type="file" accept=".pdf,application/pdf" onchange="handleDropZoneFile(this)">
+              <div class="drop-zone-icon">📄</div>
+              <div class="drop-zone-text">Drag & drop PDF here or <span>browse</span></div>
+              <div class="drop-zone-hint">PDF only — max 20MB</div>
+            </div>
+            <input type="hidden" id="lessonPdf">
           </div>
 
           <div class="divider"></div>
@@ -555,12 +711,257 @@ const SUPABASE_ANON="sb_publishable_4RiANbDn7lrulIbcXHS_3A_ANMSwaYp";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 const ADMIN="kevin.hany.08@proton.me";
 
+// Storage bucket name — create this in Supabase Dashboard > Storage
+const STORAGE_BUCKET = 'uploads';
+
 let editingLessonId=null,editingHwId=null,allLessons={},allHw={};
 let examResults=[],studentsByEmail={};
 let currentOpenStudentEmail=null;
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 
 const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
+
+/* ══════════════════════════════════════════
+   DRAG & DROP UPLOAD SYSTEM
+   ══════════════════════════════════════════ */
+
+// Initialize all drop zones
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.drop-zone').forEach(initDropZone);
+});
+
+function initDropZone(zone) {
+  const fileInput = zone.querySelector('input[type="file"]');
+  
+  ['dragenter','dragover'].forEach(evt => {
+    zone.addEventListener(evt, e => {
+      e.preventDefault();
+      zone.classList.add('dragover');
+    });
+  });
+  
+  ['dragleave','drop'].forEach(evt => {
+    zone.addEventListener(evt, e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+    });
+  });
+  
+  zone.addEventListener('drop', e => {
+    const files = e.dataTransfer.files;
+    if (files.length) {
+      fileInput.files = files;
+      processDropZoneFile(zone, files[0]);
+    }
+  });
+}
+
+function handleDropZoneFile(input) {
+  const zone = input.closest('.drop-zone');
+  if (input.files.length) {
+    processDropZoneFile(zone, input.files[0]);
+  }
+}
+
+async function processDropZoneFile(zone, file) {
+  const targetId = zone.dataset.target;
+  const isImage = file.type.startsWith('image/');
+  const isPdf = file.type === 'application/pdf';
+  
+  // Validate
+  if (targetId === 'lessonImage' || zone.classList.contains('q-image-zone')) {
+    if (!isImage) {
+      showToast('error', 'Invalid File', 'Please upload an image (PNG, JPG, WEBP)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('error', 'Too Large', 'Image must be under 5MB');
+      return;
+    }
+  }
+  if (targetId === 'lessonPdf') {
+    if (!isPdf) {
+      showToast('error', 'Invalid File', 'Please upload a PDF file');
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      showToast('error', 'Too Large', 'PDF must be under 20MB');
+      return;
+    }
+  }
+  
+  // Show upload UI
+  const oldContent = zone.innerHTML;
+  const fileInputHtml = `<input type="file" accept="${isImage ? 'image/*' : '.pdf,application/pdf'}" onchange="handleDropZoneFile(this)" style="display:none">`;
+  
+  zone.innerHTML = `
+    ${fileInputHtml}
+    <div class="drop-zone-icon">${isImage ? '🖼️' : '📄'}</div>
+    <div class="drop-zone-filename">${file.name}</div>
+    <div class="upload-progress"><div class="upload-progress-bar" id="prog-${targetId || zone.id}"></div></div>
+    <div class="upload-status uploading" id="status-${targetId || zone.id}">Uploading…</div>
+  `;
+  zone.classList.add('has-file');
+  
+  // Simulate progress
+  const progBar = zone.querySelector('.upload-progress-bar');
+  let progress = 0;
+  const progInterval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 20, 90);
+    progBar.style.width = progress + '%';
+  }, 200);
+  
+  try {
+    // Upload to Supabase Storage
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const folder = isImage ? 'images' : 'pdfs';
+    const filePath = `${folder}/${timestamp}_${safeName}`;
+    
+    const { data, error } = await db.storage.from(STORAGE_BUCKET).upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+    
+    clearInterval(progInterval);
+    
+    if (error) throw error;
+    
+    // Get public URL
+    const { data: urlData } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+    const publicUrl = urlData.publicUrl;
+    
+    // Store URL in hidden input
+    if (targetId) {
+      document.getElementById(targetId).value = publicUrl;
+    }
+    
+    // Show success with preview
+    progBar.style.width = '100%';
+    const statusEl = zone.querySelector('.upload-status');
+    statusEl.className = 'upload-status done';
+    statusEl.textContent = 'Uploaded ✓';
+    
+    setTimeout(() => {
+      if (isImage) {
+        zone.innerHTML = `
+          ${fileInputHtml}
+          <div class="drop-zone-preview">
+            <img src="${publicUrl}" alt="Preview">
+            <button class="drop-zone-remove" onclick="clearDropZone(this, '${targetId}')">✕</button>
+          </div>
+          <div class="drop-zone-filename">${file.name}</div>
+          <div class="upload-status done">Uploaded ✓</div>
+        `;
+      } else {
+        zone.innerHTML = `
+          ${fileInputHtml}
+          <div class="drop-zone-icon" style="font-size:2.5rem">✅</div>
+          <div class="drop-zone-filename">${file.name}</div>
+          <div class="upload-status done">PDF Uploaded ✓</div>
+          <button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this, '${targetId}')">✕</button>
+        `;
+      }
+      zone.classList.add('has-file');
+    }, 600);
+    
+    // Return URL for question image zones
+    if (zone.dataset.urlStore !== undefined) {
+      zone.dataset.uploadedUrl = publicUrl;
+    }
+    
+    showToast('success', 'Uploaded!', `${file.name} uploaded successfully`);
+    
+  } catch (err) {
+    clearInterval(progInterval);
+    console.error('Upload error:', err);
+    
+    // Reset zone
+    const accept = isImage ? 'image/*' : '.pdf,application/pdf';
+    const icon = isImage ? '🖼️' : '📄';
+    const typeText = isImage ? 'image' : 'PDF';
+    const hint = isImage ? 'PNG, JPG, WEBP — max 5MB' : 'PDF only — max 20MB';
+    
+    zone.innerHTML = `
+      <input type="file" accept="${accept}" onchange="handleDropZoneFile(this)">
+      <div class="drop-zone-icon">${icon}</div>
+      <div class="drop-zone-text">Drag & drop ${typeText} here or <span>browse</span></div>
+      <div class="drop-zone-hint">${hint}</div>
+    `;
+    zone.classList.remove('has-file');
+    initDropZone(zone);
+    
+    showToast('error', 'Upload Failed', err.message || 'Check Supabase Storage bucket settings');
+  }
+}
+
+window.clearDropZone = function(btn, targetId) {
+  const zone = btn.closest('.drop-zone');
+  const isImageZone = targetId === 'lessonImage' || zone.classList.contains('q-image-zone');
+  const accept = isImageZone ? 'image/*' : '.pdf,application/pdf';
+  const icon = isImageZone ? '🖼️' : '📄';
+  const typeText = isImageZone ? 'image' : 'PDF';
+  const hint = isImageZone ? 'PNG, JPG, WEBP — max 5MB' : 'PDF only — max 20MB';
+  
+  zone.innerHTML = `
+    <input type="file" accept="${accept}" onchange="handleDropZoneFile(this)">
+    <div class="drop-zone-icon">${icon}</div>
+    <div class="drop-zone-text">Drag & drop ${typeText} here or <span>browse</span></div>
+    <div class="drop-zone-hint">${hint}</div>
+  `;
+  zone.classList.remove('has-file');
+  initDropZone(zone);
+  
+  if (targetId) {
+    document.getElementById(targetId).value = '';
+  }
+  if (zone.dataset.uploadedUrl) {
+    zone.dataset.uploadedUrl = '';
+  }
+};
+
+// Pre-fill drop zone with existing URL (for editing)
+function setDropZonePreview(zone, url) {
+  if (!zone || !url) return;
+  const targetId = zone.dataset.target || '';
+  const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)/i.test(url) || targetId === 'lessonImage';
+  
+  if (targetId) {
+    document.getElementById(targetId).value = url;
+  }
+  
+  const accept = isImage ? 'image/*' : '.pdf,application/pdf';
+  const fileInputHtml = `<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)" style="display:none">`;
+  
+  if (isImage) {
+    zone.innerHTML = `
+      ${fileInputHtml}
+      <div class="drop-zone-preview">
+        <img src="${url}" alt="Preview">
+        <button class="drop-zone-remove" onclick="clearDropZone(this, '${targetId}')">✕</button>
+      </div>
+      <div class="drop-zone-filename" style="word-break:break-all">${url.split('/').pop()}</div>
+      <div class="upload-status done">Loaded ✓</div>
+    `;
+  } else {
+    zone.innerHTML = `
+      ${fileInputHtml}
+      <div class="drop-zone-icon" style="font-size:2.5rem">📄</div>
+      <div class="drop-zone-filename" style="word-break:break-all">${url.split('/').pop()}</div>
+      <div class="upload-status done">Loaded ✓</div>
+      <button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this, '${targetId}')">✕</button>
+    `;
+  }
+  zone.classList.add('has-file');
+  if (zone.dataset.uploadedUrl !== undefined) {
+    zone.dataset.uploadedUrl = url;
+  }
+}
+
+
+/* ══════════════════════════════════════════
+   ORIGINAL LOGIC (all preserved)
+   ══════════════════════════════════════════ */
 
 function normalizePhoneEg(phone){
   let value=String(phone||'').replace(/[^\d+]/g,'');
@@ -820,7 +1221,6 @@ async function loadResults(){
     studentsByEmail=uMap;
     examResults=res||[];
 
-    // Overview recent
     const ovRows=(res||[]).slice(0,8).map(r=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
       const nm=uMap[r.email]?.name||r.email?.split('@')[0]||'—';
@@ -828,7 +1228,6 @@ async function loadResults(){
     }).join('');
     document.getElementById('ovBody').innerHTML=ovRows||`<tr><td colspan="4" class="td-empty">No results yet</td></tr>`;
 
-    // Results table
     renderResultsTable();
   }catch(e){}
 }
@@ -876,7 +1275,6 @@ async function openStudent(email,name){
   document.getElementById('spEmail').textContent=email;
   document.getElementById('studentModal').classList.add('show');
   
-  // Set block button status based on current raw data
   const sData = studentsByEmail[email]?.raw;
   const btnBlock = document.getElementById('btnBlockStudent');
   const btnParentReport = document.getElementById('btnParentReport');
@@ -919,7 +1317,8 @@ async function openStudent(email,name){
       html+=`<div class="sp-section-title">📝 Exams</div>`;
       sExams.forEach(r=>{
         const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';
-        const sentBadge=isWhatsappSent(email,r)?'<span class="wa-sent">تم الإرسال عبر واتساب</span>':'<span class="wa-not-sent">لم يتم الإرسال</span>'; html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.7rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center">${dt} ${sentBadge}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
+        const sentBadge=isWhatsappSent(email,r)?'<span class="wa-sent">تم الإرسال عبر واتساب</span>':'<span class="wa-not-sent">لم يتم الإرسال</span>';
+        html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.7rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center">${dt} ${sentBadge}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
       });
     }
     if(!courses.length&&!sExams.length)html='<div style="text-align:center;padding:32px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
@@ -941,7 +1340,7 @@ window.toggleBlockStudent = async () => {
     await db.from('users').update({ is_blocked: newStatus }).eq('email', currentOpenStudentEmail);
     showToast('success', 'Success', newStatus ? 'Student blocked.' : 'Student unblocked.');
     if(studentsByEmail[currentOpenStudentEmail]) studentsByEmail[currentOpenStudentEmail].raw.is_blocked = newStatus;
-    openStudent(currentOpenStudentEmail, studentsByEmail[currentOpenStudentEmail].name); // Refresh UI
+    openStudent(currentOpenStudentEmail, studentsByEmail[currentOpenStudentEmail].name);
   } catch(e) { showToast('error', 'Error', e.message); }
 };
 
@@ -1008,7 +1407,10 @@ async function loadLessons(){
 
 function resetLessonForm(){
   editingLessonId=null;
-  ['lessonName','lessonPrice','lessonImage','lessonPdf'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lessonName').value='';
+  document.getElementById('lessonPrice').value='';
+  document.getElementById('lessonImage').value='';
+  document.getElementById('lessonPdf').value='';
   document.getElementById('lessonGrade').value='1';
   document.getElementById('lessonValidity').value='90';
   document.getElementById('videosContainer').innerHTML='';
@@ -1016,6 +1418,30 @@ function resetLessonForm(){
   document.getElementById('lessonFormTitle').textContent='➕ Add New Course';
   document.getElementById('saveLessonBtn').textContent='Publish Course 🚀';
   document.getElementById('cancelLessonBtn').classList.add('hidden');
+  
+  // Reset drop zones
+  const coverZone = document.getElementById('dropCoverImage');
+  const pdfZone = document.getElementById('dropPdfNotes');
+  if(coverZone) {
+    coverZone.innerHTML = `
+      <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
+      <div class="drop-zone-icon">🖼️</div>
+      <div class="drop-zone-text">Drag & drop image here or <span>browse</span></div>
+      <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
+    `;
+    coverZone.classList.remove('has-file');
+    initDropZone(coverZone);
+  }
+  if(pdfZone) {
+    pdfZone.innerHTML = `
+      <input type="file" accept=".pdf,application/pdf" onchange="handleDropZoneFile(this)">
+      <div class="drop-zone-icon">📄</div>
+      <div class="drop-zone-text">Drag & drop PDF here or <span>browse</span></div>
+      <div class="drop-zone-hint">PDF only — max 20MB</div>
+    `;
+    pdfZone.classList.remove('has-file');
+    initDropZone(pdfZone);
+  }
 }
 
 function editLesson(id){
@@ -1029,6 +1455,15 @@ function editLesson(id){
   document.getElementById('lessonPdf').value=d.pdf||'';
   document.getElementById('videosContainer').innerHTML='';
   document.getElementById('questionsContainer').innerHTML='';
+  
+  // Set drop zone previews for existing files
+  if(d.image) {
+    setDropZonePreview(document.getElementById('dropCoverImage'), d.image);
+  }
+  if(d.pdf) {
+    setDropZonePreview(document.getElementById('dropPdfNotes'), d.pdf);
+  }
+  
   const normalizedVideos=normalizeLessonVideos(d);
   if(normalizedVideos.length) normalizedVideos.forEach(v=>addVideoBlock(v));
   else if(d.video) addVideoBlock({name:d.name||'Main Video',url:d.video,requireHw:false,hwId:''});
@@ -1216,7 +1651,7 @@ async function saveHw(){
   btn.textContent=editingHwId?'Update Assignment 🔄':'Publish Assignment 📤';btn.disabled=false;
 }
 
-/* ── QUESTION HELPER ── */
+/* ── QUESTION HELPER (with drag & drop image) ── */
 window.updateOptionsUI=function(sel){
   const count=parseInt(sel.value);
   const block=sel.closest('.q-block');
@@ -1234,6 +1669,9 @@ window.updateOptionsUI=function(sel){
   optsC.innerHTML=ih;corrS.innerHTML=ch;
 };
 
+// Unique ID counter for question image zones
+let qImageZoneCounter = 0;
+
 window.addQuestion=function(cid,data=null){
   const n=document.querySelectorAll('#'+cid+' .question-block').length+1;
   const div=document.createElement('div');div.className='q-block question-block';
@@ -1245,13 +1683,25 @@ window.addQuestion=function(cid,data=null){
     iH+=`<div><div class="opt-lbl">OPTION ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="Option ${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;
     chH+=`<option value="${l}" ${data?.correct===l?'selected':''}>${U}</option>`;
   }
+  
+  const zoneId = 'qImgZone_' + (++qImageZoneCounter);
+  
   div.innerHTML=`
     <div class="q-block-head">
       <span class="q-num-badge">Question ${n}</span>
       <button class="q-del" onclick="this.closest('.q-block').remove()">✕</button>
     </div>
     <div class="fw"><label class="flbl">Question Text</label><input class="q-text finp" placeholder="Type question…" value="${(data?.text||'').replace(/"/g,'&quot;')}"></div>
-    <div class="fw"><label class="flbl">Question Image URL (optional)</label><input class="q-image finp" placeholder="https://…" value="${(data?.image||'').replace(/"/g,'&quot;')}"></div>
+    <div class="fw">
+      <label class="flbl">Question Image (optional)</label>
+      <div class="drop-zone q-image-zone" id="${zoneId}" data-target="" data-uploaded-url="${(data?.image||'').replace(/"/g,'&quot;')}" style="min-height:80px;padding:14px 12px;">
+        <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
+        <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
+        <div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div>
+        <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
+      </div>
+      <input type="hidden" class="q-image" value="${(data?.image||'').replace(/"/g,'&quot;')}">
+    </div>
     <div class="fg2" style="margin-bottom:10px">
       <div class="fw">
         <label class="flbl">Number of Options</label>
@@ -1264,18 +1714,155 @@ window.addQuestion=function(cid,data=null){
     </div>
     <div class="dynamic-opts">${iH}</div>`;
   document.getElementById(cid).appendChild(div);
+  
+  // Initialize the question image drop zone
+  const qZone = document.getElementById(zoneId);
+  initDropZone(qZone);
+  
+  // If editing and there's an existing image, show preview
+  if(data?.image) {
+    setDropZonePreview(qZone, data.image);
+  }
+  
+  // Override the upload behavior for question image zones
+  // We need to store the URL in the hidden input next to the zone
+  const origProcess = processDropZoneFile;
+  // We handle this via the dataset.uploadedUrl + getQuestionsFrom
 };
 
 function getQuestionsFrom(cid){
   const qs=[];
   document.querySelectorAll('#'+cid+' .question-block').forEach(b=>{
     const cnt=parseInt(b.querySelector('.q-opt-count').value)||4;
-    const q={text:b.querySelector('.q-text').value||'',image:b.querySelector('.q-image').value||'',correct:b.querySelector('.q-correct').value,optionsCount:cnt};
+    
+    // Get image from either the hidden input or the drop zone's uploaded URL
+    const hiddenInput = b.querySelector('.q-image');
+    const dropZone = b.querySelector('.q-image-zone');
+    let imageUrl = '';
+    if(dropZone && dropZone.dataset.uploadedUrl) {
+      imageUrl = dropZone.dataset.uploadedUrl;
+    } else if(hiddenInput) {
+      imageUrl = hiddenInput.value;
+    }
+    
+    const q={text:b.querySelector('.q-text').value||'',image:imageUrl,correct:b.querySelector('.q-correct').value,optionsCount:cnt};
     for(let i=0;i<cnt;i++){const l=OPT_LETTERS[i];q[l]=b.querySelector('.q-'+l)?.value||'';}
     qs.push(q);
   });
   return qs;
 }
+
+// Override processDropZoneFile to handle question image zones
+const _origProcessDropZoneFile = processDropZoneFile;
+async function processDropZoneFileOverride(zone, file) {
+  // For question image zones, we need special handling for the URL storage
+  if (zone.classList.contains('q-image-zone')) {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      showToast('error', 'Invalid File', 'Please upload an image (PNG, JPG, WEBP)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('error', 'Too Large', 'Image must be under 5MB');
+      return;
+    }
+    
+    const fileInputHtml = `<input type="file" accept="image/*" onchange="handleDropZoneFile(this)" style="display:none">`;
+    
+    zone.innerHTML = `
+      ${fileInputHtml}
+      <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
+      <div class="drop-zone-filename">${file.name}</div>
+      <div class="upload-progress"><div class="upload-progress-bar"></div></div>
+      <div class="upload-status uploading">Uploading…</div>
+    `;
+    zone.classList.add('has-file');
+    
+    const progBar = zone.querySelector('.upload-progress-bar');
+    let progress = 0;
+    const progInterval = setInterval(() => {
+      progress = Math.min(progress + Math.random() * 20, 90);
+      progBar.style.width = progress + '%';
+    }, 200);
+    
+    try {
+      const timestamp = Date.now();
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const filePath = `images/questions/${timestamp}_${safeName}`;
+      
+      const { data, error } = await db.storage.from(STORAGE_BUCKET).upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+      
+      clearInterval(progInterval);
+      if (error) throw error;
+      
+      const { data: urlData } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+      const publicUrl = urlData.publicUrl;
+      
+      // Store URL in dataset
+      zone.dataset.uploadedUrl = publicUrl;
+      
+      // Also update the hidden input
+      const hiddenInput = zone.closest('.fw').querySelector('.q-image');
+      if(hiddenInput) hiddenInput.value = publicUrl;
+      
+      progBar.style.width = '100%';
+      
+      setTimeout(() => {
+        zone.innerHTML = `
+          ${fileInputHtml}
+          <div class="drop-zone-preview" style="max-width:200px">
+            <img src="${publicUrl}" alt="Question Image">
+            <button class="drop-zone-remove" onclick="clearQuestionImage(this)">✕</button>
+          </div>
+          <div class="drop-zone-filename">${file.name}</div>
+          <div class="upload-status done" style="font-size:.6rem">Uploaded ✓</div>
+        `;
+        zone.classList.add('has-file');
+      }, 600);
+      
+      showToast('success', 'Uploaded!', `Question image uploaded`);
+      
+    } catch (err) {
+      clearInterval(progInterval);
+      zone.innerHTML = `
+        <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
+        <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
+        <div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div>
+        <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
+      `;
+      zone.classList.remove('has-file');
+      zone.dataset.uploadedUrl = '';
+      initDropZone(zone);
+      showToast('error', 'Upload Failed', err.message);
+    }
+    return;
+  }
+  
+  // Default behavior for non-question zones
+  return _origProcessDropZoneFile(zone, file);
+}
+
+// Replace the global function
+processDropZoneFile = processDropZoneFileOverride;
+
+window.clearQuestionImage = function(btn) {
+  const zone = btn.closest('.q-image-zone');
+  zone.dataset.uploadedUrl = '';
+  const hiddenInput = zone.closest('.fw').querySelector('.q-image');
+  if(hiddenInput) hiddenInput.value = '';
+  
+  zone.innerHTML = `
+    <input type="file" accept="image/*" onchange="handleDropZoneFile(this)">
+    <div class="drop-zone-icon" style="font-size:1.4rem">🖼️</div>
+    <div class="drop-zone-text" style="font-size:.72rem">Drag & drop question image or <span>browse</span></div>
+    <div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>
+  `;
+  zone.classList.remove('has-file');
+  initDropZone(zone);
+};
 
 /* ── CODES ── */
 async function loadAllCodes() {
@@ -1318,7 +1905,7 @@ async function generateCodes(){
   }
   try{
     await db.from('codes').insert(codes);
-    loadAllCodes(); // Refresh list after generation
+    loadAllCodes();
   }catch(e){showToast('error','Save Error',e.message);}
 }
 function copyCodes(){
