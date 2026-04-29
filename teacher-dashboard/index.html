@@ -10,90 +10,42 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
-
 :root{
-  --bg:#F5F0E8;
-  --bg2:#EDE7DB;
-  --surface:#FAF7F2;
-  --surface2:#F7F2EA;
-  --navy:#2C2418;
-  --green:#2D5A3D;
-  --green2:#3A7550;
-  --green3:#4A9060;
-  --green4:#7AA88A;
-  --green-light:rgba(45,90,61,.09);
-  --green-light2:rgba(45,90,61,.14);
-  --border:rgba(44,36,24,.10);
-  --border2:rgba(44,36,24,.20);
-  --text:#2C2418;
-  --muted:#6B5E4E;
-  --muted2:#9B8E7A;
-  --red:#A33B2E;
-  --red-bg:rgba(163,59,46,.08);
-  --amber:#C4654A;
-  --amber-bg:rgba(196,101,74,.10);
-  --shadow:0 8px 28px rgba(44,36,24,.07);
-  --shadow2:0 20px 54px rgba(44,36,24,.12);
-  --sans:'DM Sans',sans-serif;
-  --display:'Cormorant Garamond',serif;
-  --mono:'JetBrains Mono',monospace;
-  --sidebar-w:248px;
-  --bottom-nav-h:64px;
-  --topbar-h:56px;
+  --bg:#F5F0E8;--bg2:#EDE7DB;--surface:#FAF7F2;--surface2:#F7F2EA;
+  --navy:#2C2418;--green:#2D5A3D;--green2:#3A7550;--green3:#4A9060;--green4:#7AA88A;
+  --green-light:rgba(45,90,61,.09);--green-light2:rgba(45,90,61,.14);
+  --border:rgba(44,36,24,.10);--border2:rgba(44,36,24,.20);
+  --text:#2C2418;--muted:#6B5E4E;--muted2:#9B8E7A;
+  --red:#A33B2E;--red-bg:rgba(163,59,46,.08);--amber:#C4654A;--amber-bg:rgba(196,101,74,.10);
+  --shadow:0 8px 28px rgba(44,36,24,.07);--shadow2:0 20px 54px rgba(44,36,24,.12);
+  --sans:'DM Sans',sans-serif;--display:'Cormorant Garamond',serif;--mono:'JetBrains Mono',monospace;
+  --sidebar-w:248px;--bottom-nav-h:64px;--topbar-h:56px;
 }
-
 body{font-family:var(--sans);background:radial-gradient(circle at top left,rgba(196,168,130,.12),transparent 24%),var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;position:relative;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px;}
 ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px;}
 .hidden{display:none!important;}
-
-/* ── TOAST ── */
 #toast-container{position:fixed;top:12px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:calc(100vw - 24px);}
 .toast{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:12px 14px;min-width:240px;max-width:320px;box-shadow:var(--shadow2);pointer-events:all;animation:toastIn .3s both;border-left:3px solid var(--green);}
-.toast.error{border-left-color:var(--red);}
-.toast.info{border-left-color:#3b82f6;}
-.toast.warning{border-left-color:var(--amber);}
-.toast-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
-.toast-body{flex:1;min-width:0;}
-.toast-title{font-weight:700;font-size:.8rem;margin-bottom:2px;}
-.toast-msg{font-size:.72rem;color:var(--muted);word-break:break-word;}
+.toast.error{border-left-color:var(--red);}.toast.info{border-left-color:#3b82f6;}.toast.warning{border-left-color:var(--amber);}
+.toast-icon{font-size:15px;flex-shrink:0;margin-top:1px;}.toast-body{flex:1;min-width:0;}
+.toast-title{font-weight:700;font-size:.8rem;margin-bottom:2px;}.toast-msg{font-size:.72rem;color:var(--muted);word-break:break-word;}
 .toast-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;flex-shrink:0;padding:0 2px;min-width:20px;min-height:20px;}
 .toast-exit{animation:toastOut .25s both;}
 @keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 @keyframes toastOut{to{opacity:0;transform:translateX(16px)}}
-
-/* ── SECURE LAYER ── */
 #secureLayer{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
 .spin-ring{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .secure-txt{font-family:var(--mono);font-size:.68rem;color:var(--green);letter-spacing:1px;}
-
-/* ══════════════════════════════════════
-   SIDEBAR — desktop only
-══════════════════════════════════════ */
-.sidebar{
-  width:var(--sidebar-w);min-height:100vh;
-  background:linear-gradient(180deg,rgba(44,36,24,.98),rgba(44,36,24,.94));
-  box-shadow:18px 0 44px rgba(44,36,24,.12);
-  display:flex;flex-direction:column;
-  position:fixed;left:0;top:0;bottom:0;z-index:50;
-  overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1);
-}
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:linear-gradient(180deg,rgba(44,36,24,.98),rgba(44,36,24,.94));box-shadow:18px 0 44px rgba(44,36,24,.12);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1);}
 .sb-logo{padding:22px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);}
 .sb-logo-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 8px 20px rgba(45,90,61,.24);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0;}
-.sb-logo-name{font-family:var(--display);font-size:1rem;font-weight:800;color:#fff;}
-.sb-logo-name span{color:var(--green3);}
+.sb-logo-name{font-family:var(--display);font-size:1rem;font-weight:800;color:#fff;}.sb-logo-name span{color:var(--green3);}
 .sb-badge{font-size:.5rem;font-weight:700;background:rgba(34,197,94,.15);color:var(--green3);border:1px solid rgba(34,197,94,.25);border-radius:5px;padding:2px 7px;font-family:var(--mono);letter-spacing:1px;margin-top:2px;display:inline-block;}
 .sb-section{font-size:.56rem;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;padding:16px 18px 4px;font-family:var(--mono);}
 .sb-nav{flex:1;padding:6px 10px;}
-.sb-link{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;border-radius:10px;
-  font-size:.82rem;font-weight:600;color:rgba(255,255,255,.5);
-  cursor:pointer;transition:all .2s;margin-bottom:3px;
-  border:1px solid transparent;background:none;font-family:var(--sans);width:100%;text-align:left;
-  min-height:44px;
-}
+.sb-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;margin-bottom:3px;border:1px solid transparent;background:none;font-family:var(--sans);width:100%;text-align:left;min-height:44px;}
 .sb-link:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.08);}
 .sb-link.active{background:var(--green);color:#fff;font-weight:700;}
 .sb-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;background:rgba(255,255,255,.06);transition:all .2s;}
@@ -101,13 +53,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opa
 .sb-footer{padding:14px;border-top:1px solid rgba(255,255,255,.07);}
 .sb-logout{width:100%;display:flex;align-items:center;gap:8px;justify-content:center;padding:12px;background:var(--red-bg);border:1px solid rgba(220,38,38,.2);border-radius:10px;color:var(--red);font-family:var(--sans);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;min-height:44px;}
 .sb-logout:hover{background:rgba(220,38,38,.12);}
-
-/* ══════════════════════════════════════
-   MAIN AREA
-══════════════════════════════════════ */
 .main-area{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
-
-/* ── TOPBAR ── */
 .topbar{background:rgba(250,247,242,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--border2);padding:0 28px;height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 2px 12px rgba(13,31,20,.05);}
 .topbar-left{display:flex;align-items:center;gap:10px;}
 .topbar-title{font-family:var(--display);font-size:1rem;font-weight:800;display:flex;align-items:center;gap:8px;}
@@ -115,28 +61,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opa
 .teacher-pill{display:flex;align-items:center;gap:7px;background:rgba(45,90,61,.08);border:1px solid var(--border2);border-radius:20px;padding:6px 12px;font-size:.72rem;font-weight:700;color:var(--green2);white-space:nowrap;}
 .teacher-dot{width:6px;height:6px;background:var(--green3);border-radius:50%;animation:blink 2s infinite;flex-shrink:0;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ── CONTENT ── */
 .content{padding:24px 28px 60px;flex:1;}
 .section-page{display:none;animation:fadeIn .25s ease both;}
 .section-page.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── STATS ── */
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
 .stat-c{background:rgba(250,247,242,.92);border:1px solid var(--border);border-radius:18px;padding:18px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);transition:all .25s;}
 .stat-c:hover{border-color:var(--green);transform:translateY(-2px);}
 .stat-icon{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--green-light),rgba(196,168,130,.12));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
 .stat-val{font-family:var(--mono);font-size:1.6rem;font-weight:700;color:var(--green);line-height:1;}
 .stat-lbl{font-size:.63rem;color:var(--muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.8px;}
-
-/* ── CARD ── */
 .card{background:rgba(250,247,242,.92);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:18px;}
 .card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:linear-gradient(180deg,rgba(237,231,219,.8),rgba(250,247,242,.92));}
 .card-title{font-family:var(--display);font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:7px;}
 .card-body{padding:20px;}
-
-/* ── FORMS ── */
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 .fw{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
@@ -147,8 +85,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opa
 .finp::placeholder{color:var(--muted2);}
 select.finp{color:var(--muted);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B5E4E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
 textarea.finp{resize:vertical;min-height:90px;line-height:1.6;}
-
-/* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:10px;border:none;font-family:var(--sans);font-weight:700;font-size:.82rem;cursor:pointer;transition:all .22s;white-space:nowrap;min-height:44px;-webkit-tap-highlight-color:transparent;}
 .btn-primary{background:var(--green);color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.3);}
 .btn-primary:hover,.btn-primary:active{background:var(--green2);}
@@ -156,11 +92,7 @@ textarea.finp{resize:vertical;min-height:90px;line-height:1.6;}
 .btn-ghost:hover,.btn-ghost:active{border-color:var(--green);color:var(--green);}
 .btn-danger{background:var(--red-bg);border:1px solid rgba(220,38,38,.2);color:var(--red);}
 .btn-danger:hover,.btn-danger:active{background:rgba(220,38,38,.12);}
-.btn-full{width:100%;}
-.btn-lg{padding:13px 22px;font-size:.88rem;}
-.btn-sm{padding:8px 12px;font-size:.74rem;min-height:36px;}
-
-/* ── TABLE ── */
+.btn-full{width:100%;}.btn-lg{padding:13px 22px;font-size:.88rem;}.btn-sm{padding:8px 12px;font-size:.74rem;min-height:36px;}
 .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);-webkit-overflow-scrolling:touch;}
 table{width:100%;border-collapse:collapse;text-align:left;min-width:480px;}
 thead{background:var(--bg2);}
@@ -169,45 +101,32 @@ tbody tr{border-bottom:1px solid var(--border);transition:background .18s;}
 tbody tr:hover,.tbody tr:active{background:var(--bg2);}
 tbody tr:last-child{border-bottom:none;}
 tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
-.td-name{font-weight:700;color:var(--text);}
-.td-email{font-family:var(--mono);font-size:.65rem;color:var(--muted);}
+.td-name{font-weight:700;color:var(--text);}.td-email{font-family:var(--mono);font-size:.65rem;color:var(--muted);}
 .td-green{color:var(--green);font-weight:700;}
 .td-score{display:inline-flex;align-items:center;background:var(--green-light);border:1px solid var(--border2);color:var(--green);padding:3px 9px;border-radius:6px;font-family:var(--mono);font-size:.68rem;font-weight:800;}
 .td-date{font-family:var(--mono);font-size:.65rem;color:var(--muted);white-space:nowrap;}
 .td-empty{padding:40px;text-align:center;color:var(--muted);font-size:.86rem;}
-
-/* ── SEARCH ── */
 .search-wrap{position:relative;width:100%;}
 .search-wrap input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 14px 10px 38px;border-radius:10px;font-family:var(--sans);font-size:.84rem;outline:none;transition:all .2s;min-height:44px;}
 .search-wrap input:focus{border-color:var(--green);}
 .search-wrap input::placeholder{color:var(--muted2);}
 .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-
-/* ── QUESTION BLOCK ── */
 .q-block{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
 .q-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .q-num-badge{font-family:var(--mono);font-size:.6rem;color:var(--green);background:var(--green-light);border:1px solid var(--border2);padding:3px 10px;border-radius:20px;font-weight:700;}
 .q-del{width:34px;height:34px;background:var(--red-bg);border:1px solid rgba(220,38,38,.2);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:.75rem;transition:all .2s;-webkit-tap-highlight-color:transparent;}
 .dynamic-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:10px;}
 .opt-lbl{font-size:.56rem;font-weight:700;color:var(--muted);font-family:var(--mono);margin-bottom:3px;letter-spacing:.8px;}
-
-/* ── VIDEO BLOCK ── */
 .video-block{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;}
 .video-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .vid-num-badge{font-family:var(--mono);font-size:.6rem;color:var(--green);background:var(--green-light);border:1px solid var(--border2);padding:3px 10px;border-radius:20px;font-weight:700;}
-
-/* ── CODES ── */
 .codes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin-top:12px;max-height:300px;overflow-y:auto;}
 .code-pill{font-family:var(--mono);font-size:.68rem;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;text-align:center;transition:all .2s;letter-spacing:.8px;}
-
-/* ── BADGE ── */
 .badge{font-size:.62rem;font-weight:800;padding:4px 10px;border-radius:8px;cursor:pointer;border:none;font-family:var(--sans);transition:all .2s;}
 .badge-active{background:var(--green-light);color:var(--green);border:1px solid var(--border2);}
 .badge-expired{background:var(--red-bg);color:var(--red);border:1px solid rgba(220,38,38,.2);}
 .badge-sel{background:var(--green);color:#fff;}
 .divider{height:1px;background:var(--border);margin:18px 0;}
-
-/* ── STUDENT MODAL ── */
 .sp-overlay{position:fixed;inset:0;z-index:1500;background:rgba(13,31,20,.7);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:all .3s;}
 .sp-overlay.show{opacity:1;pointer-events:auto;}
 .sp-card{background:var(--surface);width:100%;max-width:680px;border:1px solid var(--border2);border-radius:24px 24px 0 0;box-shadow:var(--shadow2);display:flex;flex-direction:column;max-height:92vh;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);}
@@ -228,8 +147,6 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
 .sp-item{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--border);padding:12px 13px;border-radius:10px;margin-bottom:7px;}
 .sp-item-name{font-size:.83rem;font-weight:700;}
 .sp-item-score{font-family:var(--mono);font-size:.75rem;font-weight:800;color:var(--green);background:var(--green-light);border:1px solid var(--border2);padding:3px 9px;border-radius:6px;}
-
-/* ── DROP ZONE ── */
 .drop-zone{position:relative;border:2px dashed var(--border2);border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .25s;background:var(--bg2);min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;overflow:hidden;}
 .drop-zone:hover,.drop-zone:focus-within{border-color:var(--green);background:var(--green-light);}
 .drop-zone.dragover{border-color:var(--green2);background:rgba(45,90,61,.12);}
@@ -246,11 +163,7 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
 .upload-progress{width:100%;max-width:200px;height:3px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:7px;}
 .upload-progress-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--green3));border-radius:4px;transition:width .3s;width:0%;}
 .upload-status{font-size:.62rem;font-family:var(--mono);font-weight:700;margin-top:3px;}
-.upload-status.uploading{color:var(--amber);}
-.upload-status.done{color:var(--green);}
-.upload-status.error{color:var(--red);}
-
-/* ── TRACKER ── */
+.upload-status.uploading{color:var(--amber);}.upload-status.done{color:var(--green);}.upload-status.error{color:var(--red);}
 .tracker-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
 .tracker-stat{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;}
 .tracker-stat-icon{width:36px;height:36px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
@@ -259,17 +172,11 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
 .tracker-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
 .tracker-filter-btn{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:.7rem;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .2s;min-height:36px;-webkit-tap-highlight-color:transparent;}
 .tracker-filter-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
-
-/* ── WA ── */
 .wa-stack{display:flex;flex-direction:column;align-items:center;gap:5px;}
 .wa-send-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--green-light);border:1px solid var(--border2);text-decoration:none;font-size:.95rem;transition:all .2s;-webkit-tap-highlight-color:transparent;}
 .wa-sent{font-size:.6rem;font-weight:800;color:var(--green2);background:rgba(45,90,61,.08);border:1px solid rgba(45,90,61,.16);padding:3px 7px;border-radius:999px;white-space:nowrap;}
 .wa-not-sent{font-size:.6rem;font-weight:800;color:var(--amber);background:rgba(196,101,74,.08);border:1px solid rgba(196,101,74,.16);padding:3px 7px;border-radius:999px;white-space:nowrap;}
 .wa-no-parent{font-size:.6rem;font-weight:800;color:var(--muted2);background:rgba(44,36,24,.04);border:1px solid rgba(44,36,24,.08);padding:3px 7px;border-radius:999px;white-space:nowrap;}
-
-/* ══════════════════════════════════════
-   BOTTOM NAVIGATION — mobile only
-══════════════════════════════════════ */
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;background:rgba(44,36,24,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.1);height:var(--bottom-nav-h);padding:0 4px;padding-bottom:env(safe-area-inset-bottom);}
 .bottom-nav-inner{display:flex;align-items:center;justify-content:space-around;height:100%;max-width:600px;margin:0 auto;}
 .bn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;cursor:pointer;padding:6px 4px;border-radius:12px;transition:all .2s;border:none;background:none;color:rgba(255,255,255,.45);font-family:var(--sans);-webkit-tap-highlight-color:transparent;min-width:0;}
@@ -277,8 +184,6 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
 .bn-icon{font-size:1.2rem;line-height:1;position:relative;}
 .bn-item.active .bn-icon::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--green3);border-radius:50%;}
 .bn-label{font-size:.54rem;font-weight:700;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52px;text-align:center;}
-
-/* ── MORE DRAWER (mobile) ── */
 .more-drawer{position:fixed;inset:0;z-index:1000;opacity:0;pointer-events:none;transition:opacity .25s;}
 .more-drawer.show{opacity:1;pointer-events:auto;}
 .more-drawer-bg{position:absolute;inset:0;background:rgba(13,31,20,.6);backdrop-filter:blur(6px);}
@@ -290,127 +195,60 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
 .md-item:active{background:var(--green);color:#fff;}
 .md-item-icon{font-size:1.1rem;}
 .md-logout{width:100%;display:flex;align-items:center;gap:8px;justify-content:center;padding:13px;background:var(--red-bg);border:1px solid rgba(220,38,38,.2);border-radius:12px;color:var(--red);font-family:var(--sans);font-size:.84rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-
-/* ── MOBILE HEADER ── */
 .mob-header{display:none;position:sticky;top:0;z-index:40;background:rgba(250,247,242,.95);backdrop-filter:blur(18px);border-bottom:1px solid var(--border2);height:54px;align-items:center;padding:0 16px;justify-content:space-between;box-shadow:0 2px 10px rgba(13,31,20,.05);}
 .mob-logo{display:flex;align-items:center;gap:9px;}
 .mob-logo-mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:.78rem;color:#fff;}
-.mob-logo-name{font-family:var(--display);font-size:.9rem;font-weight:800;color:var(--text);}
-.mob-logo-name span{color:var(--green2);}
+.mob-logo-name{font-family:var(--display);font-size:.9rem;font-weight:800;color:var(--text);}.mob-logo-name span{color:var(--green2);}
 .mob-section-name{font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:20px;border:1px solid var(--border2);}
-
-/* ═══════════════════════════
-   RESPONSIVE BREAKPOINTS
-═══════════════════════════ */
+/* ── Exam Duration highlight ── */
+.exam-dur-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(196,101,74,.08);border:1px solid rgba(196,101,74,.2);color:var(--amber);font-family:var(--mono);font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:6px;margin-left:6px;}
 @media(max-width:900px){
-  .sidebar{display:none;}
-  .main-area{margin-left:0;}
-  .topbar{display:none;}
-  .mob-header{display:flex;}
-  .bottom-nav{display:block;}
+  .sidebar{display:none;}.main-area{margin-left:0;}.topbar{display:none;}.mob-header{display:flex;}.bottom-nav{display:block;}
   .content{padding:14px 14px calc(var(--bottom-nav-h) + 14px);}
-
   .stats-row{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-  .stat-c{padding:14px;border-radius:14px;}
-  .stat-icon{width:38px;height:38px;border-radius:10px;}
-  .stat-val{font-size:1.4rem;}
-
-  .card{border-radius:16px;margin-bottom:12px;}
-  .card-head{padding:12px 14px;gap:8px;}
-  .card-body{padding:14px;}
-  .card-title{font-size:.86rem;}
-
-  .fg2,.fg3{grid-template-columns:1fr;}
-
-  .btn{min-height:44px;font-size:.82rem;}
-  .btn-sm{min-height:38px;}
-
-  table{min-width:540px;}
-  thead th{padding:10px 12px;font-size:.58rem;}
-  tbody td{padding:11px 12px;font-size:.78rem;}
-
-  .search-wrap{max-width:none;}
-
-  .tracker-summary{grid-template-columns:1fr 1fr;}
-  .tracker-filters{gap:6px;}
-
+  .stat-c{padding:14px;border-radius:14px;}.stat-icon{width:38px;height:38px;border-radius:10px;}.stat-val{font-size:1.4rem;}
+  .card{border-radius:16px;margin-bottom:12px;}.card-head{padding:12px 14px;gap:8px;}.card-body{padding:14px;}.card-title{font-size:.86rem;}
+  .fg2,.fg3{grid-template-columns:1fr;}.btn{min-height:44px;font-size:.82rem;}.btn-sm{min-height:38px;}
+  table{min-width:540px;}thead th{padding:10px 12px;font-size:.58rem;}tbody td{padding:11px 12px;font-size:.78rem;}
+  .search-wrap{max-width:none;}.tracker-summary{grid-template-columns:1fr 1fr;}.tracker-filters{gap:6px;}
   .codes-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
-
-  .sp-overlay{align-items:flex-end;}
-  .sp-card{border-radius:22px 22px 0 0;max-height:90vh;}
-
-  .sp-stats{gap:8px;}
-  .sp-stat{padding:12px 8px;}
-  .sp-stat-num{font-size:1.5rem;}
-
-  .sp-actions{gap:6px;}
-  .sp-actions .btn{padding:7px 10px;font-size:.68rem;min-height:36px;}
-
+  .sp-overlay{align-items:flex-end;}.sp-card{border-radius:22px 22px 0 0;max-height:90vh;}
+  .sp-stats{gap:8px;}.sp-stat{padding:12px 8px;}.sp-stat-num{font-size:1.5rem;}
+  .sp-actions{gap:6px;}.sp-actions .btn{padding:7px 10px;font-size:.68rem;min-height:36px;}
   .dynamic-opts{grid-template-columns:1fr 1fr;}
-
-  /* Card view for results table on very small screens */
-  .results-card-view{display:block;}
-  .results-table-view{display:none;}
 }
-
 @media(max-width:480px){
-  .stats-row{grid-template-columns:1fr;}
-  .tracker-summary{grid-template-columns:1fr 1fr;}
-  .mob-section-name{display:none;}
-  .card-head{flex-direction:column;align-items:flex-start;}
-  .card-head .btn{align-self:flex-end;}
+  .stats-row{grid-template-columns:1fr;}.tracker-summary{grid-template-columns:1fr 1fr;}
+  .mob-section-name{display:none;}.card-head{flex-direction:column;align-items:flex-start;}.card-head .btn{align-self:flex-end;}
   .sp-stats{grid-template-columns:repeat(3,1fr);}
 }
-
-/* ── Prevent zoom on input focus iOS ── */
-@media screen and (-webkit-min-device-pixel-ratio:0){
-  .finp,.search-wrap input{font-size:16px;}
-}
+@media screen and (-webkit-min-device-pixel-ratio:0){.finp,.search-wrap input{font-size:16px;}}
 </style>
 </head>
 <body>
-
 <div id="toast-container"></div>
 <div id="secureLayer">
   <div class="spin-ring"></div>
   <div class="secure-txt">Verifying admin access…</div>
 </div>
 
-<!-- DESKTOP SIDEBAR -->
 <aside class="sidebar" id="sidebarEl">
   <div class="sb-logo">
     <div class="sb-logo-mark">MP</div>
-    <div>
-      <div class="sb-logo-name">Math<span>Pro</span></div>
-      <div class="sb-badge">ADMIN</div>
-    </div>
+    <div><div class="sb-logo-name">Math<span>Pro</span></div><div class="sb-badge">ADMIN</div></div>
   </div>
   <nav class="sb-nav">
     <div class="sb-section">Main</div>
-    <button class="sb-link active" onclick="showSection('overview',this)">
-      <div class="sb-icon">📊</div>Overview
-    </button>
+    <button class="sb-link active" onclick="showSection('overview',this)"><div class="sb-icon">📊</div>Overview</button>
     <div class="sb-section">Content</div>
-    <button class="sb-link" onclick="showSection('lessons',this)">
-      <div class="sb-icon">📚</div>Courses & Lessons
-    </button>
-    <button class="sb-link" onclick="showSection('homework',this)">
-      <div class="sb-icon">📋</div>Assignments
-    </button>
+    <button class="sb-link" onclick="showSection('lessons',this)"><div class="sb-icon">📚</div>Courses & Lessons</button>
+    <button class="sb-link" onclick="showSection('homework',this)"><div class="sb-icon">📋</div>Assignments</button>
     <div class="sb-section">Students</div>
-    <button class="sb-link" onclick="showSection('results',this)">
-      <div class="sb-icon">📈</div>Student Results
-    </button>
+    <button class="sb-link" onclick="showSection('results',this)"><div class="sb-icon">📈</div>Student Results</button>
     <div class="sb-section">Tools</div>
-    <button class="sb-link" onclick="showSection('codes',this)">
-      <div class="sb-icon">🎫</div>Codes
-    </button>
-    <button class="sb-link" onclick="showSection('tracker',this)">
-      <div class="sb-icon">🗂️</div>Code Tracker
-    </button>
-    <button class="sb-link" onclick="showSection('notif',this)">
-      <div class="sb-icon">📢</div>Broadcast
-    </button>
+    <button class="sb-link" onclick="showSection('codes',this)"><div class="sb-icon">🎫</div>Codes</button>
+    <button class="sb-link" onclick="showSection('tracker',this)"><div class="sb-icon">🗂️</div>Code Tracker</button>
+    <button class="sb-link" onclick="showSection('notif',this)"><div class="sb-icon">📢</div>Broadcast</button>
   </nav>
   <div class="sb-footer">
     <button class="sb-logout" onclick="signOut()">
@@ -420,7 +258,6 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
   </div>
 </aside>
 
-<!-- MOBILE HEADER -->
 <div class="mob-header" id="mobHeader">
   <div class="mob-logo">
     <div class="mob-logo-mark">MP</div>
@@ -429,47 +266,24 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
   <div class="mob-section-name" id="mobSectionName">Overview</div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
-    <button class="bn-item active" id="bn-overview" onclick="showSection('overview',null,'overview')">
-      <div class="bn-icon">📊</div>
-      <div class="bn-label">Overview</div>
-    </button>
-    <button class="bn-item" id="bn-lessons" onclick="showSection('lessons',null,'lessons')">
-      <div class="bn-icon">📚</div>
-      <div class="bn-label">Courses</div>
-    </button>
-    <button class="bn-item" id="bn-results" onclick="showSection('results',null,'results')">
-      <div class="bn-icon">📈</div>
-      <div class="bn-label">Students</div>
-    </button>
-    <button class="bn-item" id="bn-codes" onclick="showSection('codes',null,'codes')">
-      <div class="bn-icon">🎫</div>
-      <div class="bn-label">Codes</div>
-    </button>
-    <button class="bn-item" id="bn-more" onclick="toggleMoreDrawer()">
-      <div class="bn-icon">☰</div>
-      <div class="bn-label">More</div>
-    </button>
+    <button class="bn-item active" id="bn-overview" onclick="showSection('overview',null,'overview')"><div class="bn-icon">📊</div><div class="bn-label">Overview</div></button>
+    <button class="bn-item" id="bn-lessons" onclick="showSection('lessons',null,'lessons')"><div class="bn-icon">📚</div><div class="bn-label">Courses</div></button>
+    <button class="bn-item" id="bn-results" onclick="showSection('results',null,'results')"><div class="bn-icon">📈</div><div class="bn-label">Students</div></button>
+    <button class="bn-item" id="bn-codes" onclick="showSection('codes',null,'codes')"><div class="bn-icon">🎫</div><div class="bn-label">Codes</div></button>
+    <button class="bn-item" id="bn-more" onclick="toggleMoreDrawer()"><div class="bn-icon">☰</div><div class="bn-label">More</div></button>
   </div>
 </nav>
 
-<!-- MORE DRAWER (mobile) -->
 <div class="more-drawer" id="moreDrawer" onclick="closeMoreDrawer(event)">
   <div class="more-drawer-bg"></div>
   <div class="more-drawer-panel">
     <div class="more-drawer-title">More Sections</div>
     <div class="more-drawer-grid">
-      <button class="md-item" onclick="showSection('homework',null,'homework');closeMoreDrawer()">
-        <span class="md-item-icon">📋</span>Assignments
-      </button>
-      <button class="md-item" onclick="showSection('tracker',null,'tracker');closeMoreDrawer()">
-        <span class="md-item-icon">🗂️</span>Code Tracker
-      </button>
-      <button class="md-item" onclick="showSection('notif',null,'notif');closeMoreDrawer()">
-        <span class="md-item-icon">📢</span>Broadcast
-      </button>
+      <button class="md-item" onclick="showSection('homework',null,'homework');closeMoreDrawer()"><span class="md-item-icon">📋</span>Assignments</button>
+      <button class="md-item" onclick="showSection('tracker',null,'tracker');closeMoreDrawer()"><span class="md-item-icon">🗂️</span>Code Tracker</button>
+      <button class="md-item" onclick="showSection('notif',null,'notif');closeMoreDrawer()"><span class="md-item-icon">📢</span>Broadcast</button>
     </div>
     <button class="md-logout" onclick="signOut()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -479,14 +293,10 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
 </div>
 
 <div class="main-area">
-  <!-- DESKTOP TOPBAR -->
   <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-title" id="topbarTitle">Overview</div>
-    </div>
+    <div class="topbar-left"><div class="topbar-title" id="topbarTitle">Overview</div></div>
     <div class="teacher-pill"><div class="teacher-dot"></div>MathPro Command</div>
   </div>
-
   <div class="content">
 
     <!-- OVERVIEW -->
@@ -516,14 +326,15 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
         </div>
         <div style="padding:4px">
           <div class="table-wrap">
-            <table><thead><tr><th>Name</th><th>Grade</th><th>Price</th><th>Videos</th><th>Actions</th></tr></thead>
-            <tbody id="lessonsBody"><tr><td colspan="5" class="td-empty">Loading…</td></tr></tbody></table>
+            <table><thead><tr><th>Name</th><th>Grade</th><th>Price</th><th>⏱ Exam</th><th>Videos</th><th>Actions</th></tr></thead>
+            <tbody id="lessonsBody"><tr><td colspan="6" class="td-empty">Loading…</td></tr></tbody></table>
           </div>
         </div>
       </div>
       <div class="card" id="lessonFormCard">
         <div class="card-head"><div class="card-title" id="lessonFormTitle">➕ Add New Course</div></div>
         <div class="card-body">
+          <!-- Row 1: Name + Grade -->
           <div class="fg2">
             <div class="fw"><label class="flbl">Course Title</label><input id="lessonName" class="finp" placeholder="e.g., Chapter 1 – Lesson 2"></div>
             <div class="fw"><label class="flbl">School Grade</label>
@@ -534,10 +345,21 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
               </select>
             </div>
           </div>
-          <div class="fg2">
+          <!-- Row 2: Price + Validity + Exam Duration -->
+          <div class="fg3">
             <div class="fw"><label class="flbl">Price (EGP)</label><input id="lessonPrice" type="number" class="finp" placeholder="150"></div>
             <div class="fw"><label class="flbl">Validity (Days)</label><input id="lessonValidity" type="number" class="finp" placeholder="90" value="90"></div>
+            <div class="fw">
+              <label class="flbl">⏱ Exam Duration (Minutes)</label>
+              <input id="lessonExamDuration" type="number" class="finp" placeholder="40" value="40" min="1" max="180">
+            </div>
           </div>
+          <!-- About / Description -->
+          <div class="fw">
+            <label class="flbl">📝 About This Lesson</label>
+            <textarea id="lessonAbout" class="finp" rows="3" placeholder="Briefly describe what students will learn in this lesson…"></textarea>
+          </div>
+          <!-- Cover Image -->
           <div class="fw">
             <label class="flbl">Cover Image</label>
             <div class="drop-zone" id="dropCoverImage" data-target="lessonImage">
@@ -548,6 +370,7 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
             </div>
             <input type="hidden" id="lessonImage">
           </div>
+          <!-- PDF -->
           <div class="fw">
             <label class="flbl">PDF Notes</label>
             <div class="drop-zone" id="dropPdfNotes" data-target="lessonPdf">
@@ -559,6 +382,7 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
             <input type="hidden" id="lessonPdf">
           </div>
           <div class="divider"></div>
+          <!-- Videos -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
             <div>
               <div style="font-family:var(--display);font-size:.92rem;font-weight:700;">📺 Video Lessons</div>
@@ -568,6 +392,7 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
           </div>
           <div id="videosContainer"></div>
           <div class="divider"></div>
+          <!-- Questions -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
             <div style="font-family:var(--display);font-size:.92rem;font-weight:700;">📝 Exam Questions</div>
             <button class="btn btn-ghost btn-sm" onclick="addQuestion('questionsContainer')">+ Add Question</button>
@@ -658,9 +483,7 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
           </div>
         </div>
         <div class="card-body">
-          <div id="codesPlaceholder" class="hidden" style="text-align:center;padding:36px;color:var(--muted);background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;font-size:.84rem">
-            Tap the button above to generate 50 new codes 🎯
-          </div>
+          <div id="codesPlaceholder" class="hidden" style="text-align:center;padding:36px;color:var(--muted);background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;font-size:.84rem">Tap the button above to generate 50 new codes 🎯</div>
           <div id="codesResultArea" class="hidden" style="margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
               <span style="font-size:.8rem;color:var(--green);font-weight:700">Newly Generated Codes</span>
@@ -694,22 +517,10 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
         </div>
         <div class="card-body">
           <div class="tracker-summary" id="trackerSummary">
-            <div class="tracker-stat">
-              <div class="tracker-stat-icon">🎫</div>
-              <div><div class="tracker-stat-val" id="tStatTotal">—</div><div class="tracker-stat-lbl">Codes Used</div></div>
-            </div>
-            <div class="tracker-stat">
-              <div class="tracker-stat-icon">✅</div>
-              <div><div class="tracker-stat-val" id="tStatActive">—</div><div class="tracker-stat-lbl">Active</div></div>
-            </div>
-            <div class="tracker-stat">
-              <div class="tracker-stat-icon">❌</div>
-              <div><div class="tracker-stat-val" id="tStatExpired">—</div><div class="tracker-stat-lbl">Expired</div></div>
-            </div>
-            <div class="tracker-stat">
-              <div class="tracker-stat-icon">📚</div>
-              <div><div class="tracker-stat-val" id="tStatLessons">—</div><div class="tracker-stat-lbl">Lessons</div></div>
-            </div>
+            <div class="tracker-stat"><div class="tracker-stat-icon">🎫</div><div><div class="tracker-stat-val" id="tStatTotal">—</div><div class="tracker-stat-lbl">Codes Used</div></div></div>
+            <div class="tracker-stat"><div class="tracker-stat-icon">✅</div><div><div class="tracker-stat-val" id="tStatActive">—</div><div class="tracker-stat-lbl">Active</div></div></div>
+            <div class="tracker-stat"><div class="tracker-stat-icon">❌</div><div><div class="tracker-stat-val" id="tStatExpired">—</div><div class="tracker-stat-lbl">Expired</div></div></div>
+            <div class="tracker-stat"><div class="tracker-stat-icon">📚</div><div><div class="tracker-stat-val" id="tStatLessons">—</div><div class="tracker-stat-lbl">Lessons</div></div></div>
           </div>
           <div class="tracker-filters">
             <span style="font-size:.68rem;font-weight:700;color:var(--muted);font-family:var(--mono);">FILTER:</span>
@@ -719,14 +530,8 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
           </div>
           <div class="table-wrap" style="max-height:500px;overflow-y:auto">
             <table>
-              <thead>
-                <tr>
-                  <th>Student</th><th>Email</th><th>Code</th><th>Lesson</th><th>Activated</th><th>Expires</th><th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="trackerBody">
-                <tr><td colspan="7" class="td-empty">Click Refresh to load data</td></tr>
-              </tbody>
+              <thead><tr><th>Student</th><th>Email</th><th>Code</th><th>Lesson</th><th>Activated</th><th>Expires</th><th>Status</th></tr></thead>
+              <tbody id="trackerBody"><tr><td colspan="7" class="td-empty">Click Refresh to load data</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -747,8 +552,8 @@ tbody td{padding:12px 16px;font-size:.82rem;vertical-align:middle;}
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main-area -->
+  </div>
+</div>
 
 <!-- STUDENT MODAL -->
 <div id="studentModal" class="sp-overlay">
@@ -789,217 +594,155 @@ let currentOpenStudentEmail=null;
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 const GRADE_MAP={"1":"1st Year","2":"2nd Year","3":"3rd Year"};
 
-/* ── Mobile More Drawer ── */
-function toggleMoreDrawer(){
-  const d=document.getElementById('moreDrawer');
-  d.classList.toggle('show');
-}
-function closeMoreDrawer(e){
-  const d=document.getElementById('moreDrawer');
-  if(!e||e.target===d||e.target.classList.contains('more-drawer-bg')) d.classList.remove('show');
-}
+function toggleMoreDrawer(){document.getElementById('moreDrawer').classList.toggle('show');}
+function closeMoreDrawer(e){const d=document.getElementById('moreDrawer');if(!e||e.target===d||e.target.classList.contains('more-drawer-bg'))d.classList.remove('show');}
 
-/* ── Drag & Drop ── */
-document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.drop-zone').forEach(initDropZone);
-});
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.drop-zone').forEach(initDropZone);});
 
 function initDropZone(zone){
-  const fileInput=zone.querySelector('input[type="file"]');
-  if(!fileInput) return;
-  ['dragenter','dragover'].forEach(evt=>{
-    zone.addEventListener(evt,e=>{e.preventDefault();zone.classList.add('dragover');});
-  });
-  ['dragleave','drop'].forEach(evt=>{
-    zone.addEventListener(evt,e=>{e.preventDefault();zone.classList.remove('dragover');});
-  });
-  zone.addEventListener('drop',e=>{
-    const files=e.dataTransfer.files;
-    if(files.length){fileInput.files=files;processDropZoneFile(zone,files[0]);}
-  });
+  const fileInput=zone.querySelector('input[type="file"]');if(!fileInput)return;
+  ['dragenter','dragover'].forEach(evt=>{zone.addEventListener(evt,e=>{e.preventDefault();zone.classList.add('dragover');});});
+  ['dragleave','drop'].forEach(evt=>{zone.addEventListener(evt,e=>{e.preventDefault();zone.classList.remove('dragover');});});
+  zone.addEventListener('drop',e=>{const files=e.dataTransfer.files;if(files.length){fileInput.files=files;processDropZoneFile(zone,files[0]);}});
 }
-
-function handleDropZoneFile(input){
-  const zone=input.closest('.drop-zone');
-  if(input.files.length) processDropZoneFile(zone,input.files[0]);
-}
-
+function handleDropZoneFile(input){const zone=input.closest('.drop-zone');if(input.files.length)processDropZoneFile(zone,input.files[0]);}
 async function processDropZoneFile(zone,file){
   const targetId=zone.dataset.target;
   const isImage=file.type.startsWith('image/');
   const isPdf=file.type==='application/pdf';
-  if(targetId==='lessonImage'||zone.classList.contains('q-image-zone')){
+  if(zone.classList.contains('q-image-zone')){
     if(!isImage){showToast('error','Invalid','Please upload an image');return;}
     if(file.size>5*1024*1024){showToast('error','Too Large','Image must be under 5MB');return;}
+    await uploadQuestionImage(zone,file);return;
   }
-  if(targetId==='lessonPdf'){
-    if(!isPdf){showToast('error','Invalid','Please upload a PDF');return;}
-    if(file.size>20*1024*1024){showToast('error','Too Large','PDF must be under 20MB');return;}
+  if(targetId==='lessonImage'||targetId==='lessonPdf'||(zone.id&&zone.id.startsWith('drop'))){
+    if(targetId==='lessonImage'&&!isImage){showToast('error','Invalid','Please upload an image');return;}
+    if(targetId==='lessonPdf'&&!isPdf){showToast('error','Invalid','Please upload a PDF');return;}
+    if(isImage&&file.size>5*1024*1024){showToast('error','Too Large','Image must be under 5MB');return;}
+    if(isPdf&&file.size>20*1024*1024){showToast('error','Too Large','PDF must be under 20MB');return;}
   }
   const fileInputHtml=`<input type="file" accept="${isImage?'image/*':'.pdf,application/pdf'}" onchange="handleDropZoneFile(this)" style="display:none">`;
   zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon">${isImage?'🖼️':'📄'}</div><div class="drop-zone-filename">${file.name}</div><div class="upload-progress"><div class="upload-progress-bar" id="prog-${targetId||zone.id}"></div></div><div class="upload-status uploading" id="status-${targetId||zone.id}">Uploading…</div>`;
   zone.classList.add('has-file');
   const progBar=zone.querySelector('.upload-progress-bar');
-  let progress=0;
-  const progInterval=setInterval(()=>{progress=Math.min(progress+Math.random()*20,90);progBar.style.width=progress+'%';},200);
+  let progress=0;const progInterval=setInterval(()=>{progress=Math.min(progress+Math.random()*20,90);progBar.style.width=progress+'%';},200);
   try{
-    const timestamp=Date.now();
-    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-    const folder=isImage?'images':'pdfs';
-    const filePath=`${folder}/${timestamp}_${safeName}`;
-    const{data,error}=await db.storage.from(STORAGE_BUCKET).upload(filePath,file,{cacheControl:'3600',upsert:false});
-    clearInterval(progInterval);
-    if(error) throw error;
+    const timestamp=Date.now();const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const folder=isImage?'images':'pdfs';const filePath=`${folder}/${timestamp}_${safeName}`;
+    const{error}=await db.storage.from(STORAGE_BUCKET).upload(filePath,file,{cacheControl:'3600',upsert:false});
+    clearInterval(progInterval);if(error)throw error;
     const{data:urlData}=db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
     const publicUrl=urlData.publicUrl;
-    if(targetId) document.getElementById(targetId).value=publicUrl;
+    if(targetId)document.getElementById(targetId).value=publicUrl;
     progBar.style.width='100%';
-    const statusEl=zone.querySelector('.upload-status');
-    statusEl.className='upload-status done';statusEl.textContent='Uploaded ✓';
+    const statusEl=zone.querySelector('.upload-status');statusEl.className='upload-status done';statusEl.textContent='Uploaded ✓';
     setTimeout(()=>{
-      if(isImage){
-        zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview"><img src="${publicUrl}" alt="Preview"><button class="drop-zone-remove" onclick="clearDropZone(this,'${targetId}')">✕</button></div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done">Uploaded ✓</div>`;
-      }else{
-        zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:2rem">✅</div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done">PDF Uploaded ✓</div><button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this,'${targetId}')">✕</button>`;
-      }
+      if(isImage){zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview"><img src="${publicUrl}" alt="Preview"><button class="drop-zone-remove" onclick="clearDropZone(this,'${targetId}')">✕</button></div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done">Uploaded ✓</div>`;}
+      else{zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:2rem">✅</div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done">PDF Uploaded ✓</div><button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this,'${targetId}')">✕</button>`;}
       zone.classList.add('has-file');
     },600);
-    if(zone.dataset.urlStore!==undefined) zone.dataset.uploadedUrl=publicUrl;
+    if(zone.dataset.urlStore!==undefined)zone.dataset.uploadedUrl=publicUrl;
     showToast('success','Uploaded!',`${file.name} uploaded`);
   }catch(err){
     clearInterval(progInterval);
-    const accept=isImage?'image/*':'.pdf,application/pdf';
-    const icon=isImage?'🖼️':'📄';
-    const typeText=isImage?'image':'PDF';
-    const hint=isImage?'PNG, JPG, WEBP — max 5MB':'PDF only — max 20MB';
+    const accept=isImage?'image/*':'.pdf,application/pdf';const icon=isImage?'🖼️':'📄';const typeText=isImage?'image':'PDF';const hint=isImage?'PNG, JPG, WEBP — max 5MB':'PDF only — max 20MB';
     zone.innerHTML=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">${icon}</div><div class="drop-zone-text">Tap to upload ${typeText} or <span>browse</span></div><div class="drop-zone-hint">${hint}</div>`;
-    zone.classList.remove('has-file');
-    initDropZone(zone);
+    zone.classList.remove('has-file');initDropZone(zone);
     showToast('error','Upload Failed',err.message||'Check Supabase Storage settings');
   }
 }
-
+async function uploadQuestionImage(zone,file){
+  const fileInputHtml=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)" style="display:none">`;
+  zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:1.3rem">🖼️</div><div class="drop-zone-filename">${file.name}</div><div class="upload-progress"><div class="upload-progress-bar"></div></div><div class="upload-status uploading">Uploading…</div>`;
+  zone.classList.add('has-file');
+  const progBar=zone.querySelector('.upload-progress-bar');let progress=0;
+  const progInterval=setInterval(()=>{progress=Math.min(progress+Math.random()*20,90);progBar.style.width=progress+'%';},200);
+  try{
+    const timestamp=Date.now();const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const filePath=`images/questions/${timestamp}_${safeName}`;
+    const{error}=await db.storage.from(STORAGE_BUCKET).upload(filePath,file,{cacheControl:'3600',upsert:false});
+    clearInterval(progInterval);if(error)throw error;
+    const{data:urlData}=db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+    const publicUrl=urlData.publicUrl;
+    zone.dataset.uploadedUrl=publicUrl;
+    const hiddenInput=zone.closest('.fw').querySelector('.q-image');if(hiddenInput)hiddenInput.value=publicUrl;
+    progBar.style.width='100%';
+    setTimeout(()=>{
+      zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview" style="max-width:180px"><img src="${publicUrl}" alt="Question Image"><button class="drop-zone-remove" onclick="clearQuestionImage(this)">✕</button></div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done" style="font-size:.6rem">Uploaded ✓</div>`;
+      zone.classList.add('has-file');
+    },600);
+    showToast('success','Uploaded!','Question image uploaded');
+  }catch(err){
+    clearInterval(progInterval);
+    zone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon" style="font-size:1.3rem">🖼️</div><div class="drop-zone-text" style="font-size:.7rem">Tap or drag image here</div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;
+    zone.classList.remove('has-file');zone.dataset.uploadedUrl='';initDropZone(zone);
+    showToast('error','Upload Failed',err.message);
+  }
+}
 window.clearDropZone=function(btn,targetId){
   const zone=btn.closest('.drop-zone');
   const isImageZone=targetId==='lessonImage'||zone.classList.contains('q-image-zone');
-  const accept=isImageZone?'image/*':'.pdf,application/pdf';
-  const icon=isImageZone?'🖼️':'📄';
-  const typeText=isImageZone?'image':'PDF';
-  const hint=isImageZone?'PNG, JPG, WEBP — max 5MB':'PDF only — max 20MB';
+  const accept=isImageZone?'image/*':'.pdf,application/pdf';const icon=isImageZone?'🖼️':'📄';const typeText=isImageZone?'image':'PDF';const hint=isImageZone?'PNG, JPG, WEBP — max 5MB':'PDF only — max 20MB';
   zone.innerHTML=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">${icon}</div><div class="drop-zone-text">Tap to upload ${typeText} or <span>browse</span></div><div class="drop-zone-hint">${hint}</div>`;
-  zone.classList.remove('has-file');
-  initDropZone(zone);
-  if(targetId) document.getElementById(targetId).value='';
-  if(zone.dataset.uploadedUrl) zone.dataset.uploadedUrl='';
+  zone.classList.remove('has-file');initDropZone(zone);
+  if(targetId)document.getElementById(targetId).value='';
+  if(zone.dataset.uploadedUrl)zone.dataset.uploadedUrl='';
 };
-
+window.clearQuestionImage=function(btn){
+  const zone=btn.closest('.q-image-zone');zone.dataset.uploadedUrl='';
+  const hiddenInput=zone.closest('.fw').querySelector('.q-image');if(hiddenInput)hiddenInput.value='';
+  zone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon" style="font-size:1.3rem">🖼️</div><div class="drop-zone-text" style="font-size:.7rem">Tap or drag image here</div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;
+  zone.classList.remove('has-file');initDropZone(zone);
+};
 function setDropZonePreview(zone,url){
-  if(!zone||!url) return;
-  const targetId=zone.dataset.target||'';
+  if(!zone||!url)return;const targetId=zone.dataset.target||'';
   const isImage=/\.(jpg|jpeg|png|gif|webp|svg|bmp)/i.test(url)||targetId==='lessonImage';
-  if(targetId) document.getElementById(targetId).value=url;
-  const accept=isImage?'image/*':'.pdf,application/pdf';
-  const fileInputHtml=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)" style="display:none">`;
-  if(isImage){
-    zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview"><img src="${url}" alt="Preview"><button class="drop-zone-remove" onclick="clearDropZone(this,'${targetId}')">✕</button></div><div class="drop-zone-filename">${url.split('/').pop()}</div><div class="upload-status done">Loaded ✓</div>`;
-  }else{
-    zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:2rem">📄</div><div class="drop-zone-filename">${url.split('/').pop()}</div><div class="upload-status done">Loaded ✓</div><button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this,'${targetId}')">✕</button>`;
-  }
-  zone.classList.add('has-file');
-  if(zone.dataset.uploadedUrl!==undefined) zone.dataset.uploadedUrl=url;
+  if(targetId)document.getElementById(targetId).value=url;
+  const accept=isImage?'image/*':'.pdf,application/pdf';const fileInputHtml=`<input type="file" accept="${accept}" onchange="handleDropZoneFile(this)" style="display:none">`;
+  if(isImage){zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview"><img src="${url}" alt="Preview"><button class="drop-zone-remove" onclick="clearDropZone(this,'${targetId}')">✕</button></div><div class="drop-zone-filename">${url.split('/').pop()}</div><div class="upload-status done">Loaded ✓</div>`;}
+  else{zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:2rem">📄</div><div class="drop-zone-filename">${url.split('/').pop()}</div><div class="upload-status done">Loaded ✓</div><button class="drop-zone-remove" style="position:absolute;top:8px;right:8px" onclick="clearDropZone(this,'${targetId}')">✕</button>`;}
+  zone.classList.add('has-file');if(zone.dataset.uploadedUrl!==undefined)zone.dataset.uploadedUrl=url;
 }
 
-/* ── Helpers ── */
-function normalizePhoneEg(phone){
-  let value=String(phone||'').replace(/[^\d+]/g,'');
-  if(!value) return '';
-  value=value.replace(/^00/,'');
-  if(value.startsWith('+')) value=value.slice(1);
-  if(value.startsWith('2')&&value[1]==='0') return value;
-  if(value.startsWith('20')) return value;
-  if(value.startsWith('0')) return '2'+value;
-  return value;
-}
+function normalizePhoneEg(phone){let value=String(phone||'').replace(/[^\d+]/g,'');if(!value)return '';value=value.replace(/^00/,'');if(value.startsWith('+'))value=value.slice(1);if(value.startsWith('2')&&value[1]==='0')return value;if(value.startsWith('20'))return value;if(value.startsWith('0'))return '2'+value;return value;}
 function escapeHtml(str){return String(str||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);}
 function getStudentLatestResults(email,limit=5){return examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,limit);}
 function buildParentReportText(email,student,maxItems=5){
-  const raw=student?.raw||{};
-  const name=student?.name||email.split('@')[0];
-  const grade=GRADE_MAP[String(raw.grade||'')]||'—';
-  const results=getStudentLatestResults(email,maxItems);
-  const latest=results[0];
+  const raw=student?.raw||{};const name=student?.name||email.split('@')[0];const grade=GRADE_MAP[String(raw.grade||'')]||'—';
+  const results=getStudentLatestResults(email,maxItems);const latest=results[0];
   const avg=results.length?Math.round(results.reduce((sum,r)=>sum+((Number(r.score)||0)/(Number(r.total)||1))*100,0)/results.length):0;
   let lines=['تقرير الطالب من منصة MathPro',`الطالب: ${name}`,`الصف: ${grade}`,`عدد الامتحانات المسجلة: ${results.length}`];
-  if(latest){
-    lines.push(`آخر امتحان: ${latest.lesson}`);
-    lines.push(`الدرجة: ${latest.score}/${latest.total}`);
-    lines.push(`متوسط الأداء: ${avg}%`);
-    lines.push('');
-    lines.push('آخر الدرجات:');
-    results.forEach((r,i)=>{const dt=r.date?new Date(r.date).toLocaleDateString('en-GB'):'—';lines.push(`${i+1}) ${r.lesson}: ${r.score}/${r.total} - ${dt}`);});
-  }else{lines.push('لا توجد درجات مسجلة حتى الآن.');}
-  lines.push('');lines.push('مع تحيات مستر شريف علي');
-  return lines.join('\n');
+  if(latest){lines.push(`آخر امتحان: ${latest.lesson}`);lines.push(`الدرجة: ${latest.score}/${latest.total}`);lines.push(`متوسط الأداء: ${avg}%`);lines.push('');lines.push('آخر الدرجات:');results.forEach((r,i)=>{const dt=r.date?new Date(r.date).toLocaleDateString('en-GB'):'—';lines.push(`${i+1}) ${r.lesson}: ${r.score}/${r.total} - ${dt}`);});}
+  else{lines.push('لا توجد درجات مسجلة حتى الآن.');}
+  lines.push('');lines.push('مع تحيات مستر شريف علي');return lines.join('\n');
 }
-function buildParentWhatsappUrl(email){
-  const student=studentsByEmail[email];
-  const phone=normalizePhoneEg(student?.raw?.parentphone||student?.raw?.parent_phone||student?.raw?.parentPhone||'');
-  if(!phone) return '';
-  return `https://wa.me/${phone}?text=${encodeURIComponent(buildParentReportText(email,student))}`;
-}
+function buildParentWhatsappUrl(email){const student=studentsByEmail[email];const phone=normalizePhoneEg(student?.raw?.parentphone||student?.raw?.parent_phone||student?.raw?.parentPhone||'');if(!phone)return '';return `https://wa.me/${phone}?text=${encodeURIComponent(buildParentReportText(email,student))}`;}
 function getLatestResultRecord(email){return examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]||null;}
 function getWhatsappSentStore(){try{return JSON.parse(localStorage.getItem('mp_whatsapp_sent_store')||'{}')||{};}catch(_){return {};}}
 function setWhatsappSentStore(store){localStorage.setItem('mp_whatsapp_sent_store',JSON.stringify(store));}
-function getWhatsappSentKey(email,result){if(!result) return '';return [email,result.lesson||'',result.score||'',result.total||'',result.date||''].join('||');}
-function markWhatsappSent(email,result){const key=getWhatsappSentKey(email,result);if(!key) return;const store=getWhatsappSentStore();store[key]={sent:true,sentAt:new Date().toISOString()};setWhatsappSentStore(store);}
-function isWhatsappSent(email,result){const key=getWhatsappSentKey(email,result);if(!key) return false;const store=getWhatsappSentStore();return Boolean(store[key]&&store[key].sent);}
+function getWhatsappSentKey(email,result){if(!result)return '';return [email,result.lesson||'',result.score||'',result.total||'',result.date||''].join('||');}
+function markWhatsappSent(email,result){const key=getWhatsappSentKey(email,result);if(!key)return;const store=getWhatsappSentStore();store[key]={sent:true,sentAt:new Date().toISOString()};setWhatsappSentStore(store);}
+function isWhatsappSent(email,result){const key=getWhatsappSentKey(email,result);if(!key)return false;const store=getWhatsappSentStore();return Boolean(store[key]&&store[key].sent);}
 function sendParentReport(email){
-  const url=buildParentWhatsappUrl(email);
-  const student=studentsByEmail[email];
-  const latest=getLatestResultRecord(email);
-  if(!student?.raw?.parentphone&&!student?.raw?.parent_phone&&!student?.raw?.parentPhone){showToast('warning','No Parent Phone','No parent number saved for this student.');return;}
+  const url=buildParentWhatsappUrl(email);const student=studentsByEmail[email];const latest=getLatestResultRecord(email);
+  const parentPhone=student?.raw?.parentphone||student?.raw?.parent_phone||student?.raw?.parentPhone||'';
+  if(!parentPhone){showToast('warning','No Parent Phone','No parent number saved for this student.');return;}
   if(!latest){showToast('warning','No Result','No saved result to send yet.');return;}
   if(!url){showToast('error','Error','Check parent phone format.');return;}
-  markWhatsappSent(email,latest);
-  window.open(url,'_blank');
-  renderResultsTable();
-  showToast('success','WhatsApp Ready','Marked as sent via WhatsApp.');
+  markWhatsappSent(email,latest);window.open(url,'_blank');renderResultsTable();showToast('success','WhatsApp Ready','Marked as sent via WhatsApp.');
 }
 function isMissingColumnError(error){const msg=String(error?.message||error||'');return /column .* does not exist|Could not find the .* column|schema cache/i.test(msg);}
 
 /* ── Video helpers ── */
-function normalizeVideoItem(item,index=0,fallbackName=''){
-  if(!item) return null;
-  if(typeof item==='string'){const url=item.trim();if(!url) return null;return{name:fallbackName||`Video ${index+1}`,url,requireHw:false,hwId:''};}
-  const url=String(item.url||item.video||item.link||'').trim();
-  if(!url) return null;
-  return{name:String(item.name||item.title||fallbackName||`Video ${index+1}`).trim(),url,requireHw:Boolean(item.requireHw),hwId:String(item.hwId||item.homeworkId||item.homework_id||'').trim()};
-}
-function parseVideoArray(raw,fallbackName=''){
-  if(Array.isArray(raw)) return raw.map((item,i)=>normalizeVideoItem(item,i,fallbackName)).filter(Boolean);
-  if(typeof raw==='string'){const t=raw.trim();if(!t) return [];try{const p=JSON.parse(t);if(Array.isArray(p)) return p.map((item,i)=>normalizeVideoItem(item,i,fallbackName)).filter(Boolean);const one=normalizeVideoItem(p,0,fallbackName);return one?[one]:[];}catch(_){}const one=normalizeVideoItem(t,0,fallbackName);return one?[one]:[];}
-  if(raw&&typeof raw==='object'){const one=normalizeVideoItem(raw,0,fallbackName);return one?[one]:[];}
-  return [];
-}
-function normalizeLessonVideos(lesson){
-  const v1=parseVideoArray(lesson?.videos,lesson?.name||'Video');if(v1.length) return v1;
-  const v2=parseVideoArray(lesson?.video,lesson?.name||'Video');if(v2.length) return v2;
-  return [];
-}
-function normalizeQuestions(raw){
-  if(Array.isArray(raw)) return raw;
-  if(typeof raw==='string'){try{const p=JSON.parse(raw);return Array.isArray(p)?p:[];}catch(_){}}
-  return [];
-}
-function serializeLegacyVideoValue(videos,fallbackVideo=''){
-  const normalized=parseVideoArray(videos,'Video');
-  if(!normalized.length) return String(fallbackVideo||'').trim();
-  if(normalized.length===1&&!normalized[0].requireHw&&!normalized[0].hwId) return normalized[0].url;
-  return JSON.stringify(normalized);
-}
+function normalizeVideoItem(item,index=0,fallbackName=''){if(!item)return null;if(typeof item==='string'){const url=item.trim();if(!url)return null;return{name:fallbackName||`Video ${index+1}`,url,requireHw:false,hwId:''};}const url=String(item.url||item.video||item.link||'').trim();if(!url)return null;return{name:String(item.name||item.title||fallbackName||`Video ${index+1}`).trim(),url,requireHw:Boolean(item.requireHw),hwId:String(item.hwId||item.homeworkId||item.homework_id||'').trim()};}
+function parseVideoArray(raw,fallbackName=''){if(Array.isArray(raw))return raw.map((item,i)=>normalizeVideoItem(item,i,fallbackName)).filter(Boolean);if(typeof raw==='string'){const t=raw.trim();if(!t)return [];try{const p=JSON.parse(t);if(Array.isArray(p))return p.map((item,i)=>normalizeVideoItem(item,i,fallbackName)).filter(Boolean);const one=normalizeVideoItem(p,0,fallbackName);return one?[one]:[];}catch(_){}const one=normalizeVideoItem(t,0,fallbackName);return one?[one]:[];}if(raw&&typeof raw==='object'){const one=normalizeVideoItem(raw,0,fallbackName);return one?[one]:[];}return [];}
+function normalizeLessonVideos(lesson){const v1=parseVideoArray(lesson?.videos,lesson?.name||'Video');if(v1.length)return v1;const v2=parseVideoArray(lesson?.video,lesson?.name||'Video');if(v2.length)return v2;return [];}
+function normalizeQuestions(raw){if(Array.isArray(raw))return raw;if(typeof raw==='string'){try{const p=JSON.parse(raw);return Array.isArray(p)?p:[];}catch(_){}}return [];}
+function serializeLegacyVideoValue(videos,fallbackVideo=''){const normalized=parseVideoArray(videos,'Video');if(!normalized.length)return String(fallbackVideo||'').trim();if(normalized.length===1&&!normalized[0].requireHw&&!normalized[0].hwId)return normalized[0].url;return JSON.stringify(normalized);}
+
 async function saveLessonWithFallback(payload){
   const legacyVideoValue=serializeLegacyVideoValue(payload.videos,payload.video||'');
-  const basePayload={name:payload.name,grade:payload.grade,price:payload.price,validitydays:payload.validitydays,image:payload.image,pdf:payload.pdf,video:legacyVideoValue};
+  const basePayload={name:payload.name,grade:payload.grade,price:payload.price,validitydays:payload.validitydays,examduration:payload.examduration,about:payload.about,image:payload.image,pdf:payload.pdf,video:legacyVideoValue};
   const candidates=[
     {mode:'modern-all',data:{...basePayload,videos:payload.videos,questions:payload.questions}},
     {mode:'legacy-video+questions',data:{...basePayload,questions:payload.questions}},
@@ -1008,86 +751,55 @@ async function saveLessonWithFallback(payload){
   ];
   const tried=new Set();let lastError=null;
   for(const c of candidates){
-    const key=Object.keys(c.data).sort().join('|');
-    if(tried.has(key)) continue;tried.add(key);
+    const key=Object.keys(c.data).sort().join('|');if(tried.has(key))continue;tried.add(key);
     const req=editingLessonId?db.from('lessons').update(c.data).eq('id',editingLessonId):db.from('lessons').insert([c.data]);
-    const{error}=await req;
-    if(!error) return c;
-    lastError=error;
-    if(!isMissingColumnError(error)) throw error;
+    const{error}=await req;if(!error)return c;lastError=error;if(!isMissingColumnError(error))throw error;
   }
   throw lastError||new Error('Failed to save lesson.');
 }
 
 /* ── Toast ── */
 function showToast(type,title,msg,dur=4000){
-  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
-  const c=document.getElementById('toast-container');
-  const t=document.createElement('div');
-  t.className=`toast ${type}`;
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};const c=document.getElementById('toast-container');
+  const t=document.createElement('div');t.className=`toast ${type}`;
   t.innerHTML=`<div class="toast-icon">${icons[type]}</div><div class="toast-body"><div class="toast-title">${title}</div>${msg?`<div class="toast-msg">${msg}</div>`:''}</div><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
   c.appendChild(t);setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),250)},dur);
 }
 
 /* ── Auth ── */
-async function checkAuth(){
-  const{data:{session}}=await db.auth.getSession();
-  if(session&&session.user.email===ADMIN){document.getElementById('secureLayer').classList.add('hidden');loadAll();}
-  else window.location.href='/home';
-}
+async function checkAuth(){const{data:{session}}=await db.auth.getSession();if(session&&session.user.email===ADMIN){document.getElementById('secureLayer').classList.add('hidden');loadAll();}else window.location.href='/home';}
 checkAuth();
 async function loadAll(){await loadStats();await loadLessons();await loadHw();await loadResults();await loadAllCodes();}
 
 /* ── Sidebar / Navigation ── */
 const TITLES={overview:'Overview',lessons:'Courses & Lessons',homework:'Assignments',results:'Student Results',codes:'Subscription Codes',tracker:'Code Tracker',notif:'Broadcast'};
-const BN_KEYS=['overview','lessons','results','codes'];
-
 function showSection(name,desktopBtn,bnKey=null){
   document.querySelectorAll('.section-page').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+name).classList.add('active');
-  if(desktopBtn) desktopBtn.classList.add('active');
-  else{
-    // sync desktop sidebar
-    document.querySelectorAll('.sb-link').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'")) b.classList.add('active');});
-  }
-  // sync bottom nav
-  const bnId=bnKey||name;
-  const bnEl=document.getElementById('bn-'+bnId);
-  if(bnEl) bnEl.classList.add('active');
-  // update titles
+  if(desktopBtn)desktopBtn.classList.add('active');
+  else{document.querySelectorAll('.sb-link').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'"))b.classList.add('active');});}
+  const bnId=bnKey||name;const bnEl=document.getElementById('bn-'+bnId);if(bnEl)bnEl.classList.add('active');
   document.getElementById('topbarTitle').textContent=TITLES[name]||name;
-  const mobLabel=document.getElementById('mobSectionName');
-  if(mobLabel) mobLabel.textContent=TITLES[name]||name;
-  if(name==='tracker') loadTracker();
-  // scroll to top
+  const mobLabel=document.getElementById('mobSectionName');if(mobLabel)mobLabel.textContent=TITLES[name]||name;
+  if(name==='tracker')loadTracker();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 /* ── Stats ── */
 async function loadStats(){
   try{
-    const[{count:u},{count:r},{count:l}]=await Promise.all([
-      db.from('users').select('*',{count:'exact',head:true}),
-      db.from('results').select('*',{count:'exact',head:true}),
-      db.from('lessons').select('*',{count:'exact',head:true})
-    ]);
-    document.getElementById('statStudents').textContent=u||0;
-    document.getElementById('statResults').textContent=r||0;
-    document.getElementById('statLessons').textContent=l||0;
+    const[{count:u},{count:r},{count:l}]=await Promise.all([db.from('users').select('*',{count:'exact',head:true}),db.from('results').select('*',{count:'exact',head:true}),db.from('lessons').select('*',{count:'exact',head:true})]);
+    document.getElementById('statStudents').textContent=u||0;document.getElementById('statResults').textContent=r||0;document.getElementById('statLessons').textContent=l||0;
   }catch(e){}
 }
 
 /* ── Results ── */
 async function loadResults(){
   try{
-    const[{data:users},{data:res}]=await Promise.all([
-      db.from('users').select('*'),
-      db.from('results').select('*').order('date',{ascending:false})
-    ]);
-    const uMap={};
-    if(users) users.forEach(u=>{if(u.email) uMap[u.email]={name:u.name||u.email.split('@')[0],raw:u};});
+    const[{data:users},{data:res}]=await Promise.all([db.from('users').select('*'),db.from('results').select('*').order('date',{ascending:false})]);
+    const uMap={};if(users)users.forEach(u=>{if(u.email)uMap[u.email]={name:u.name||u.email.split('@')[0],raw:u};});
     studentsByEmail=uMap;examResults=res||[];
     const ovRows=(res||[]).slice(0,8).map(r=>{
       const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
@@ -1098,15 +810,13 @@ async function loadResults(){
     renderResultsTable();
   }catch(e){}
 }
-
 function renderResultsTable(){
   const students=Object.entries(studentsByEmail).filter(([e])=>e!==ADMIN);
   if(!students.length){document.getElementById('resultsBody').innerHTML=`<tr><td colspan="6" class="td-empty">No students yet</td></tr>`;return;}
   let rows='';
   students.sort((a,b)=>String(a[1].name).localeCompare(String(b[1].name))).forEach(([email,s])=>{
     const sRes=examResults.filter(r=>r.email===email).sort((a,b)=>new Date(b.date)-new Date(a.date));
-    const latest=sRes[0];
-    const dt=latest?.date?new Date(latest.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';
+    const latest=sRes[0];const dt=latest?.date?new Date(latest.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';
     const parentPhone=s.raw?.parentphone||s.raw?.parent_phone||s.raw?.parentPhone||'';
     const sent=latest?isWhatsappSent(email,latest):false;
     let waCell='<div class="wa-stack"><span class="wa-no-parent">—</span></div>';
@@ -1124,91 +834,46 @@ function renderResultsTable(){
   });
   document.getElementById('resultsBody').innerHTML=rows;
 }
-
-function searchTable(){
-  const v=document.querySelector('#sec-results input').value.toLowerCase();
-  document.querySelectorAll('#resultsBody tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});
-}
+function searchTable(){const v=document.querySelector('#sec-results input').value.toLowerCase();document.querySelectorAll('#resultsBody tr').forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(v)?'':'none';});}
 
 /* ── Student Modal ── */
 async function openStudent(email,name){
   currentOpenStudentEmail=email;
-  document.getElementById('spName').textContent=name;
-  document.getElementById('spEmail').textContent=email;
-  document.getElementById('studentModal').classList.add('show');
-  document.body.style.overflow='hidden';
+  document.getElementById('spName').textContent=name;document.getElementById('spEmail').textContent=email;
+  document.getElementById('studentModal').classList.add('show');document.body.style.overflow='hidden';
   const sData=studentsByEmail[email]?.raw;
-  const btnBlock=document.getElementById('btnBlockStudent');
-  const btnParentReport=document.getElementById('btnParentReport');
+  const btnBlock=document.getElementById('btnBlockStudent');const btnParentReport=document.getElementById('btnParentReport');
   const hasParentPhone=Boolean(sData?.parentphone||sData?.parent_phone||sData?.parentPhone);
   if(btnParentReport){btnParentReport.disabled=!hasParentPhone;btnParentReport.style.opacity=hasParentPhone?'1':'.5';}
   if(sData?.is_blocked){btnBlock.innerHTML='✅ Unblock';btnBlock.classList.replace('btn-danger','btn-primary');}
   else{btnBlock.innerHTML='🚫 Block';btnBlock.classList.replace('btn-primary','btn-danger');}
   document.getElementById('spDetails').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
   try{
-    const[{data:codes},{data:hwRes}]=await Promise.all([
-      db.from('codes').select('lessonid,expiryat').eq('usedby',email).eq('used',true),
-      db.from('hw_results').select('*').eq('email',email)
-    ]);
+    const[{data:codes},{data:hwRes}]=await Promise.all([db.from('codes').select('lessonid,expiryat').eq('usedby',email).eq('used',true),db.from('hw_results').select('*').eq('email',email)]);
     const sExams=examResults.filter(r=>r.email===email);
     const courses=(codes||[]).map(c=>({name:allLessons[c.lessonid]?.name||'Deleted',exp:c.expiryat}));
-    document.getElementById('spCourses').textContent=courses.length;
-    document.getElementById('spExams').textContent=sExams.length;
-    document.getElementById('spHws').textContent=(hwRes||[]).length;
+    document.getElementById('spCourses').textContent=courses.length;document.getElementById('spExams').textContent=sExams.length;document.getElementById('spHws').textContent=(hwRes||[]).length;
     let html='';
-    if(courses.length){
-      html+=`<div class="sp-section-title">🎫 Courses</div>`;
-      courses.forEach(c=>{
-        const expTs=c.exp?new Date(c.exp).getTime():NaN;
-        const exp=Number.isFinite(expTs)?new Date(expTs).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';
-        const active=Number.isFinite(expTs)?expTs>Date.now():false;
-        html+=`<div class="sp-item"><span class="sp-item-name">${c.name}</span><span class="badge ${active?'badge-active':'badge-expired'}">${active?'Active':'Expired'}</span></div>`;
-      });
-    }
-    if(sExams.length){
-      html+=`<div class="sp-section-title">📝 Exams</div>`;
-      sExams.forEach(r=>{
-        const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';
-        const sentBadge=isWhatsappSent(email,r)?'<span class="wa-sent">تم الإرسال</span>':'<span class="wa-not-sent">لم يتم</span>';
-        html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.68rem;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center">${dt} ${sentBadge}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;
-      });
-    }
-    if(!courses.length&&!sExams.length) html='<div style="text-align:center;padding:28px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
+    if(courses.length){html+=`<div class="sp-section-title">🎫 Courses</div>`;courses.forEach(c=>{const expTs=c.exp?new Date(c.exp).getTime():NaN;const exp=Number.isFinite(expTs)?new Date(expTs).toLocaleDateString('en-GB',{month:'short',day:'numeric',year:'numeric'}):'—';const active=Number.isFinite(expTs)?expTs>Date.now():false;html+=`<div class="sp-item"><span class="sp-item-name">${c.name}</span><span class="badge ${active?'badge-active':'badge-expired'}">${active?'Active':'Expired'}</span></div>`;});}
+    if(sExams.length){html+=`<div class="sp-section-title">📝 Exams</div>`;sExams.forEach(r=>{const dt=r.date?new Date(r.date).toLocaleDateString('en-GB',{month:'short',day:'numeric'}):'—';const sentBadge=isWhatsappSent(email,r)?'<span class="wa-sent">تم الإرسال</span>':'<span class="wa-not-sent">لم يتم</span>';html+=`<div class="sp-item"><div><div class="sp-item-name">${r.lesson}</div><div style="font-size:.68rem;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center">${dt} ${sentBadge}</div></div><span class="sp-item-score">${r.score}/${r.total}</span></div>`;});}
+    if(!courses.length&&!sExams.length)html='<div style="text-align:center;padding:28px;color:var(--muted);background:var(--bg2);border-radius:12px;border:1px dashed var(--border2)">No activity yet</div>';
     document.getElementById('spDetails').innerHTML=html;
   }catch(e){document.getElementById('spDetails').innerHTML=`<div style="color:var(--red);text-align:center;padding:20px">Error loading data</div>`;}
 }
-
-function closeStudent(){
-  document.getElementById('studentModal').classList.remove('show');
-  document.body.style.overflow='';
-  currentOpenStudentEmail=null;
-}
-// Close modal on backdrop tap
-document.getElementById('studentModal').addEventListener('click',function(e){if(e.target===this) closeStudent();});
-
+function closeStudent(){document.getElementById('studentModal').classList.remove('show');document.body.style.overflow='';currentOpenStudentEmail=null;}
+document.getElementById('studentModal').addEventListener('click',function(e){if(e.target===this)closeStudent();});
 window.toggleBlockStudent=async()=>{
-  if(!currentOpenStudentEmail) return;
-  const sData=studentsByEmail[currentOpenStudentEmail]?.raw;
-  const isBlocked=sData?.is_blocked||false;const newStatus=!isBlocked;
-  if(!confirm(newStatus?"Block this student?":"Unblock this student?")) return;
-  try{
-    await db.from('users').update({is_blocked:newStatus}).eq('email',currentOpenStudentEmail);
-    showToast('success','Success',newStatus?'Student blocked.':'Student unblocked.');
-    if(studentsByEmail[currentOpenStudentEmail]) studentsByEmail[currentOpenStudentEmail].raw.is_blocked=newStatus;
-    openStudent(currentOpenStudentEmail,studentsByEmail[currentOpenStudentEmail].name);
-  }catch(e){showToast('error','Error',e.message);}
+  if(!currentOpenStudentEmail)return;const sData=studentsByEmail[currentOpenStudentEmail]?.raw;const isBlocked=sData?.is_blocked||false;const newStatus=!isBlocked;
+  if(!confirm(newStatus?"Block this student?":"Unblock this student?"))return;
+  try{await db.from('users').update({is_blocked:newStatus}).eq('email',currentOpenStudentEmail);showToast('success','Success',newStatus?'Student blocked.':'Student unblocked.');if(studentsByEmail[currentOpenStudentEmail])studentsByEmail[currentOpenStudentEmail].raw.is_blocked=newStatus;openStudent(currentOpenStudentEmail,studentsByEmail[currentOpenStudentEmail].name);}
+  catch(e){showToast('error','Error',e.message);}
 };
-
 window.resetStudentDevice=async()=>{
-  if(!currentOpenStudentEmail) return;
-  if(!confirm("Reset device limit for this student?")) return;
+  if(!currentOpenStudentEmail)return;if(!confirm("Reset device limit for this student?"))return;
   const attempts=[{devices:[]},{devices:'[]'},{devices:null},{device_id:null},{deviceId:null},{device_id:null,device_token:null},{device_id:null,device_fingerprint:null},{device_id:null,last_device_id:null}];
   let success=false,lastError=null;
-  for(const updates of attempts){
-    const{error}=await db.from('users').update(updates).eq('email',currentOpenStudentEmail);
-    if(!error){success=true;break;}lastError=error;if(!isMissingColumnError(error)) break;
-  }
-  if(success){const rawUser=studentsByEmail[currentOpenStudentEmail]?.raw;if(rawUser) rawUser.devices=[];showToast('success','Done','Devices reset. Ask student to log in again.');}
+  for(const updates of attempts){const{error}=await db.from('users').update(updates).eq('email',currentOpenStudentEmail);if(!error){success=true;break;}lastError=error;if(!isMissingColumnError(error))break;}
+  if(success){const rawUser=studentsByEmail[currentOpenStudentEmail]?.raw;if(rawUser)rawUser.devices=[];showToast('success','Done','Devices reset. Ask student to log in again.');}
   else{showToast('error','Error',lastError?.message||'Could not reset devices.');}
 };
 
@@ -1216,18 +881,18 @@ window.resetStudentDevice=async()=>{
 async function loadLessons(){
   try{
     const{data}=await db.from('lessons').select('*').order('created_at',{ascending:false});
-    allLessons={};
-    let opts='<option value="">— None —</option>';
-    if(!data||!data.length){document.getElementById('lessonsBody').innerHTML=`<tr><td colspan="5" class="td-empty">No courses yet</td></tr>`;return;}
+    allLessons={};let opts='<option value="">— None —</option>';
+    if(!data||!data.length){document.getElementById('lessonsBody').innerHTML=`<tr><td colspan="6" class="td-empty">No courses yet</td></tr>`;return;}
     let rows='';
     data.forEach(d=>{
-      allLessons[d.id]=d;
-      opts+=`<option value="${d.id}">${d.name}</option>`;
+      allLessons[d.id]=d;opts+=`<option value="${d.id}">${d.name}</option>`;
       const vids=normalizeLessonVideos(d).length;
+      const dur=d.examduration||40;
       rows+=`<tr>
         <td class="td-name" style="font-size:.8rem">${d.name}</td>
         <td style="color:var(--muted);font-size:.75rem;white-space:nowrap">${GRADE_MAP[d.grade]||'—'}</td>
         <td class="td-green" style="white-space:nowrap">${d.price?d.price+' EGP':'Free'}</td>
+        <td><span class="exam-dur-badge">⏱ ${dur}m</span></td>
         <td><span style="background:var(--green-light);color:var(--green);border:1px solid var(--border2);padding:2px 8px;border-radius:5px;font-family:var(--mono);font-size:.62rem;font-weight:700;white-space:nowrap">${vids}v</span></td>
         <td><div style="display:flex;gap:5px;justify-content:center">
           <button class="btn btn-ghost btn-sm" style="padding:6px 9px;font-size:.7rem" onclick='editLesson("${d.id}")'>Edit</button>
@@ -1236,70 +901,60 @@ async function loadLessons(){
       </tr>`;
     });
     document.getElementById('lessonsBody').innerHTML=rows;
-    ['hwLessonId','hwNextLessonId'].forEach(id=>{const el=document.getElementById(id);if(el) el.innerHTML=opts;});
+    ['hwLessonId','hwNextLessonId'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
   }catch(e){}
 }
 
 function resetLessonForm(){
   editingLessonId=null;
-  document.getElementById('lessonName').value='';
-  document.getElementById('lessonPrice').value='';
-  document.getElementById('lessonImage').value='';
-  document.getElementById('lessonPdf').value='';
-  document.getElementById('lessonGrade').value='1';
-  document.getElementById('lessonValidity').value='90';
-  document.getElementById('videosContainer').innerHTML='';
-  document.getElementById('questionsContainer').innerHTML='';
+  document.getElementById('lessonName').value='';document.getElementById('lessonPrice').value='';
+  document.getElementById('lessonImage').value='';document.getElementById('lessonPdf').value='';
+  document.getElementById('lessonGrade').value='1';document.getElementById('lessonValidity').value='90';
+  document.getElementById('lessonExamDuration').value='40';
+  document.getElementById('lessonAbout').value='';
+  document.getElementById('videosContainer').innerHTML='';document.getElementById('questionsContainer').innerHTML='';
   document.getElementById('lessonFormTitle').textContent='➕ Add New Course';
   document.getElementById('saveLessonBtn').textContent='Publish Course 🚀';
   document.getElementById('cancelLessonBtn').classList.add('hidden');
-  const coverZone=document.getElementById('dropCoverImage');
-  const pdfZone=document.getElementById('dropPdfNotes');
+  const coverZone=document.getElementById('dropCoverImage');const pdfZone=document.getElementById('dropPdfNotes');
   if(coverZone){coverZone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">🖼️</div><div class="drop-zone-text">Tap to upload image or <span>browse</span></div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;coverZone.classList.remove('has-file');initDropZone(coverZone);}
   if(pdfZone){pdfZone.innerHTML=`<input type="file" accept=".pdf,application/pdf" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon">📄</div><div class="drop-zone-text">Tap to upload PDF or <span>browse</span></div><div class="drop-zone-hint">PDF only — max 20MB</div>`;pdfZone.classList.remove('has-file');initDropZone(pdfZone);}
 }
 
 function editLesson(id){
-  const d=allLessons[id];if(!d) return;
+  const d=allLessons[id];if(!d)return;
   editingLessonId=id;
-  document.getElementById('lessonName').value=d.name||'';
-  document.getElementById('lessonGrade').value=d.grade||'1';
-  document.getElementById('lessonPrice').value=d.price||'';
-  document.getElementById('lessonValidity').value=d.validitydays||90;
-  document.getElementById('lessonImage').value=d.image||'';
-  document.getElementById('lessonPdf').value=d.pdf||'';
-  document.getElementById('videosContainer').innerHTML='';
-  document.getElementById('questionsContainer').innerHTML='';
-  if(d.image) setDropZonePreview(document.getElementById('dropCoverImage'),d.image);
-  if(d.pdf) setDropZonePreview(document.getElementById('dropPdfNotes'),d.pdf);
+  document.getElementById('lessonName').value=d.name||'';document.getElementById('lessonGrade').value=d.grade||'1';
+  document.getElementById('lessonPrice').value=d.price||'';document.getElementById('lessonValidity').value=d.validitydays||90;
+  document.getElementById('lessonExamDuration').value=d.examduration||40;
+  document.getElementById('lessonAbout').value=d.about||'';
+  document.getElementById('lessonImage').value=d.image||'';document.getElementById('lessonPdf').value=d.pdf||'';
+  document.getElementById('videosContainer').innerHTML='';document.getElementById('questionsContainer').innerHTML='';
+  if(d.image)setDropZonePreview(document.getElementById('dropCoverImage'),d.image);
+  if(d.pdf)setDropZonePreview(document.getElementById('dropPdfNotes'),d.pdf);
   const normalizedVideos=normalizeLessonVideos(d);
-  if(normalizedVideos.length) normalizedVideos.forEach(v=>addVideoBlock(v));
-  else if(d.video) addVideoBlock({name:d.name||'Main Video',url:d.video,requireHw:false,hwId:''});
+  if(normalizedVideos.length)normalizedVideos.forEach(v=>addVideoBlock(v));
+  else if(d.video)addVideoBlock({name:d.name||'Main Video',url:d.video,requireHw:false,hwId:''});
   normalizeQuestions(d.questions).forEach(q=>addQuestion('questionsContainer',q));
   document.getElementById('lessonFormTitle').textContent='✏️ Edit Course';
   document.getElementById('saveLessonBtn').textContent='Update Course 🔄';
   document.getElementById('cancelLessonBtn').classList.remove('hidden');
   document.getElementById('lessonFormCard').scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 async function delLesson(id){
-  if(!confirm("Delete this course permanently?")) return;
+  if(!confirm("Delete this course permanently?"))return;
   try{await db.from('lessons').delete().eq('id',id);showToast('success','Deleted','Course removed.');loadLessons();loadStats();}
   catch(e){showToast('error','Error',e.message);}
 }
 
 /* ── Video Blocks ── */
 function getHwOptions(){return Object.values(allHw).map(h=>`<option value="${h.id}">${h.title||h.name||h.id}</option>`).join('');}
-
 window.addVideoBlock=function(data=null){
   const n=document.querySelectorAll('#videosContainer .video-block').length+1;
   const div=document.createElement('div');div.className='video-block';
   const hwOpts=`<option value="">— None —</option>${getHwOptions()}`;
   div.innerHTML=`
-    <div class="video-block-head">
-      <span class="vid-num-badge">Video ${n}</span>
-      <button class="q-del" onclick="this.closest('.video-block').remove()">✕</button>
-    </div>
+    <div class="video-block-head"><span class="vid-num-badge">Video ${n}</span><button class="q-del" onclick="this.closest('.video-block').remove()">✕</button></div>
     <div class="fg2">
       <div class="fw"><label class="flbl">Video Name</label><input class="vid-name finp" placeholder="e.g., Introduction" value="${(data?.name||'').replace(/"/g,'&quot;')}"></div>
       <div class="fw"><label class="flbl">YouTube URL</label><input class="vid-url finp" placeholder="https://youtu.be/…" value="${(data?.url||'').replace(/"/g,'&quot;')}"></div>
@@ -1317,38 +972,35 @@ window.addVideoBlock=function(data=null){
         <select class="vid-hw-id finp">${hwOpts}</select>
       </div>
     </div>`;
-  if(data?.requireHw&&data?.hwId){setTimeout(()=>{const sel=div.querySelector('.vid-hw-id');if(sel) sel.value=data.hwId;},50);}
+  if(data?.requireHw&&data?.hwId){setTimeout(()=>{const sel=div.querySelector('.vid-hw-id');if(sel)sel.value=data.hwId;},50);}
   document.getElementById('videosContainer').appendChild(div);
 };
-
-window.toggleHwSelect=function(sel){
-  const wrap=sel.closest('.video-block').querySelector('.vid-hw-select-wrap');
-  wrap.style.display=sel.value==='1'?'':'none';
-};
-
+window.toggleHwSelect=function(sel){const wrap=sel.closest('.video-block').querySelector('.vid-hw-select-wrap');wrap.style.display=sel.value==='1'?'':'none';};
 function getVideosFromForm(){
   const videos=[];
   document.querySelectorAll('#videosContainer .video-block').forEach((b,i)=>{
-    const req=b.querySelector('.vid-require-hw').value==='1';
-    const hwId=b.querySelector('.vid-hw-id')?.value||'';
-    const url=b.querySelector('.vid-url').value.trim();
-    const name=b.querySelector('.vid-name').value.trim();
-    if(!url) return;
-    videos.push({name:name||`Video ${i+1}`,url,requireHw:req,hwId:req?hwId:''});
+    const req=b.querySelector('.vid-require-hw').value==='1';const hwId=b.querySelector('.vid-hw-id')?.value||'';
+    const url=b.querySelector('.vid-url').value.trim();const name=b.querySelector('.vid-name').value.trim();
+    if(!url)return;videos.push({name:name||`Video ${i+1}`,url,requireHw:req,hwId:req?hwId:''});
   });
   return videos;
 }
-
 async function saveLesson(){
-  const name=document.getElementById('lessonName').value.trim();
-  if(!name) return showToast('warning','Missing','Course title is required!');
-  const videos=getVideosFromForm();
-  if(!videos.length) return showToast('warning','Missing','Add at least one video URL.');
+  const name=document.getElementById('lessonName').value.trim();if(!name)return showToast('warning','Missing','Course title is required!');
+  const videos=getVideosFromForm();if(!videos.length)return showToast('warning','Missing','Add at least one video URL.');
   const questions=getQuestionsFrom('questionsContainer');
-  const btn=document.getElementById('saveLessonBtn');
-  btn.textContent='Saving…';btn.disabled=true;
+  const btn=document.getElementById('saveLessonBtn');btn.textContent='Saving…';btn.disabled=true;
   try{
-    const payload={name,grade:document.getElementById('lessonGrade').value,price:Number(document.getElementById('lessonPrice').value)||0,validitydays:Number(document.getElementById('lessonValidity').value)||90,image:document.getElementById('lessonImage').value.trim(),pdf:document.getElementById('lessonPdf').value.trim(),video:videos[0]?.url||'',videos,questions};
+    const payload={
+      name,grade:document.getElementById('lessonGrade').value,
+      price:Number(document.getElementById('lessonPrice').value)||0,
+      validitydays:Number(document.getElementById('lessonValidity').value)||90,
+      examduration:Number(document.getElementById('lessonExamDuration').value)||40,
+      about:document.getElementById('lessonAbout').value.trim(),
+      image:document.getElementById('lessonImage').value.trim(),
+      pdf:document.getElementById('lessonPdf').value.trim(),
+      video:videos[0]?.url||'',videos,questions
+    };
     await saveLessonWithFallback(payload);
     showToast('success',editingLessonId?'Updated ✅':'Published ✅','Course saved!');
     resetLessonForm();loadLessons();loadStats();
@@ -1363,60 +1015,17 @@ async function loadHw(){
     allHw={};
     if(!data||!data.length){document.getElementById('hwBody').innerHTML=`<tr><td colspan="4" class="td-empty">No assignments yet</td></tr>`;return;}
     let rows='';
-    data.forEach(d=>{
-      allHw[d.id]=d;
-      const linked=allLessons[d.lessonid]?.name||'—';
-      rows+=`<tr>
-        <td class="td-name" style="font-size:.8rem">${d.title||d.name||'—'}<div style="font-size:.65rem;color:var(--muted)">${normalizeQuestions(d.questions).length} questions</div></td>
-        <td style="color:var(--muted);font-size:.75rem">${GRADE_MAP[d.grade]||'—'}</td>
-        <td class="td-green" style="font-size:.78rem">${linked}</td>
-        <td><div style="display:flex;gap:5px;justify-content:center">
-          <button class="btn btn-ghost btn-sm" style="padding:6px 9px;font-size:.7rem" onclick='editHw("${d.id}")'>Edit</button>
-          <button class="btn btn-danger btn-sm" style="padding:6px 9px;font-size:.7rem" onclick='delHw("${d.id}")'>Del</button>
-        </div></td>
-      </tr>`;
-    });
+    data.forEach(d=>{allHw[d.id]=d;const linked=allLessons[d.lessonid]?.name||'—';rows+=`<tr><td class="td-name" style="font-size:.8rem">${d.title||d.name||'—'}<div style="font-size:.65rem;color:var(--muted)">${normalizeQuestions(d.questions).length} questions</div></td><td style="color:var(--muted);font-size:.75rem">${GRADE_MAP[d.grade]||'—'}</td><td class="td-green" style="font-size:.78rem">${linked}</td><td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-ghost btn-sm" style="padding:6px 9px;font-size:.7rem" onclick='editHw("${d.id}")'>Edit</button><button class="btn btn-danger btn-sm" style="padding:6px 9px;font-size:.7rem" onclick='delHw("${d.id}")'>Del</button></div></td></tr>`;});
     document.getElementById('hwBody').innerHTML=rows;
   }catch(e){}
 }
-
-function resetHwForm(){
-  editingHwId=null;
-  document.getElementById('hwTitle').value='';document.getElementById('hwGrade').value='1';
-  document.getElementById('hwLessonId').value='';document.getElementById('hwNextLessonId').value='';
-  document.getElementById('hwQuestionsContainer').innerHTML='';
-  document.getElementById('hwFormTitle').textContent='➕ Create Assignment';
-  document.getElementById('saveHwBtn').textContent='Publish Assignment 📤';
-  document.getElementById('cancelHwBtn').classList.add('hidden');
-}
-
-function editHw(id){
-  const d=allHw[id];if(!d) return;
-  editingHwId=id;
-  document.getElementById('hwTitle').value=d.title||d.name||'';
-  document.getElementById('hwGrade').value=d.grade||'1';
-  document.getElementById('hwLessonId').value=d.lessonid||'';
-  document.getElementById('hwNextLessonId').value=d.next_lesson_id||'';
-  document.getElementById('hwQuestionsContainer').innerHTML='';
-  (d.questions||[]).forEach(q=>addQuestion('hwQuestionsContainer',q));
-  document.getElementById('hwFormTitle').textContent='✏️ Edit Assignment';
-  document.getElementById('saveHwBtn').textContent='Update Assignment 🔄';
-  document.getElementById('cancelHwBtn').classList.remove('hidden');
-  document.getElementById('hwFormCard').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-async function delHw(id){
-  if(!confirm("Delete this assignment?")) return;
-  await db.from('homework').delete().eq('id',id).then(()=>showToast('success','Deleted','Assignment removed.')).catch(e=>showToast('error','Error',e.message));
-  loadHw();
-}
-
+function resetHwForm(){editingHwId=null;document.getElementById('hwTitle').value='';document.getElementById('hwGrade').value='1';document.getElementById('hwLessonId').value='';document.getElementById('hwNextLessonId').value='';document.getElementById('hwQuestionsContainer').innerHTML='';document.getElementById('hwFormTitle').textContent='➕ Create Assignment';document.getElementById('saveHwBtn').textContent='Publish Assignment 📤';document.getElementById('cancelHwBtn').classList.add('hidden');}
+function editHw(id){const d=allHw[id];if(!d)return;editingHwId=id;document.getElementById('hwTitle').value=d.title||d.name||'';document.getElementById('hwGrade').value=d.grade||'1';document.getElementById('hwLessonId').value=d.lessonid||'';document.getElementById('hwNextLessonId').value=d.next_lesson_id||'';document.getElementById('hwQuestionsContainer').innerHTML='';(d.questions||[]).forEach(q=>addQuestion('hwQuestionsContainer',q));document.getElementById('hwFormTitle').textContent='✏️ Edit Assignment';document.getElementById('saveHwBtn').textContent='Update Assignment 🔄';document.getElementById('cancelHwBtn').classList.remove('hidden');document.getElementById('hwFormCard').scrollIntoView({behavior:'smooth',block:'start'});}
+async function delHw(id){if(!confirm("Delete this assignment?"))return;await db.from('homework').delete().eq('id',id).then(()=>showToast('success','Deleted','Assignment removed.')).catch(e=>showToast('error','Error',e.message));loadHw();}
 async function saveHw(){
-  const title=document.getElementById('hwTitle').value;
-  if(!title) return showToast('warning','Missing','Title required!');
+  const title=document.getElementById('hwTitle').value;if(!title)return showToast('warning','Missing','Title required!');
   const questions=getQuestionsFrom('hwQuestionsContainer');
-  const btn=document.getElementById('saveHwBtn');
-  btn.textContent='Saving…';btn.disabled=true;
+  const btn=document.getElementById('saveHwBtn');btn.textContent='Saving…';btn.disabled=true;
   try{
     const payload={title,grade:document.getElementById('hwGrade').value,lessonid:document.getElementById('hwLessonId').value||null,next_lesson_id:document.getElementById('hwNextLessonId').value||null,questions};
     if(editingHwId){await db.from('homework').update(payload).eq('id',editingHwId);showToast('success','Updated ✅','Assignment updated!');}
@@ -1428,40 +1037,22 @@ async function saveHw(){
 
 /* ── Questions ── */
 window.updateOptionsUI=function(sel){
-  const count=parseInt(sel.value);
-  const block=sel.closest('.q-block');
-  const optsC=block.querySelector('.dynamic-opts');
-  const corrS=block.querySelector('.q-correct');
-  const cur=corrS.value;
-  const vals={};
-  optsC.querySelectorAll('input').forEach(i=>vals[i.dataset.opt]=i.value);
+  const count=parseInt(sel.value);const block=sel.closest('.q-block');const optsC=block.querySelector('.dynamic-opts');const corrS=block.querySelector('.q-correct');const cur=corrS.value;
+  const vals={};optsC.querySelectorAll('input').forEach(i=>vals[i.dataset.opt]=i.value);
   let ih='',ch='';
-  for(let i=0;i<count;i++){
-    const l=OPT_LETTERS[i],v=vals[l]||'',U=l.toUpperCase();
-    ih+=`<div><div class="opt-lbl">OPT ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="Option ${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;
-    ch+=`<option value="${l}" ${cur===l?'selected':''}>${U}</option>`;
-  }
+  for(let i=0;i<count;i++){const l=OPT_LETTERS[i],v=vals[l]||'',U=l.toUpperCase();ih+=`<div><div class="opt-lbl">OPT ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="Option ${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;ch+=`<option value="${l}" ${cur===l?'selected':''}>${U}</option>`;}
   optsC.innerHTML=ih;corrS.innerHTML=ch;
 };
-
 let qImageZoneCounter=0;
 window.addQuestion=function(cid,data=null){
   const n=document.querySelectorAll('#'+cid+' .question-block').length+1;
   const div=document.createElement('div');div.className='q-block question-block';
-  const cnt=data?.optionsCount||4;
-  let cOpts='',iH='',chH='';
-  for(let i=2;i<=10;i++) cOpts+=`<option value="${i}" ${cnt==i?'selected':''}>${i} Options</option>`;
-  for(let i=0;i<cnt;i++){
-    const l=OPT_LETTERS[i],v=data?data[l]||'':'',U=l.toUpperCase();
-    iH+=`<div><div class="opt-lbl">OPT ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;
-    chH+=`<option value="${l}" ${data?.correct===l?'selected':''}>${U}</option>`;
-  }
+  const cnt=data?.optionsCount||4;let cOpts='',iH='',chH='';
+  for(let i=2;i<=10;i++)cOpts+=`<option value="${i}" ${cnt==i?'selected':''}>${i} Options</option>`;
+  for(let i=0;i<cnt;i++){const l=OPT_LETTERS[i],v=data?data[l]||'':'',U=l.toUpperCase();iH+=`<div><div class="opt-lbl">OPT ${U}</div><input class="q-${l} finp" data-opt="${l}" placeholder="${U}" value="${v.replace(/"/g,'&quot;')}"></div>`;chH+=`<option value="${l}" ${data?.correct===l?'selected':''}>${U}</option>`;}
   const zoneId='qImgZone_'+(++qImageZoneCounter);
   div.innerHTML=`
-    <div class="q-block-head">
-      <span class="q-num-badge">Q${n}</span>
-      <button class="q-del" onclick="this.closest('.q-block').remove()">✕</button>
-    </div>
+    <div class="q-block-head"><span class="q-num-badge">Q${n}</span><button class="q-del" onclick="this.closest('.q-block').remove()">✕</button></div>
     <div class="fw"><label class="flbl">Question</label><input class="q-text finp" placeholder="Type question…" value="${(data?.text||'').replace(/"/g,'&quot;')}"></div>
     <div class="fw">
       <label class="flbl">Image (optional)</label>
@@ -1479,204 +1070,74 @@ window.addQuestion=function(cid,data=null){
     </div>
     <div class="dynamic-opts">${iH}</div>`;
   document.getElementById(cid).appendChild(div);
-  const qZone=document.getElementById(zoneId);
-  initDropZone(qZone);
-  if(data?.image) setDropZonePreview(qZone,data.image);
+  const qZone=document.getElementById(zoneId);initDropZone(qZone);
+  if(data?.image)setDropZonePreview(qZone,data.image);
 };
-
 function getQuestionsFrom(cid){
   const qs=[];
   document.querySelectorAll('#'+cid+' .question-block').forEach(b=>{
     const cnt=parseInt(b.querySelector('.q-opt-count').value)||4;
-    const hiddenInput=b.querySelector('.q-image');
-    const dropZone=b.querySelector('.q-image-zone');
-    let imageUrl='';
-    if(dropZone&&dropZone.dataset.uploadedUrl) imageUrl=dropZone.dataset.uploadedUrl;
-    else if(hiddenInput) imageUrl=hiddenInput.value;
+    const hiddenInput=b.querySelector('.q-image');const dropZone=b.querySelector('.q-image-zone');
+    let imageUrl='';if(dropZone&&dropZone.dataset.uploadedUrl)imageUrl=dropZone.dataset.uploadedUrl;else if(hiddenInput)imageUrl=hiddenInput.value;
     const q={text:b.querySelector('.q-text').value||'',image:imageUrl,correct:b.querySelector('.q-correct').value,optionsCount:cnt};
-    for(let i=0;i<cnt;i++){const l=OPT_LETTERS[i];q[l]=b.querySelector('.q-'+l)?.value||'';}
-    qs.push(q);
+    for(let i=0;i<cnt;i++){const l=OPT_LETTERS[i];q[l]=b.querySelector('.q-'+l)?.value||'';}qs.push(q);
   });
   return qs;
 }
 
-const _origProcessDropZoneFile=processDropZoneFile;
-async function processDropZoneFileOverride(zone,file){
-  if(zone.classList.contains('q-image-zone')){
-    const isImage=file.type.startsWith('image/');
-    if(!isImage){showToast('error','Invalid','Please upload an image');return;}
-    if(file.size>5*1024*1024){showToast('error','Too Large','Image must be under 5MB');return;}
-    const fileInputHtml=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)" style="display:none">`;
-    zone.innerHTML=`${fileInputHtml}<div class="drop-zone-icon" style="font-size:1.3rem">🖼️</div><div class="drop-zone-filename">${file.name}</div><div class="upload-progress"><div class="upload-progress-bar"></div></div><div class="upload-status uploading">Uploading…</div>`;
-    zone.classList.add('has-file');
-    const progBar=zone.querySelector('.upload-progress-bar');
-    let progress=0;
-    const progInterval=setInterval(()=>{progress=Math.min(progress+Math.random()*20,90);progBar.style.width=progress+'%';},200);
-    try{
-      const timestamp=Date.now();
-      const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-      const filePath=`images/questions/${timestamp}_${safeName}`;
-      const{data,error}=await db.storage.from(STORAGE_BUCKET).upload(filePath,file,{cacheControl:'3600',upsert:false});
-      clearInterval(progInterval);
-      if(error) throw error;
-      const{data:urlData}=db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
-      const publicUrl=urlData.publicUrl;
-      zone.dataset.uploadedUrl=publicUrl;
-      const hiddenInput=zone.closest('.fw').querySelector('.q-image');
-      if(hiddenInput) hiddenInput.value=publicUrl;
-      progBar.style.width='100%';
-      setTimeout(()=>{
-        zone.innerHTML=`${fileInputHtml}<div class="drop-zone-preview" style="max-width:180px"><img src="${publicUrl}" alt="Question Image"><button class="drop-zone-remove" onclick="clearQuestionImage(this)">✕</button></div><div class="drop-zone-filename">${file.name}</div><div class="upload-status done" style="font-size:.6rem">Uploaded ✓</div>`;
-        zone.classList.add('has-file');
-      },600);
-      showToast('success','Uploaded!','Question image uploaded');
-    }catch(err){
-      clearInterval(progInterval);
-      zone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon" style="font-size:1.3rem">🖼️</div><div class="drop-zone-text" style="font-size:.7rem">Tap or drag image here</div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;
-      zone.classList.remove('has-file');zone.dataset.uploadedUrl='';
-      initDropZone(zone);
-      showToast('error','Upload Failed',err.message);
-    }
-    return;
-  }
-  return _origProcessDropZoneFile(zone,file);
-}
-processDropZoneFile=processDropZoneFileOverride;
-
-window.clearQuestionImage=function(btn){
-  const zone=btn.closest('.q-image-zone');
-  zone.dataset.uploadedUrl='';
-  const hiddenInput=zone.closest('.fw').querySelector('.q-image');
-  if(hiddenInput) hiddenInput.value='';
-  zone.innerHTML=`<input type="file" accept="image/*" onchange="handleDropZoneFile(this)"><div class="drop-zone-icon" style="font-size:1.3rem">🖼️</div><div class="drop-zone-text" style="font-size:.7rem">Tap or drag image here</div><div class="drop-zone-hint">PNG, JPG, WEBP — max 5MB</div>`;
-  zone.classList.remove('has-file');initDropZone(zone);
-};
-
 /* ── Codes ── */
 async function loadAllCodes(){
-  const tbody=document.getElementById('codesListBody');
-  tbody.innerHTML='<tr><td colspan="4" class="td-empty">Loading codes...</td></tr>';
+  const tbody=document.getElementById('codesListBody');tbody.innerHTML='<tr><td colspan="4" class="td-empty">Loading codes...</td></tr>';
   try{
     const{data}=await db.from('codes').select('*').order('created_at',{ascending:false});
     if(!data||!data.length){tbody.innerHTML='<tr><td colspan="4" class="td-empty">No codes yet.</td></tr>';return;}
     let rows='';
-    data.forEach(c=>{
-      const status=c.used?'<span style="color:var(--red);font-weight:700;font-size:.72rem">Used</span>':'<span style="color:var(--green);font-weight:700;font-size:.72rem">Free</span>';
-      const user=c.usedby||'<span style="color:var(--muted)">—</span>';
-      const lesson=allLessons[c.lessonid]?.name||'<span style="color:var(--muted)">Any</span>';
-      rows+=`<tr><td style="font-family:var(--mono);font-size:.72rem;font-weight:700">${c.code}</td><td>${status}</td><td style="font-size:.7rem;font-family:var(--mono)">${user}</td><td style="font-size:.7rem;color:var(--muted)">${lesson}</td></tr>`;
-    });
+    data.forEach(c=>{const status=c.used?'<span style="color:var(--red);font-weight:700;font-size:.72rem">Used</span>':'<span style="color:var(--green);font-weight:700;font-size:.72rem">Free</span>';const user=c.usedby||'<span style="color:var(--muted)">—</span>';const lesson=allLessons[c.lessonid]?.name||'<span style="color:var(--muted)">Any</span>';rows+=`<tr><td style="font-family:var(--mono);font-size:.72rem;font-weight:700">${c.code}</td><td>${status}</td><td style="font-size:.7rem;font-family:var(--mono)">${user}</td><td style="font-size:.7rem;color:var(--muted)">${lesson}</td></tr>`;});
     tbody.innerHTML=rows;
   }catch(e){tbody.innerHTML=`<tr><td colspan="4" class="td-empty" style="color:var(--red)">Error loading codes</td></tr>`;}
 }
-
 async function generateCodes(){
-  if(!confirm("Generate 50 new codes?")) return;
-  document.getElementById('codesResultArea').classList.remove('hidden');
-  document.getElementById('codesPlaceholder').classList.add('hidden');
+  if(!confirm("Generate 50 new codes?"))return;
+  document.getElementById('codesResultArea').classList.remove('hidden');document.getElementById('codesPlaceholder').classList.add('hidden');
   const grid=document.getElementById('codesGrid');grid.innerHTML='';
   const codes=[];
-  for(let i=0;i<50;i++){
-    const c="MP-"+Math.floor(Math.random()*1e12);
-    codes.push({code:c,used:false});
-    const el=document.createElement('div');el.className='code-pill';el.textContent=c;grid.appendChild(el);
-  }
-  try{await db.from('codes').insert(codes);loadAllCodes();}
-  catch(e){showToast('error','Save Error',e.message);}
+  for(let i=0;i<50;i++){const c="MP-"+Math.floor(Math.random()*1e12);codes.push({code:c,used:false});const el=document.createElement('div');el.className='code-pill';el.textContent=c;grid.appendChild(el);}
+  try{await db.from('codes').insert(codes);loadAllCodes();}catch(e){showToast('error','Save Error',e.message);}
 }
-
-function copyCodes(){
-  const codes=Array.from(document.getElementById('codesGrid').children).map(d=>d.textContent).join('\n');
-  navigator.clipboard.writeText(codes).then(()=>showToast('success','Copied!','All codes copied ✅'));
-}
+function copyCodes(){const codes=Array.from(document.getElementById('codesGrid').children).map(d=>d.textContent).join('\n');navigator.clipboard.writeText(codes).then(()=>showToast('success','Copied!','All codes copied ✅'));}
 
 /* ── Code Tracker ── */
-let trackerData=[];
-let trackerFilter='all';
-
+let trackerData=[],trackerFilter='all';
 async function loadTracker(){
-  const tbody=document.getElementById('trackerBody');
-  tbody.innerHTML='<tr><td colspan="7" class="td-empty">Loading…</td></tr>';
+  const tbody=document.getElementById('trackerBody');tbody.innerHTML='<tr><td colspan="7" class="td-empty">Loading…</td></tr>';
   try{
     const{data:codes}=await db.from('codes').select('*').eq('used',true).order('created_at',{ascending:false});
-    if(!codes||!codes.length){
-      tbody.innerHTML='<tr><td colspan="7" class="td-empty">No codes used yet</td></tr>';
-      updateTrackerStats([]);return;
-    }
+    if(!codes||!codes.length){tbody.innerHTML='<tr><td colspan="7" class="td-empty">No codes used yet</td></tr>';updateTrackerStats([]);return;}
     trackerData=codes.map(c=>{
-      const student=studentsByEmail[c.usedby]||{};
-      const lessonName=allLessons[c.lessonid]?.name||'—';
-      const activatedRaw=c.used_at||c.created_at||null;
-      const activatedOn=activatedRaw?new Date(activatedRaw).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
-      const expiryTs=c.expiryat?new Date(c.expiryat).getTime():NaN;
-      const expiresOn=Number.isFinite(expiryTs)?new Date(expiryTs).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
-      const isActive=Number.isFinite(expiryTs)?expiryTs>Date.now():null;
+      const student=studentsByEmail[c.usedby]||{};const lessonName=allLessons[c.lessonid]?.name||'—';
+      const activatedRaw=c.used_at||c.created_at||null;const activatedOn=activatedRaw?new Date(activatedRaw).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
+      const expiryTs=c.expiryat?new Date(c.expiryat).getTime():NaN;const expiresOn=Number.isFinite(expiryTs)?new Date(expiryTs).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';const isActive=Number.isFinite(expiryTs)?expiryTs>Date.now():null;
       return{name:student.name||c.usedby?.split('@')[0]||'—',email:c.usedby||'—',code:c.code||'—',lesson:lessonName,activatedOn,expiresOn,isActive,_raw:c};
     });
-    updateTrackerStats(trackerData);
-    applyTrackerFilter();
+    updateTrackerStats(trackerData);applyTrackerFilter();
   }catch(e){tbody.innerHTML=`<tr><td colspan="7" class="td-empty" style="color:var(--red)">Error: ${e.message}</td></tr>`;}
 }
-
-function updateTrackerStats(data){
-  document.getElementById('tStatTotal').textContent=data.length;
-  document.getElementById('tStatActive').textContent=data.filter(d=>d.isActive===true).length;
-  document.getElementById('tStatExpired').textContent=data.filter(d=>d.isActive===false).length;
-  document.getElementById('tStatLessons').textContent=new Set(data.map(d=>d.lesson).filter(l=>l&&l!=='—')).size;
-}
-
-function setTrackerFilter(filter,btn){
-  trackerFilter=filter;
-  document.querySelectorAll('.tracker-filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  applyTrackerFilter();
-}
-
-function applyTrackerFilter(){
-  const search=(document.getElementById('trackerSearch')?.value||'').toLowerCase();
-  let filtered=trackerData;
-  if(trackerFilter==='active') filtered=filtered.filter(d=>d.isActive===true);
-  if(trackerFilter==='expired') filtered=filtered.filter(d=>d.isActive===false);
-  if(search) filtered=filtered.filter(d=>
-    d.name.toLowerCase().includes(search)||d.email.toLowerCase().includes(search)||
-    d.lesson.toLowerCase().includes(search)||d.code.toLowerCase().includes(search)
-  );
-  renderTracker(filtered);
-}
-
+function updateTrackerStats(data){document.getElementById('tStatTotal').textContent=data.length;document.getElementById('tStatActive').textContent=data.filter(d=>d.isActive===true).length;document.getElementById('tStatExpired').textContent=data.filter(d=>d.isActive===false).length;document.getElementById('tStatLessons').textContent=new Set(data.map(d=>d.lesson).filter(l=>l&&l!=='—')).size;}
+function setTrackerFilter(filter,btn){trackerFilter=filter;document.querySelectorAll('.tracker-filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');applyTrackerFilter();}
+function applyTrackerFilter(){const search=(document.getElementById('trackerSearch')?.value||'').toLowerCase();let filtered=trackerData;if(trackerFilter==='active')filtered=filtered.filter(d=>d.isActive===true);if(trackerFilter==='expired')filtered=filtered.filter(d=>d.isActive===false);if(search)filtered=filtered.filter(d=>d.name.toLowerCase().includes(search)||d.email.toLowerCase().includes(search)||d.lesson.toLowerCase().includes(search)||d.code.toLowerCase().includes(search));renderTracker(filtered);}
 function filterTracker(){applyTrackerFilter();}
-
 function renderTracker(data){
   const tbody=document.getElementById('trackerBody');
   if(!data.length){tbody.innerHTML='<tr><td colspan="7" class="td-empty">No results found</td></tr>';return;}
-  tbody.innerHTML=data.map(r=>{
-    let statusBadge;
-    if(r.isActive===null) statusBadge='<span style="color:var(--muted2);font-size:.66rem;font-family:var(--mono)">No expiry</span>';
-    else if(r.isActive) statusBadge='<span class="badge badge-active">✅ Active</span>';
-    else statusBadge='<span class="badge badge-expired">❌ Expired</span>';
-    return`<tr>
-      <td class="td-name" style="font-size:.78rem">${escapeHtml(r.name)}</td>
-      <td class="td-email">${escapeHtml(r.email)}</td>
-      <td style="font-family:var(--mono);font-size:.68rem;color:var(--green2);font-weight:700;white-space:nowrap">${escapeHtml(r.code)}</td>
-      <td class="td-green" style="font-size:.78rem">${escapeHtml(r.lesson)}</td>
-      <td class="td-date">${r.activatedOn}</td>
-      <td class="td-date">${r.expiresOn}</td>
-      <td>${statusBadge}</td>
-    </tr>`;
-  }).join('');
+  tbody.innerHTML=data.map(r=>{let statusBadge;if(r.isActive===null)statusBadge='<span style="color:var(--muted2);font-size:.66rem;font-family:var(--mono)">No expiry</span>';else if(r.isActive)statusBadge='<span class="badge badge-active">✅ Active</span>';else statusBadge='<span class="badge badge-expired">❌ Expired</span>';return`<tr><td class="td-name" style="font-size:.78rem">${escapeHtml(r.name)}</td><td class="td-email">${escapeHtml(r.email)}</td><td style="font-family:var(--mono);font-size:.68rem;color:var(--green2);font-weight:700;white-space:nowrap">${escapeHtml(r.code)}</td><td class="td-green" style="font-size:.78rem">${escapeHtml(r.lesson)}</td><td class="td-date">${r.activatedOn}</td><td class="td-date">${r.expiresOn}</td><td>${statusBadge}</td></tr>`;}).join('');
 }
 
 /* ── Broadcast ── */
 async function sendNotif(){
-  const msg=document.getElementById('notifMessage').value;
-  if(!msg) return showToast('warning','Empty','Write a message first!');
-  try{
-    await db.from('announcements').insert([{message:msg,active:true}]);
-    showToast('success','Sent 🚀','Broadcast sent to all students.');
-    document.getElementById('notifMessage').value='';
-  }catch(e){showToast('error','Error',e.message);}
+  const msg=document.getElementById('notifMessage').value;if(!msg)return showToast('warning','Empty','Write a message first!');
+  try{await db.from('announcements').insert([{message:msg,active:true}]);showToast('success','Sent 🚀','Broadcast sent to all students.');document.getElementById('notifMessage').value='';}
+  catch(e){showToast('error','Error',e.message);}
 }
-
 window.signOut=async()=>{await db.auth.signOut();window.location.href='/home';};
 </script>
 </body>
