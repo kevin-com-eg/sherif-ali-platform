@@ -189,7 +189,12 @@ main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:26px 20p
 .sw-chip strong{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:1px}
 .sw-chip.running strong{color:var(--accent2)}
 
-/* ── ABOUT CARD ── */
+/* ── ABOUT CARD (inside sidebar) ── */
+.about-sidebar{padding:12px;border-top:1px solid var(--border);background:var(--bg)}
+.about-sidebar-title{font-family:var(--mono);font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px;padding:0 4px}
+.about-sidebar-title::before{content:'';width:8px;height:2px;background:var(--accent);border-radius:2px}
+.about-sidebar-body{font-size:.8rem;color:var(--muted2);line-height:1.7;padding:0 4px 4px}
+/* Keep old about card for fallback */
 .about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;margin-top:16px;box-shadow:var(--shadow)}
 .about-card-title{font-family:var(--mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .about-card-title::before{content:'';width:10px;height:2px;background:var(--accent);border-radius:2px}
@@ -253,14 +258,14 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
 .vp-popup ul li{padding:8px 15px;font-size:.78rem;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:space-between}
 .vp-popup ul li:hover{background:rgba(255,255,255,.07)}
 .vp-popup ul li.active::after{content:'✓';color:var(--accent3);font-size:.78rem;font-weight:800}
-.mp4-wm{position:absolute;bottom:10px;left:12px;z-index:2;pointer-events:none;font-family:var(--mono);font-size:.62rem;font-weight:700;color:rgba(255,255,255,.15);letter-spacing:1px}
+.mp4-wm{position:absolute;bottom:10px;left:12px;z-index:2;pointer-events:none;font-family:var(--mono);font-size:.72rem;font-weight:800;color:rgba(255,255,255,.55);letter-spacing:2px;text-shadow:0 1px 6px rgba(0,0,0,.9)}
 
 /* ══ YOUTUBE PLAYER ══ */
 .yt-wrap{position:relative;width:100%;height:100%;background:#1a1209;overflow:hidden}
 .yt-iframe-zone{position:absolute;top:-62px;left:-4px;right:-4px;bottom:-42px;pointer-events:none;z-index:1;}
 .yt-iframe-zone iframe{width:100%;height:100%;border:none;display:block}
 .yt-click-layer{position:absolute;inset:0;z-index:10;cursor:pointer}
-.yt-wm{position:absolute;z-index:50;pointer-events:none;font-family:var(--mono);font-size:clamp(.55rem,1.1vw,.75rem);font-weight:700;color:rgba(255,255,255,.2);letter-spacing:1px;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.6);top:12%;left:15%;transition:top 1.5s cubic-bezier(.4,0,.2,1),left 1.5s cubic-bezier(.4,0,.2,1);}
+.yt-wm{position:absolute;z-index:50;pointer-events:none;font-family:var(--mono);font-size:clamp(.65rem,1.3vw,.9rem);font-weight:800;color:rgba(255,255,255,.55);letter-spacing:2px;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.6);top:12%;left:15%;transition:top 1.5s cubic-bezier(.4,0,.2,1),left 1.5s cubic-bezier(.4,0,.2,1);}
 .yt-ctrl{position:absolute;bottom:0;left:0;right:0;z-index:30;background:linear-gradient(to top,rgba(20,14,6,.95) 0%,rgba(20,14,6,.45) 65%,transparent 100%);padding:28px 14px 10px;transform:translateY(100%);opacity:0;transition:transform .3s ease,opacity .3s ease;}
 .yt-wrap:hover .yt-ctrl,.yt-wrap.ctrl-on .yt-ctrl{transform:translateY(0);opacity:1}
 .yt-prog-wrap{width:100%;height:4px;background:rgba(255,255,255,.2);border-radius:4px;cursor:pointer;margin-bottom:10px;transition:height .15s;position:relative;}
@@ -305,9 +310,38 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
 .yt-wrap:fullscreen,.yt-wrap:-webkit-full-screen{border-radius:0}
 
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media(max-width:1100px){.watch-layout{grid-template-columns:300px minmax(0,1fr);gap:18px}}
-@media(max-width:800px){.watch-layout{grid-template-columns:1fr}.sidebar-card{position:relative;top:auto}.sidebar-scroll{max-height:none}.info-grid{grid-template-columns:1fr}}
-@media(max-width:600px){main{padding:18px 14px 80px}.back-btn span{display:none}.tab-btn{padding:7px 10px;font-size:.74rem}.q-card{padding:18px 14px}.quiz-nav{flex-wrap:wrap}.q-btn.finish{width:100%;justify-content:center}}
+@media(max-width:1100px){.watch-layout{grid-template-columns:280px minmax(0,1fr);gap:18px}}
+@media(max-width:800px){
+  .watch-layout{grid-template-columns:1fr;gap:16px}
+  .sidebar-card{position:relative;top:auto;order:2}
+  .stage-area{order:1}
+  .sidebar-scroll{max-height:260px}
+  .info-grid{grid-template-columns:1fr 1fr}
+  .watch-info{margin-top:14px}
+  .bottom-nav-row{margin-top:12px}
+}
+@media(max-width:600px){
+  main{padding:14px 12px 60px}
+  .back-btn span{display:none}
+  .tab-btn{padding:6px 10px;font-size:.72rem}
+  .q-card{padding:16px 12px}
+  .quiz-nav{flex-wrap:wrap;gap:6px}
+  .q-btn.finish{width:100%;justify-content:center}
+  .info-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .info-chip{padding:12px}
+  .info-chip strong{font-size:.82rem}
+  .sw-chip{padding:12px}
+  .stage-player{border-radius:var(--radius)}
+  .sidebar-scroll{max-height:220px}
+  .watch-layout{gap:12px}
+  .nav-inner{padding:0 12px;gap:8px}
+  .tabs{max-width:none;flex:1}
+  .tab-btn{padding:6px 8px;font-size:.7rem}
+}
+@media(max-width:400px){
+  .tab-btn{padding:5px 7px;font-size:.66rem}
+  main{padding:10px 10px 60px}
+}
 </style>
 </head>
 <body>
@@ -709,9 +743,18 @@ function renderVideoPage(){
   const nextDisabled=currentVideoIdx>=videosData.length-1?'disabled':'';
   const lessonAbout=lessonData?.about||'';
 
+  /* About block for sidebar */
+  const aboutSidebarHtml=lessonAbout
+    ?'<div class="about-sidebar"><div class="about-sidebar-title">About This Lesson</div><div class="about-sidebar-body">'+lessonAbout.replace(/\n/g,'<br>')+'</div></div>'
+    :'';
+
   container.innerHTML=
     '<div class="watch-layout">'
-    +'<aside class="sidebar-card"><div class="sidebar-head">📋 Course Content</div><div class="sidebar-scroll">'+sideItems+'</div></aside>'
+    +'<aside class="sidebar-card">'
+    +'<div class="sidebar-head">📋 Course Content</div>'
+    +'<div class="sidebar-scroll">'+sideItems+'</div>'
+    +aboutSidebarHtml
+    +'</aside>'
     +'<section class="stage-area">'
     +'<div class="stage-player">'+playerHtml+'</div>'
     +'<div class="watch-info">'
@@ -721,11 +764,8 @@ function renderVideoPage(){
     +'<div class="info-chip"><span>Total Videos</span><strong>'+videosData.length+'</strong></div>'
     +'<div class="info-chip"><span>Progress</span><strong>'+(currentVideoIdx+1)+' / '+videosData.length+'</strong></div>'
     +'<div class="info-chip"><span>Status</span><strong style="color:'+statusColor+'">'+statusText+'</strong></div>'
-    /* ── Stopwatch chip ── */
     +'<div class="sw-chip" id="swChip"><span>⏱ Watch Time</span><strong id="swVal">0:00</strong></div>'
     +'</div>'
-    /* ── About Card ── */
-    +(lessonAbout?'<div class="about-card"><div class="about-card-title">About This Lesson</div><div class="about-card-body">'+lessonAbout.replace(/\n/g,'<br>')+'</div></div>':'')
     +'</div>'
     +'<div class="bottom-nav-row">'
     +'<button class="vid-page-btn" onclick="videoPrev()" '+prevDisabled+'><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Prev</button>'
