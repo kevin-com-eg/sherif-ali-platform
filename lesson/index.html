@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MathPro · Lesson</title>
+<title>Kalawy · Lesson</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&family=Material+Icons&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -309,6 +309,13 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
 .yt-replay-ov button:hover{background:var(--accent3)}
 .yt-wrap:fullscreen,.yt-wrap:-webkit-full-screen{border-radius:0}
 
+/* ══ GOOGLE DRIVE PLAYER ══ */
+.drive-wrap{position:relative;width:100%;height:100%;background:#1a1209;overflow:hidden}
+.drive-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#1a1209}
+.drive-wm{position:absolute;z-index:50;top:14%;left:14%;pointer-events:none;font-family:var(--mono);font-size:clamp(.7rem,1.4vw,1rem);font-weight:900;color:rgba(255,255,255,.55);letter-spacing:2px;white-space:nowrap;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 14px rgba(0,0,0,.65);transition:top 1.5s cubic-bezier(.4,0,.2,1),left 1.5s cubic-bezier(.4,0,.2,1)}
+.drive-shield{position:absolute;inset:0;z-index:40;pointer-events:none;background:linear-gradient(to bottom,rgba(26,18,9,.18),transparent 22%,transparent 82%,rgba(26,18,9,.18))}
+@media print{body{display:none!important}}
+
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media(max-width:1100px){.watch-layout{grid-template-columns:280px minmax(0,1fr);gap:18px}}
 @media(max-width:800px){
@@ -457,10 +464,37 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
 <script>
 /* ── SECURITY ── */
 (function(){
-  document.addEventListener('contextmenu',e=>e.preventDefault());
-  document.addEventListener('copy',e=>{e.clipboardData.setData('text/plain','⚠️ Disabled');e.preventDefault();});
-  window.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&e.keyCode===85)){e.preventDefault();return false;}});
-  const kill=()=>{if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){document.body.innerHTML='<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);text-align:center"><div><div style="font-size:3rem">🔒</div><h2 style="font-family:serif;margin:14px 0 7px">Access Blocked</h2><p style="color:#9B8E7A;font-size:.88rem">Close developer tools to continue.</p></div></div>';}};
+  document.addEventListener('contextmenu',e=>e.preventDefault(),true);
+  document.addEventListener('copy',e=>{try{e.clipboardData.setData('text/plain','⚠️ Disabled');}catch(_){}e.preventDefault();},true);
+  document.addEventListener('cut',e=>e.preventDefault(),true);
+  document.addEventListener('dragstart',e=>e.preventDefault(),true);
+  document.addEventListener('selectstart',e=>e.preventDefault(),true);
+
+  function blockKeys(e){
+    const k=(e.key||'').toLowerCase();
+    const blocked =
+      e.keyCode===123 || e.key==='F12' || e.key==='PrintScreen' ||
+      (e.ctrlKey&&e.shiftKey&&['i','j','c','k'].includes(k)) ||
+      (e.ctrlKey&&['u','s','p'].includes(k));
+    if(blocked){
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.key==='PrintScreen'){
+        document.documentElement.style.filter='brightness(0)';
+        setTimeout(()=>{document.documentElement.style.filter='';},900);
+        try{navigator.clipboard&&navigator.clipboard.writeText('Screenshots are disabled on Kalawy Player.');}catch(_){}
+      }
+      return false;
+    }
+  }
+  window.addEventListener('keydown',blockKeys,true);
+  window.addEventListener('keyup',blockKeys,true);
+
+  const kill=()=>{
+    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+      document.body.innerHTML='<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);text-align:center"><div><div style="font-size:3rem">🔒</div><h2 style="font-family:serif;margin:14px 0 7px">Access Blocked</h2><p style="color:#9B8E7A;font-size:.88rem">Close developer tools to continue.</p></div></div>';
+    }
+  };
   setInterval(kill,1000);
 })();
 
@@ -514,6 +548,7 @@ function swReset(){swStop();swSeconds=0;}
 let ytApiReady=false;
 let activeYTPlayer=null;
 let activeYTWmTimer=null;
+let activeDriveWmTimer=null;
 window.onYouTubeIframeAPIReady=function(){ytApiReady=true;};
 
 function showLoader(t=''){const s=document.getElementById('loadingScreen');document.getElementById('ldTxt').textContent=t||'Loading…';s.style.display='flex';void s.offsetWidth;s.style.opacity='1';}
@@ -536,16 +571,36 @@ window.switchTab=(tab)=>{
 
 function destroyActiveYT(){
   clearTimeout(activeYTWmTimer);
+  clearInterval(activeDriveWmTimer);
+  activeDriveWmTimer=null;
   if(activeYTPlayer){try{activeYTPlayer.destroy();}catch(e){}activeYTPlayer=null;}
 }
 
 function extractYTId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);return m?m[1]:null;}
-function isDirectVid(url){if(!url)return false;return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)||(!url.includes('youtu')&&!url.includes('youtube')&&url.startsWith('http'));}
+function extractDriveId(url){
+  if(!url)return null;
+  let m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if(m)return m[1];
+  m=url.match(/[?&]id=([^&]+)/);
+  if(m)return m[1];
+  return null;
+}
+function getDrivePreviewUrl(url){const id=extractDriveId(url);return id?'https://drive.google.com/file/d/'+id+'/preview':null;}
+function isDriveUrl(url){return !!extractDriveId(url);}
+function isDirectVid(url){if(!url)return false;return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)||(!url.includes('youtu')&&!url.includes('youtube')&&!url.includes('drive.google.com')&&url.startsWith('http'));}
+function moveDriveWatermark(){
+  clearInterval(activeDriveWmTimer);
+  const wm=document.getElementById('driveWm');
+  if(!wm)return;
+  const spots=[['8%','10%'],['12%','62%'],['46%','22%'],['70%','58%'],['32%','72%'],['76%','12%']];
+  let i=0;
+  activeDriveWmTimer=setInterval(()=>{i=(i+1)%spots.length;wm.style.top=spots[i][0];wm.style.left=spots[i][1];},4500);
+}
 
 function extractVideos(snap){
   const names=['videos','video','video_links','videoLinks','video_urls','videoData','links','media'];
   for(const name of names){if(snap[name]!==undefined&&snap[name]!==null){let p=snap[name];if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){continue;}}if(Array.isArray(p)&&p.length>0)return normalizeVideos(p);if(typeof p==='object'&&!Array.isArray(p)){if(p.url||p.name||p.link)return normalizeVideos([p]);const vals=Object.values(p).filter(v=>v&&typeof v==='object');if(vals.length>0&&(vals[0].url||vals[0].name||vals[0].link))return normalizeVideos(vals);}}}
-  for(const[key,val] of Object.entries(snap)){if(['id','name','questions','pdf','created_at','validitydays','examduration','about'].includes(key))continue;const str=typeof val==='string'?val:JSON.stringify(val);if(str&&str.includes('youtu')){let p=val;if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){}}if(Array.isArray(p))return normalizeVideos(p);if(typeof p==='object'&&p.url)return normalizeVideos([p]);if(typeof val==='string'&&extractYTId(val))return normalizeVideos([{url:val,name:'Video 1'}]);}}
+  for(const[key,val] of Object.entries(snap)){if(['id','name','questions','pdf','created_at','validitydays','examduration','about'].includes(key))continue;const str=typeof val==='string'?val:JSON.stringify(val);if(str&&(str.includes('youtu')||str.includes('youtube')||str.includes('drive.google.com'))){let p=val;if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){}}if(Array.isArray(p))return normalizeVideos(p);if(typeof p==='object'&&p.url)return normalizeVideos([p]);if(typeof val==='string'&&(extractYTId(val)||extractDriveId(val)))return normalizeVideos([{url:val,name:'Video 1'}]);}}
   return null;
 }
 function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video_url||v.src||'',name:v.name||v.title||v.label||'Video '+(i+1),requireHw:!!(v.requireHw||v.require_hw||false),hwId:v.hwId||v.hw_id||''}));}
@@ -553,7 +608,7 @@ function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video
 const pageParams=new URLSearchParams(location.search);
 const DESKTOP_MODE=pageParams.get('desktop')==='1';
 const REQUESTED_VIDEO_INDEX=Math.max(0,parseInt(pageParams.get('video')||'0',10)||0);
-const DESKTOP_PROTOCOL='mathpro://open';
+const DESKTOP_PROTOCOL='kalawyplayer://open';
 
 function buildDesktopPlayerUrl(idx){const v=videosData[idx];if(!v)return '';const lessonId=pageParams.get('id')||'';const title=encodeURIComponent(v.name||('Lecture '+(idx+1)));const videoUrl=encodeURIComponent(v.url||'');const student=encodeURIComponent(myStudentId||'000000');return DESKTOP_PROTOCOL+'?lesson='+encodeURIComponent(lessonId)+'&video='+idx+'&student='+student+'&title='+title+'&url='+videoUrl;}
 function openDesktopPlayerOrFallback(idx){const appUrl=buildDesktopPlayerUrl(idx);if(!appUrl){goToVideo(idx);switchTab('videos');return;}const lessonId=pageParams.get('id')||'';const fallbackUrl='/lesson?id='+encodeURIComponent(lessonId)+'&video='+idx+'&desktop=1';let hiddenTriggered=false;const onHide=function(){hiddenTriggered=true;cleanup();};const cleanup=function(){window.removeEventListener('blur',onHide);document.removeEventListener('visibilitychange',onVis);};const onVis=function(){if(document.hidden){hiddenTriggered=true;cleanup();}};window.addEventListener('blur',onHide,{once:true});document.addEventListener('visibilitychange',onVis);location.href=appUrl;setTimeout(function(){cleanup();if(!hiddenTriggered)location.href=fallbackUrl;},1200);}
@@ -716,6 +771,7 @@ function renderVideoPage(){
   const v=videosData[currentVideoIdx];
   const isLocked=v.requireHw&&!hwResultsMap[v.hwId];
   const ytId=extractYTId(v.url);
+  const drivePreview=getDrivePreviewUrl(v.url);
   const isDirect=isDirectVid(v.url);
 
   let sideItems='';
@@ -733,6 +789,7 @@ function renderVideoPage(){
   let playerHtml='';
   if(isLocked){playerHtml='<div class="video-locked-ov"><div class="lk-emoji">🔒</div><div class="lk-title">Video Locked</div><div class="lk-sub">Complete the homework assignment first to unlock this video.</div><button class="lk-btn" onclick="switchTab(\'homework\')">Go to Homework →</button></div>';}
   else if(ytId){playerHtml='<div id="ytPlayerSlot" style="width:100%;height:100%"></div>';}
+  else if(drivePreview){playerHtml='<div class="drive-wrap"><iframe src="'+drivePreview+'" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe><div class="drive-shield"></div><div class="drive-wm" id="driveWm">'+(myStudentId||'KALAWY')+'</div></div>';}
   else if(isDirect){playerHtml='<div id="mp4Slot" style="width:100%;height:100%"></div>';}
   else{playerHtml='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);background:var(--bg2)"><div style="font-size:2.5rem">⚠️</div><div style="font-size:.85rem">Could not load video</div></div>';}
 
@@ -776,6 +833,7 @@ function renderVideoPage(){
     +'</div>';
 
   if(ytId&&!isLocked){const slot=document.getElementById('ytPlayerSlot');if(slot)initYTPlayer(slot,ytId,myStudentId);}
+  if(drivePreview&&!isLocked){moveDriveWatermark();swStart();}
   if(isDirect&&!isLocked){const slot=document.getElementById('mp4Slot');if(slot)initMP4Player(slot,v.url,myStudentId);}
 }
 
