@@ -6,6 +6,9 @@
 <title>Kalawy · Lesson</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600;700&family=Material+Icons&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.16.0/controls.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.16.0/shaka-player.ui.js" crossorigin="anonymous"></script>
+<script defer src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
@@ -182,24 +185,14 @@ main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:26px 20p
 .info-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 16px}
 .info-chip span{font-size:.78rem;color:var(--muted);display:block;margin-bottom:3px}
 .info-chip strong{font-size:.92rem;color:var(--text);font-weight:700}
-
-/* ── STOPWATCH chip ── */
 .sw-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 16px;display:flex;flex-direction:column;gap:3px}
 .sw-chip span{font-size:.78rem;color:var(--muted)}
 .sw-chip strong{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:1px}
 .sw-chip.running strong{color:var(--accent2)}
-
-/* ── ABOUT CARD (inside sidebar) ── */
 .about-sidebar{padding:12px;border-top:1px solid var(--border);background:var(--bg)}
 .about-sidebar-title{font-family:var(--mono);font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px;padding:0 4px}
 .about-sidebar-title::before{content:'';width:8px;height:2px;background:var(--accent);border-radius:2px}
 .about-sidebar-body{font-size:.8rem;color:var(--muted2);line-height:1.7;padding:0 4px 4px}
-/* Keep old about card for fallback */
-.about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;margin-top:16px;box-shadow:var(--shadow)}
-.about-card-title{font-family:var(--mono);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px}
-.about-card-title::before{content:'';width:10px;height:2px;background:var(--accent);border-radius:2px}
-.about-card-body{font-size:.88rem;color:var(--muted2);line-height:1.75}
-
 .bottom-nav-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:16px}
 .vid-page-btn{display:flex;align-items:center;gap:5px;padding:9px 18px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--muted2);cursor:pointer;transition:all .2s}
 .vid-page-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
@@ -210,6 +203,15 @@ main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:26px 20p
 .empty-vid .ei{font-size:3rem;margin-bottom:14px}
 .empty-vid .et{font-family:var(--display);font-size:1.35rem;font-weight:700}
 .empty-vid .es{font-size:.85rem;color:var(--muted);margin-top:7px}
+
+/* ── SHAKA PLAYER WRAPPER ── */
+.shaka-wrap{position:relative;width:100%;height:100%;background:#1a1209}
+.shaka-wrap [data-shaka-player-container]{width:100%;height:100%}
+.shaka-wrap video[data-shaka-player]{width:100%!important;height:100%!important;object-fit:contain;display:block}
+.shaka-wrap .shaka-controls-button-panel{background-color:#00000017}
+.shaka-wm{position:absolute;z-index:50;pointer-events:none;font-family:var(--mono);font-size:.72rem;font-weight:800;color:rgba(255,255,255,.55);letter-spacing:2px;text-shadow:0 1px 6px rgba(0,0,0,.9);transition:top 1.5s cubic-bezier(.4,0,.2,1),left 1.5s cubic-bezier(.4,0,.2,1)}
+.svg-controller{fill:white;width:40px;height:40px;margin-top:8px}
+@media(max-width:600px){.shaka-seek-btn{display:none}}
 
 /* ── HOMEWORK ── */
 .hw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:50px 30px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow)}
@@ -228,127 +230,12 @@ main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:26px 20p
 .pdf-btn{display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#fff;border:none;padding:14px 38px;border-radius:var(--radius);font-family:var(--sans);font-size:.92rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .25s;box-shadow:0 7px 22px var(--accent-glow)}
 .pdf-btn:hover{background:var(--accent2);transform:translateY(-1px)}
 
-/* ══ MP4 PLAYER ══ */
-.mp4-wrap{position:relative;width:100%;height:100%;background:#1a1209;overflow:hidden}
-video.main-vid{position:relative;width:100%;height:100%;outline:none;display:block}
-.mp4-loader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--accent3);border-radius:50%;z-index:4;animation:spin .7s linear infinite;display:none}
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-.mp4-wrap .vp-controls{position:absolute;bottom:0;left:0;right:0;z-index:3;background:linear-gradient(to top,rgba(26,18,9,.9) 0%,rgba(26,18,9,.4) 65%,transparent 100%);padding:0 14px 10px;transform:translateY(100%);transition:transform .3s ease;opacity:0}
-.mp4-wrap .vp-controls.show{transform:translateY(0);opacity:1}
-.vp-progress{width:100%;height:5px;background:rgba(255,255,255,.2);border-radius:4px;cursor:pointer;position:relative;margin-bottom:10px;margin-top:8px;transition:height .15s}
-.vp-progress:hover{height:7px}
-.vp-bar{height:100%;background:var(--accent3);border-radius:4px;position:relative;pointer-events:none}
-.vp-bar::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:50%;right:-6px;transform:translateY(-50%);box-shadow:0 0 5px rgba(74,144,96,.6)}
-.vp-row{display:flex;align-items:center;justify-content:space-between;gap:5px}
-.vp-left,.vp-right{display:flex;align-items:center;gap:4px}
-.vp-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;cursor:pointer;color:#fff;border-radius:7px;transition:background .2s}
-.vp-icon:hover{background:rgba(255,255,255,.1)}
-.vp-icon .material-icons{font-size:20px;color:#fff}
-.vp-vol-wrap{display:flex;align-items:center;gap:5px}
-.vol-slider{-webkit-appearance:none;appearance:none;width:0;height:3px;background:rgba(255,255,255,.4);outline:none;border:none;border-radius:3px;cursor:pointer;transition:width .22s;opacity:0}
-.vp-vol-wrap:hover .vol-slider,.vol-slider:focus{width:60px;opacity:1}
-.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;cursor:pointer}
-.vp-time{color:rgba(255,255,255,.88);font-family:var(--mono);font-size:.72rem;white-space:nowrap;padding:0 4px}
-.vp-speed{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:3px 8px;font-family:var(--mono);font-size:.67rem;font-weight:800;color:#fff;cursor:pointer;transition:all .2s}
-.vp-speed:hover{background:rgba(255,255,255,.22)}
-.vp-settings-popup{position:absolute;bottom:58px;right:14px;background:rgba(26,18,9,.96);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);width:170px;color:#fff;z-index:10;display:none;overflow:hidden}
-.vp-settings-popup.show{display:block}
-.vp-popup-title{font-size:.62rem;font-weight:800;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:1.5px;padding:8px 14px 4px;font-family:var(--mono)}
-.vp-popup ul{list-style:none}
-.vp-popup ul li{padding:8px 15px;font-size:.78rem;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:space-between}
-.vp-popup ul li:hover{background:rgba(255,255,255,.07)}
-.vp-popup ul li.active::after{content:'✓';color:var(--accent3);font-size:.78rem;font-weight:800}
-.mp4-wm{position:absolute;bottom:10px;left:12px;z-index:2;pointer-events:none;font-family:var(--mono);font-size:.72rem;font-weight:800;color:rgba(255,255,255,.55);letter-spacing:2px;text-shadow:0 1px 6px rgba(0,0,0,.9)}
-
-/* ══ YOUTUBE PLAYER ══ */
-.yt-wrap{position:relative;width:100%;height:100%;background:#1a1209;overflow:hidden}
-.yt-iframe-zone{position:absolute;top:-62px;left:-4px;right:-4px;bottom:-42px;pointer-events:none;z-index:1;}
-.yt-iframe-zone iframe{width:100%;height:100%;border:none;display:block}
-.yt-click-layer{position:absolute;inset:0;z-index:10;cursor:pointer}
-.yt-wm{position:absolute;z-index:50;pointer-events:none;font-family:var(--mono);font-size:clamp(.65rem,1.3vw,.9rem);font-weight:800;color:rgba(255,255,255,.55);letter-spacing:2px;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.6);top:12%;left:15%;transition:top 1.5s cubic-bezier(.4,0,.2,1),left 1.5s cubic-bezier(.4,0,.2,1);}
-.yt-ctrl{position:absolute;bottom:0;left:0;right:0;z-index:30;background:linear-gradient(to top,rgba(20,14,6,.95) 0%,rgba(20,14,6,.45) 65%,transparent 100%);padding:28px 14px 10px;transform:translateY(100%);opacity:0;transition:transform .3s ease,opacity .3s ease;}
-.yt-wrap:hover .yt-ctrl,.yt-wrap.ctrl-on .yt-ctrl{transform:translateY(0);opacity:1}
-.yt-prog-wrap{width:100%;height:4px;background:rgba(255,255,255,.2);border-radius:4px;cursor:pointer;margin-bottom:10px;transition:height .15s;position:relative;}
-.yt-prog-wrap:hover{height:6px}
-.yt-prog-fill{height:100%;background:var(--accent3);border-radius:4px;position:relative;pointer-events:none;transition:width .12s linear;}
-.yt-prog-fill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(74,144,96,.8);opacity:0;transition:opacity .15s;}
-.yt-prog-wrap:hover .yt-prog-fill::after{opacity:1}
-.yt-row{display:flex;align-items:center;justify-content:space-between;gap:4px}
-.yt-left,.yt-right{display:flex;align-items:center;gap:3px}
-.yt-btn{width:33px;height:33px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:background .18s;color:#fff;flex-shrink:0;}
-.yt-btn:hover{background:rgba(255,255,255,.1)}
-.yt-btn svg{width:18px;height:18px;fill:#fff;pointer-events:none}
-.yt-time{font-family:var(--mono);font-size:.67rem;color:rgba(255,255,255,.82);white-space:nowrap;padding:0 5px}
-.yt-vol-wrap{display:flex;align-items:center;gap:4px}
-.yt-vol-sl{-webkit-appearance:none;width:0;height:3px;background:rgba(255,255,255,.35);border-radius:3px;outline:none;cursor:pointer;transition:width .2s,opacity .2s;opacity:0;}
-.yt-vol-wrap:hover .yt-vol-sl,.yt-vol-sl:focus{width:58px;opacity:1}
-.yt-vol-sl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff}
-.yt-spd-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:3px 8px;font-family:var(--mono);font-size:.63rem;font-weight:700;color:#fff;cursor:pointer;transition:background .18s;}
-.yt-spd-btn:hover{background:rgba(255,255,255,.2)}
-.yt-spd-popup{position:absolute;bottom:60px;right:14px;background:rgba(14,10,4,.97);border:1px solid rgba(255,255,255,.1);border-radius:10px;min-width:130px;z-index:60;overflow:hidden;display:none;}
-.yt-spd-popup.open{display:block}
-.yt-spd-popup-ttl{font-family:var(--mono);font-size:.57rem;color:rgba(255,255,255,.33);text-transform:uppercase;letter-spacing:1.5px;padding:8px 14px 4px;}
-.yt-spd-popup ul{list-style:none}
-.yt-spd-popup li{padding:8px 14px;font-size:.78rem;color:rgba(255,255,255,.8);cursor:pointer;transition:background .15s;display:flex;justify-content:space-between;align-items:center;}
-.yt-spd-popup li:hover{background:rgba(255,255,255,.07)}
-.yt-spd-popup li.active{color:var(--accent3)}
-.yt-spd-popup li.active::after{content:'✓';font-size:.7rem;font-weight:800}
-.yt-big-play{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.38);transition:opacity .25s;}
-.yt-big-play.gone{opacity:0;pointer-events:none}
-.yt-big-circle{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.13);border:2px solid rgba(255,255,255,.32);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s;cursor:pointer;}
-.yt-big-circle:hover{transform:scale(1.1);background:rgba(255,255,255,.24)}
-.yt-big-circle svg{width:28px;height:28px;fill:#fff}
-.yt-seek-fl{position:absolute;top:50%;transform:translateY(-50%);z-index:40;background:rgba(0,0,0,.52);border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;opacity:0;transition:opacity .18s;pointer-events:none;font-family:var(--mono);font-size:.54rem;color:#fff;}
-.yt-seek-fl svg{width:17px;height:17px;fill:#fff}
-.yt-seek-fl.left-fl{left:13%}
-.yt-seek-fl.right-fl{right:13%}
-.yt-replay-ov{position:absolute;inset:0;z-index:25;background:rgba(0,0,0,.52);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
-.yt-replay-ov.show{display:flex}
-.yt-replay-ov span{color:rgba(255,255,255,.7);font-size:.83rem;font-family:var(--sans)}
-.yt-replay-ov button{background:var(--accent2);color:#fff;border:none;padding:11px 28px;border-radius:10px;font-family:var(--sans);font-weight:700;font-size:.88rem;cursor:pointer;transition:background .2s;}
-.yt-replay-ov button:hover{background:var(--accent3)}
-.yt-wrap:fullscreen,.yt-wrap:-webkit-full-screen{border-radius:0}
-
-/* ══ GOOGLE DRIVE PLAYER ══ */
-.drive-wrap{position:relative;width:100%;height:100%;background:#1a1209;overflow:hidden}
-.drive-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#1a1209}
-.drive-wm{position:absolute;z-index:50;top:14%;left:14%;pointer-events:none;font-family:var(--mono);font-size:clamp(.7rem,1.4vw,1rem);font-weight:900;color:rgba(255,255,255,.55);letter-spacing:2px;white-space:nowrap;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 14px rgba(0,0,0,.65);transition:top 1.5s cubic-bezier(.4,0,.2,1),left 1.5s cubic-bezier(.4,0,.2,1)}
-.drive-shield{position:absolute;inset:0;z-index:40;pointer-events:none;background:linear-gradient(to bottom,rgba(26,18,9,.18),transparent 22%,transparent 82%,rgba(26,18,9,.18))}
-@media print{body{display:none!important}}
-
 @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media(max-width:1100px){.watch-layout{grid-template-columns:280px minmax(0,1fr);gap:18px}}
-@media(max-width:800px){
-  .watch-layout{grid-template-columns:1fr;gap:16px}
-  .sidebar-card{position:relative;top:auto;order:2}
-  .stage-area{order:1}
-  .sidebar-scroll{max-height:260px}
-  .info-grid{grid-template-columns:1fr 1fr}
-  .watch-info{margin-top:14px}
-  .bottom-nav-row{margin-top:12px}
-}
-@media(max-width:600px){
-  main{padding:14px 12px 60px}
-  .back-btn span{display:none}
-  .tab-btn{padding:6px 10px;font-size:.72rem}
-  .q-card{padding:16px 12px}
-  .quiz-nav{flex-wrap:wrap;gap:6px}
-  .q-btn.finish{width:100%;justify-content:center}
-  .info-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .info-chip{padding:12px}
-  .info-chip strong{font-size:.82rem}
-  .sw-chip{padding:12px}
-  .stage-player{border-radius:var(--radius)}
-  .sidebar-scroll{max-height:220px}
-  .watch-layout{gap:12px}
-  .nav-inner{padding:0 12px;gap:8px}
-  .tabs{max-width:none;flex:1}
-  .tab-btn{padding:6px 8px;font-size:.7rem}
-}
-@media(max-width:400px){
-  .tab-btn{padding:5px 7px;font-size:.66rem}
-  main{padding:10px 10px 60px}
-}
+@media(max-width:800px){.watch-layout{grid-template-columns:1fr;gap:16px}.sidebar-card{position:relative;top:auto;order:2}.stage-area{order:1}.sidebar-scroll{max-height:260px}.info-grid{grid-template-columns:1fr 1fr}.watch-info{margin-top:14px}.bottom-nav-row{margin-top:12px}}
+@media(max-width:600px){main{padding:14px 12px 60px}.back-btn span{display:none}.tab-btn{padding:6px 10px;font-size:.72rem}.q-card{padding:16px 12px}.quiz-nav{flex-wrap:wrap;gap:6px}.q-btn.finish{width:100%;justify-content:center}.info-grid{grid-template-columns:1fr 1fr;gap:8px}.info-chip{padding:12px}.info-chip strong{font-size:.82rem}.sw-chip{padding:12px}.stage-player{border-radius:var(--radius)}.sidebar-scroll{max-height:220px}.watch-layout{gap:12px}.nav-inner{padding:0 12px;gap:8px}.tabs{max-width:none;flex:1}.tab-btn{padding:6px 8px;font-size:.7rem}}
+@media(max-width:400px){.tab-btn{padding:5px 7px;font-size:.66rem}main{padding:10px 10px 60px}}
+@media print{body{display:none!important}}
 </style>
 </head>
 <body>
@@ -418,7 +305,6 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
   </nav>
 
   <main>
-    <!-- QUIZ TAB -->
     <div id="tab-quiz">
       <div id="startScreen">
         <span class="start-emoji">🚀</span>
@@ -443,13 +329,8 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
       </div>
     </div>
 
-    <!-- HOMEWORK TAB -->
     <div id="tab-homework" class="hidden"></div>
-
-    <!-- VIDEOS TAB -->
     <div id="tab-videos" class="hidden"><div id="videosContainer"></div></div>
-
-    <!-- PDF TAB -->
     <div id="tab-pdf" class="hidden">
       <div class="pdf-card">
         <div class="pdf-ico">📚</div>
@@ -469,59 +350,16 @@ video.main-vid{position:relative;width:100%;height:100%;outline:none;display:blo
   document.addEventListener('cut',e=>e.preventDefault(),true);
   document.addEventListener('dragstart',e=>e.preventDefault(),true);
   document.addEventListener('selectstart',e=>e.preventDefault(),true);
-
-  function blockKeys(e){
-    const k=(e.key||'').toLowerCase();
-    const blocked =
-      e.keyCode===123 || e.key==='F12' || e.key==='PrintScreen' ||
-      (e.ctrlKey&&e.shiftKey&&['i','j','c','k'].includes(k)) ||
-      (e.ctrlKey&&['u','s','p'].includes(k));
-    if(blocked){
-      e.preventDefault();
-      e.stopPropagation();
-      if(e.key==='PrintScreen'){
-        document.documentElement.style.filter='brightness(0)';
-        setTimeout(()=>{document.documentElement.style.filter='';},900);
-        try{navigator.clipboard&&navigator.clipboard.writeText('Screenshots are disabled on Kalawy Player.');}catch(_){}
-      }
-      return false;
-    }
-  }
-  window.addEventListener('keydown',blockKeys,true);
-  window.addEventListener('keyup',blockKeys,true);
-
-  const kill=()=>{
-    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      document.body.innerHTML='<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);text-align:center"><div><div style="font-size:3rem">🔒</div><h2 style="font-family:serif;margin:14px 0 7px">Access Blocked</h2><p style="color:#9B8E7A;font-size:.88rem">Close developer tools to continue.</p></div></div>';
-    }
-  };
+  function blockKeys(e){const k=(e.key||'').toLowerCase();const blocked=e.keyCode===123||e.key==='F12'||e.key==='PrintScreen'||(e.ctrlKey&&e.shiftKey&&['i','j','c','k'].includes(k))||(e.ctrlKey&&['u','s','p'].includes(k));if(blocked){e.preventDefault();e.stopPropagation();return false;}}
+  window.addEventListener('keydown',blockKeys,true);window.addEventListener('keyup',blockKeys,true);
+  const kill=()=>{if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){document.body.innerHTML='<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);text-align:center"><div><div style="font-size:3rem">🔒</div><h2 style="font-family:serif;margin:14px 0 7px">Access Blocked</h2><p style="color:#9B8E7A;font-size:.88rem">Close developer tools to continue.</p></div></div>';}};
   setInterval(kill,1000);
 })();
 
 /* ── ADBLOCKER DETECTION ── */
-function detectAdBlocker(){
-  return new Promise(resolve=>{
-    const bait=document.createElement('div');
-    bait.setAttribute('id','ads-bait');bait.setAttribute('aria-hidden','true');bait.innerHTML='&nbsp;';
-    bait.style.cssText='height:1px!important;width:1px!important;position:absolute!important;left:-9999px!important;top:-9999px!important;opacity:0!important;pointer-events:none!important';
-    bait.className='ads ad adsbox ad-banner ad-placement ad-unit pub_300x250 pub_728x90 text-ad banner-ad ad-container ad-wrapper sponsor sponsored';
-    document.body.appendChild(bait);
-    setTimeout(()=>{
-      const el=document.getElementById('ads-bait');if(!el){resolve(true);return;}
-      const style=window.getComputedStyle(el);const rect=el.getBoundingClientRect();
-      const hiddenByExtension=style.display==='none'||style.visibility==='hidden'||(style.opacity==='0'&&(rect.width===0||rect.height===0))||el.offsetParent===null||el.clientHeight===0||el.clientWidth===0;
-      el.remove();resolve(hiddenByExtension);
-    },350);
-  });
-}
+function detectAdBlocker(){return new Promise(resolve=>{const bait=document.createElement('div');bait.setAttribute('id','ads-bait');bait.setAttribute('aria-hidden','true');bait.innerHTML='&nbsp;';bait.style.cssText='height:1px!important;width:1px!important;position:absolute!important;left:-9999px!important;top:-9999px!important;opacity:0!important;pointer-events:none!important';bait.className='ads ad adsbox ad-banner ad-placement ad-unit pub_300x250 pub_728x90 text-ad banner-ad ad-container ad-wrapper sponsor sponsored';document.body.appendChild(bait);setTimeout(()=>{const el=document.getElementById('ads-bait');if(!el){resolve(true);return;}const style=window.getComputedStyle(el);const rect=el.getBoundingClientRect();const hiddenByExtension=style.display==='none'||style.visibility==='hidden'||(style.opacity==='0'&&(rect.width===0||rect.height===0))||el.offsetParent===null||el.clientHeight===0||el.clientWidth===0;el.remove();resolve(hiddenByExtension);},350);})}
 function isBraveBrowser(){try{return!!(navigator.brave&&typeof navigator.brave.isBrave==='function');}catch(e){return false;}}
-function showAdBlockWall(){
-  document.getElementById('loadingScreen').style.opacity='0';
-  setTimeout(()=>{document.getElementById('loadingScreen').style.display='none';},300);
-  const sub=document.querySelector('#adBlockWall .adblock-sub');
-  if(sub){sub.textContent=isBraveBrowser()?'Brave Shields detected. Please disable Shields for this site then reload.':'AdBlock detected. Please disable it for this site then reload.';}
-  document.getElementById('adBlockWall').classList.remove('hidden');
-}
+function showAdBlockWall(){document.getElementById('loadingScreen').style.opacity='0';setTimeout(()=>{document.getElementById('loadingScreen').style.display='none';},300);const sub=document.querySelector('#adBlockWall .adblock-sub');if(sub){sub.textContent=isBraveBrowser()?'Brave Shields detected. Please disable Shields for this site then reload.':'AdBlock detected. Please disable it for this site then reload.';}document.getElementById('adBlockWall').classList.remove('hidden');}
 async function checkAdBlocker(){try{const blocked=await detectAdBlocker();if(blocked){showAdBlockWall();return true;}}catch(e){}return false;}
 
 /* ── SUPABASE ── */
@@ -531,9 +369,7 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
 
 const OPT_LETTERS=['a','b','c','d','e','f','g','h','i','j'];
 let currentUser=null,questions=[],curIdx=0,userAns={},lessonData=null;
-let timeLeft=40*60;   // default — will be overridden from DB
-let examDurationMins=40;
-let examTimer,myStudentId='000000';
+let timeLeft=40*60,examDurationMins=40,examTimer,myStudentId='000000';
 let hwData=null,hwUserAns={},hwCurIdx=0,hwDone=false,hwQuestions=[];
 let videosData=[],hwResultsMap={},currentVideoIdx=0;
 
@@ -544,20 +380,123 @@ function swStart(){if(swRunning)return;swRunning=true;swInterval=setInterval(()=
 function swStop(){if(!swRunning)return;swRunning=false;clearInterval(swInterval);}
 function swReset(){swStop();swSeconds=0;}
 
-/* ── YouTube IFrame API ── */
-let ytApiReady=false;
-let activeYTPlayer=null;
-let activeYTWmTimer=null;
-let activeDriveWmTimer=null;
-window.onYouTubeIframeAPIReady=function(){ytApiReady=true;};
+/* ── Shaka Player custom seek buttons ── */
+class SeekBack10Button extends shaka.ui.Element {
+  constructor(parent,controls){
+    super(parent,controls);
+    this.video_=controls.getVideo();this.player_=controls.getPlayer();
+    this.button_=document.createElement('button');
+    this.button_.classList.add('shaka-controls-button','shaka-seek-btn','shaka-tooltip');
+    this.button_.setAttribute('aria-label','Back 10 seconds');
+    const label=document.createElement('span');
+    label.innerHTML=`<svg class="svg-controller"><path d="M15 3c-3.054 0-5.84 1.155-7.96 3.04L5 4v6h6L8.455 7.455A9.935 9.935 0 0115 5c5.535 0 10 4.465 10 10s-4.465 10-10 10S5 20.535 5 15a1 1 0 10-2 0c0 6.615 5.385 12 12 12s12-5.385 12-12S21.615 3 15 3zm2.688 8.35c-1.816 0-2.96 1.36-2.96 3.695 0 2.334 1.127 3.73 2.96 3.73 1.826 0 2.958-1.4 2.958-3.724 0-2.344-1.146-3.701-2.959-3.701zm-6.553.19l-1.791 1.22v1.543l1.699-1.149h.092v5.432h1.793v-7.047h-1.793zm6.553 1.187c.684 0 1.142.77 1.142 2.318 0 1.558-.458 2.353-1.142 2.353-.684 0-1.14-.795-1.14-2.353 0-1.548.456-2.318 1.14-2.318z"/></svg>`;
+    this.button_.appendChild(label);parent.appendChild(this.button_);
+    this.eventManager.listen(this.button_,'click',()=>{const range=this.player_&&this.player_.seekRange?this.player_.seekRange():{start:0,end:this.video_.duration||0};this.video_.currentTime=Math.max(range.start,(this.video_.currentTime||0)-10);});
+  }
+  release(){super.release();if(this.button_)this.button_.remove();}
+}
+class SeekForward10Button extends shaka.ui.Element {
+  constructor(parent,controls){
+    super(parent,controls);
+    this.video_=controls.getVideo();this.player_=controls.getPlayer();
+    this.button_=document.createElement('button');
+    this.button_.classList.add('shaka-controls-button','shaka-seek-btn','shaka-tooltip');
+    this.button_.setAttribute('aria-label','Forward 10 seconds');
+    const label=document.createElement('span');
+    label.innerHTML=`<svg class="svg-controller"><path d="M15 3C8.385 3 3 8.385 3 15s5.385 12 12 12 12-5.385 12-12a1 1 0 10-2 0c0 5.535-4.465 10-10 10S5 20.535 5 15 9.465 5 15 5c2.512 0 4.79.931 6.545 2.455L19 10h6V4l-2.04 2.04A11.955 11.955 0 0015 3zm2.688 8.35c-1.816 0-2.96 1.36-2.96 3.695 0 2.334 1.127 3.73 2.96 3.73 1.826 0 2.958-1.4 2.958-3.724 0-2.344-1.146-3.701-2.959-3.701zm-6.553.19l-1.791 1.22v1.543l1.699-1.149h.092v5.432h1.793v-7.047h-1.793zm6.553 1.187c.684 0 1.142.77 1.142 2.318 0 1.558-.458 2.353-1.142 2.353-.684 0-1.14-.795-1.14-2.353 0-1.548.456-2.318 1.14-2.318z"/></svg>`;
+    this.button_.appendChild(label);parent.appendChild(this.button_);
+    this.eventManager.listen(this.button_,'click',()=>{const range=this.player_&&this.player_.seekRange?this.player_.seekRange():{start:0,end:this.video_.duration||0};this.video_.currentTime=Math.min(range.end-0.1,(this.video_.currentTime||0)+10);});
+  }
+  release(){super.release();if(this.button_)this.button_.remove();}
+}
+function createShakaFactory(Cls){
+  if(typeof shaka!=='undefined'&&shaka.ui&&shaka.ui.Element&&typeof shaka.ui.Element.Factory==='function')return new shaka.ui.Element.Factory(Cls);
+  return{create:(parent,controls)=>new Cls(parent,controls)};
+}
+shaka.ui.Controls.registerElement('seek_backward_10',createShakaFactory(SeekBack10Button));
+shaka.ui.Controls.registerElement('seek_forward_10',createShakaFactory(SeekForward10Button));
+
+/* ── Active Shaka instance tracker ── */
+let activeShakaPlayer=null,activeShakaUI=null,activeShakaWmTimer=null;
+
+function destroyActivePlayer(){
+  clearInterval(activeShakaWmTimer);activeShakaWmTimer=null;
+  if(activeShakaUI){try{activeShakaUI.destroy();}catch(e){}activeShakaUI=null;}
+  if(activeShakaPlayer){try{activeShakaPlayer.destroy();}catch(e){}activeShakaPlayer=null;}
+}
+
+/* ── Init Shaka Player ── */
+async function initShakaPlayer(container, videoUrl, studentId){
+  destroyActivePlayer();
+  container.innerHTML='<div class="shaka-wrap"><div data-shaka-player-container><video autoplay data-shaka-player id="shakaVid"></video></div><div class="shaka-wm" id="shakaWm">'+studentId+'</div></div>';
+
+  const video=document.getElementById('shakaVid');
+  const shakaContainer=container.querySelector('[data-shaka-player-container]');
+
+  shaka.polyfill.installAll();
+  if(!shaka.Player.isBrowserSupported()){console.warn('Shaka not supported');return;}
+
+  const player=new shaka.Player();
+  await player.attach(video);
+  activeShakaPlayer=player;
+
+  const ui=new shaka.ui.Overlay(player,shakaContainer,video);
+  activeShakaUI=ui;
+
+  ui.configure({
+    addBigPlayButton:false,
+    enableFullscreenOnRotation:true,
+    enableKeyboardPlaybackControlsInWindow:true,
+    seekOnTaps:true,
+    enableTooltips:true,
+    seekBarColors:{played:'#2D5A3D'},
+    customContextMenu:true,
+    playbackRates:[0.5,0.75,1,1.25,1.5,1.75,2,3,4],
+    controlPanelElements:['play_pause','seek_backward_10','seek_forward_10','mute','volume','time_and_duration','spacer','overflow_menu','fullscreen'],
+    overflowMenuButtons:['captions','language','chapter','playback_rate','quality'],
+    contextMenuElements:['loop']
+  });
+
+  try{await player.load(videoUrl);}catch(e){console.error('Shaka load error:',e);}
+
+  /* stopwatch hooks */
+  video.addEventListener('play',()=>swStart());
+  video.addEventListener('pause',()=>swStop());
+  video.addEventListener('ended',()=>swStop());
+
+  /* watermark movement */
+  const wm=document.getElementById('shakaWm');
+  const spots=[['8%','10%'],['12%','62%'],['46%','22%'],['70%','58%'],['32%','72%'],['76%','12%']];
+  let si=0;
+  if(wm){wm.style.top=spots[0][0];wm.style.left=spots[0][1];}
+  activeShakaWmTimer=setInterval(()=>{si=(si+1)%spots.length;if(wm){wm.style.top=spots[si][0];wm.style.left=spots[si][1];}},5000);
+}
+
+/* ── Google Drive fallback (iframe) ── */
+function extractDriveId(url){if(!url)return null;let m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/);if(m)return m[1];m=url.match(/[?&]id=([^&]+)/);return m?m[1]:null;}
+function getDrivePreviewUrl(url){const id=extractDriveId(url);return id?'https://drive.google.com/file/d/'+id+'/preview':null;}
+function isDriveUrl(url){return!!extractDriveId(url);}
+
+/* ── YouTube detection (still supported via Shaka if direct m3u8; else fallback iframe) ── */
+function extractYTId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);return m?m[1]:null;}
+
+function isHlsOrMp4(url){if(!url)return false;return /\.(m3u8|mp4|webm|ogg|mov)(\?.*)?$/i.test(url)||url.includes('.m3u8')||url.includes('.mp4');}
+
+function extractVideos(snap){
+  const names=['videos','video','video_links','videoLinks','video_urls','videoData','links','media'];
+  for(const name of names){if(snap[name]!==undefined&&snap[name]!==null){let p=snap[name];if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){continue;}}if(Array.isArray(p)&&p.length>0)return normalizeVideos(p);if(typeof p==='object'&&!Array.isArray(p)){if(p.url||p.name||p.link)return normalizeVideos([p]);const vals=Object.values(p).filter(v=>v&&typeof v==='object');if(vals.length>0&&(vals[0].url||vals[0].name||vals[0].link))return normalizeVideos(vals);}}}
+  for(const[key,val] of Object.entries(snap)){if(['id','name','questions','pdf','created_at','validitydays','examduration','about'].includes(key))continue;const str=typeof val==='string'?val:JSON.stringify(val);if(str&&(str.includes('youtu')||str.includes('youtube')||str.includes('drive.google.com')||str.includes('.m3u8')||str.includes('.mp4'))){let p=val;if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){}}if(Array.isArray(p))return normalizeVideos(p);if(typeof p==='object'&&p.url)return normalizeVideos([p]);if(typeof val==='string')return normalizeVideos([{url:val,name:'Video 1'}]);}}
+  return null;
+}
+function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video_url||v.src||'',name:v.name||v.title||v.label||'Video '+(i+1),requireHw:!!(v.requireHw||v.require_hw||false),hwId:v.hwId||v.hw_id||''}));}
+
+const pageParams=new URLSearchParams(location.search);
 
 function showLoader(t=''){const s=document.getElementById('loadingScreen');document.getElementById('ldTxt').textContent=t||'Loading…';s.style.display='flex';void s.offsetWidth;s.style.opacity='1';}
 function hideLoader(){const s=document.getElementById('loadingScreen');s.style.opacity='0';setTimeout(()=>s.style.display='none',300);}
 
 window.switchTab=(tab)=>{
-  destroyActiveYT();
-  /* stop stopwatch when leaving videos tab */
-  if(tab!=='videos')swStop();
+  if(tab!=='videos'){destroyActivePlayer();swStop();}
   showLoader('Loading…');
   setTimeout(()=>{
     document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
@@ -569,201 +508,11 @@ window.switchTab=(tab)=>{
   },300);
 };
 
-function destroyActiveYT(){
-  clearTimeout(activeYTWmTimer);
-  clearInterval(activeDriveWmTimer);
-  activeDriveWmTimer=null;
-  if(activeYTPlayer){try{activeYTPlayer.destroy();}catch(e){}activeYTPlayer=null;}
-}
-
-function extractYTId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);return m?m[1]:null;}
-function extractDriveId(url){
-  if(!url)return null;
-  let m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if(m)return m[1];
-  m=url.match(/[?&]id=([^&]+)/);
-  if(m)return m[1];
-  return null;
-}
-function getDrivePreviewUrl(url){const id=extractDriveId(url);return id?'https://drive.google.com/file/d/'+id+'/preview':null;}
-function isDriveUrl(url){return !!extractDriveId(url);}
-function isDirectVid(url){if(!url)return false;return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url)||(!url.includes('youtu')&&!url.includes('youtube')&&!url.includes('drive.google.com')&&url.startsWith('http'));}
-function moveDriveWatermark(){
-  clearInterval(activeDriveWmTimer);
-  const wm=document.getElementById('driveWm');
-  if(!wm)return;
-  const spots=[['8%','10%'],['12%','62%'],['46%','22%'],['70%','58%'],['32%','72%'],['76%','12%']];
-  let i=0;
-  activeDriveWmTimer=setInterval(()=>{i=(i+1)%spots.length;wm.style.top=spots[i][0];wm.style.left=spots[i][1];},4500);
-}
-
-function extractVideos(snap){
-  const names=['videos','video','video_links','videoLinks','video_urls','videoData','links','media'];
-  for(const name of names){if(snap[name]!==undefined&&snap[name]!==null){let p=snap[name];if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){continue;}}if(Array.isArray(p)&&p.length>0)return normalizeVideos(p);if(typeof p==='object'&&!Array.isArray(p)){if(p.url||p.name||p.link)return normalizeVideos([p]);const vals=Object.values(p).filter(v=>v&&typeof v==='object');if(vals.length>0&&(vals[0].url||vals[0].name||vals[0].link))return normalizeVideos(vals);}}}
-  for(const[key,val] of Object.entries(snap)){if(['id','name','questions','pdf','created_at','validitydays','examduration','about'].includes(key))continue;const str=typeof val==='string'?val:JSON.stringify(val);if(str&&(str.includes('youtu')||str.includes('youtube')||str.includes('drive.google.com'))){let p=val;if(typeof p==='string'){try{p=JSON.parse(p);}catch(e){}}if(Array.isArray(p))return normalizeVideos(p);if(typeof p==='object'&&p.url)return normalizeVideos([p]);if(typeof val==='string'&&(extractYTId(val)||extractDriveId(val)))return normalizeVideos([{url:val,name:'Video 1'}]);}}
-  return null;
-}
-function normalizeVideos(raw){return raw.map((v,i)=>({url:v.url||v.link||v.video_url||v.src||'',name:v.name||v.title||v.label||'Video '+(i+1),requireHw:!!(v.requireHw||v.require_hw||false),hwId:v.hwId||v.hw_id||''}));}
-
-const pageParams=new URLSearchParams(location.search);
-const DESKTOP_MODE=pageParams.get('desktop')==='1';
-const REQUESTED_VIDEO_INDEX=Math.max(0,parseInt(pageParams.get('video')||'0',10)||0);
-const DESKTOP_PROTOCOL='kalawyplayer://open';
-
-function buildDesktopPlayerUrl(idx){const v=videosData[idx];if(!v)return '';const lessonId=pageParams.get('id')||'';const title=encodeURIComponent(v.name||('Lecture '+(idx+1)));const videoUrl=encodeURIComponent(v.url||'');const student=encodeURIComponent(myStudentId||'000000');return DESKTOP_PROTOCOL+'?lesson='+encodeURIComponent(lessonId)+'&video='+idx+'&student='+student+'&title='+title+'&url='+videoUrl;}
-function openDesktopPlayerOrFallback(idx){const appUrl=buildDesktopPlayerUrl(idx);if(!appUrl){goToVideo(idx);switchTab('videos');return;}const lessonId=pageParams.get('id')||'';const fallbackUrl='/lesson?id='+encodeURIComponent(lessonId)+'&video='+idx+'&desktop=1';let hiddenTriggered=false;const onHide=function(){hiddenTriggered=true;cleanup();};const cleanup=function(){window.removeEventListener('blur',onHide);document.removeEventListener('visibilitychange',onVis);};const onVis=function(){if(document.hidden){hiddenTriggered=true;cleanup();}};window.addEventListener('blur',onHide,{once:true});document.addEventListener('visibilitychange',onVis);location.href=appUrl;setTimeout(function(){cleanup();if(!hiddenTriggered)location.href=fallbackUrl;},1200);}
-function applyInitialVideoLaunch(){if(videosData&&videosData.length>0){currentVideoIdx=Math.min(Math.max(REQUESTED_VIDEO_INDEX,0),videosData.length-1);}if(DESKTOP_MODE){document.getElementById('btn-videos-tab').classList.remove('locked');switchTab('videos');}}
-
-/* ════════════════════════════
-   YOUTUBE PLAYER
-════════════════════════════ */
-function initYTPlayer(wrapper,videoId,studentId){
-  const YT_SPEEDS=[0.5,0.75,1,1.25,1.5,1.75,2];
-  wrapper.innerHTML=
-    '<div class="yt-wrap" id="ytWrap">'
-    +'<div class="yt-iframe-zone"><div id="ytInnerPlayer"></div></div>'
-    +'<div class="yt-click-layer" id="ytClickLayer"></div>'
-    +'<div class="yt-big-play" id="ytBigPlay"><div class="yt-big-circle" id="ytBigCircle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
-    +'<div class="yt-seek-fl left-fl" id="ytSeekL"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>−10s</div>'
-    +'<div class="yt-seek-fl right-fl" id="ytSeekR"><svg viewBox="0 0 24 24"><path d="M18.92 13.12C17.87 9.93 14.86 7.62 11.32 7.62c-1.96 0-3.73.72-5.12 1.88L2.83 6.13H2v9h.83l4.17-4.17a5.99 5.99 0 014.32-1.74c2.97 0 5.45 2.02 6.17 4.78l2.41-.78z"/></svg>+10s</div>'
-    +'<div class="yt-replay-ov" id="ytReplay"><span>Video ended</span><button id="ytReplayBtn">↺ Replay</button></div>'
-    +'<div class="yt-wm" id="ytWm">'+studentId+'</div>'
-    +'<div class="yt-ctrl" id="ytCtrl">'
-    +'<div class="yt-prog-wrap" id="ytProgWrap"><div class="yt-prog-fill" id="ytProgFill" style="width:0%"></div></div>'
-    +'<div class="yt-row">'
-    +'<div class="yt-left">'
-    +'<button class="yt-btn" id="ytPP"><svg id="ytPPIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>'
-    +'<button class="yt-btn" id="ytRew"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>'
-    +'<button class="yt-btn" id="ytFwd"><svg viewBox="0 0 24 24"><path d="M18.92 13.12C17.87 9.93 14.86 7.62 11.32 7.62c-1.96 0-3.73.72-5.12 1.88L2.83 6.13H2v9h.83l4.17-4.17a5.99 5.99 0 014.32-1.74c2.97 0 5.45 2.02 6.17 4.78l2.41-.78z"/></svg></button>'
-    +'<div class="yt-vol-wrap"><button class="yt-btn" id="ytVolBtn"><svg id="ytVolIcon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg></button>'
-    +'<input type="range" class="yt-vol-sl" id="ytVolSl" min="0" max="100" value="80"></div>'
-    +'<span class="yt-time" id="ytTime">0:00 / 0:00</span>'
-    +'</div>'
-    +'<div class="yt-right">'
-    +'<button class="yt-spd-btn" id="ytSpdBtn">1×</button>'
-    +'<button class="yt-btn" id="ytFs"><svg id="ytFsIcon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>'
-    +'</div>'
-    +'</div>'
-    +'</div>'
-    +'<div class="yt-spd-popup" id="ytSpdPop"><div class="yt-spd-popup-ttl">Speed</div><ul id="ytSpdList">'
-    +YT_SPEEDS.map(s=>'<li data-speed="'+s+'" class="'+(s===1?'active':'')+'">'+( s===1?'Normal':s+'×')+'</li>').join('')
-    +'</ul></div>'
-    +'</div>';
-
-  const wrap=document.getElementById('ytWrap');
-  const clickLayer=document.getElementById('ytClickLayer');
-  const bigPlay=document.getElementById('ytBigPlay');
-  const bigCircle=document.getElementById('ytBigCircle');
-  const ppBtn=document.getElementById('ytPP');
-  const ppIcon=document.getElementById('ytPPIcon');
-  const rewBtn=document.getElementById('ytRew');
-  const fwdBtn=document.getElementById('ytFwd');
-  const progWrap=document.getElementById('ytProgWrap');
-  const progFill=document.getElementById('ytProgFill');
-  const timeEl=document.getElementById('ytTime');
-  const volBtn=document.getElementById('ytVolBtn');
-  const volIcon=document.getElementById('ytVolIcon');
-  const volSl=document.getElementById('ytVolSl');
-  const spdBtn=document.getElementById('ytSpdBtn');
-  const spdPop=document.getElementById('ytSpdPop');
-  const spdList=document.getElementById('ytSpdList');
-  const fsBtn=document.getElementById('ytFs');
-  const fsIcon=document.getElementById('ytFsIcon');
-  const wmEl=document.getElementById('ytWm');
-  const seekL=document.getElementById('ytSeekL');
-  const seekR=document.getElementById('ytSeekR');
-  const replayOv=document.getElementById('ytReplay');
-  const replayBtn=document.getElementById('ytReplayBtn');
-
-  let vol=80,muted=false,dragging=false,ctrlTimer,speed=1;
-
-  function moveWm(){const px=8,py=10;wmEl.style.top=(py+Math.random()*(100-py*2))+'%';wmEl.style.left=(px+Math.random()*(100-px*2))+'%';activeYTWmTimer=setTimeout(moveWm,2600+Math.random()*1800);}
-  moveWm();
-  document.addEventListener('fullscreenchange',function(){clearTimeout(activeYTWmTimer);moveWm();});
-
-  function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;}
-  function setPP(st){ppIcon.innerHTML=st==='pause'?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>';}
-  function flashSeek(el){el.style.opacity='1';setTimeout(()=>el.style.opacity='0',550);}
-  function showCtrl(){wrap.classList.add('ctrl-on');clearTimeout(ctrlTimer);ctrlTimer=setTimeout(()=>{try{if(activeYTPlayer&&activeYTPlayer.getPlayerState()===1)wrap.classList.remove('ctrl-on');}catch(e){}},3200);}
-  function updateVolIcon(){const v=muted?0:vol;if(v===0)volIcon.innerHTML='<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';else if(v<40)volIcon.innerHTML='<path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/>';else volIcon.innerHTML='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';}
-
-  function buildPlayer(){
-    activeYTPlayer=new YT.Player('ytInnerPlayer',{
-      videoId:videoId,
-      playerVars:{controls:0,disablekb:1,fs:0,rel:0,iv_load_policy:3,modestbranding:1,showinfo:0,playsinline:1,cc_load_policy:0,autohide:1,enablejsapi:1,origin:location.origin},
-      events:{
-        onReady:function(e){
-          activeYTPlayer.setVolume(vol);
-          setInterval(function(){
-            if(!activeYTPlayer||!activeYTPlayer.getDuration)return;
-            const dur=activeYTPlayer.getDuration()||0;const cur=activeYTPlayer.getCurrentTime()||0;
-            if(!dragging&&dur>0)progFill.style.width=(cur/dur*100)+'%';
-            timeEl.textContent=fmt(cur)+' / '+fmt(dur);
-          },250);
-        },
-        onStateChange:function(e){
-          const S=YT.PlayerState;
-          if(e.data===S.PLAYING){
-            setPP('pause');bigPlay.classList.add('gone');replayOv.classList.remove('show');
-            wrap.classList.add('ctrl-on');setTimeout(()=>wrap.classList.remove('ctrl-on'),2200);
-            swStart();  // ← start stopwatch when video plays
-          }
-          if(e.data===S.PAUSED){setPP('play');wrap.classList.add('ctrl-on');swStop();}
-          if(e.data===S.ENDED){setPP('play');replayOv.classList.add('show');swStop();}
-        }
-      }
-    });
-  }
-  if(ytApiReady){buildPlayer();}
-  else{const orig=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=function(){ytApiReady=true;if(orig)orig();buildPlayer();};}
-
-  function togglePlay(){if(!activeYTPlayer)return;try{const st=activeYTPlayer.getPlayerState();if(st===1)activeYTPlayer.pauseVideo();else activeYTPlayer.playVideo();}catch(e){}}
-  let clickTm;
-  clickLayer.addEventListener('click',function(){clearTimeout(clickTm);clickTm=setTimeout(togglePlay,210);showCtrl();});
-  clickLayer.addEventListener('dblclick',function(){clearTimeout(clickTm);toggleFullscreen();});
-  bigCircle.addEventListener('click',function(e){e.stopPropagation();if(activeYTPlayer)activeYTPlayer.playVideo();});
-  ppBtn.addEventListener('click',togglePlay);
-
-  function seekToRatio(e){if(!activeYTPlayer)return;const rect=progWrap.getBoundingClientRect();const ratio=Math.max(0,Math.min((e.clientX-rect.left)/rect.width,1));const dur=activeYTPlayer.getDuration()||0;activeYTPlayer.seekTo(ratio*dur,true);progFill.style.width=(ratio*100)+'%';}
-  progWrap.addEventListener('pointerdown',function(e){dragging=true;progWrap.setPointerCapture(e.pointerId);seekToRatio(e);});
-  progWrap.addEventListener('pointermove',function(e){if(dragging)seekToRatio(e);});
-  progWrap.addEventListener('pointerup',function(){dragging=false;});
-
-  rewBtn.addEventListener('click',function(){if(!activeYTPlayer)return;activeYTPlayer.seekTo(Math.max(0,activeYTPlayer.getCurrentTime()-10),true);flashSeek(seekL);});
-  fwdBtn.addEventListener('click',function(){if(!activeYTPlayer)return;activeYTPlayer.seekTo(Math.min(activeYTPlayer.getDuration(),activeYTPlayer.getCurrentTime()+10),true);flashSeek(seekR);});
-
-  volSl.value=80;
-  volSl.addEventListener('input',function(){vol=parseInt(volSl.value);muted=vol===0;if(activeYTPlayer){if(muted)activeYTPlayer.mute();else{activeYTPlayer.unMute();activeYTPlayer.setVolume(vol);}}updateVolIcon();});
-  volBtn.addEventListener('click',function(){muted=!muted;if(activeYTPlayer){if(muted)activeYTPlayer.mute();else{activeYTPlayer.unMute();activeYTPlayer.setVolume(vol);}}updateVolIcon();});
-
-  spdList.querySelectorAll('li').forEach(function(li){li.addEventListener('click',function(){speed=parseFloat(li.dataset.speed);if(activeYTPlayer)activeYTPlayer.setPlaybackRate(speed);spdBtn.textContent=speed===1?'1×':speed+'×';spdList.querySelectorAll('li').forEach(x=>x.classList.remove('active'));li.classList.add('active');spdPop.classList.remove('open');});});
-  spdBtn.addEventListener('click',function(e){e.stopPropagation();spdPop.classList.toggle('open');});
-  document.addEventListener('click',function(e){if(!spdPop.contains(e.target)&&e.target!==spdBtn)spdPop.classList.remove('open');});
-
-  function toggleFullscreen(){if(!document.fullscreenElement){wrap.requestFullscreen().catch(()=>{});fsIcon.innerHTML='<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>';}else{document.exitFullscreen();fsIcon.innerHTML='<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';}}
-  fsBtn.addEventListener('click',toggleFullscreen);
-  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement)fsIcon.innerHTML='<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';});
-
-  replayBtn.addEventListener('click',function(){if(activeYTPlayer){activeYTPlayer.seekTo(0,true);activeYTPlayer.playVideo();replayOv.classList.remove('show');}});
-  wrap.addEventListener('mousemove',showCtrl);wrap.addEventListener('touchstart',showCtrl,{passive:true});wrap.classList.add('ctrl-on');
-
-  document.addEventListener('keydown',function(e){
-    if(!activeYTPlayer)return;const tag=document.activeElement&&document.activeElement.tagName;if(tag==='INPUT'||tag==='TEXTAREA')return;
-    if(e.code==='Space'||e.code==='KeyK'){e.preventDefault();togglePlay();}
-    if(e.code==='ArrowLeft'){activeYTPlayer.seekTo(Math.max(0,activeYTPlayer.getCurrentTime()-10),true);flashSeek(seekL);}
-    if(e.code==='ArrowRight'){activeYTPlayer.seekTo(Math.min(activeYTPlayer.getDuration(),activeYTPlayer.getCurrentTime()+10),true);flashSeek(seekR);}
-    if(e.code==='KeyF')toggleFullscreen();
-    if(e.code==='KeyM'){muted=!muted;if(muted)activeYTPlayer.mute();else{activeYTPlayer.unMute();activeYTPlayer.setVolume(vol);}updateVolIcon();}
-  });
-  updateVolIcon();
-}
-
 /* ════════════════════════════
    VIDEO PAGE RENDER
 ════════════════════════════ */
 function renderVideoPage(){
-  destroyActiveYT();
-  swReset();  // reset stopwatch for new video
+  destroyActivePlayer();swReset();
   const container=document.getElementById('videosContainer');
   if(!videosData||videosData.length===0){container.innerHTML='<div class="empty-vid"><div class="ei">📺</div><div class="et">No Videos Yet</div><div class="es">Video lessons will appear here once added.</div></div>';return;}
   if(currentVideoIdx>=videosData.length)currentVideoIdx=videosData.length-1;
@@ -772,26 +521,27 @@ function renderVideoPage(){
   const isLocked=v.requireHw&&!hwResultsMap[v.hwId];
   const ytId=extractYTId(v.url);
   const drivePreview=getDrivePreviewUrl(v.url);
-  const isDirect=isDirectVid(v.url);
 
   let sideItems='';
   videosData.forEach(function(vid,i){
     const locked=vid.requireHw&&!hwResultsMap[vid.hwId];
-    const divClick=locked?'':( i===currentVideoIdx?'':'goToVideo('+i+')' );
-    const btnClick=locked?'':( DESKTOP_MODE?'goToVideo('+i+')':'openDesktopPlayerOrFallback('+i+')' );
-    const activeClass=i===currentVideoIdx?'active':'';const lockedClass=locked?'locked':'';const vidName=vid.name||('Lecture '+(i+1));
-    sideItems+='<div class="side-item '+activeClass+' '+lockedClass+'" onclick="'+divClick+'">'
-      +'<div class="side-head"><span class="side-dot">'+(i+1)+'</span><div class="side-copy"><div class="side-title">'+vidName+'</div>'
-      +'<button class="side-play" '+(locked?'disabled':'')+' onclick="event.stopPropagation();'+btnClick+'">'
-      +(locked?'🔒 Locked':(DESKTOP_MODE?'▶ Play':'▶ Open in App'))+'</button></div></div></div>';
+    const activeClass=i===currentVideoIdx?'active':'';const lockedClass=locked?'locked':'';
+    sideItems+='<div class="side-item '+activeClass+' '+lockedClass+'" onclick="'+(locked?'':'goToVideo('+i+')')+'">'
+      +'<div class="side-head"><span class="side-dot">'+(i+1)+'</span><div class="side-copy"><div class="side-title">'+(vid.name||'Video '+(i+1))+'</div>'
+      +'<button class="side-play" '+(locked?'disabled':'')+' onclick="event.stopPropagation();'+(locked?'':'goToVideo('+i+')')+'">'
+      +(locked?'🔒 Locked':'▶ Play')+'</button></div></div></div>';
   });
 
   let playerHtml='';
-  if(isLocked){playerHtml='<div class="video-locked-ov"><div class="lk-emoji">🔒</div><div class="lk-title">Video Locked</div><div class="lk-sub">Complete the homework assignment first to unlock this video.</div><button class="lk-btn" onclick="switchTab(\'homework\')">Go to Homework →</button></div>';}
-  else if(ytId){playerHtml='<div id="ytPlayerSlot" style="width:100%;height:100%"></div>';}
-  else if(drivePreview){playerHtml='<div class="drive-wrap"><iframe src="'+drivePreview+'" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe><div class="drive-shield"></div><div class="drive-wm" id="driveWm">'+(myStudentId||'KALAWY')+'</div></div>';}
-  else if(isDirect){playerHtml='<div id="mp4Slot" style="width:100%;height:100%"></div>';}
-  else{playerHtml='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);background:var(--bg2)"><div style="font-size:2.5rem">⚠️</div><div style="font-size:.85rem">Could not load video</div></div>';}
+  if(isLocked){
+    playerHtml='<div class="video-locked-ov"><div class="lk-emoji">🔒</div><div class="lk-title">Video Locked</div><div class="lk-sub">Complete the homework assignment first to unlock this video.</div><button class="lk-btn" onclick="switchTab(\'homework\')">Go to Homework →</button></div>';
+  } else if(isDriveUrl(v.url)&&!ytId){
+    /* Google Drive: use iframe (Shaka can't play Drive links) */
+    playerHtml='<div style="position:absolute;inset:0"><iframe src="'+drivePreview+'" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;border:0;background:#1a1209" referrerpolicy="no-referrer"></iframe><div class="shaka-wm" id="shakaWm" style="position:absolute;top:10%;left:12%;z-index:50">'+myStudentId+'</div></div>';
+  } else {
+    /* Shaka handles HLS, DASH, MP4, YouTube (via plugin or direct embed) */
+    playerHtml='<div id="shakaSlot" style="position:absolute;inset:0;width:100%;height:100%"></div>';
+  }
 
   const vidTitle=v.name||('Lecture '+(currentVideoIdx+1));
   const statusColor=isLocked?'var(--red)':'var(--accent2)';
@@ -799,11 +549,7 @@ function renderVideoPage(){
   const prevDisabled=currentVideoIdx===0?'disabled':'';
   const nextDisabled=currentVideoIdx>=videosData.length-1?'disabled':'';
   const lessonAbout=lessonData?.about||'';
-
-  /* About block for sidebar */
-  const aboutSidebarHtml=lessonAbout
-    ?'<div class="about-sidebar"><div class="about-sidebar-title">About This Lesson</div><div class="about-sidebar-body">'+lessonAbout.replace(/\n/g,'<br>')+'</div></div>'
-    :'';
+  const aboutSidebarHtml=lessonAbout?'<div class="about-sidebar"><div class="about-sidebar-title">About This Lesson</div><div class="about-sidebar-body">'+lessonAbout.replace(/\n/g,'<br>')+'</div></div>':'';
 
   container.innerHTML=
     '<div class="watch-layout">'
@@ -822,100 +568,45 @@ function renderVideoPage(){
     +'<div class="info-chip"><span>Progress</span><strong>'+(currentVideoIdx+1)+' / '+videosData.length+'</strong></div>'
     +'<div class="info-chip"><span>Status</span><strong style="color:'+statusColor+'">'+statusText+'</strong></div>'
     +'<div class="sw-chip" id="swChip"><span>⏱ Watch Time</span><strong id="swVal">0:00</strong></div>'
-    +'</div>'
-    +'</div>'
+    +'</div></div>'
     +'<div class="bottom-nav-row">'
     +'<button class="vid-page-btn" onclick="videoPrev()" '+prevDisabled+'><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> Prev</button>'
     +'<span class="vid-page-ind">'+(currentVideoIdx+1)+' / '+videosData.length+'</span>'
     +'<button class="vid-page-btn" onclick="videoNext()" '+nextDisabled+'>Next <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>'
-    +'</div>'
-    +'</section>'
-    +'</div>';
+    +'</div></section></div>';
 
-  if(ytId&&!isLocked){const slot=document.getElementById('ytPlayerSlot');if(slot)initYTPlayer(slot,ytId,myStudentId);}
-  if(drivePreview&&!isLocked){moveDriveWatermark();swStart();}
-  if(isDirect&&!isLocked){const slot=document.getElementById('mp4Slot');if(slot)initMP4Player(slot,v.url,myStudentId);}
+  /* Attach Shaka after DOM is ready */
+  if(!isLocked&&!isDriveUrl(v.url)){
+    const slot=document.getElementById('shakaSlot');
+    if(slot){
+      /* For YouTube, convert to embed URL for Shaka or use direct stream */
+      let playUrl=v.url;
+      if(ytId)playUrl='https://www.youtube.com/embed/'+ytId+'?enablejsapi=1';
+      initShakaPlayer(slot,playUrl,myStudentId);
+    }
+  } else if(isDriveUrl(v.url)&&!isLocked){
+    /* Drive watermark movement */
+    const wm=document.getElementById('shakaWm');
+    const spots=[['8%','10%'],['12%','62%'],['46%','22%'],['70%','58%'],['32%','72%'],['76%','12%']];
+    let si=0;
+    activeShakaWmTimer=setInterval(()=>{si=(si+1)%spots.length;if(wm){wm.style.top=spots[si][0];wm.style.left=spots[si][1];}},5000);
+    swStart();
+  }
 }
 
-window.goToVideo=function(idx){destroyActiveYT();currentVideoIdx=idx;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});};
-window.videoNext=function(){if(currentVideoIdx<videosData.length-1){destroyActiveYT();currentVideoIdx++;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
-window.videoPrev=function(){if(currentVideoIdx>0){destroyActiveYT();currentVideoIdx--;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
-
-/* ════ MP4 PLAYER ════ */
-function initMP4Player(wrapper,videoUrl,studentId){
-  const SPEEDS=[0.5,0.75,1,1.25,1.5,1.75,2];
-  wrapper.innerHTML='<div class="mp4-wrap">'
-    +'<div class="mp4-loader"></div>'
-    +'<video class="main-vid" preload="metadata"><source src="'+videoUrl+'" type="video/mp4"></video>'
-    +'<div class="mp4-wm">ID: '+studentId+'</div>'
-    +'<div class="vp-controls">'
-    +'<div class="vp-progress"><div class="vp-bar" style="width:0%"></div></div>'
-    +'<div class="vp-row"><div class="vp-left">'
-    +'<div class="vp-icon vp-rew" title="−10s"><i class="material-icons">replay_10</i></div>'
-    +'<div class="vp-icon vp-pp" title="Play"><i class="material-icons">play_arrow</i></div>'
-    +'<div class="vp-icon vp-fwd" title="+10s"><i class="material-icons">forward_10</i></div>'
-    +'<div class="vp-vol-wrap"><div class="vp-icon vp-vol-btn"><i class="material-icons">volume_up</i></div><input type="range" min="0" max="100" value="80" class="vol-slider"></div>'
-    +'<div class="vp-time"><span class="vp-cur">0:00</span> / <span class="vp-dur">0:00</span></div>'
-    +'</div><div class="vp-right">'
-    +'<div class="vp-speed" title="Speed">1×</div>'
-    +'<div class="vp-icon vp-pip" title="PiP"><i class="material-icons">picture_in_picture_alt</i></div>'
-    +'<div class="vp-icon vp-fs" title="Fullscreen"><i class="material-icons">fullscreen</i></div>'
-    +'</div></div></div>'
-    +'<div class="vp-settings-popup vp-popup"><div class="vp-popup-title">Speed</div><ul>'
-    +SPEEDS.map(s=>'<li data-speed="'+s+'" class="'+(s===1?'active':'')+'">'+( s===1?'Normal':s+'×' )+'</li>').join('')
-    +'</ul></div></div>';
-
-  requestAnimationFrame(function(){
-    const pw=wrapper.querySelector('.mp4-wrap');const vid=pw.querySelector('.main-vid');const loader=pw.querySelector('.mp4-loader');
-    const controls=pw.querySelector('.vp-controls');const progress=pw.querySelector('.vp-progress');const bar=pw.querySelector('.vp-bar');
-    const pp=pw.querySelector('.vp-pp');const curEl=pw.querySelector('.vp-cur');const durEl=pw.querySelector('.vp-dur');
-    const speedBtn=pw.querySelector('.vp-speed');const volSlider=pw.querySelector('.vol-slider');const volIcon=pw.querySelector('.vp-vol-btn i');
-    const fsBtn=pw.querySelector('.vp-fs');const pipBtn=pw.querySelector('.vp-pip');const settingsPopup=pw.querySelector('.vp-popup');const speedItems=pw.querySelectorAll('.vp-popup ul li');
-    function fmt(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0'+sec:sec);}
-    function playV(){vid.play();pp.querySelector('i').textContent='pause';}
-    function pauseV(){vid.pause();pp.querySelector('i').textContent='play_arrow';}
-    pp.addEventListener('click',function(){vid.paused?playV():pauseV();});
-    pw.addEventListener('click',function(e){if(e.target===pw||e.target===vid){vid.paused?playV():pauseV();}});
-    vid.addEventListener('waiting',function(){loader.style.display='block';});
-    vid.addEventListener('canplay',function(){loader.style.display='none';});
-    vid.addEventListener('ended',function(){pp.querySelector('i').textContent='replay';swStop();});
-    vid.addEventListener('loadeddata',function(){durEl.textContent=fmt(vid.duration);});
-    vid.addEventListener('timeupdate',function(){if(!vid.duration)return;bar.style.width=(vid.currentTime/vid.duration*100)+'%';curEl.textContent=fmt(vid.currentTime);});
-    vid.addEventListener('play',function(){swStart();});
-    vid.addEventListener('pause',function(){swStop();});
-    let dragging=false;
-    function seekTo(e){const rect=progress.getBoundingClientRect();const x=Math.max(0,Math.min(e.clientX-rect.left,rect.width));vid.currentTime=(x/rect.width)*vid.duration;}
-    progress.addEventListener('pointerdown',function(e){dragging=true;progress.setPointerCapture(e.pointerId);seekTo(e);});
-    progress.addEventListener('pointermove',function(e){if(dragging)seekTo(e);});
-    progress.addEventListener('pointerup',function(){dragging=false;});
-    volSlider.value=80;vid.volume=0.8;
-    function updateVol(){const v=vid.volume;volIcon.textContent=v===0?'volume_off':v<0.4?'volume_down':'volume_up';}
-    volSlider.addEventListener('input',function(){vid.volume=volSlider.value/100;updateVol();});
-    pw.querySelector('.vp-vol-btn').addEventListener('click',function(){vid.volume=vid.volume>0?0:0.8;volSlider.value=vid.volume*100;updateVol();});
-    let hideTimer;
-    function showCtrl(){controls.classList.add('show');clearTimeout(hideTimer);hideTimer=setTimeout(function(){if(!vid.paused&&!settingsPopup.classList.contains('show'))controls.classList.remove('show');},2800);}
-    pw.addEventListener('mousemove',showCtrl);pw.addEventListener('touchstart',showCtrl,{passive:true});controls.classList.add('show');
-    speedItems.forEach(function(li){li.addEventListener('click',function(){speedItems.forEach(x=>x.classList.remove('active'));li.classList.add('active');const s=parseFloat(li.dataset.speed);vid.playbackRate=s;speedBtn.textContent=s===1?'1×':s+'×';settingsPopup.classList.remove('show');});});
-    speedBtn.addEventListener('click',function(e){e.stopPropagation();settingsPopup.classList.toggle('show');});
-    document.addEventListener('click',function(e){if(!settingsPopup.contains(e.target)&&e.target!==speedBtn)settingsPopup.classList.remove('show');});
-    pipBtn.addEventListener('click',function(){if(document.pictureInPictureEnabled)vid.requestPictureInPicture().catch(()=>{});});
-    fsBtn.addEventListener('click',function(){if(!document.fullscreenElement){pw.requestFullscreen();fsBtn.querySelector('i').textContent='fullscreen_exit';}else{document.exitFullscreen();fsBtn.querySelector('i').textContent='fullscreen';}});
-    pw.querySelector('.vp-rew').addEventListener('click',function(){vid.currentTime=Math.max(0,vid.currentTime-10);});
-    pw.querySelector('.vp-fwd').addEventListener('click',function(){vid.currentTime=Math.min(vid.duration,vid.currentTime+10);});
-    vid.addEventListener('contextmenu',function(e){e.preventDefault();});
-    updateVol();
-  });
-}
+window.goToVideo=function(idx){destroyActivePlayer();currentVideoIdx=idx;renderVideoPage();window.scrollTo({top:0,behavior:'smooth'});};
+window.videoNext=function(){if(currentVideoIdx<videosData.length-1){destroyActivePlayer();currentVideoIdx++;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
+window.videoPrev=function(){if(currentVideoIdx>0){destroyActivePlayer();currentVideoIdx--;renderVideoPage();scrollTo({top:0,behavior:'smooth'});}};
 
 window.goToCheckout=function(){
   const lessonId=new URLSearchParams(location.search).get('id');
   if(!lessonId){location.href='/dashboard';return;}
   localStorage.setItem('checkout_lesson_id',lessonId);
-  location.href=`/checkout?lesson_id=${encodeURIComponent(lessonId)}`;
+  location.href='/checkout?lesson_id='+encodeURIComponent(lessonId);
 };
 
 /* ════════════════════════════
-   INIT
+   INIT / AUTH
 ════════════════════════════ */
 async function init(){
   const adBlocked=await checkAdBlocker();if(adBlocked)return;
@@ -924,9 +615,7 @@ async function init(){
   if(!session){hideLoader();location.href='/home';return;}
   currentUser=session.user;
   const cached=localStorage.getItem('access_'+currentUser.id+'_'+lessonId);
-  if(cached){
-    try{const p=JSON.parse(cached);if(p.expiry>Date.now()){myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();await loadLesson(lessonId);startAccessTimer(p.expiry);verifyBg(lessonId);hideLoader();return;}}catch(e){}
-  }
+  if(cached){try{const p=JSON.parse(cached);if(p.expiry>Date.now()){myStudentId=p.studentId||currentUser.id.substring(0,6).toUpperCase();await loadLesson(lessonId);startAccessTimer(p.expiry);verifyBg(lessonId);hideLoader();return;}}catch(e){}}
   try{
     const[{data:u},{data:codes}]=await Promise.all([db.from('users').select('studentid').eq('id',currentUser.id).single(),db.from('codes').select('*').eq('usedby',currentUser.email)]);
     if(u)myStudentId=u.studentid||currentUser.id.substring(0,6).toUpperCase();
@@ -937,9 +626,7 @@ async function init(){
   }catch(e){hideLoader();document.getElementById('codeLockScreen').classList.remove('hidden');}
 }
 
-async function verifyBg(lessonId){
-  try{const{data:codes}=await db.from('codes').select('expiryat,lessonid,usedby').eq('usedby',currentUser.email);if(!codes)return;const now=Date.now();let ok=false;codes.forEach(function(c){if(String(c.lessonid)===String(lessonId)&&c.usedby===currentUser.email&&Number(c.expiryat)>now)ok=true;});if(!ok)localStorage.removeItem('access_'+currentUser.id+'_'+lessonId);}catch(e){}
-}
+async function verifyBg(lessonId){try{const{data:codes}=await db.from('codes').select('expiryat,lessonid,usedby').eq('usedby',currentUser.email);if(!codes)return;const now=Date.now();let ok=false;codes.forEach(function(c){if(String(c.lessonid)===String(lessonId)&&c.usedby===currentUser.email&&Number(c.expiryat)>now)ok=true;});if(!ok)localStorage.removeItem('access_'+currentUser.id+'_'+lessonId);}catch(e){}}
 
 function startAccessTimer(expiry){
   document.getElementById('accessTimerBox').classList.remove('hidden');
@@ -957,14 +644,12 @@ async function loadLesson(id){
   ]);
   if(!snap)return;
   lessonData=snap;questions=lessonData.questions||[];
-
-  /* ── Read exam duration from DB ── */
   examDurationMins=Number(lessonData.examduration)||40;
   timeLeft=examDurationMins*60;
   document.getElementById('examDurationWarn').textContent='⏱ Time Limit: '+examDurationMins+' Minutes';
   document.getElementById('timerVal').textContent=examDurationMins+':00';
-
   document.getElementById('navLessonTitle').textContent=lessonData.name||'MathPro';
+
   videosData=[];
   const extracted=extractVideos(snap);
   if(extracted){videosData=extracted;}
@@ -982,115 +667,33 @@ async function loadLesson(id){
 
   if(questions.length===0){
     document.getElementById('tab-quiz').innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:60px 28px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:3rem;margin-bottom:14px">🎓</div><div style="font-family:var(--display);font-size:1.5rem;font-weight:700">No Exam For This Course</div><div style="font-size:.87rem;color:var(--muted);margin-top:8px">Videos and PDF are unlocked automatically.</div></div>';
-    unlockPostExam(true);applyInitialVideoLaunch();return;
+    unlockPostExam(true);return;
   }
   const prev=res&&res.find(r=>r.lesson===lessonData.name);
-  if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(false,buildMsg(prev.score,questions.length,true));applyInitialVideoLaunch();}
-  else{
-    const saved=localStorage.getItem('exam_'+currentUser.id+'_'+id);
-    if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockPostExam(false,buildMsg(pd.score,questions.length,true));applyInitialVideoLaunch();}catch(e){}}
-  }
+  if(prev){userAns=prev.userans||{};generateReview();unlockPostExam(false,buildMsg(prev.score,questions.length,true));}
+  else{const saved=localStorage.getItem('exam_'+currentUser.id+'_'+id);if(saved){try{const pd=JSON.parse(saved);userAns=pd.userAns;generateReview();unlockPostExam(false,buildMsg(pd.score,questions.length,true));}catch(e){}}}
 }
 
 /* ── HOMEWORK ── */
 function renderNoHomework(){document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">No Assignment</div><div class="hw-sub">There is no homework assignment for this course.</div></div>';}
 function renderHomeworkStart(){document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:16px">📋</div><div class="hw-title">Assignment: '+(hwData.title||'Homework')+'</div><div class="hw-sub">Answer '+hwQuestions.length+' questions. Completing this may unlock gated videos!</div><button class="hw-btn" onclick="startHw()">Start Assignment →</button></div>';}
-function renderHomeworkDone(result){
-  const pct=result.total>0?Math.round(result.score/result.total*100):0;const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';
-  let rev='<div style="margin-top:26px"><div class="review-title">Assignment Review</div>';
-  hwQuestions.forEach(function(q,i){const ok=result.userans&&result.userans[i]===q.correct;const al=result.userans&&result.userans[i];const ans=al?(q[al]?al.toUpperCase()+' — '+q[al]:al.toUpperCase()):'—';const corr=q.correct?(q[q.correct]?q.correct.toUpperCase()+' — '+q[q.correct]:q.correct.toUpperCase()):'—';rev+='<div class="review-item '+(ok?'correct':'wrong')+'"><div class="review-meta"><span class="rv-lbl">Q'+(i+1)+'</span><span class="rbadge '+(ok?'correct':'wrong')+'">'+(ok?'✓ Correct':'✗ Wrong')+'</span></div><div class="rv-q">'+(q.text||'Choose:')+'</div><div class="rv-ans">Your answer: <span>'+ans+'</span></div>'+(!ok?'<div class="rv-correct">✓ Correct: '+corr+'</div>':'')+'</div>';});
-  rev+='</div>';
-  document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:12px">✅</div><div class="hw-title" style="color:var(--accent)">Assignment Complete!</div><div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:'+clr+';margin:12px 0 5px">'+result.score+'<span style="font-size:1.1rem;color:var(--muted);">/'+result.total+'</span></div><div style="font-size:.82rem;color:var(--muted)">'+pct+'% — '+(pct>=70?'Excellent!':pct>=50?'Good job!':'Keep practicing!')+'</div></div>'+rev;
-}
+function renderHomeworkDone(result){const pct=result.total>0?Math.round(result.score/result.total*100):0;const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';let rev='<div style="margin-top:26px"><div class="review-title">Assignment Review</div>';hwQuestions.forEach(function(q,i){const ok=result.userans&&result.userans[i]===q.correct;const al=result.userans&&result.userans[i];const ans=al?(q[al]?al.toUpperCase()+' — '+q[al]:al.toUpperCase()):'—';const corr=q.correct?(q[q.correct]?q.correct.toUpperCase()+' — '+q[q.correct]:q.correct.toUpperCase()):'—';rev+='<div class="review-item '+(ok?'correct':'wrong')+'"><div class="review-meta"><span class="rv-lbl">Q'+(i+1)+'</span><span class="rbadge '+(ok?'correct':'wrong')+'">'+(ok?'✓ Correct':'✗ Wrong')+'</span></div><div class="rv-q">'+(q.text||'Choose:')+'</div><div class="rv-ans">Your answer: <span>'+ans+'</span></div>'+(!ok?'<div class="rv-correct">✓ Correct: '+corr+'</div>':'')+'</div>';});rev+='</div>';document.getElementById('tab-homework').innerHTML='<div class="hw-card"><div style="font-size:3rem;margin-bottom:12px">✅</div><div class="hw-title" style="color:var(--accent)">Assignment Complete!</div><div style="font-family:var(--mono);font-size:2.5rem;font-weight:700;color:'+clr+';margin:12px 0 5px">'+result.score+'<span style="font-size:1.1rem;color:var(--muted);">/'+result.total+'</span></div><div style="font-size:.82rem;color:var(--muted)">'+pct+'% — '+(pct>=70?'Excellent!':pct>=50?'Good job!':'Keep practicing!')+'</div></div>'+rev;}
 window.startHw=function(){showLoader('Preparing…');setTimeout(function(){hwCurIdx=0;hwUserAns={};renderHwQ();hideLoader();},300);};
-function renderHwQ(){
-  const q=hwQuestions[hwCurIdx];if(!q)return;
-  const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);const count=q.optionsCount||4;const prevHidden=hwCurIdx===0?'hidden':'';const isLast=hwCurIdx<hwQuestions.length-1;
-  document.getElementById('tab-homework').innerHTML='<div class="quiz-wrap"><div class="progress-row"><span class="q-count">'+(hwCurIdx+1)+'/'+hwQuestions.length+'</span><div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div></div><div class="q-card"><div class="q-label">Assignment · Q'+(hwCurIdx+1)+'</div>'+(q.image?'<img src="'+q.image+'" class="q-img" alt="">':'')+'<div class="q-text">'+(q.text||'Choose:')+'</div><div class="options">'+OPT_LETTERS.slice(0,count).map(opt=>'<label class="opt"><input type="radio" name="hw" value="'+opt+'" '+(hwUserAns[hwCurIdx]===opt?'checked':'')+'><span class="opt-key">'+opt.toUpperCase()+'</span><span class="opt-text">'+(q[opt]||'')+'</span></label>').join('')+'</div></div><div class="quiz-nav"><button class="q-btn ghost '+prevHidden+'" onclick="saveHwAns();hwCurIdx--;renderHwQ()">← Previous</button>'+(isLast?'<button class="q-btn primary" onclick="saveHwAns();hwCurIdx++;renderHwQ()">Next →</button>':'<button class="q-btn primary" onclick="saveHwAns();submitHw()">Submit ✓</button>')+'</div></div>';
-}
+function renderHwQ(){const q=hwQuestions[hwCurIdx];if(!q)return;const pct=Math.round((hwCurIdx+1)/hwQuestions.length*100);const count=q.optionsCount||4;const prevHidden=hwCurIdx===0?'hidden':'';const isLast=hwCurIdx<hwQuestions.length-1;document.getElementById('tab-homework').innerHTML='<div class="quiz-wrap"><div class="progress-row"><span class="q-count">'+(hwCurIdx+1)+'/'+hwQuestions.length+'</span><div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div></div><div class="q-card"><div class="q-label">Assignment · Q'+(hwCurIdx+1)+'</div>'+(q.image?'<img src="'+q.image+'" class="q-img" alt="">':'')+'<div class="q-text">'+(q.text||'Choose:')+'</div><div class="options">'+OPT_LETTERS.slice(0,count).map(opt=>'<label class="opt"><input type="radio" name="hw" value="'+opt+'" '+(hwUserAns[hwCurIdx]===opt?'checked':'')+'><span class="opt-key">'+opt.toUpperCase()+'</span><span class="opt-text">'+(q[opt]||'')+'</span></label>').join('')+'</div></div><div class="quiz-nav"><button class="q-btn ghost '+prevHidden+'" onclick="saveHwAns();hwCurIdx--;renderHwQ()">← Previous</button>'+(isLast?'<button class="q-btn primary" onclick="saveHwAns();hwCurIdx++;renderHwQ()">Next →</button>':'<button class="q-btn primary" onclick="saveHwAns();submitHw()">Submit ✓</button>')+'</div></div>';}
 function saveHwAns(){const s=document.querySelector('input[name="hw"]:checked');if(s)hwUserAns[hwCurIdx]=s.value;}
-async function submitHw(){
-  saveHwAns();showLoader('Submitting…');
-  let score=0;hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});
-  const res={email:currentUser.email,hw_id:hwData.id,lesson:lessonData&&lessonData.name||'',score,total:hwQuestions.length,userans:hwUserAns};
-  await db.from('hw_results').insert([res]).catch(()=>{});
-  hwDone=true;hwResultsMap[hwData.id]=Object.assign({},res);renderHomeworkDone(res);hideLoader();
-}
+async function submitHw(){saveHwAns();showLoader('Submitting…');let score=0;hwQuestions.forEach((q,i)=>{if(hwUserAns[i]===q.correct)score++;});const res={email:currentUser.email,hw_id:hwData.id,lesson:lessonData&&lessonData.name||'',score,total:hwQuestions.length,userans:hwUserAns};await db.from('hw_results').insert([res]).catch(()=>{});hwDone=true;hwResultsMap[hwData.id]=Object.assign({},res);renderHomeworkDone(res);hideLoader();}
 
 /* ── QUIZ ── */
 function buildMsg(score,total,prev){const pct=total>0?Math.round(score/total*100):0;return{score,total,pct,prev};}
-
-document.getElementById('startBtn').onclick=function(){
-  if(!questions.length)return alert('No exam questions yet.');
-  showLoader('Preparing exam…');
-  setTimeout(function(){
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('quizApp').classList.remove('hidden');
-    document.getElementById('timerBox').classList.remove('hidden');
-    renderQ();startTimer();hideLoader();
-  },300);
-};
-
-function renderQ(){
-  const q=questions[curIdx];if(!q)return;
-  const pct=Math.round((curIdx+1)/questions.length*100);const count=q.optionsCount||4;
-  document.getElementById('qCount').textContent=(curIdx+1)+' / '+questions.length;
-  document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('qDisplay').innerHTML='<div class="q-label">Question '+(curIdx+1)+'</div>'+(q.image?'<img src="'+q.image+'" class="q-img" alt="">':'')+'<div class="q-text">'+(q.text||'Choose:')+'</div><div class="options">'+OPT_LETTERS.slice(0,count).map(opt=>'<label class="opt"><input type="radio" name="exam" value="'+opt+'" '+(userAns[curIdx]===opt?'checked':'')+'><span class="opt-key">'+opt.toUpperCase()+'</span><span class="opt-text">'+(q[opt]||'')+'</span></label>').join('')+'</div>';
-  document.getElementById('prevBtn').classList.toggle('hidden',curIdx===0);
-  document.getElementById('nextBtn').classList.toggle('hidden',curIdx===questions.length-1);
-  document.getElementById('finishBtn').classList.toggle('hidden',curIdx!==questions.length-1);
-}
+document.getElementById('startBtn').onclick=function(){if(!questions.length)return alert('No exam questions yet.');showLoader('Preparing exam…');setTimeout(function(){document.getElementById('startScreen').classList.add('hidden');document.getElementById('quizApp').classList.remove('hidden');document.getElementById('timerBox').classList.remove('hidden');renderQ();startTimer();hideLoader();},300);};
+function renderQ(){const q=questions[curIdx];if(!q)return;const pct=Math.round((curIdx+1)/questions.length*100);const count=q.optionsCount||4;document.getElementById('qCount').textContent=(curIdx+1)+' / '+questions.length;document.getElementById('progFill').style.width=pct+'%';document.getElementById('qDisplay').innerHTML='<div class="q-label">Question '+(curIdx+1)+'</div>'+(q.image?'<img src="'+q.image+'" class="q-img" alt="">':'')+'<div class="q-text">'+(q.text||'Choose:')+'</div><div class="options">'+OPT_LETTERS.slice(0,count).map(opt=>'<label class="opt"><input type="radio" name="exam" value="'+opt+'" '+(userAns[curIdx]===opt?'checked':'')+'><span class="opt-key">'+opt.toUpperCase()+'</span><span class="opt-text">'+(q[opt]||'')+'</span></label>').join('')+'</div>';document.getElementById('prevBtn').classList.toggle('hidden',curIdx===0);document.getElementById('nextBtn').classList.toggle('hidden',curIdx===questions.length-1);document.getElementById('finishBtn').classList.toggle('hidden',curIdx!==questions.length-1);}
 function saveAns(){const s=document.querySelector('input[name="exam"]:checked');if(s)userAns[curIdx]=s.value;}
 document.getElementById('nextBtn').onclick=function(){saveAns();curIdx++;renderQ();};
 document.getElementById('prevBtn').onclick=function(){saveAns();curIdx--;renderQ();};
-
-document.getElementById('finishBtn').onclick=async function(){
-  saveAns();clearInterval(examTimer);showLoader('Grading…');
-  try{
-    let score=0;questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});
-    const payload={email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns,date:new Date().toISOString()};
-    const{error}=await db.from('results').insert([payload]);if(error)throw error;
-    const id=new URLSearchParams(location.search).get('id');
-    localStorage.setItem('exam_'+currentUser.id+'_'+id,JSON.stringify({userAns,score}));
-    generateReview();unlockPostExam(false,buildMsg(score,questions.length,false));scrollTo({top:0,behavior:'smooth'});
-  }catch(err){console.error('Exam submit error:',err);alert('Error saving exam: '+(err.message||err));}
-  finally{hideLoader();}
-};
-
-function generateReview(){
-  const list=document.getElementById('reviewList');if(!list)return;list.innerHTML='';
-  questions.forEach((q,i)=>{
-    const ok=userAns[i]===q.correct;const al=userAns[i];
-    const ans=al?(q[al]?al.toUpperCase()+' — '+q[al]:al.toUpperCase()):'—';
-    const corr=q.correct?(q[q.correct]?q.correct.toUpperCase()+' — '+q[q.correct]:q.correct.toUpperCase()):'—';
-    list.innerHTML+='<div class="review-item '+(ok?'correct':'wrong')+'" style="animation:cardIn .35s ease '+(i*.04)+'s both"><div class="review-meta"><span class="rv-lbl">Q'+(i+1)+'</span><span class="rbadge '+(ok?'correct':'wrong')+'">'+(ok?'✓ Correct':'✗ Wrong')+'</span></div>'+(q.image?'<img src="'+q.image+'" style="max-height:150px;border-radius:var(--radius);margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2)">':'')+'<div class="rv-q">'+(q.text||'Choose:')+'</div><div class="rv-ans">Your answer: <span>'+ans+'</span></div>'+(!ok?'<div class="rv-correct">✓ Correct: '+corr+'</div>':'')+'</div>';
-  });
-}
-
-function unlockPostExam(skipAnim,msgObj){
-  document.getElementById('startScreen').classList.add('hidden');
-  document.getElementById('quizApp').classList.add('hidden');
-  document.getElementById('timerBox').classList.add('hidden');
-  document.getElementById('reviewArea').classList.remove('hidden');
-  if(msgObj){
-    const{score,total,pct,prev}=msgObj;const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';
-    const r=50,circ=2*Math.PI*r,off=circ-(pct/100)*circ;
-    document.getElementById('scoreBanner').innerHTML='<div class="score-ring"><svg width="116" height="116" viewBox="0 0 116 116"><circle cx="58" cy="58" r="'+r+'" fill="none" stroke="var(--border2)" stroke-width="7"/><circle cx="58" cy="58" r="'+r+'" fill="none" stroke="'+clr+'" stroke-width="7" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 6px '+clr+')"/></svg><div class="score-n" style="color:'+clr+'">'+score+'</div><div class="score-pct">'+pct+'%</div></div><div class="score-of">Out of '+total+' questions</div><div class="score-msg">'+(prev?'✦ You already completed this exam':'✦ Score recorded!')+'</div><div class="score-unlock">✅ Videos &amp; PDF Unlocked</div>';
-  }
-  ['videos','pdf'].forEach(t=>document.getElementById('btn-'+t+'-tab').classList.remove('locked'));
-}
-
-function startTimer(){
-  /* use dynamic examDurationMins */
-  timeLeft=examDurationMins*60;
-  examTimer=setInterval(function(){
-    const m=Math.floor(timeLeft/60),s=timeLeft%60;
-    document.getElementById('timerVal').textContent=m+':'+(s<10?'0'+s:s);
-    if(timeLeft<=120)document.getElementById('timerBox').classList.add('urgent');
-    if(timeLeft--<=0){clearInterval(examTimer);alert('Time is up!');document.getElementById('finishBtn').click();}
-  },1000);
-}
+document.getElementById('finishBtn').onclick=async function(){saveAns();clearInterval(examTimer);showLoader('Grading…');try{let score=0;questions.forEach((q,i)=>{if(userAns[i]===q.correct)score++;});const payload={email:currentUser.email,lesson:lessonData.name,score,total:questions.length,userans:userAns,date:new Date().toISOString()};const{error}=await db.from('results').insert([payload]);if(error)throw error;const id=new URLSearchParams(location.search).get('id');localStorage.setItem('exam_'+currentUser.id+'_'+id,JSON.stringify({userAns,score}));generateReview();unlockPostExam(false,buildMsg(score,questions.length,false));scrollTo({top:0,behavior:'smooth'});}catch(err){console.error('Exam submit error:',err);alert('Error saving exam: '+(err.message||err));}finally{hideLoader();}};
+function generateReview(){const list=document.getElementById('reviewList');if(!list)return;list.innerHTML='';questions.forEach((q,i)=>{const ok=userAns[i]===q.correct;const al=userAns[i];const ans=al?(q[al]?al.toUpperCase()+' — '+q[al]:al.toUpperCase()):'—';const corr=q.correct?(q[q.correct]?q.correct.toUpperCase()+' — '+q[q.correct]:q.correct.toUpperCase()):'—';list.innerHTML+='<div class="review-item '+(ok?'correct':'wrong')+'" style="animation:cardIn .35s ease '+(i*.04)+'s both"><div class="review-meta"><span class="rv-lbl">Q'+(i+1)+'</span><span class="rbadge '+(ok?'correct':'wrong')+'">'+(ok?'✓ Correct':'✗ Wrong')+'</span></div>'+(q.image?'<img src="'+q.image+'" style="max-height:150px;border-radius:var(--radius);margin-bottom:10px;border:1px solid var(--border);width:100%;object-fit:contain;background:var(--bg2)">':'')+'<div class="rv-q">'+(q.text||'Choose:')+'</div><div class="rv-ans">Your answer: <span>'+ans+'</span></div>'+(!ok?'<div class="rv-correct">✓ Correct: '+corr+'</div>':'')+'</div>';});}
+function unlockPostExam(skipAnim,msgObj){document.getElementById('startScreen').classList.add('hidden');document.getElementById('quizApp').classList.add('hidden');document.getElementById('timerBox').classList.add('hidden');document.getElementById('reviewArea').classList.remove('hidden');if(msgObj){const{score,total,pct,prev}=msgObj;const clr=pct>=70?'var(--accent)':pct>=50?'var(--amber)':'var(--red)';const r=50,circ=2*Math.PI*r,off=circ-(pct/100)*circ;document.getElementById('scoreBanner').innerHTML='<div class="score-ring"><svg width="116" height="116" viewBox="0 0 116 116"><circle cx="58" cy="58" r="'+r+'" fill="none" stroke="var(--border2)" stroke-width="7"/><circle cx="58" cy="58" r="'+r+'" fill="none" stroke="'+clr+'" stroke-width="7" stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;filter:drop-shadow(0 0 6px '+clr+')"/></svg><div class="score-n" style="color:'+clr+'">'+score+'</div><div class="score-pct">'+pct+'%</div></div><div class="score-of">Out of '+total+' questions</div><div class="score-msg">'+(prev?'✦ You already completed this exam':'✦ Score recorded!')+'</div><div class="score-unlock">✅ Videos &amp; PDF Unlocked</div>';}['videos','pdf'].forEach(t=>document.getElementById('btn-'+t+'-tab').classList.remove('locked'));}
+function startTimer(){timeLeft=examDurationMins*60;examTimer=setInterval(function(){const m=Math.floor(timeLeft/60),s=timeLeft%60;document.getElementById('timerVal').textContent=m+':'+(s<10?'0'+s:s);if(timeLeft<=120)document.getElementById('timerBox').classList.add('urgent');if(timeLeft--<=0){clearInterval(examTimer);alert('Time is up!');document.getElementById('finishBtn').click();}},1000);}
 
 init();
 </script>
