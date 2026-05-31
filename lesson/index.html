@@ -213,6 +213,12 @@ main{position:relative;z-index:1;max-width:1380px;margin:0 auto;padding:26px 20p
 .svg-controller{fill:white;width:40px;height:40px;margin-top:8px}
 @media(max-width:600px){.shaka-seek-btn{display:none}}
 
+/* ── HIDDEN DRIVE PLAYER ── */
+.drive-player-outer{position:absolute;inset:0;overflow:hidden;background:#1a1209}
+.drive-hidden-wrap{position:absolute;top:-58px;left:-2px;right:-2px;bottom:0;overflow:hidden}
+.drive-hidden-wrap iframe{width:104%;height:calc(100% + 100px);border:none;margin-left:-2%;display:block;background:#1a1209}
+.drive-bottom-mask{position:absolute;bottom:0;left:0;right:0;height:3px;background:#1a1209;z-index:6;pointer-events:none}
+
 /* ── HOMEWORK ── */
 .hw-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:50px 30px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow)}
 .hw-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:3px;background:linear-gradient(to right,transparent,var(--accent),transparent);border-radius:0 0 4px 4px}
@@ -472,12 +478,40 @@ async function initShakaPlayer(container, videoUrl, studentId){
   activeShakaWmTimer=setInterval(()=>{si=(si+1)%spots.length;if(wm){wm.style.top=spots[si][0];wm.style.left=spots[si][1];}},5000);
 }
 
-/* ── Google Drive fallback (iframe) ── */
+/* ── Hidden Drive Player ── */
+function initDrivePlayer(container, driveUrl, studentId){
+  destroyActivePlayer();
+  const did=extractDriveId(driveUrl);
+  if(!did){container.innerHTML='<div style="color:#fff;display:flex;align-items:center;justify-content:center;height:100%">Invalid Drive URL</div>';return;}
+
+  /* ?rm=minimal removes Drive toolbar; clipping via CSS hides the remaining header */
+  const msrc='https://drive.google.com/file/d/'+did+'/preview?rm=minimal';
+
+  container.innerHTML=
+    '<div class="drive-player-outer">'
+    +'<div class="drive-hidden-wrap">'
+    +'<iframe src="'+msrc+'" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe>'
+    +'</div>'
+    +'<div class="drive-bottom-mask"></div>'
+    +'<div class="shaka-wm" id="shakaWm" style="pointer-events:none">'+studentId+'</div>'
+    +'</div>';
+
+  /* watermark movement */
+  const wm=document.getElementById('shakaWm');
+  const spots=[['8%','10%'],['12%','62%'],['46%','22%'],['70%','58%'],['32%','72%'],['76%','12%']];
+  let si=0;
+  if(wm){wm.style.top=spots[0][0];wm.style.left=spots[0][1];}
+  activeShakaWmTimer=setInterval(()=>{si=(si+1)%spots.length;if(wm){wm.style.top=spots[si][0];wm.style.left=spots[si][1];}},5000);
+
+  swStart();
+}
+
+/* ── Google Drive URL helpers ── */
 function extractDriveId(url){if(!url)return null;let m=url.match(/drive\.google\.com\/file\/d\/([^/]+)/);if(m)return m[1];m=url.match(/[?&]id=([^&]+)/);return m?m[1]:null;}
 function getDrivePreviewUrl(url){const id=extractDriveId(url);return id?'https://drive.google.com/file/d/'+id+'/preview':null;}
 function isDriveUrl(url){return!!extractDriveId(url);}
 
-/* ── YouTube detection (still supported via Shaka if direct m3u8; else fallback iframe) ── */
+/* ── YouTube detection ── */
 function extractYTId(url){if(!url)return null;const m=url.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);return m?m[1]:null;}
 
 function isHlsOrMp4(url){if(!url)return false;return /\.(m3u8|mp4|webm|ogg|mov)(\?.*)?$/i.test(url)||url.includes('.m3u8')||url.includes('.mp4');}
@@ -520,7 +554,6 @@ function renderVideoPage(){
   const v=videosData[currentVideoIdx];
   const isLocked=v.requireHw&&!hwResultsMap[v.hwId];
   const ytId=extractYTId(v.url);
-  const drivePreview=getDrivePreviewUrl(v.url);
 
   let sideItems='';
   videosData.forEach(function(vid,i){
@@ -536,10 +569,10 @@ function renderVideoPage(){
   if(isLocked){
     playerHtml='<div class="video-locked-ov"><div class="lk-emoji">🔒</div><div class="lk-title">Video Locked</div><div class="lk-sub">Complete the homework assignment first to unlock this video.</div><button class="lk-btn" onclick="switchTab(\'homework\')">Go to Homework →</button></div>';
   } else if(isDriveUrl(v.url)&&!ytId){
-    /* Google Drive: use iframe (Shaka can't play Drive links) */
-    playerHtml='<div style="position:absolute;inset:0"><iframe src="'+drivePreview+'" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;border:0;background:#1a1209" referrerpolicy="no-referrer"></iframe><div class="shaka-wm" id="shakaWm" style="position:absolute;top:10%;left:12%;z-index:50">'+myStudentId+'</div></div>';
+    /* ── HIDDEN DRIVE PLAYER: slot only — initDrivePlayer fills it after DOM insert ── */
+    playerHtml='<div id="driveSlot" style="position:absolute;inset:0;width:100%;height:100%"></div>';
   } else {
-    /* Shaka handles HLS, DASH, MP4, YouTube (via plugin or direct embed) */
+    /* Shaka handles HLS, DASH, MP4 */
     playerHtml='<div id="shakaSlot" style="position:absolute;inset:0;width:100%;height:100%"></div>';
   }
 
@@ -575,22 +608,21 @@ function renderVideoPage(){
     +'<button class="vid-page-btn" onclick="videoNext()" '+nextDisabled+'>Next <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>'
     +'</div></section></div>';
 
-  /* Attach Shaka after DOM is ready */
-  if(!isLocked&&!isDriveUrl(v.url)){
-    const slot=document.getElementById('shakaSlot');
-    if(slot){
-      /* For YouTube, convert to embed URL for Shaka or use direct stream */
-      let playUrl=v.url;
-      if(ytId)playUrl='https://www.youtube.com/embed/'+ytId+'?enablejsapi=1';
-      initShakaPlayer(slot,playUrl,myStudentId);
+  /* ── Attach players after DOM is ready ── */
+  if(!isLocked){
+    if(isDriveUrl(v.url)&&!ytId){
+      /* Hidden Google Drive Player */
+      const driveSlot=document.getElementById('driveSlot');
+      if(driveSlot)initDrivePlayer(driveSlot,v.url,myStudentId);
+    } else {
+      /* Shaka for HLS / MP4 / YouTube */
+      const shakaSlot=document.getElementById('shakaSlot');
+      if(shakaSlot){
+        let playUrl=v.url;
+        if(ytId)playUrl='https://www.youtube.com/embed/'+ytId+'?enablejsapi=1';
+        initShakaPlayer(shakaSlot,playUrl,myStudentId);
+      }
     }
-  } else if(isDriveUrl(v.url)&&!isLocked){
-    /* Drive watermark movement */
-    const wm=document.getElementById('shakaWm');
-    const spots=[['8%','10%'],['12%','62%'],['46%','22%'],['70%','58%'],['32%','72%'],['76%','12%']];
-    let si=0;
-    activeShakaWmTimer=setInterval(()=>{si=(si+1)%spots.length;if(wm){wm.style.top=spots[si][0];wm.style.left=spots[si][1];}},5000);
-    swStart();
   }
 }
 
